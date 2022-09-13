@@ -98,7 +98,7 @@ class GlobalService{
     }
     
     public function getBASEURL_OCRAPI(){
-        return "https://www.homekeo.fr/";
+        return "https://dockeo.fr/";
     }
 
     public function initEmailTransport($entreprise_id = null){

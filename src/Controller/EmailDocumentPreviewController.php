@@ -35,9 +35,6 @@ class EmailDocumentPreviewController extends Controller
      */
     public function index($dossier)
     {
-
-        dd('acces refusé');
-
         switch ($dossier) {
             case 'facturation':
                 $path = "/uploads/achats/facturation/";

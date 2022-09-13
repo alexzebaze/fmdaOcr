@@ -1,4 +1,4 @@
-{% set base_api_ocr_url = "https://www.homekeo.fr" %}
+{% set base_api_ocr_url = "https://dockeo.fr" %}
 <div class="table-responsive">
     {% if dossier != 'paie' %}
         <table class="table">
@@ -179,7 +179,7 @@
                 <tr {% if not document.execute %} style="background: #e7eaec" {% endif %}>
                     <td>#{{document.id}}</td>
                     <td>
-                        <span class="showDocument" data-file="{{path}}{{document.getDocument}}" style="cursor: pointer;"><img src="//ssl.gstatic.com/docs/doclist/images/mediatype/icon_3_pdf_x16.png"></span> 
+                        <span class="showDocument" data-file="{{base_api_ocr_url}}{{path}}{{document.getDocument}}" style="cursor: pointer;"><img src="//ssl.gstatic.com/docs/doclist/images/mediatype/icon_3_pdf_x16.png"></span> 
                     </td>
                     <td>{{document.score}}</td>
                     <td>{{document.getCreateAt|date('d/m/Y')}}</td>
