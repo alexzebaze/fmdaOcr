@@ -1,0 +1,1547 @@
+
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/ico" href="{{ asset('favicon.ico') }}"/>
+    <title>FMDA</title>
+    <meta name="description" content=""/>
+
+   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu" crossorigin="anonymous">
+    <link href="{{ asset('vendor/@fortawesome/fontawesome-free/css/fontawesome.css') }}" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/photoswipe/4.1.3/photoswipe.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/photoswipe/4.1.3/default-skin/default-skin.css"/>
+    <link href="{{ asset('vendor/iCheck/custom.css') }}" rel="stylesheet">
+    <link href="{{ asset('vendor/animate.css/animate.css') }}" rel="stylesheet">
+    <link href="{{ asset('css/style.css') }}" rel="stylesheet">
+    <link rel="stylesheet" href="{{ asset('vendor/toastr/toastr.min.css') }}"/>
+    <script src="{{ asset('js/jquery-3.1.1.min.js') }}"></script>
+    
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/smoothness/jquery-ui.css">
+      <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+      <link rel="stylesheet" type="text/css" href="{{ asset('vendor/nestable2/jquery.nestable.min.css') }}">
+      <script src="{{ asset('vendor/nestable2/jquery.nestable.min.js') }}"></script>
+      <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+
+
+
+      <style type="text/css"  media="print">
+         @media print {
+            body * {
+               visibility: hidden;
+            }
+            #ct, #ct * {
+               visibility: visible;
+            }
+         }
+
+         @page { size: auto;  margin: 0mm; padding-bottom: 4cm}
+
+
+         body  
+         { 
+            /* this affects the margin on the content before sending to printer */ 
+            margin: 0px;  
+         } 
+
+         .actions-btn-tooltip.tooltip {
+             opacity: 1;
+             top: -11px!important;
+         }
+         .actions-btn-tooltip .arrow:before {
+             border-top-color: #3b3f5c;
+         }
+         .actions-btn-tooltip .tooltip-inner {
+             background: #3b3f5c;
+             color: #fff;
+             font-weight: 700;
+             border-radius: 30px;
+             box-shadow: 0px 5px 15px 1px rgba(113, 106, 202, 0.2);
+             padding: 4px 16px;
+         }
+         .invoice-container {
+             width: 100%;
+         }
+         .invoice-inbox {
+             padding: 0;
+             background-color: #fff;
+             border-radius: 6px;
+             box-shadow: rgb(145 158 171 / 24%) 0px 0px 2px 0px, rgb(145 158 171 / 24%) 0px 16px 32px -4px;
+         }
+         .invoice-inbox .inv-number {
+             font-size: 18px;
+             font-weight: 700;
+             margin-bottom: 0;
+             color: #888ea8;
+         }
+         .invoice-inbox .invoice-action svg {
+             cursor: pointer;
+             font-weight: 600;
+             color: #888ea8;
+             margin-right: 6px;
+             vertical-align: middle;
+             fill: rgba(0, 23, 55, 0.08);
+         }
+         .invoice-inbox .invoice-action svg:not(:last-child) {
+             margin-right: 15px;
+         }
+         .invoice-inbox .invoice-action svg:hover {
+             color: #4361ee;
+             fill: rgba(27, 85, 226, 0.23921568627450981);
+         }
+
+         /*
+         ===================
+
+              Invoice
+
+         ===================
+         */
+
+         /*    Inv head section   */
+
+         .invoice .content-section .inv--head-section {
+             padding: 36px 35px;
+             margin-bottom: 40px;
+             padding-bottom: 25px;
+             border-bottom: 1px solid #ebedf2;
+         }
+
+         .inv--customer-detail-section {
+             padding: 36px 35px;
+             padding-top: 0;
+         }
+
+         .invoice .content-section .inv--head-section h3.in-heading {
+             font-size: 18px;
+             font-weight: 600;
+             color: #0e1726;
+             margin: 0;
+             margin-top:10px;
+         }
+         .invoice .content-section .inv--head-section .company-logo {
+             width: 60px;
+             height: 60px;
+             object-fit: cover;
+             margin: auto;
+             display: block;
+         }
+         .invoice .content-section .inv--head-section div.company-info {
+             display: flex;
+             justify-content: flex-end;
+         }
+         .invoice .content-section .inv--head-section div.company-info svg {
+             width: 42px;
+             height: 42px;
+             margin-right: 10px;
+             color: #4361ee;
+             fill: rgba(27, 85, 226, 0.23921568627450981);
+         }
+         .invoice .content-section .inv--head-section .inv-brand-name {
+             font-size: 23px;
+             font-weight: 600;
+             margin-bottom: 0;
+             align-self: center;
+         }
+
+         /*    Inv detail section    */
+
+         .invoice .content-section .inv--detail-section .inv-to {
+            font-weight: 700;
+             font-size: 15px;
+             margin-bottom: 15px;
+         }
+         .invoice .content-section .inv--detail-section .inv-customer-name {
+             font-weight: 700;
+             margin-bottom: 2px;
+             font-size: 13px;
+             color: #4361ee;
+         }
+         .invoice .content-section .inv--detail-section .inv-detail-title {
+             font-weight: 700;
+             margin-bottom: 0;
+             font-size: 15px;
+             margin-bottom: 15px;
+         }
+         .invoice .content-section .inv--detail-section .inv-details {
+             font-weight: 700;
+             margin-bottom: 15px;
+         }
+         .invoice .content-section .inv--detail-section .inv-street-addr {
+             font-weight: 600;
+             margin-bottom: 2px;
+             font-size: 13px;
+         }
+         .invoice .content-section .inv--detail-section .inv-email-address {
+             font-weight: 600;
+             margin-bottom: 2px;
+             font-size: 13px;
+         }
+
+         /*inv-list-number*/
+         .invoice .content-section .inv--detail-section .inv-list-number {
+             margin-bottom: 2px;
+         }
+         .invoice .content-section .inv--detail-section .inv-list-number .inv-title {
+             font-weight: 400;
+             font-size: 20px;
+         }
+         .invoice .content-section .inv--detail-section .inv-list-number .inv-number {
+             font-weight: 400;
+             font-size: 18px;
+             color: #4361ee;
+         }
+
+         /*inv-created-date*/
+         .invoice .content-section .inv--detail-section .inv-created-date {
+             margin-bottom: 2px;
+         }
+         .invoice .content-section .inv--detail-section .inv-created-date .inv-title {
+             font-weight: 700;
+             font-size: 13px;
+         }
+         .invoice .content-section .inv--detail-section .inv-created-date .inv-date {
+             font-size: 13px;
+             font-weight: 600;
+         }
+
+         /*inv-due-date*/
+         .invoice .content-section .inv--detail-section .inv-due-date {
+             margin-bottom: 2px;
+         }
+         .invoice .content-section .inv--detail-section .inv-due-date .inv-title {
+             font-weight: 700;
+             font-size: 13px;
+         }
+         .invoice .content-section .inv--detail-section .inv-due-date .inv-date {
+             font-size: 13px;
+             font-weight: 600;
+         }
+
+         /*    Inv product table section    */
+         .invoice .content-section .inv--product-table-section {
+             padding: 30px 0;
+         }
+         .invoice .content-section .inv--product-table-section table {
+             margin-bottom: 0;
+         }
+         .invoice .content-section .inv--product-table-section thead tr {
+             border: none;
+         }
+         .invoice .content-section .inv--product-table-section th {
+             padding: 9px 22px;
+             font-size: 11px!important;
+             border: none;
+             border-top: 1px solid #e0e6ed;
+             border-bottom: 1px solid #e0e6ed;
+             color: #515365!important;
+         }
+         .invoice .content-section .inv--product-table-section th:first-child {
+             padding-left: 35px;
+         }
+         .invoice .content-section .inv--product-table-section th:last-child {
+             padding-right: 35px;
+         }
+         .invoice .content-section .inv--product-table-section tr td:first-child {
+             padding-left: 35px;
+         }
+         .invoice .content-section .inv--product-table-section tr td:last-child {
+             padding-right: 35px;
+         }
+         .invoice .content-section .inv--product-table-section td {
+             color: #515365;
+             font-weight: 600;
+             border: none;
+             padding: 10px 25px;
+             vertical-align: top!important;
+         }
+         .invoice .content-section .inv--product-table-section tbody tr:nth-of-type(even) td {
+             background-color: #fafafa;
+         }
+
+         /*inv--payment-info*/
+         .invoice .content-section .inv--payment-info {
+             font-size: 13px;
+             font-weight: 600;
+         }
+         .invoice .content-section .inv--payment-info .inv-title {
+             color: #4361ee;
+             font-weight: 600;
+             margin-bottom: 15px;
+             width: 65%;
+             margin-left: auto;
+         }
+         .invoice .content-section .inv--payment-info p {
+             margin-bottom: 0;
+             display: flex;
+             width: 65%;
+             margin-left: auto;
+             justify-content: space-between;
+         }
+         .invoice .content-section .inv--payment-info span {
+             font-weight: 500;
+             display: inline-block;
+             white-space: nowrap;
+         }
+         .invoice .content-section .inv--payment-info .inv-subtitle {
+             font-weight: 600;
+             font-size: 13px;
+             display: inline-block;
+             white-space: normal;
+             margin-right: 4px;
+         }
+
+         /*inv--total-amounts*/
+         .invoice .content-section .inv--total-amounts {
+             padding: 0 35px;
+             margin-bottom: 25px;
+             padding-bottom: 25px;
+             border-bottom: 1px solid #ebedf2;
+             padding-top: 100px;
+             padding-right: 70px;
+             padding-bottom: 100px;
+             text-align: right;
+         }
+         .invoice .content-section .inv--total-amounts .grand-total-title h4 {
+             position: relative;
+             font-weight: 600;
+             font-size: 16px;
+             margin-bottom: 0;
+             padding: 0;
+             color: #0e1726;
+             display: inline-block;
+             letter-spacing: 1px;
+         }
+         .invoice .content-section .inv--total-amounts .grand-total-amount h4 {
+             position: relative;
+             font-weight: 600;
+             font-size: 16px;
+             margin-bottom: 0;
+             padding: 0;
+             color: #0e1726;
+             display: inline-block;
+             letter-spacing: 1px;
+         }
+
+         /*inv--note*/
+         .inv--note {
+             padding: 0 25px;
+             padding-bottom: 25px;
+         }
+         .inv--note p {
+             margin-bottom: 0;
+             font-weight: 600;
+             color: #888ea8;
+         }
+
+         /*
+         ===============================
+             Invoice Actions Button
+         ===============================
+         */
+
+         .invoice-actions-btn {
+             padding: 25px;
+             padding-top: 32px;
+             padding-bottom: 32px;
+             background-color: #fff;
+             box-shadow: rgb(145 158 171 / 24%) 0px 0px 2px 0px, rgb(145 158 171 / 24%) 0px 16px 32px -4px;
+             border-radius: 6px;
+         }
+         .invoice-actions-btn label {
+             font-size: 14px;
+             font-weight: 600;
+             color: #515365;
+         }
+
+         /* Invoice Actions -> action-btn */
+
+         .invoice-actions-btn .invoice-action-btn a {
+             -webkit-transform: none;
+             transform: none;
+         }
+         .invoice-actions-btn .invoice-action-btn a.btn-send {
+             width: 100%;
+             margin-bottom: 20px;
+         }
+         .invoice-actions-btn .invoice-action-btn a.btn-print {
+             width: 100%;
+             margin-bottom: 20px;
+         }
+         .invoice-actions-btn .invoice-action-btn a.btn-download {
+             width: 100%;
+             margin-bottom: 20px;
+         }
+         .invoice-actions-btn .invoice-action-btn a.btn-edit {
+             width: 100%;
+         }
+         @media (max-width: 1199px) {
+             .invoice-actions-btn {
+                 margin-top: 25px;
+             }
+             .invoice-actions-btn .invoice-action-btn a.btn-send {
+                 margin-bottom: 0;
+             }
+             .invoice-actions-btn .invoice-action-btn a.btn-print {
+                 margin-bottom: 0;
+             }
+             .invoice-actions-btn .invoice-action-btn a.btn-download {
+                 margin-bottom: 0;
+             }
+         }
+         @media (max-width: 767px) {
+             .invoice-actions-btn .invoice-action-btn a.btn-send {
+                 margin-bottom: 20px;
+             }
+             .invoice-actions-btn .invoice-action-btn a.btn-print {
+                 margin-bottom: 20px;
+             }
+         }
+         @media (max-width: 575px) {
+             .invoice .content-section .inv--payment-info .inv-title {
+                 margin-top: 25px;
+             }
+             .invoice .content-section .inv--payment-info .inv-title {
+                 margin-left: 0;
+                 margin-right: auto;
+                 margin-bottom: 6px;
+                 width: auto;
+             }
+             .invoice .content-section .inv--payment-info p {
+                 margin-left: 0;
+                 margin-right: auto;
+                 width: auto;
+                 justify-content: flex-start;
+             }
+             .invoice .content-section .inv--payment-info .inv-subtitle {
+                 min-width: 140px;
+             }
+             .invoice-actions-btn .invoice-action-btn a.btn-download {
+                 margin-bottom: 20px;
+             }
+             .invoice .content-section .inv--payment-info span {
+                 white-space: normal;
+             }
+             
+         }
+         .rounded-img{
+            border-radius: 50%;
+             position: relative;
+             z-index: 1;
+             width: 40px;
+             height: 40px;
+             object-fit: cover;
+         }
+         .signature-container{
+            display: flex;
+             align-items: center;
+             justify-content: space-between;
+             padding: 177px 57px 69px;
+         }
+         .signature-left {
+             width: 208px;
+             text-align: center;
+         }
+         .cardre-signature {
+             height: 130px;
+             border: 1px solid gray;
+             margin-top: 23px;
+         }
+      </style>
+      <style type="text/css">
+          .dd-empty{display: none;}
+          .dd{max-width: 100%}
+      </style>
+      <style type="text/css">
+         .fixed-btn{
+            position: fixed;
+            top: 2px;
+         }
+         #extSubmitFixed{display: none;}
+         .disable{pointer-events: none;}
+         .d-flex{display: flex;}
+         .flex-align-center{align-items: center;}
+         .justify-content-center{justify-content: center;}
+         .table {
+         display: table;
+         border-collapse: collapse;
+         margin-bottom: 0;
+         }
+         .table .tr {
+         display: table-row;
+         border: 1px solid #fff;
+         }
+         .table .tr:first-child {
+         font-weight: bold;
+         border:0;
+         }
+         .table .tr:first-child > .td-cell{
+         border:0;
+         text-align: center;
+         }
+         .table .tr:first-child > .td-cell:first-child{
+         text-align: left;
+         }
+         .table .tr:not(:first-child) {
+         background-color: #f5f6f8;
+         border-bottom-color: #f5f6f8;
+         }
+         .table .tr:nth-child(2) {
+         background-color: #fff;
+         border: none;
+         }
+         .table .tr:not(:first-child):hover {
+         background: #dbdcde;
+         }
+         .table .tr:nth-child(2):hover {
+         background: #fff;
+         }
+         .table .tr:nth-child(2) > .col-sort{
+            cursor: pointer;
+         }
+         .table .tr .td-cell {
+            position: relative;
+         display: table-cell;
+         padding: 0px 8px;
+         border-left: 1px solid #fff;
+         text-align: center;
+         max-height: 35px;
+         border-bottom: 1px solid #fff;
+         }
+         .table .tr .td-cell:first-child {
+         border-left: 0;
+         }
+         .table .tr .td-cell:nth-child(2) {
+         }
+         /* Not necessary for table styling */
+         .div-table,
+         .table-tag {
+         margin: 6px 2em;
+         }
+         .div-table .title,
+         .table-tag .title {
+         text-align: center;
+         padding-bottom: 0.5em;
+         }
+         .planning-table-container{margin-bottom: 0;}
+         .list-ouvrier{
+         text-align: center;
+         margin: 0;
+         }
+         .planning-chantier-item .rounded-img {
+         border-radius: 50%;
+         object-fit: cover;
+         }
+         .list-ouvrier .rounded-img {
+         cursor: pointer;
+         position: relative;
+         left: -5px;
+         margin-left: -15px;
+         width: 27px;
+         height: 27px;
+         }
+         .list-user-dispo .rounded-img {
+         width: 25px;
+         min-width: 25px;
+         height: 25px;
+         display: flex;
+         align-items: center;
+         margin-right: 12px;
+         }
+         .list-ouvrier .avatar:hover .rounded-img{
+         z-index: 4;
+         }
+         .list-ouvrier {
+         }
+         .timeline{width: 173px}
+         .timeline .timeline-content{
+         position: relative;
+         cursor: pointer;
+         color: #fff;
+         padding: 1px 10px;
+         border-radius: 10px;
+         display: block;
+         width: 105px;
+         font-size: 12px;
+         margin: auto;
+         }
+         .timeline .duree{display: none;}
+         .timeline-content:hover .interval{
+         display: none;
+         }
+         .timeline-content:hover .interval+.duree{
+         display: block;
+         }
+         .td-cell-categorie{
+         padding-left: 0px!important;
+         padding-right: 0px!important;
+         }
+         .row-new-tache{
+         flex: 1;
+         position: relative;
+         display: flex;
+         align-items: stretch;
+         justify-content: space-between;
+         }
+         .row-new-tache .col-input-new{
+         flex: 1;
+         padding-left: 18px;
+         }
+         .row-new-tache .col-input-new:focus+.btn-save-new-cat{
+         display: block;
+         }
+         .row-new-tache .btn-save-new-cat{
+         position: absolute;
+         right: 0;
+         display: none;
+         color: #fff;
+         align-items: center;
+         justify-content: center;
+         padding: 0 35px;
+         height: 100%;
+         border-radius: 0;
+         }
+         .btn.createPlanning{
+         border: 1px solid #e6e9ef;
+         color: #323338;
+         }
+         .timeline .timeline-content.not-date{background: #ccc!important}
+         .date-range-input{
+         background: transparent;
+         cursor: pointer;
+         width: 100%;
+         position: absolute;
+         left: 0;
+         right: 0;
+         top: 0px;
+         bottom: 0px;
+         color: transparent;
+         border: none;
+         outline: none;
+         }
+         .user-dropdown{
+         display: none;
+         background: #fff;
+         border-radius: 8px;
+         padding: 15px 8px;
+         position: absolute;
+         top: 40px;
+         z-index: 500;
+         width: 270px;
+         box-shadow: 0px 0px 6px 1px rgb(0 0 0 / 7%);
+         }   
+
+         .status-dropdown{
+         display: none;
+         background: #fff;
+         padding: 14px 0 9px;
+         position: absolute;
+         top: 44px;
+         z-index: 10;
+         width: 270px;
+         box-shadow: 0px 0px 6px 1px rgb(0 0 0 / 7%);
+         }
+         .carret{
+           width: 0;
+           height: 0;
+           border-style: solid;
+           border-width: 0px 8px 6px 8px;
+           border-color: transparent transparent #fff transparent;
+           position: absolute;
+         }
+         .carret.carret-dropdown-status{
+         top: -6px;
+         }
+         .user-dropdown .list-select-user >*{
+         background: #e5f4ff !important;
+         color: #000;
+         padding: 5px 20px 5px 3px;
+         border-radius: 5px;
+         font-size: 7px;
+         margin-right: 3px;
+         margin-bottom: 4px;
+         }
+         .filter-user{
+         width: 100%;
+         outline: none;
+         border: none;
+         margin: 16px 0px 13px;
+         }
+         .list-user-dispo{
+         list-style: none;
+         margin: 0;
+         text-align: left;
+         font-size: 13px;
+         margin-top: 12px;
+         padding: 0 4px 0;
+         /*max-height: 209px;
+         overflow: hidden;*/
+         }
+         .list-user-dispo >*{
+         cursor: pointer;
+         padding: 5px 6px;
+         border-radius: 5px;
+         font-size: 12px;
+         }
+         .list-user-dispo >*:not(:last-child){
+         margin-bottom: 0;
+         }
+         .list-user-dispo >*:hover{
+         /*background: rgb(202, 182, 65);*/
+         color: #fff;
+         }
+         .table .tr:first-child > .td-cell.td-cell-personne{
+         width: 270px;
+         }
+         .user-dropdown .line{
+         height: 1px;
+         background: #ccc;
+         flex: 0.3;
+         }
+         .footer{display: none;}
+         .remove-user {
+         cursor: pointer;
+         position: absolute;
+         right: 0px;
+         transform: translateY(-50%);
+         top: 50%;
+         font-size: 13px;
+         padding: 2px 5px;
+         line-height: 1;
+         border-radius: 50%;
+         }
+         .remove-user:hover{
+         background: #fff;
+         }
+         /* status menu */
+         .menu-status {
+         position: relative;
+         width: 100px;
+         font-size: 1.2rem;
+         font-weight: bold;
+         color: #687F98;
+         background-color: white;
+         transition: transform 0.4s cubic-bezier(0.28, 0.25, 0.36, 1.28);
+         cursor: pointer;
+         color: #fff;
+         margin: auto;
+         height: 35px;
+         display: flex;
+         align-items: center;
+         justify-content: center;
+         }
+         .menu__icon-box {
+         width: 1rem;
+         height: 1rem;
+         margin-top: -0.3rem;
+         }
+         .menu__icon {
+         width: 1rem;
+         height: 1rem;
+         border-top: 0.15rem solid #687F98;
+         border-right: 0.15rem solid #687F98;
+         transition: all 0.3s ease-in-out;
+         transform: rotate(135deg);
+         }
+         .menu__dropdown {
+         width: 17rem;
+         font-weight: lighter;
+         position: absolute;
+         top: 4rem;
+         opacity: 0;
+         display: none;
+         z-index: 2;
+         }
+         .menu__dropdown-option {
+         padding: 0.8rem 1.6rem;
+         }
+         .menu__dropdown-option:hover {
+         background-color: #E8F0FC;
+         }
+         .menu__active {
+         }
+         .menu__active .menu__icon {
+         transform: rotate(-45deg);
+         margin-top: 0.5rem;
+         }
+         .menu__active .menu__dropdown {
+         opacity: 1;
+         display: block;
+         animation: showDropdownMenu 0.4s cubic-bezier(0.28, 0.25, 0.36, 1.28);
+         }
+         @keyframes showDropdownMenu {
+         0% {
+         opacity: 0;
+         transform: translateY(-2rem);
+         }
+         100% {
+         opacity: 1;
+         transform: translateY(0rem);
+         }
+         }
+         .filter-td{
+         display: flex;
+         align-items: center;
+         flex-direction: column;
+         justify-content: center;
+         font-size: 11px;
+         border-radius: 50%;
+         width: 23px;
+         height: 22px;
+         color: #fff;
+         cursor: pointer;
+         }   
+         .dropdown-config-planning{
+          display: flex;
+          align-items: center;
+          flex-direction: column;
+          justify-content: center;
+          font-size: 8px;
+          border-radius: 50%;
+          width: 15px;
+          height: 15px;
+          color: #fff;
+          cursor: pointer;
+          margin-bottom: 5px;
+          background: rgb(196, 196, 196);
+         }
+         .config-planning-container {
+          display: none;
+          background: #fff;
+          border-radius: 8px;
+          padding: 16px 0;
+          position: absolute;
+          top: 32px;
+          color: #323338;
+          left: 7px;
+          text-align: left;
+          z-index: 9999;
+          width: 301px;
+          box-shadow: 0px 0px 6px 1px rgb(0 0 0 / 15%);
+          font-size: 14px;
+         }
+         .config-planning-container .config-color{
+         width: 13px;
+         height: 13px;
+         display: inline-block;
+         border-radius: 50%;
+         background: rgb(196, 196, 196);
+         }
+         .config-planning-container .config-item{cursor: pointer;padding:0 18px;}
+         .config-planning-container .config-item:not(:last-child) {
+          margin-bottom: 12px;
+         }
+         .config-planning-container .config-text {
+         margin-left: 7px;
+         }
+         .dropdown-config-planning .config-text {
+          margin-left: 7px;
+         }
+
+         .dropdown-config-planning:after {
+         content: '\25bc';   
+         } 
+         .filter-td > .fa{
+         line-height: 0.7;
+         }
+         .filter-td.asc > .desc{
+         color: #b3b3b3;
+         }
+         .filter-td.desc > .asc{
+         color: #b3b3b3;
+         }
+         .sortorder:after {
+         content: '\25b2';   
+         }
+         .sortorder.reverse:after {
+         content: '\25bc';   
+         }   
+         .table .tr:hover .ds-menu-button-container{
+         opacity: 1;
+         }
+         .pulse-menu-component {
+         align-items: center;
+         background-color: #ffffff !important;
+         background-color: var(--primary-background-color) !important;
+         display: flex;
+         flex: 0 0 30px;
+         justify-content: center;
+         max-width: 30px;
+         z-index: 1;
+         }
+         .pulse-menu-component:before {
+         content: "";
+         height: 100%;
+         width: 16px;
+         position: absolute;
+         left: -16px;
+         background-color: #ffffff;
+         background-color: var(--primary-background-color);
+         }
+         .pulse-menu-component .ds-menu-button-container {
+         opacity: 0;
+         }
+         .ds-menu-button.ds-menu-button-sm {
+         width: 18px;
+         height: 18px;
+         font-size: 15px;
+         border-radius: 4px;
+         display: flex;
+         justify-content: center;
+         align-items: center;
+         cursor: pointer;
+         background-color: #e6e9ef;
+         }
+         .td-cell.col-action{
+         background: #fff; width: 36.3px
+         }
+         .toggle-user .user-empty{
+         position: relative;
+         top: 6px;
+         }
+         input.no-editing{
+         cursor: default;
+         border: none;
+         background: none;
+         }
+         .inputTache, .inputEmplacement{
+         padding-left: 10px;
+         width: 100%;
+          min-height: 100%;
+          position: absolute;
+          top: 0px;
+          right: 0;
+          left: 0;
+          color: #323338;
+          padding-left: 17px;
+              text-transform: capitalize;
+            font-size: 12px;
+         }
+         .status-container .list-status{
+         padding: 0 14px;
+         display: flex;
+         flex-wrap: wrap;
+         justify-content: space-between; 
+         }
+         .status-container .list-status .status-item{
+         background: rgb(202, 182, 65);
+         width: 117px;
+         margin-bottom: 6px;
+         height: 32px;
+         display: flex;
+         align-items: center;
+         justify-content: center;
+         }
+         .status-container .row-edit{
+         color: #0085ff;
+         font-weight: 100;
+         border-top: 1px solid #adadad;
+         margin-top: 15px;
+         padding: 11px 0 1px;
+         font-size: 13px;
+         margin-top: 35px;
+         }
+         .config-color-container {
+         display: none;
+         position: absolute;
+         top: 0px;
+         z-index: 9;
+         left: 0;
+         }
+         .color-selected{
+         background: #fff;
+         margin: 0;
+         position: absolute;
+         left: 0;
+         top: 1px;
+         padding: 0;
+         border: 1px solid #c5c7d0;
+         display: flex;
+         align-items: center;
+         justify-content: center;
+         width: 35px;
+         height: 34px;
+         border-bottom: none;
+         border-radius: 50% 50% 0 0;
+         }
+         .config-color-container .list-color-config {
+         background: #fff;
+         border: 1px solid #c5c7d0;
+         padding: 7px 5px;
+         width: 142px;
+         display: flex;
+         justify-content: start;
+         flex-wrap: wrap;
+         margin-top: 34px;
+         }
+         .list-color-config .color-item, .color-selected .color-item {
+          width: 19px;
+          height: 19px;
+          display: inline-block;
+          border-radius: 50%;
+          margin-right: 6px;
+          margin-bottom: 7px;
+         }
+         .input-planning-name{padding: 6px 12px 6px 0}
+         .input-planning-name.focus{width: calc( 100% - 35px );}
+         .dropdown-tache-config{
+         width: 301px;
+         color: #323338;
+         font-size: 14px;
+         }
+         .dropdown-tache-config .icon-left-row{
+         margin-right: 5px;
+         }
+         .dragable-container {
+         display: none;
+         border-radius: 4px 0 0 4px;
+         cursor: pointer;
+         background: #e6e9ef;
+         transition: background 0.1s ease;
+         pointer-events: none;
+         }
+         .dragable-container > .dragable-container-content{
+         padding-left: 8px;
+         position: relative;
+         min-height: 40px;
+         font-size: 18px;
+         font-weight: 100;
+         display: flex;
+         justify-content: space-between;
+         align-items: center;
+         padding: 0 11px;
+         }
+         .dragable-container:hover .planning-nom {
+         padding-left: 5px;
+         }
+         .dragable-container:hover .expanded-btn-open {
+         display: flex;
+         }
+         .dragable-container > .dragable-container-content > *{
+         display: flex;
+         align-items: center;
+         }
+         .expanded-btn-open{
+         display: none;
+         font-size: 12px;
+         background: #d9d9d9;
+         width: 20px;
+         height: 20px;
+         border-radius: 50%;
+         align-items: center;
+         justify-content: center;
+         }
+         .dragable-container .planning-nom{
+         transition: linear padding-left .1s;
+         }
+         .profile-item{
+         display: none;
+         background: #fff;
+         border-radius: 9px;
+         box-shadow: 0px 0px 6px 1px rgb(0 0 0 / 7%);
+         width: 324px;
+         position: absolute;
+         left: 0;
+         right: 0;
+         margin: auto;
+         top: -93px;
+         z-index: 10;
+         }
+         .profile-item-content {
+         display: flex;
+         align-items: flex-start;
+         padding: 16px 19px;
+         }
+         .profile-img > img{
+         width: 75px;
+         height: 75px;
+         object-fit: cover;
+         border-radius: 50%;
+         }
+         .profile-info-desc {
+         text-align: left;
+         margin-left: 26px;
+         line-height: 22px;
+         }
+         .profile-info-desc .prenom{
+         color: #525252;
+         font-weight: 600;
+         font-size: 16px;
+         margin-bottom: 4px;
+         }
+      </style>
+
+      <style type="text/css">
+         .div-table, .table-tag{margin: 6px 0}
+         .timeline-container::-webkit-scrollbar {
+             width: 1.1rem;
+         }
+         *::-webkit-scrollbar-track {
+             background-color: #edf2f7;
+         }
+         *::-webkit-scrollbar-thumb {
+             background-color: #718096;
+             border-radius: 9999px;
+         }
+         .timeline-container {
+             scrollbar-width: thin;
+             /* The color of thumb and track areas */
+             scrollbar-color: #718096 #edf2f7;
+         }
+         .timeline-container{
+            cursor: grab;
+            overflow: auto;
+            /*height: 100vh;*/
+         }
+         td, th{
+         height: 100px;
+         min-width: 232px;
+         }
+         table {
+         white-space: nowrap;
+         margin: 0;
+         border: none;
+         border-collapse: separate;
+         border-spacing: 0;
+         table-layout: fixed;
+         }
+         .timeline-table td{
+         border: 1px solid #dedede; 
+         border-left: none; 
+         }
+         .timeline-table tbody td, .timeline-table tbody th{
+         border-top: none;
+         }
+         .timeline-table thead.inner th:first-child{border-bottom: none;}
+         .timeline-table .outer > tr > th:first-child, .timeline-table tbody th:first-child{
+         border-right: 1px solid #a5a6a8;
+         }
+         .timeline-table thead.inner tr:first-child td{
+         border-bottom: none;
+         font-size: 17px;
+         }
+         tbody th:first-child{border-bottom: 1px solid #dedede;}
+         thead.inner tr:nth-child(1) td {
+         font-weight: bold;
+         }
+         tr > th:first-child{
+            display: flex;
+            align-items: flex-start;
+            padding: 7px 12px 9px 7px;
+            border-left: 1px solid #dedede;
+            border-top: none;
+            width: 257px;
+            display: -webkit-box;
+            -webkit-line-clamp: 1;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            font-size: 13px;
+            z-index: 100;
+         }
+         thead.outer > tr >th, thead.inner td {
+         height: 45px;
+         font-size: 11px;
+         color: #4e4f52;
+         font-weight: 300;
+         }
+         table td, table th {
+         padding: 0.5rem 1rem;
+         }
+         table thead tr > th {
+         padding: 0;
+         position: sticky;
+         top: 0;
+         z-index: 1;
+         background: white;
+         z-index: 200;
+         }
+         table td {
+         background: #fff;
+         /*padding: 4px 5px;*/
+         padding: 0;
+         text-align: center;
+         }
+         table tbody th {
+         font-weight: 100;
+         position: relative;
+         }
+         table thead th:first-child {
+         position: sticky;
+         left: 0;
+         z-index: 201;
+         height: 90px;
+         }
+         table tbody th {
+            position: sticky;
+            left: 0;
+            background: white;
+            z-index: 1;
+         }
+         .timeline-avatar > img {
+            width: 37px;
+            height: 37px;
+            object-fit: cover;
+            border-radius: 50%;
+         }
+         .timeline-info-desc {
+            text-align: left;
+            margin-left: 11px;
+            line-height: 22px;
+         }
+         tbody .table-cell{height: 100px;}
+         tbody .td-timel{
+            padding: 0;
+            border:none;
+         }
+         .timeline-container tbody td{
+            position: relative;
+         }
+         .timeline-bar {
+            z-index: 10;
+            border-radius: 3px;
+            position: absolute;
+            left: 56px;
+            width: 50px;
+            height: 30px;
+            background: rgb(255, 21, 138);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: grabbing;
+            top: 40px;
+         }
+         .timeline-bar:hover .crok-resize{
+            display: inline-flex;
+         }
+         .timeline-bar .crok-resize{
+             position: absolute;
+             display: none;
+             background: #5f5f5f;
+             color: #fff;
+             padding: 1px 1px;
+             top: 0;
+             bottom: 0;
+             align-items: center;
+             justify-content: center;
+         }
+         .timeline-bar .crok-resize.resizable-w{
+            left: -6px;
+            border-radius: 3px 0 0 3px;
+         }
+         .timeline-bar .crok-resize.resizable-e{
+            right: -6px;
+            border-radius: 0 3px 3px 0;
+         }
+         .td-timel-container .month-bar {
+            height: 100%;
+             display: inline-block;
+             flex: 1;
+         }
+         .td-timel-container {
+             height: 100%;
+             width: 100%;
+             display: flex;
+             justify-content: space-between;
+         }
+         .content-q-th{
+            position: absolute;
+            top: 50%;
+            bottom: 50%;
+            left: 0;
+            right:0;
+            margin: auto;
+            transform: translateY(-50%);
+         }
+         .timeline-bar:hover {
+            min-width: 80px;
+         }
+         .tooltip-timeline-bar {
+            background: #000000c2;
+            height: 12px;
+            position: absolute;
+            left: 0;
+            right: 0;
+            margin: auto;
+            top: -35px;
+            height: 100%;
+            display: none;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 11px;
+            border-radius: 3px;
+            font-size: 14px;
+         }
+         .nbr-day-timeline{
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #000;
+            font-size: 16px;
+            font-weight: 400;
+         }
+         .rounded-img {
+             border-radius: 50%;
+             position: relative;
+             left: -5px;
+             z-index: 1;
+             width: 40px;
+             height: 40px;
+             object-fit: cover;
+             transition: easy 0.4s all;
+         }
+         .td-cell.timeline:hover .clearDate{
+            display: inline-block;
+         }
+         .clearDate {
+            display: none;
+             position: absolute;
+             right: 3px;
+             top: 50%;
+             transform: translateY(-50%);
+             background: #ccc;
+             color: #fff;
+             height: 16px;
+             width: 16px;
+             font-size: 11px;
+             line-height: 1;
+             border-radius: 50%;
+             cursor: pointer;
+         }
+         .clearDate:hover{
+            background: #888;
+         }
+
+
+         .tabs-planning-control-list {
+             display: flex;
+             margin-bottom: 20px;
+             margin-top: 38px;
+             margin-left: 22px;
+             border-bottom: 1px solid #e8e8e8;
+             padding-bottom: 9px;
+         }
+         .tab-planning-control-item {
+            cursor: pointer;
+            margin-right: 33px;
+            padding-right: 7px;
+             font-size: 15px;
+             position: relative;
+         }
+         .tab-planning-control-item.active::after {
+             content: "";
+             position: absolute;
+             height: 3px;
+             width: 113%;
+             background: #18a689;
+             bottom: -11px;
+             left: -7px;
+         }
+         .tab-planning-content-item:not(.active){
+            display: none;
+         }
+         #changeEcheance{
+            min-width: 180px;
+             font-size: 17px;
+         }
+      </style>
+</head>
+
+<body style="-webkit-print-color-adjust: exact;">
+
+   <div class="ibox-content">
+      <div ng-app="planning" ng-controller="PlanningController" class="planning-container">
+        {% if users is defined %}
+            <input type="hidden" name="users_print" value="{{users}}">
+        {% endif %}
+        {% if print is defined %}
+            <input type="hidden" name="print" value="1">
+        {% endif %}
+
+         <div class="tabs-container-content">
+            <div class="tabs-planning-container-list">
+               <div id="table-toggle" class="tab-planning-content-item active">
+                  
+                  <div class="planning-table-show">
+                     <div class="text-right">
+                        <span  onclick="printDiv('planning-chantier-list')" class="btn btn-primary">Imprimer</span>
+                     </div>
+                     <div class="planning-chantier-list">
+                        <div id="ct" class="">
+                          
+                          <div class="invoice-00001">
+                              <div class="content-section">
+
+                                  <div class="inv--head-section inv--detail-section">
+                                  
+                                      <div class="" style="display: flex;align-items: start;justify-content: space-between;">
+                                      
+                                          <div class="col-12">
+                                              <div class="">
+                                                  
+                                                  {% if app.session.get('entreprise_session_id') %}
+                                                    <span>
+                                                        {% if entreprise.logo %}
+                                                            <img class="company-logo align-self-start" src="/logo/{{app.session.get('entreprise_session_logo')}}" style="object-fit: cover;max-width: 160px; max-height: 85px">
+                                                        {% else %} 
+                                                            <img class="company-logo align-self-start" src="{{asset('images/logotransfmda.png')}}" style="object-fit: contain;max-width: 261px; max-height: 85px">
+                                                        {% endif %}
+                                                    </span>
+                                                    <h2 class="in-heading align-self-start" style="margin-top: 15px;margin-bottom: 0;font-weight: 900;">{{ app.session.get('entreprise_session_name') }}</h2>
+                                                    
+                                                {% endif %}
+                                              </div>
+                                              <div class="mt-3" style="margin-top: 7px!important">
+                                                 <p class="inv-email-address" >{{entreprise.adresse|upper}}</p>
+                                                 <p class="inv-email-address">{{entreprise.postalcode|upper}} {{entreprise.ville|upper}}</p>
+                                                 <p class="inv-email-address">{{entreprise.email}}</p>
+                                                 <p class="inv-email-address">
+                                                   {{entreprise.phone}}
+                                                 </p>
+                                             </div>
+                                          </div>
+
+                                          <div class="text-right">
+                                              <p class="inv-list-number" style="">
+                                                <span class="inv-title">Date : <span style="text-transform: uppercase;">{{ "now"|date("d/m/Y") }}</span>
+                                                </span>
+                                              </p>
+                                          </div>
+                                      </div>
+                                      
+                                  </div>
+                                  <h2 class="text-center" style="font-weight: bold;margin-bottom: 49px;text-transform: uppercase;">[[informations.title]]</h2>
+                                  <div class="inv--product-table-section" style="margin-top: 20px;">
+                                    <div class="div-table planning-chantier-item" ng-repeat="planning in plannings track by $index" ng-if="planning.taches.length > 0">
+                                         <div class="planning-table-container" id="table-container-[[planning.categorie_id]]">
+                                            <div class="table"  id="simpleList-[[planning.categorie_id]]">
+                                               <div class="tr ">
+                                                  <div class="td-cell td-categorie col-sort" style="position: relative; padding: 0; border-left: none;display: flex;justify-content: flex-end;">
+                                                      <span class="expanded-btn-open" style="/*display: flex;*/margin-right: 5px;">
+                                                        <i class="fa fa-arrows-v" aria-hidden="true"></i>
+                                                      </span>
+                                                     <input ng-if="!planning.new_created" id="categorie_id_[[planning.categorie_id]]" type="text" class="form-control input-planning-name" value="[[planning.categorie]]" style="pointer-events: none;border: none;">
+                                                     <div class="config-color-container" data-planning-id="[[planning.categorie_id]]">
+                                                        <span class="color-selected">
+                                                          <span class="color-item" style="margin: 0; background: [[planning.categorie_color]]"></span>
+                                                        </span>
+                                                        <div class="list-color-config">
+                                                           <a class="color-item" style="background: [[color]];" ng-repeat="color in planningConfigColor" ng-click="changePlanningConfigColor(planning.categorie_id, color)"></a>
+                                                        </div>
+                                                     </div>
+                                                  </div>
+                                                  <div class="td-cell col-sort">
+                                                     <span>Timeline</span>
+                                                  </div>
+                                                  <div class="td-cell td-personne" style="padding: 0px 10px">Personnes</div>
+                                                  <div class="td-cell td-emplacement">
+                                                     Emplacement
+                                                  </div>
+                                                  <div class="td-cell col-sort">Nb jour</div>
+                                               </div>
+
+
+                                               
+                                               <div ng-repeat="tache in planning.taches | orderBy:propertyName:reverse track by $index"  data-categorie="[[planning.categorie_id]]" class="tr dd-item" data-tache-id="[[tache.id]]" style="background-color: #f5f6f8!important;">
+                                                   <div class="td-cell tache-name" style="position: relative; pointer-events: none;border-bottom: 1px solid #fff!important;">
+                                                     <input type="text" data-categorie=[[planning.categorie_id]] data-id-tache=[[tache.id]] id="editing-[[tache.id]]" class="inputTache no-editing" value="[[tache.tache]]" disabled name="" style="width: 100%; border-left: 7px solid [[planning.categorie_color]]!important;pointer-events: none;">
+                                                   </div>
+                                                   <div class="td-cell timeline">
+                                                      <span class="timeline-content not-date" ng-show="!tache.dateInterval">
+                                                         <span  ng-show="!tache.dateInterval">
+                                                            <span class="interval" style="color: #fff!important">
+                                                            -
+                                                            </span>
+                                                         </span> 
+                                                      </span>
+
+                                                      <span class="timeline-content" ng-show="tache.dateInterval" style="background: [[planning.categorie_color]]!important">
+                                                         <span ng-hide="!tache.dateInterval">
+                                                            <span class="interval" style="color: #fff!important">
+                                                            [[tache.dateInterval]]
+                                                            </span>
+                                                            <span class="duree" style="color: #fff!important">
+                                                            [[tache.diffDay]]d
+                                                            </span>
+                                                         </span> 
+                                                      </span>
+
+                                                   </div>
+                                                   <div class="td-cell" style="position: relative;">
+                                                      <div class="toggle-user">
+                                                         <div class="list-ouvrier list-inline" ng-if="tache.users.length > 0">
+                                                            <span class="avatar user-profile-avatar" data-user-id="[[usr.id]]" data-tache-id="[[tache.id]]" ng-repeat="usr in tache.users| orderBy:'lastname' track by $index">
+                                                               <img width="20px" height="20px" ng-src="data:image/jpeg;base64,[[usr.avatar]]"
+                                                                  class="rounded-img" ng-if="usr.avatar != ''" style="border: 1px solid [[planning.categorie_color]]">
+                                                            </span>
+                                                         </div>
+                                                      </div>
+                                                   </div>
+                                                   <div class="td-cell td-editable tache-emplacement" style="position: relative;">
+                                                      <input type="text" data-categorie=[[planning.categorie_id]] data-id-tache=[[tache.id]] id="editing-[[tache.id]]" class="inputEmplacement no-editing" value="[[tache.emplacement]]" disabled name="" style="width: 100%;">
+                                                   </div>
+                                                   <div class="td-cell">[[tache.diffDay]]</div>
+                                               </div>
+                                            </div>
+                                         </div>
+                                    </div>
+                                 </div>
+                              </div>
+                           </div>
+                        </div>
+                     </div>
+                     <div class="loader-container flex-align-center d-flex" style="justify-content: center; display: flex;">
+                        <img src="{{asset('images/loading.gif')}}" style="width: 54px;">
+                     </div>
+                  </div> 
+
+               </div>
+
+            </div>
+         </div>
+      </div>       
+   </div>
+
+
+   <!-- Mainly scripts -->
+   <script src="{{ asset('vendor/popper.js/dist/umd/popper.js') }}"></script>
+   <script src="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha384-aJ21OjlMXNL5UyIl/XNwTMqvzeRMZH2w8c5cRVpzpU8Y5bApTppSuUkhZXN0VxHd" crossorigin="anonymous"></script>
+   <script src="{{ asset('vendor/metisMenu/jquery.metisMenu.js') }}"></script>
+   <script src="{{ asset('vendor/slimscroll/jquery.slimscroll.min.js') }}"></script>
+   <script src="{{ asset('vendor/peity/jquery.peity.min.js') }}"></script>
+   <script src="{{ asset('vendor/toastr/toastr.min.js') }}"></script>
+
+   <!-- Custom and plugin javascript -->
+   <script src="{{ asset('js/inspinia.js') }}"></script>
+   <script src="{{ asset('vendor/pace/pace.min.js') }}"></script>
+
+   <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.15.6/xlsx.core.min.js"></script>
+   <script type="text/javascript" src="{{ asset('vendor/excelplus-2.5.min.js') }}"></script>
+
+   <!-- iCheck --> 
+   <script src="{{ asset('vendor/iCheck/icheck.min.js') }}"></script>
+
+
+   <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+   <script src="https://npmcdn.com/flatpickr/dist/l10n/fr.js"></script>
+   <script src="{{asset('vendor/angular-lib/angular.js') }}" type="text/javascript"></script>
+   <script src="{{asset('vendor/angular-lib/angular-resource.js') }}" type="text/javascript"></script>
+   <script src="{{asset('vendor/angular-lib/angular-route.js') }}" type="text/javascript"></script>
+   <script src="{{asset('vendor/angular-lib/angular-sanitize.min.js') }}" type="text/javascript"></script>
+   <script src="{{asset('vendor/angular-lib/angular-ui-router.js') }}" type="text/javascript"></script>
+   <script src="{{asset('vendor/angular-lib/underscore.js') }}" type="text/javascript"></script>
+   <script src="{{asset('vendor/angular-lib/ui-bootstrap-tpls.min.js') }}" type="text/javascript"></script>
+   <script src="https://code.jquery.com/ui/1.11.3/jquery-ui.min.js" integrity="sha256-xI/qyl9vpwWFOXz7+x/9WkG5j/SVnSw21viy8fWwbeE=" crossorigin="anonymous"></script>
+
+   {% include "angular_module.html.twig" %}
+   <script type="text/javascript">
+      function printDiv(divName) {
+         window.print();
+     }
+   </script>
+</body>
+
+</html>

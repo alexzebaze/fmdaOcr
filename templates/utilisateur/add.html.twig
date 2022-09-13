@@ -1,0 +1,99 @@
+{% extends 'base.html.twig' %}
+
+{% block breadcrumb %}
+
+    <div class="row wrapper border-bottom white-bg page-heading">
+        <div class="col-lg-10">
+            <h1>Ajouter un utilisateur</h1>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                    <a href="{{ path('home') }}">Accueil</a>
+                </li>
+                <li class="breadcrumb-item">
+                    <a href="{{ path('utilisateur_list') }}">Utilisateurs</a>
+                </li>
+                <li class="breadcrumb-item active">
+                    <strong>Ajouter un utilisateur</strong>
+                </li>
+            </ol>
+        </div>
+    </div>
+{% endblock %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="ibox">
+                <div class="ibox-content">
+                    {{ include('utilisateur/_form.html.twig') }}
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <a href="{{ path('utilisateur_list') }}">Retourner à la liste des utilisateurs</a>
+{% endblock %}
+
+
+{% block javascript_script %}
+    {{ parent() }}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment-with-locales.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.47/js/bootstrap-datetimepicker.min.js"></script>
+    <script type="text/javascript">
+        $(document).on("change", ".select-doc-name", function(){
+            $val = $(this).find("option:selected").attr('value');
+            $(this).parent().find('input').attr('name',$val);
+        })
+        $(document).on('change', '.usersDocument', function(e){
+            $that = $(this);
+            let file2 = document.getElementById($that.attr('id'));
+            if (file2.files){
+                $dataFile = file2.files[0];
+                var reader = new FileReader();
+                reader.onload = function (e) {
+                    var extension = getExtentionBase64(e.target.result);
+                    if(extension == "pdf" || extension == "docx")
+                        $that.next('label').find('img').attr('src', "/assets/images/doc.png");
+                    else
+                        $that.next('label').find('img').attr('src',e.target.result);
+                }
+                reader.readAsDataURL($dataFile);
+            }
+            
+        });
+        function getExtentionBase64(base64){
+            base = base64.toLowerCase();
+            var a = base.split(';')
+            a = a[0];
+            var b = a.split('/');
+            b = b[b.length - 1];
+            return b;
+        }
+    </script>
+{% endblock %}
+
+{% block javascript %}
+{{ parent() }}
+        $(function () {
+            $('#utilisateur_birth,#utilisateur_date_entree,#utilisateur_date_sortie').datetimepicker({
+                format: 'DD/MM/YYYY',
+                /*stepping: 30,
+                enabledHours: [7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20],
+                locale: 'fr',*/
+            });
+        });
+        $(document).on('click','.view-doc', function(e){
+            e.preventDefault();
+            url = $(this).data('pdf-thumbnail-file');
+            $('#docModalIframe').attr('src',url);
+            $('#docModalIframe').show();
+            $('#docModal').modal('show');
+        });
+{% endblock %}
+
+
+{% block css %}
+    {{ parent() }}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.47/css/bootstrap-datetimepicker.min.css">
+{% endblock %}

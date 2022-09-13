@@ -1,0 +1,401 @@
+{% extends 'base.html.twig' %}
+{% block css %}
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.24/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/buttons/1.7.0/css/buttons.dataTables.min.css">
+    <script type="text/javascript" src="https://cdn.datatables.net/plug-ins/1.10.15/sorting/numeric-comma.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/plug-ins/1.11.2/sorting/num-html.js"></script>
+
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/sweetalert2@10.14.1/dist/sweetalert2.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <style type="text/css">        
+        .btnSendSms{display: none;}
+        @media (min-width: 768px){
+            .modal-sm {
+                width: 525px;
+            }
+        }
+        thead th, td{text-align: center;}
+        .rounded-img {
+            border-radius: 50%;
+            position: relative;
+            left: -5px;
+            margin-left: -23px;
+            z-index: 1;
+            width: 40px;
+            height: 40px;
+            object-fit: cover;
+            transition: easy 0.4s all;
+        }
+        .ibox-tools{display: flex;align-items: center;}
+        .openModalUser {display: none;}
+        .fixed-btn{
+            position: fixed;
+            top: 2px;
+        }
+        #extSubmitFixed{display: none;}
+        .loader-container{display: none;align-items: center;justify-content: center;}
+        .btn-export{
+            background-color: #18a689!important;
+            color: #fff!important;
+            border-color:#18a689!important;
+        }
+        
+        select.form-control:not([size]):not([multiple]) {
+            height: calc(1.5em + .75rem + 9px);
+        }
+        .form-group{text-align: left;}
+        .field-mail{display: none;}
+    </style>
+{% endblock %}
+{% block breadcrumb %}
+
+    <div class="row wrapper border-bottom white-bg page-heading">
+        <div class="col-lg-10">
+            <h1>Liste de locations</h1>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                    <a href="{{ path('home') }}">Accueil</a>
+                </li>
+                <li class="breadcrumb-item active">
+                    <strong>Location</strong>
+                </li>
+            </ol>
+        </div>
+    </div>
+{% endblock %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-lg-12">
+            {% include 'flashes.html.twig' %}
+            <div class="ibox">
+                <div class="ibox-content">
+                    {{ include('location/filter.html.twig') }}
+                </div>
+            </div>
+            <div class="ibox ">
+                <div class="ibox-title">
+                    <h5>Liste de location</h5>
+                    <div class="ibox-tools">
+                        <button type="submit" class="btn btn-primary btnSendSms" style="margin-left: 12px;">Envoyer un message</button>
+                        <a class="btn btn-primary"  href="{{ path('location_new') }}">
+                            <i class="fa fa-plus"></i>
+                            Ajouter
+                        </a>
+                        <button type="button" class="btn btn-primary openModalUser" style="margin-left: 6px;" data-toggle="modal" data-target="#modalUser">
+                          attribuer un user
+                        </button>
+                    </div>
+                </div>
+                <div class="ibox-content">
+                    <h2 class="total-bl text-center" style="font-weight: bold;color: #000;"> Montant Location : <span>{{ montant.loyer_hc|number_format(2, ',', '') }}€</span> </h2>
+
+                    <h2 class="total-bl text-center" style="font-weight: bold;color: #000;"> Montant Charge: <span>{{ montant.loyer_charge|number_format(2, ',', '') }}€</span> </h2>
+                    
+
+                    <div class="table-responsive" style="margin-top: 55px">
+                        <table class="table table-location">
+                            <thead>
+                                <tr>
+                                    <th>
+                                        <input type="checkbox" class="chk-parent" value="">
+                                    </th>
+                                    <th>Logement</th>
+                                    <th>Superficie</th>
+                                    <th>Bien</th>
+                                    <th>Locataire</th>
+                                    <th>Telephone</th>
+                                    <th>Email</th>
+                                    <th>Type</th>
+                                    <th>Debut_bail</th>
+                                    <th>Bail</th>
+                                    <th>Renouvellement</th>
+                                    <th>Loyer_hc</th>
+                                    <th>Charge</th>
+                                    <th>Eau</th>
+                                    <th>Electricite</th>
+                                    <th>Gaz</th>
+                                    <th  style="white-space: nowrap;">Eau fc</th>
+                                    <th class="no-export">actions</th>
+                                </tr>
+                            </thead> 
+                            <tbody>
+                            {% for location in locations %}
+                                <tr>
+                                    <td>
+                                        <input type="checkbox" class="check-location" name="blCheck" value="{{location.id}}" data-email="{{location.locataire ? location.locataire.email : ''}}" data-telephone="{{location.locataire ? location.locataire.telone : ''}}"> 
+                                    </td>
+                                    <td>{{ location.logement ? location.logement.identifiant : '' }}</td>
+                                    <td>{{ location.logement and location.logement.superficie ? location.logement.superficie : '0' }} M<sup>2</sup> </td>
+                                    <td>{{ location.bien is not null ? location.bien.nameentreprise : '' }}</td>
+                                    <td>
+                                        {% if location.locataire is not null %} 
+                                            <a href="{{path('client_edit', {'clientId':location.locataire.id})}}">{{ location.locataire ? location.locataire.nom : '' }}</a>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ location.locataire is not null ? location.locataire.telone : '' }}</td>
+                                    <td>{{ location.locataire is not null ? location.locataire.email : '' }}</td>
+                                    <td>
+                                        {% if location.type is not null  and location.type != "" %}
+                                            <img src="/uploads/location/icon/{{ typesIcones[location.type] }}" style="width: 30px; height: 30px;">
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ location.debutBail ? location.debutBail|date('d/m/Y') : '' }}</td>
+                                    <td>
+                                        {% if location.bail is not null  %}
+                                            <span class="showDocument" data-file="/uploads/location/{{location.bail}}" style="cursor: pointer;"><img src="//ssl.gstatic.com/docs/doclist/images/mediatype/icon_3_pdf_x16.png"></span>
+                                            <span style="visibility: hidden;">v</span>
+                                        {% else %}
+                                            <span style="visibility: hidden;">x</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if not location.renouvellement %}
+                                            <span  style="font-size: 18px;color: #ef0a0a;"><i class="fas fa-times"></i><span style="visibility: hidden;"></span></span>
+                                        {% else %}
+                                            <span style="font-size: 18px;color: green;"><i class="fa fa-check"></i>
+                                            <span style="visibility: hidden;">X</span></span>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ location.loyerHc ? location.loyerHc : 0}}€</td>
+                                    <td>{{ location.getLoyerCharge ? location.getLoyerCharge : 0}}€</td>
+
+                                    <td style="white-space: nowrap;">
+                                        {% if 1 in releves[location.id]|keys %}
+                                            {% set releve = releves[location.id] %} 
+                                            {{releve[1]['quantite']}}
+                                        {% endif %}
+                                    </td>
+                                    <td style="white-space: nowrap;">
+                                        {% if 2 in releves[location.id]|keys %}
+                                            {% set releve = releves[location.id] %} 
+                                            {{releve[2]['quantite']}}
+                                        {% endif %}
+                                    </td>
+                                    <td style="white-space: nowrap;">
+                                        {% if 3 in releves[location.id]|keys %}
+                                            {% set releve = releves[location.id] %} 
+                                            {{releve[3]['quantite']}}
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if location.getFactureEau is not null %}
+                                            <span style="visibility: hidden;">X</span></span>
+                                            <i class="fas fa-check" style="font-size: 18px;color: green;"></i>
+                                        {% else %}
+                                            <form id="formFactureEau-{{location.id}}" method="POST" action="{{path('location_facture_eau_upload', {'locationId':location.id})}}" enctype="multipart/form-data">
+                                                <label for="facture_eau-{{location.id}}" style="cursor: pointer;">
+                                                    <i class="fas fa-times" style="font-size: 18px;color: #ef0a0a;"></i>
+                                                <input type="file" data-id="{{location.id}}" name="facture_eau" id="facture_eau-{{location.id}}" accept=".png, .jpg, .jpeg, .pdf" style="display: none;">
+                                                </label>
+                                            </form>
+                                            <span style="visibility: hidden;"></span></span>
+                                        {% endif %}
+                                    </td>
+
+                                    <td class="no-export">
+                                        <a href="{{ path('location_edit', {'id': location.id} ) }}"><i class="far fa-edit"></i></a>
+                                        <a onclick="return confirm('Etes-vous sur de vouloir supprimer ?')"
+                                       href="{{ path('location_delete', {'id': location.id} ) }}"><i class="fas fa-trash-alt"></i></a>
+                                    </td>
+                                </tr>
+                            {% else %}
+                                <tr>
+                                    <td colspan="13">no records found</td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
+            </div>
+
+            <div id="modalSmsSend" class="modal fade bs-example-modal-sm modal-center" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel">
+                <div class="modal-dialog modal-sm" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header" style="border: none; padding-bottom: 44px">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                            <h4 class="modal-title">Envoyer un message</h4>
+                        </div>
+                        <div class="modal-body text-center" style="padding: 0px 30px 51px 30px">
+                            <form method="POST" action="{{path('location_send_sms')}}" name="formSendSms" enctype="multipart/form-data">
+
+                                <input type="hidden" name="list-location-id"> 
+                                <div class="form-group">
+                                    <select class="form-control" name="type_envoie">
+                                        <option value="locataire_email">Envoyer mail</option>
+                                        <option value="locataire_sms" selected>Envoyer SMS</option>
+                                    </select>  
+                                </div>      
+                                <div class="form-group field-mail">
+                                    <label>Sujet</label>
+                                    <input type="text" name="sujet" class="form-control" length="200">
+                                </div>                       
+                                <div class="form-group">
+                                    <label>Contenu</label>
+                                    <textarea name="content" class="form-control" rows="6"></textarea>
+                                </div>
+                                <div class="form-group field-mail" style="margin-bottom: 20px;">
+                                    <label style="color: #a6a4ad;">Piece jointe</label>
+                                    <input type="file" name="piece_jointe[]" multiple class="form-control">
+                                </div>
+                                <div class="col-lg-12 form-group text-center" style="display: flex; justify-content: center;">
+                                    <button type="submit" name="submit" class="btn btn-info" style="margin-left: 8px;">ENVOYER</button>
+                                </div>
+                                <div class="row export loader-container">
+                                    <img src="{{asset('images/loading.gif')}}" style="width: 54px;">
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+{% endblock %}
+{% block js_import %}
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10.14.1/dist/sweetalert2.all.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://npmcdn.com/flatpickr/dist/l10n/fr.js"></script>
+{% endblock %}
+
+{% block javascript_script %}
+    <script type="text/javascript"src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.min.js"></script>
+    <script type="text/javascript"src="https://cdn.datatables.net/buttons/1.7.0/js/dataTables.buttons.min.js"></script>
+    <script type="text/javascript"src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+    <script type="text/javascript"src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
+    <script type="text/javascript"src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+
+    <script type="text/javascript"src="https://cdn.datatables.net/buttons/1.7.0/js/buttons.html5.min.js"></script>
+    <script type="text/javascript"src="https://cdn.datatables.net/buttons/1.7.0/js/buttons.print.min.js"></script>
+
+        <script type="text/javascript" src="https://cdn.datatables.net/plug-ins/1.10.24/sorting/date-eu.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/plug-ins/1.10.15/sorting/numeric-comma.js"></script>
+
+    <script type="text/javascript">
+        $(".date-range-input").flatpickr({
+            mode: "range",
+            locale: "fr",
+            dateFormat: "d-m-Y"
+        });
+
+        $(document).on('change', 'input[name=facture_eau]', function(e){
+            $that = $(this);
+            let file2 = document.getElementById("facture_eau-"+$that.attr('data-id'));
+            if (file2.files){
+                $("#formFactureEau-"+$that.attr('data-id')).submit();
+            }
+            
+        });
+
+        $('table').on('change', '.check-location', function(){   
+            if($(this).attr('data-email') == ""){
+                toastr.error("Ce locataire n'a pas d'email");
+            } 
+            if($(this).attr('data-telephone') == ""){
+                toastr.error("Ce locataire n'a pas de numero de Telephone");
+            } 
+
+            $eltCheck = $('.check-location:checkbox:checked');
+            if( $eltCheck.length > 0){
+                $('.btnSendSms').css('display', 'block');
+            }
+            else{
+                $('.btnSendSms').css('display', 'none');
+            }
+
+            var locationCheck = [];   
+            $eltCheck.each(function( index ) {
+                if($( this ).val() != "")
+                    locationCheck.push($( this ).val());
+            });
+            $('input[name=list-location-id]').val(locationCheck.join(','));
+            if(locationCheck.length == 1){
+                
+                $('input[name=email_locataire]').val($(this).attr('data-email'));
+            }
+            else{
+                $('input[name=email_locataire]').val('');
+            }
+        });
+        $('.chk-parent').on('change', function(){  
+            $('.check-location').prop('checked', this.checked);      
+            if($(this).is(":checked")){
+                $('.btnSendSms').css('display', 'block');
+            }
+            else{
+                $('.btnSendSms').css('display', 'none');
+            }
+
+            var locationCheck = [];  
+            $eltCheck = $('.check-location:checkbox:checked'); 
+            $eltCheck.each(function( index ) {
+                if($( this ).val() != "")
+                    locationCheck.push($( this ).val());
+            });
+
+            $('input[name=list-location-id]').val(locationCheck.join(','));
+            $('input[name=email_locataire]').val('');
+            
+
+        });
+        $('body').on('click', '.btnSendSms', function(){
+            $('#modalSmsSend').modal('show');
+        })
+
+        $( "select[name=type_envoie]" ).change(function() {
+            var statusId =  $(this).val();
+            if(statusId == 'locataire_sms'){
+                $('.field-mail').css('display', 'none');
+            }
+            else{
+                $('.field-mail').css('display', 'block');
+            }
+            
+        });
+
+    </script>
+{% endblock %}
+
+{% block javascript %}
+$(document).ready( function () {
+    $('.table-location').DataTable({
+        "language": {
+            "url": "//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/French.json"
+        },
+        columnDefs: [
+           { type: 'date-eu', targets: 6 },
+           { "type": "numeric-comma", targets: 8 },
+           { "type": "numeric-comma", targets: 10 },
+           { "type": "numeric-comma", targets: 11 },
+           { "type": "numeric-comma", targets: 12 },
+           { "type": "numeric-comma", targets: 13 },
+        ],
+        "paging":   false,
+        dom: 'Bfrtip',
+        buttons: [
+            'csv', 'pdf', 'print',
+            {
+             extend: 'excel',
+             text: 'Excel',
+             title: '{{ app.session.get('entreprise_session_name') }} LOCATIONS',
+             className: 'btn btn-export',
+             exportOptions: {
+                columns: 'th:not(.no-export)'
+             },
+             customizeData: function (data) {
+                for (var i = 0; i < data.body.length; i++) {
+                    for (var j = 0; j < data.body[i].length; j++) {
+                        if(data.body[i][j].indexOf('€') > -1)
+                            data.body[i][j] = parseFloat(data.body[i][j]);
+                    }
+                }
+            }
+          }
+        ]
+    });
+} );
+{% endblock %}

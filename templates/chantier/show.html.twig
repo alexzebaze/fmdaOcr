@@ -1,0 +1,659 @@
+{% extends 'base.html.twig' %}
+{% block css %}
+    <link rel="stylesheet" href="//cdn.datatables.net/1.10.20/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+    <style type="text/css">
+        table.dataTable tfoot th, table.dataTable tfoot td{border-top: 1px solid #e7eaec; font-weight: 600;font-size: 15px; padding: 8px 10px; text-align: center;}
+        .total-bl{
+            margin: 8px 0 32px 0;
+            color: #000;
+            font-weight: 600;
+            text-align: center;
+            line-height: 26px;
+            font-size: 19px;
+            line-height: 1px;
+        }
+        .bl-dropdown{
+           display: none;
+           background: #fff;
+           border-radius: 8px;
+           padding: 15px 28px;
+           position: absolute;
+           top: 30px;
+           z-index: 10;
+           width: 270px;
+           justify-content: center;
+            flex-wrap: wrap;
+            left: 50%;
+            transform: translateX(-50%);
+           box-shadow: 0px 0px 6px 1px rgb(0 0 0 / 20%);
+        }   
+        #extSubmitFixed{display: none;}
+        .heure-galerie{
+            text-align: center;
+            margin-top: 14px;
+        }  
+        .rounded-galerie {
+            margin-left: auto;
+            margin-right: auto;
+            left: 0;
+            right: 0;
+        }
+        .video-wrapper video{
+            max-width: 971px!important;
+            max-height: 600px!important;
+            display: block;
+            margin: auto;
+            margin-top: 25px;
+        }
+    </style>
+{% endblock %}
+{% block breadcrumb %}
+
+    <div class="row wrapper border-bottom white-bg page-heading">
+        <div class="col-lg-10">
+            <h1>Consulter un chantier</h1>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                    <a href="{{ path('home') }}">Accueil</a>
+                </li>
+                <li class="breadcrumb-item active">
+                    <strong>Chantiers</strong>
+                </li>
+            </ol>
+        </div>
+    </div>
+{% endblock %}
+
+{% block content %}
+
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="ibox">
+                <div class="ibox-content">
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-12">
+            <!-- Nav tabs -->
+            <ul class="nav nav-tabs" role="tablist" id="myTabs">
+                <li role="presentation"  class="{% if tab == 'devis-tab' %}active{% endif %}"><a href="#devis-tab" aria-controls="devis-tab" role="tab" data-toggle="tab">SUIVI</a></li>
+                {% if bon_livraisons|length > 0 %}
+                <li role="presentation"  class="{% if tab == 'livraison-tab' %}active{% endif %}"><a href="#livraison-tab" aria-controls="livraison-tab" role="tab" data-toggle="tab">Bon de livraison</a></li>
+                {% endif %}  
+                <li role="presentation"  class="{% if tab == 'facture-client-tab' %}active{% endif %}"><a href="#facture-client-tab" aria-controls="facture-client-tab" role="tab" data-toggle="tab">Facture client</a></li>
+                <li role="presentation"  class="{% if tab == 'gallery-tab' %}active{% endif %}"><a href="#gallery-tab" aria-controls="gallery-tab" role="tab" data-toggle="tab">Galerie</a></li>
+            </ul>
+
+            <!-- Tab panes -->
+            <div class="tab-content">
+                <div role="tabpanel" class="tab-pane {% if tab == 'livraison-tab' %}active{% endif %}" id="livraison-tab">
+                    <div class="ibox ">
+                        <div class="ibox-title">
+                            {#<h5>Bons de livraison du chantier {{ chantier.nameentreprise }} du {{fullDate}}</h5>#}
+                            <div class="ibox-tools">
+                            </div>
+                        </div>
+                        <div class="ibox-content">
+                            <h2 class="total-bl" style="color: #666;"> Cout Materiel: <span>{{cout_materiel|number_format(2, '.', '') }}€</span> </h2>
+                            <table class="table">
+                                <thead>
+                                <tr>
+                                    <th>Date création</th>
+                                    <th>Fournisseur</th>
+                                    <th>HT</th>
+                                    <th>TTC</th>
+                                    <th>Devis</th>
+                                    <th>Doucuments</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                    {% for bon_livraison in bon_livraisons %}
+                                    <tr>
+                                        <td>
+                                            {{ bon_livraison.facturedAt|date('d/m/Y') }}
+                                        </td>
+                                        <td>{{ bon_livraison.fournisseur.nom }}</td>
+                                        <td>{{ bon_livraison.getPrixht|number_format(2, ',', ' ') }} {{ bon_livraison.devise.symbol }}</td>
+                                        <td>{{ bon_livraison.prixttc|number_format(2, ',', ' ') }} {{ bon_livraison.devise.symbol }}</td>
+
+                                        <td>
+                                            {% if bon_livraison.devis is not null %}
+                                                <span style="display: none;">V</span>
+                                                <span class="showDocument" data-file="/uploads/devis/{{bon_livraison.devis.getDocumentFile}}" style="cursor: pointer;"><img src="//ssl.gstatic.com/docs/doclist/images/mediatype/icon_3_pdf_x16.png"></span>
+                                            {% else %}
+                                                <span style="display: none;">X</span>
+                                                <span class="openDevis" data-chantier="{{chantier.getChantierId}}" data-id="{{bon_livraison.id}}" style="cursor: pointer;">
+                                                    <i class="fas fa-times" style="font-size: 18px;color: #ef0a0a;"></i>
+                                                </span>
+                                            {% endif %}
+                                        </td>
+                                        
+                                        <td> 
+                                            <span class="showDocument" data-ttc="{{ bon_livraison.prixttc|number_format(2, ',', ' ') }} {{ bon_livraison.devise.symbol }}" data-file="/uploads/factures/{{bon_livraison.getDocumentFile}}" style="cursor: pointer;"><img src="//ssl.gstatic.com/docs/doclist/images/mediatype/icon_3_pdf_x16.png"></span>
+                                        </td>
+                                    </tr>
+                                    {% else %}
+                                    <tr>
+                                        <td colspan="34" class="text-center">Aucune bon_livraison enregistrée</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                                {% if bon_livraisons|length > 0 %}
+                                    <tfoot>
+                                        <tr>
+                                            <td>Totaux</td>
+                                            <td></td>
+                                            <td>{{coutBl['sum_ht']|number_format(2, ',', ' ')}}{{bon_livraisons[0].devise.symbol}}</td>
+                                            <td>{{coutBl['prixttc']|number_format(2, ',', ' ')}}{{bon_livraisons[0].devise.symbol}}</td>
+                                            <td></td>
+                                        </tr>
+                                    </tfoot>
+                                {% endif %}
+                            </table>
+
+                        </div>
+                    </div>
+                </div>
+
+                <div role="tabpanel" class="tab-pane {% if tab == 'facture-client-tab' %}active{% endif %}" id="facture-client-tab">
+                    <div class="ibox ">
+                        <div class="ibox-title">
+                            {#<h5>Bons de livraison du chantier {{ chantier.nameentreprise }} du {{fullDate}}</h5>#}
+                            <div class="ibox-tools">
+                            </div>
+                        </div>
+                        <div class="ibox-content">
+                            <h1 class="total-bl"> Montant HT: <span>{{ montant['sum_ht'] ? montant['sum_ht']|number_format(2, ',', '') : "0" }}€</span> </h1>
+                            <div class="table-responsive">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>Doc</th>
+                                            <th>Date création</th>
+                                            <th>Document_ID</th>
+                                            <th>Client</th>
+                                            <th>Chantier</th>
+                                            <th>Devis</th>
+                                            <th>Lot</th>
+                                            <th>TTC</th>
+                                            <th>TVA</th>
+                                            <th>HT</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for facture_client in factures_client %}
+                                        <tr>
+                                            <td>
+                                                <span class="showDocument" data-file="/uploads/clients/factures/{{facture_client.getDocumentFile}}" style="cursor: pointer;"><img src="//ssl.gstatic.com/docs/doclist/images/mediatype/icon_3_pdf_x16.png"></span>
+                                            </td>
+                                            <td>
+                                                {{ facture_client.facturedAt|date('d/m/Y') }}
+                                            </td>
+                                            <td>
+                                                {{facture_client.getDocumentId}}
+                                            </td>
+                                            <td>{{ facture_client.client is not null ? facture_client.client.nom : '' }}</td>
+                                            <td>{{ facture_client.chantier is not null ? facture_client.chantier.nameentreprise : '' }}</td>
+                                            <td>
+                                                {% if facture_client.devis is not null %}
+                                                <span class="showDocument" data-file="/uploads/devis/{{facture_client.devis.getDocumentFile}}" style="cursor: pointer; margin-left: 4px"><img src="//ssl.gstatic.com/docs/doclist/images/mediatype/icon_3_pdf_x16.png"></span>
+                                                {% else %}
+                                                    <i class="fas fa-times" style="font-size: 18px;color: #ef0a0a;"></i>
+                                                {% endif %}
+                                            </td>
+                                            <td>{{facture_client.lot is not null ? facture_client.lot.lot : ''}}</td>
+                                            <td>{{ facture_client.prixttc|number_format(2, ',', ' ') }} {{ facture_client.devise.symbol }}</td>
+                                            <td>
+                                                {% set ht = facture_client.getPrixht is null ? 0 : facture_client.getPrixht %} 
+                                                {% set dividende = (ht is null or ht == 0) ? 1 : ht %} 
+
+                                                {% set partE = ((facture_client.prixttc - ht) / dividende * 100)|round(0, 'floor') %}
+                                                {% set partD = ((facture_client.prixttc - ht) / dividende * 100) - partE %}
+
+                                                {% if partE == 0 %}
+                                                    <span style="color: orange">0</span>
+                                                {% else %}
+                                                    {% if partE == 5  and (partD <= 0.8 and partD >= 0.2) %}
+                                                       <span style="color: green">5.5%</span> 
+                                                    {% elseif partE == 20  and (partD <= 0.3) %}
+                                                        <span style="color: green">20%</span>
+                                                    {% elseif partE == 19  and (partD >= 0.7) %}
+                                                        <span style="color: green">20%</span>
+                                                    {% elseif partE == 10  and (partD <= 0.3) %}
+                                                        <span style="color: green">10%</span>
+                                                    {% elseif partE == 9  and (partD >= 0.3) %}
+                                                        <span style="color: green">10%</span>
+                                                    {% else %}
+                                                        <span style="color: red">{{((facture_client.prixttc - ht) / dividende * 100)|number_format(2, ',', ' ')}}%</span>
+                                                    {% endif %}
+                                                {% endif %}
+                                            </td>
+                                            <td>{{ facture_client.prixht|number_format(2, ',', ' ') }} {{ facture_client.devise.symbol }}</td>
+                                            <td>
+                                                <a href="{{ path('facture_client_edit', {'factureId': facture_client.id} ) }}"><i class="far fa-edit"></i></a>
+                                                <a onclick="return confirm('Etes-vous sur de vouloir supprimer cette facture_client ?')"
+                                                   href="{{ path('facture_client_delete', {'factureId': facture_client.id} ) }}"><i class="fas fa-trash-alt"></i></a>
+                                            </td>
+                                        </tr>
+                                        {% else %}
+                                        <tr>
+                                            <td colspan="34">Aucune facture_client enregistrée</td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div role="tabpanel" class="tab-pane {% if tab == 'devis-tab' %}active{% endif %}" id="devis-tab">
+                    <div class="ibox ">
+                        <div class="ibox-title">
+                            <div class="ibox-tools">
+                            </div>
+                        </div>
+                        <div class="ibox-content">
+                            <h1 class="total-bl"> Montant HT: <span>{{ montant_devis['sum_ht'] ? montant_devis['sum_ht']|number_format(2, ',', '') : "0" }}€</span> </h1>
+                            <div class="table-responsive">
+                                <table class="table">
+                                    <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Date</th>
+                                        <th>NOM DU CLIENT</th>
+                                        <th>Document ID</th>
+                                        <th>LOT</th>
+                                        <th>DOC</th>
+                                        <th>HT</th>
+                                        <th>TTC</th>
+                                        <th>NB HEURES</th>
+                                        <th>TX Moyen</th>
+                                        <th>TOTAL MO</th>
+                                        <th>BL</th>
+                                        <th>Restant</th>
+                                        <th>Facturé</th>
+                                        <th>Reste à Facturer</th>
+                                        <th>Pourcentage de marge</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% set totalRestant = 0 %}
+                                        {% set totalfacture = 0 %}
+                                        {% set totalResteFact = 0 %}
+                                        {% set SumMarge = 0 %}
+                                        {% for devis in ventes %}
+                                        <tr>
+                                            <td>#{{devis.id}}</td>
+                                            <td>
+                                                {{ devis.factured_at|date('d/m/Y') }}
+                                            </td>
+                                            <td>{{devis.client}}</td>
+                                            <td>{{devis.document_id}}</td>
+                                            <td>{{devis.lot}}</td>
+                                            <td>
+                                                <span class="showDocument" data-file="/uploads/devis/{{devis.document_file}}" style="cursor: pointer;"><img src="//ssl.gstatic.com/docs/doclist/images/mediatype/icon_3_pdf_x16.png"></span>
+                                            </td>
+                                            <td>{{devis.ht}}</td>
+                                            <td>{{devis.ttc}}</td>
+                                            <td>{{devis.nbHeure}}</td>
+                                            <td>{{devis.tx_moyen|number_format(2, '.', '')}}</td>
+                                            <td>
+                                                {% set total_h = devis.total_mo|number_format(2, '.', '') %}
+                                                <a href="{{path('chantier_info_tx_devis', {'devisId':devis.id})}}">{{total_h}}</a>
+                                            </td>
+                                            <td style="display: flex; position: relative;">
+                                                <a href="{{path('chantier_list_bl_associe_devis', {'devisId':devis.id})}}"  {% if devis.list_bl|length > 0 %}style="cursor:pointer"{% endif %}>{{devis.sum_ht|number_format(2, '.', '')}}</a>
+                                            </td>
+                                            <td>
+                                                {% set currentRestant = (devis.ht - (total_h+devis.sum_ht))|number_format(2, '.', '') %}
+                                                {% set totalRestant = totalRestant +  currentRestant %} 
+                                                {{currentRestant}}
+                                            </td>
+                                            <td>
+                                                {% set sum_ht_vente = devis.sumVente.sum_ht %} 
+                                                {% set totalfacture = totalfacture + sum_ht_vente %}
+                                                {{sum_ht_vente|number_format(2, '.', '')}}
+                                            </td>
+                                            <td>
+                                                {% set currentFactRestant = (devis.ht - sum_ht_vente) %}
+                                                {{ currentFactRestant|number_format(2, '.', '') }}
+                                                {% set totalResteFact = totalResteFact + currentFactRestant %}
+                                            </td>
+                                            <td>
+                                                {% set percent_marge = ((currentRestant / (devis.ht ? devis.ht : 1)) * 100) %} 
+
+                                                {% if percent_marge > 30 %}
+                                                    <span style="color: green">
+                                                        {{ percent_marge|number_format(2, '.', '') }}%
+                                                    </span>
+                                                {% else %}
+                                                    <span style="color: red">
+                                                        {{ percent_marge|number_format(2, '.', '') }}%
+                                                    </span>
+                                                {% endif %}
+
+                                                {% set SumMarge = SumMarge + percent_marge %}
+                                            </td>
+                                        </tr>
+                                        {% else %}
+                                        <tr>
+                                            <td colspan="34" class="text-center">Aucune bon_livraison enregistrée</td>
+                                        </tr>
+                                        {% endfor %}
+                                        <tr>
+                                            <td>TOTAUX</td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <th>{{totalht|number_format(2, '.', '')}}</th>
+                                            <th>{{totalttc|number_format(2, '.', '')}}</th>
+                                            <th>{{totalHeure|number_format(2, '.', '')}}</th>
+                                            <th>{{totalTXMoyen|number_format(2, '.', '')}}</th>
+                                            <th>{{totalMO|number_format(2, '.', '')}}</th>
+                                            <td></td>
+                                            <th>
+                                                {% set montantRestant = totalRestant ? totalRestant : 0 %} 
+                                                {{ montantRestant|number_format(2, ',', '')}}€
+                                            </th>
+                                            <th>{{totalfacture ? totalfacture|number_format(2, ',', '') : "0" }}€</th>
+                                            <th>{{totalResteFacture ? totalResteFacture|number_format(2, ',', '') : "0" }}€</th>
+                                            <th>
+
+                                                {% set moyenMarge = (montant_devis['sum_ht'] != 0) ? (montantRestant/montant_devis['sum_ht']*100)|number_format(2, '.', '') : 0 %}
+                                                
+                                                {% if moyenMarge > 30 %}
+                                                    <span style="color: green">
+                                                        {{moyenMarge|number_format(2, ',', ' ') }}%
+                                                    </span>
+                                                {% else %}
+                                                    <span style="color: red">
+                                                        {{ moyenMarge|number_format(2, ',', ' ')}}%
+                                                    </span>
+                                                {% endif %}
+                                            </th>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div role="tabpanel" class="tab-pane {% if tab == 'gallery-tab' %}active{% endif %}" id="gallery-tab">
+                    <div class="ibox ">
+                        <div class="ibox-title">
+                            <h5>{{chantier.getGaleries|length}} Images gallerie</h5>
+                            <div class="ibox-tools">
+                            </div>
+                        </div>
+                        <div class="ibox-content">
+                            <div class="row galerie" id="galerie">
+                                {% for file in galeries.currentPageResults %}
+                                    <div class="col-sm-12 col-md-4 col-lg-2 col-xl-1 parent" style="position: relative; margin-bottom: 30px">
+
+                                        {% set file_gallery = file.extension == 'mp4' ? file.getUrl : file.getCompressedUrl %}
+                                    
+                                        {% if file.extension != 'mp4' %}
+                                            <div class="thumbnail-galerie" data-type="image" data-url="{{ file.url }}"  style="background-image: url('{{ file_gallery }}')" data-width="{{ file.width }}" data-height="{{ file.height }}" data-fancybox="gallery" data-caption="{{ chantier ? chantier.nameentreprise : '' }}">
+                                                <i class="fas fa-search"></i>
+                                            </div>
+                                        {% else %}
+                                            <div class="thumbnail-galerie"  data-type="video" data-video='<div class="wrapper"><div class="video-wrapper"><video width="960" class="pswp__video"  src="{{file_gallery}}" controls></video></div></div>' style="background-image: url('/assets/images/videoimg.png');">
+                                                <i class="fas fa-play"></i>
+                                            </div>
+                                        {% endif %}
+                                        
+
+                                        {% if file.user is not null and file.user.image is not empty %}
+                                            <div style="background-image: url('data:image/jpeg;base64,{{ file.user.image }}');"
+                                                 class="rounded-circle rounded-galerie">
+                                            </div>
+                                        {% endif %}
+
+                                        <div class="thumbnail-detail">
+                                            <div class="heure-galerie"><i class="fas fa-clock"></i> {{ file.createdAt|date("d/m/Y")}}</div>
+                                            <div style="margin-top: 14px; position: relative">
+                                                <a href="{{ path('galerie_download', {'fileid': file.id}) }}"><i class="fas fa-download"></i> Télécharger</a>
+                                                {% if not file.getChantierDefaultGalerie %}
+                                                <a onclick="return confirm('Êtes-vous sur de vouloir mettre comme image principal du chantier ?')" style="position:absolute;right: 2rem" href="{{ path('galerie_choose', {'fileid': file.id}) }}"><i class="fas fa-check"></i></a>
+                                                {% endif %}
+                                                <a onclick="return confirm('Êtes-vous sur de vouloir supprimer ce fichier ?')" style="position:absolute;right: 0" href="{{ path('galerie_delete', {'fileid': file.id}) }}"><i class="fas fa-trash-alt"></i></a>
+
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+            </div>
+            
+        </div>
+
+        <div class="modal fade" id="modalDevis" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h2 class="modal-title text-center" id="myModalLabel">Attribuer un devis</h2>
+                  </div>
+                  <div class="modal-body" style="padding-top: 0">
+                     <div class="loader-container">
+                        <img src="{{asset('images/loading.gif')}}" style="width: 54px;">
+                    </div>
+                    <div id="listDevisContainer"></div>
+                  </div>
+                </div>
+            </div>
+            <span id="extSubmitFixed" class="btn-small btn btn-primary" style="box-shadow: 0px 0px 10px 6px rgb(119 119 119 / 25%);position: fixed;z-index: 9999;top: 18px;"><i class="fas fa-save"></i></span>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block javascript_script %}
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+    <script src="//cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/photoswipe/4.1.3/photoswipe.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/photoswipe/4.1.3/photoswipe-ui-default.min.js"></script>
+
+    <script type="text/javascript">
+
+        function toggledropdown(devisId){
+            $('.bl-dropdown').css('display','none');
+            $('.bl-dropdown-'+devisId).css('display','flex');
+        }
+        $(document).mouseup(function(e) {
+            var container_bl = $(".bl-dropdown");
+            if (!container_bl.is(e.target) && container_bl.has(e.target).length === 0) 
+               $('.bl-dropdown').css('display','none')
+        })
+
+        $('a[data-toggle="tab"]').on('show.bs.tab', function (e) {
+            var str = $(event.target).attr('href');
+            str = str.replace("#", "");
+            $('input[name=tab]').val(str);
+        })
+
+        $('.openDevis').click(function(){
+            $('#modalDevis').modal('show');
+            $('.loader-container').css('display','flex');
+            $eltSelect = $(this).data('id');
+            $chantierList = $(this).attr('data-chantier');
+
+            $.ajax({
+                url: "{{path('devis_client_get_by_chantier')}}",
+                type: "POST",
+                dataType: "json",
+                async: true,
+                data: {
+                    list_chantier_id: $chantierList,
+                    page: 'chantier',
+                    type: 'devis_client',
+                    facture_select: $eltSelect,
+                    tagLink: "tab=livraison-tab&chantierId={{chantier.getChantierId}}"
+                },
+                success: function(response) {
+                    if(response.status == 200){                        
+                        $('#listDevisContainer').html(response.content);
+                    }
+                    else if(response.status == 500){
+                        toastr.error(response.message);
+                    }
+                    $('.loader-container').css('display','none');
+                },
+                error: function(xhr, textStatus, errorThrown) {
+                  console.log(errorThrown);
+                  $('.loader-container').css('display','none');
+                }
+            });
+        })
+        $(document).on('click', '#extSubmit', function(){
+            $('#attachDevisClient').submit();
+        })
+        $(document).on('click', '#extSubmitFixed', function(){
+            $('#attachDevisClient').submit();
+        })
+        $('body').on('change', '.list-devis input[name=devis]', function() {
+            $('.list-devis label').removeClass('active');
+            $('.list-devis input[name=devis]:checked').next().addClass('active');
+        });
+
+
+        $(document).ready(function () {
+
+            'use strict';
+
+            (function($) {
+
+              // Init empty gallery array
+              var container = [];
+
+              // Loop over gallery items and push it to the array
+              $('#galerie').find('.parent').each(function() {
+                var $link = $(this).find('.thumbnail-galerie');
+                
+                if ($link.data('type') == 'video') {
+                    var item = {
+                      html: $link.data('video')
+                    };
+                    console.log('enter');
+                } else {
+                    let img = new Image();
+                    img.onload = function() {
+                    };
+                    img.src = $link.data('url');
+
+                    var item = {
+                        src: $link.data('url'),
+                        w: $link.data('width'),
+                        h: $link.data('height'),
+                        title: $link.data('caption')
+                    };
+                }
+                container.push(item);
+              });
+
+              // Define click event on gallery item
+              $('.thumbnail-galerie').click(function(event) {
+
+                // Prevent location change
+                event.preventDefault();
+                {% verbatim %}
+                // Define object and gallery options
+                var $pswp = $('.pswp')[0],
+                  options = {
+                    index: $(this).parent('.parent').index(),
+                    bgOpacity: 0.85,
+                    showHideOpacity: true,
+                    shareButtons: [
+                        {id:'facebook', label:'Partager sur Facebook', url:'https://www.facebook.com/sharer/sharer.php?u={{url}}'},
+                        {id:'twitter', label:'Tweeter', url:'https://twitter.com/intent/tweet?text={{text}}&url={{url}}'},
+                        {id:'pinterest', label:'Epingler', url:'http://www.pinterest.com/pin/create/button/?url={{url}}&media={{image_url}}&description={{text}}'},
+                        {id:'download', label:'Télécharger l\'image', url:'{{raw_image_url}}', download:true}
+                    ]
+                  };
+                {% endverbatim %}
+                // Initialize PhotoSwipe
+                var gallery = new PhotoSwipe($pswp, PhotoSwipeUI_Default, container, options);
+                gallery.init();
+
+                gallery.listen('beforeChange', function() {
+                      var currItem = $(gallery.currItem.container);
+                      $('.thumbnail-galerie').removeClass('active');
+                      var currItemIframe = currItem.find('.thumbnail-galerie').addClass('active');
+                      $('.thumbnail-galerie').each(function() {
+                        if (!$(this).hasClass('active')) {
+                          $(this).attr('data-url', $(this).attr('data-url'));
+                        }
+                      });
+                });
+
+                gallery.listen('close', function() {
+                  $('.thumbnail-galerie').each(function() {
+                    $(this).attr('data-url', $(this).attr('data-url'));
+                  });
+                });
+
+              });
+
+            }(jQuery));
+
+        });
+
+    </script>
+
+
+{% endblock %}
+
+{% block javascript %}
+    $(document).ready(function(){
+        moment.locale('fr');
+        $('table').DataTable({
+            "language": {
+                "url": "//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/French.json"
+            },
+            "pageLength": 50,
+            "order": []
+        });
+
+        $('#myTabs a').click(function (e) {
+            e.preventDefault()
+            $(this).tab('show')
+        });
+    });
+    $('body').on('click', ' .showDocument', function(){
+        $documentFile = $(this).attr('data-file');
+        $ttc = $(this).attr('data-ttc');
+        $('#modalDocumentShow').modal('show');
+        $('#modalDocumentShow .ttc-val').text($ttc);
+        if($documentFile != ""){
+            $('.no-document').css('display','none');
+            $('.documentFile-container').css('display','block');
+            if($documentFile.substr($documentFile.length - 3).toLowerCase() == "pdf"){
+                $('.documentFile-container').html('<object class="documentPdf" data="" type="application/pdf" width="100%" height="980px" style="display: none;"></object>');
+                $('.documentPdf').css('display', 'block');
+                $('.documentPdf').attr('data', '/uploads/factures/'+$documentFile);
+            }
+            else{
+                $('.documentimage').css('display', 'block');
+                $('.documentimage').attr('src', '/uploads/factures/'+$documentFile);
+            }
+        }
+        else{
+            $('.documentFile-container').css('display','none');
+            $('.no-document').css('display','block');
+        }
+    })
+{% endblock %}

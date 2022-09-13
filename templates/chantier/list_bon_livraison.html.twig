@@ -1,0 +1,184 @@
+{% extends 'base.html.twig' %}
+{% block css %}
+    <link rel="stylesheet" href="//cdn.datatables.net/1.10.20/css/jquery.dataTables.min.css">
+    <style type="text/css">
+        thead th{text-align: center;text-align: center;}
+        .total-bl{
+            margin: 8px 0 32px 0;
+            color: #000;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        .doc-item-container{
+            position: relative;
+            height: 40px;
+            margin-left: 8px;
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .doc-item-container:hover .trash-icon{
+            display: inline-flex
+        }
+        .doc-item-container .trash-icon{
+            display: none;
+            position: absolute;
+            top: -33px;
+            z-index: 2;
+            left: -9px;
+            right: 0;
+            margin: auto;
+            background: #fff;
+            box-shadow: 0px 11px 9px 3px rgb(0 0 0 / 20%);
+            border-radius: 50%;
+            color: #d20404;
+            width: 35px;
+            height: 35px;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+    </style>
+{% endblock %}
+{% block breadcrumb %}
+    <div class="row wrapper border-bottom white-bg page-heading">
+        <div class="col-lg-10">
+            <h1>Liste des bons de livraison devis</h1>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                    <a href="{{ path('home') }}">Accueil</a>
+                </li>
+                <li class="breadcrumb-item active">
+                    <strong>Bons de livraison devis</strong>
+                </li>
+            </ol>
+        </div>
+    </div>
+
+{% endblock %}
+{% block content %}
+    <div class="row">
+        <div class="col-lg-12">
+            {% include 'flashes.html.twig' %}
+            <div class="ibox">
+                <div class="ibox-title">
+                    <h5>Liste des bons de livraison</h5> 
+                    <b>({{nbr_bl}} Documents)</b>
+                    <div class="ibox-tools">
+                    </div>
+                </div>
+                <div class="ibox-content">
+                    <h1 class="total-bl">TOTAL HT: {{ montants['sum_ht'] ? montants['sum_ht']|number_format(2, ',', '') : "0" }}€</h1>
+                    <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                        <tr>
+                            <th>Doc</th>
+                            <th>Date création</th>
+                            <th>Fournisseur</th>
+                            <th>Chantier</th>
+                            <th>Lot</th>
+                            <th>TTC</th>
+                            <th>TVA</th>
+                            <th>HT</th>
+                            <th>Devis</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                            {% for bon_livraison in pager.currentPageResults %}
+                            <tr class='text-center'>
+                                <td>
+                                    <span class="showDocument" data-file="/uploads/factures/{{bon_livraison.getDocumentFile}}" style="cursor: pointer;"><img src="//ssl.gstatic.com/docs/doclist/images/mediatype/icon_3_pdf_x16.png"></span>
+                                </td>
+                                <td>
+                                    {{ bon_livraison.facturedAt|date('d/m/Y') }}
+                                </td>
+                                <td>{{ bon_livraison.fournisseur is not null ? bon_livraison.fournisseur.nom : '' }}</td>
+                                <td>{{ bon_livraison.chantier is not null ? bon_livraison.chantier.nameentreprise : '' }}</td>
+                                <td>{{ bon_livraison.lot is not null ? bon_livraison.lot.lot : ''}}</td>
+                                <td>{{ bon_livraison.prixttc|number_format(2, ',', ' ') }} {{ bon_livraison.devise.symbol }}</td>
+                                <td>
+                                    {% set ht = bon_livraison.getPrixht is null ? 0 : bon_livraison.getPrixht %} 
+                                    {% set dividende = (ht is null or ht == 0) ? 1 : ht %} 
+
+                                    {% set partE = ((bon_livraison.prixttc - ht) / dividende * 100)|round(0, 'floor') %}
+                                    {% set partD = ((bon_livraison.prixttc - ht) / dividende * 100) - partE %}
+
+                                    {% if partE == 0 %}
+                                        <span style="color: orange">0</span>
+                                    {% else %}
+                                        {% if partE == 5  and (partD <= 0.8 and partD >= 0.2) %}
+                                           <span style="color: green">5.5%</span> 
+                                        {% elseif partE == 20  and (partD <= 0.3) %}
+                                            <span style="color: green">20%</span>
+                                        {% elseif partE == 19  and (partD >= 0.7) %}
+                                            <span style="color: green">20%</span>
+                                        {% elseif partE == 10  and (partD <= 0.3) %}
+                                            <span style="color: green">10%</span>
+                                        {% elseif partE == 9  and (partD >= 0.3) %}
+                                            <span style="color: green">10%</span>
+                                        {% else %}
+                                            <span style="color: red">{{((bon_livraison.prixttc - ht) / dividende * 100)|number_format(2, ',', ' ')}}%</span>
+                                        {% endif %}
+                                    {% endif %}
+                                </td>
+                                <td>{{ bon_livraison.getPrixht|number_format(2, ',', ' ') }} {{ bon_livraison.devise.symbol }}</td>
+                                <td>
+                                    {% if bon_livraison.devis is not null %}
+                                        <span class="doc-item-container">
+                                            <span style="display: none;">V</span>
+                                            <span class="showDocument" data-file="/uploads/devis/{{bon_livraison.devis.getDocumentFile}}" style="cursor: pointer;"><img src="//ssl.gstatic.com/docs/doclist/images/mediatype/icon_3_pdf_x16.png"></span>
+
+                                            <a class="trash-icon" onclick="return confirm('Vouley-vous dissocier ce devis ?')" href="{{ path('bon_livraison_dettach_devis', {'id': bon_livraison.id} ) }}?page=bl_associe&devis_id={{bon_livraison.devis.id}}">
+                                                <i class="fa fa-trash"></i>
+                                            </a>
+                                        </span>
+                                    {% else %}
+                                        <span style="display: none;">X</span>
+                                        <span class="openDevis" data-chantier="{{bon_livraison.chantier is not null  ? bon_livraison.chantier.getChantierId : '' }}" data-id="{{bon_livraison.id}}" style="cursor: pointer;">
+                                            <i class="fas fa-times" style="font-size: 18px;color: #ef0a0a;"></i>
+                                        </span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td colspan="34">Aucune bon_livraison Associé</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+
+                    </div>
+                    {% if pager.haveToPaginate %}
+                        {{ pagerfanta(pager, 'my_template') }}
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+{% endblock %}
+
+{% block javascript_script %}
+    <script src="//cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/plug-ins/1.10.24/sorting/date-eu.js"></script>
+{% endblock %}
+
+{% block javascript %}
+$(document).ready( function () {
+    $('table').DataTable({
+        columnDefs: [
+           { type: 'date-eu', targets: 2 }
+        ],  
+        "language": {
+            "url": "//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/French.json"
+        },
+        "pageLength": 500,
+        "order": []
+    });
+} );
+
+{% endblock %}

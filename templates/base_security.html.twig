@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    {% block seo %}
+        <title>FDMA</title>
+        <meta name="description" content="" />
+    {% endblock %}
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha512-6MXa8B6uaO18Hid6blRMetEIoPqHf7Ux1tnyIQdpt9qI5OACx7C+O3IVTr98vwGnlcg0LOLa02i9Y1HpVhlfiw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="icon" type="image/ico" href="{{ asset('favicon.ico') }}" />
+    <link rel="stylesheet" id="maincss" href="{{ asset('css/bootstrap.css') }}" />
+    <link rel="stylesheet" href="{{ asset('vendor/@fortawesome/fontawesome-free/css/fontawesome.css') }}">
+
+    <link rel="stylesheet" href="{{ asset('vendor/animate.css/animate.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/style.css') }}" />
+    <style type="text/css">
+        .sf-toolbarreset{display: none!important;}
+    </style>
+    {% block my_css %}
+    {% endblock %}
+</head>
+
+<body class="gray-bg">
+
+<div class="middle-box text-center loginscreen animated fadeInDown">
+    <div>
+        {% block content %}
+        {% endblock %}
+    </div>
+</div>
+
+<!-- Mainly scripts -->
+<script src="{{ asset('vendor/jquery/dist/jquery.js') }}"></script>
+<script src="{{ asset('vendor/popper.js/dist/umd/popper.js') }}"></script>
+<script src="{{ asset('vendor/bootstrap/dist/js/bootstrap.js') }}"></script>
+
+</body>
+
+</html>

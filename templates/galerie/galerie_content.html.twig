@@ -1,0 +1,26 @@
+{% for chantier in chantiers %}
+    <div class="col-sm-12 col-md-4 col-lg-2 col-xl-1 click-on" style="position: relative; margin-bottom: 30px;cursor: pointer;" data-url="{{ path('galerie_image_list', {'id': chantier.chantierId}) }}">
+        <div class="thumbnail-galerie" data-type="image" data-url="{{ chantier.defaultGalerie ? chantier.defaultGalerie.getCompressedUrl : '/assets/images/logotransfmda.png' }}"  style="background-image: url('{{ chantier.defaultGalerie ? chantier.defaultGalerie.getCompressedUrl : '/assets/images/logotransfmda.png' }}')">
+            {# <i class="fas fa-search"></i> #}
+        </div>
+        <div class="thumbnail-detail">
+            <div class="row px-2">
+                <div class="col-md-6 p-0">
+                    {{ chantier.nameentreprise }}
+                </div>
+                <div class="col-md-6 p-0">
+                    <div class="heure-galerie"><i class="fas fa-clock"></i> {{ chantier.created|date("d/m/Y")}}</div>
+                </div>
+            </div>
+            {# <h3>{{ chantier.nameentreprise }}</h3> #}
+            <div style="min-height: 20px">
+                {% if chantier.city %}
+                    <i class="fas fa-map-marker-alt"></i> {{ chantier.city }}
+                {% endif %}
+            </div>
+            {# <div style="margin-top: 20px; position: relative">
+                <a href="{{ path('galerie_image_list', {'id': chantier.chantierId}) }}"><i class="fas fa-eye"></i> Voir</a>
+            </div> #}
+        </div>
+    </div>
+{% endfor %}

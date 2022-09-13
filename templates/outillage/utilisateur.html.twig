@@ -1,0 +1,407 @@
+{% extends 'base.html.twig' %}
+
+{% block breadcrumb %}
+<div class="row wrapper border-bottom white-bg page-heading">
+   <div class="col-lg-10">
+      <h1>Outillage utilisateur</h1>
+      <ol class="breadcrumb">
+         <li class="breadcrumb-item">
+            <a href="{{ path('home') }}">Accueil</a>
+         </li>
+         <li class="breadcrumb-item active">
+            <strong>Outillage utilisateur</strong>
+         </li>
+      </ol>
+   </div>
+</div>
+{% endblock %}
+{% block content %}
+<style type="text/css">
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.0.943/pdf.js"></script>
+<script src="{{ asset('js/pdfThumbnails.js') }}"></script>
+<div class="row">
+   <div class="col-lg-3">
+      <div class="ibox">
+         <div class="ibox-title">
+            <h5>Liste des collaborateurs : {{ nb_ouvriers }}</h5>
+         </div>
+         <div class="ibox-content">
+            <div class="align-center">
+               <input type="radio" name="enable" id="actif" checked value="1"> <label class="filter-actif"
+                  for="actif">Actif</label>
+               <input type="radio" name="enable" id="inactif" value="0"> <label for="inactif">Inactif</label>
+            </div>
+            <div class="panel-body" id="nestable2">
+               <div class="panel-group" id="accordion">
+                  {% for u in pager.currentPageResults %}
+                  <div class="panel panel-default {{ u.etat == 1 ? 'uactif' : 'uinactif' }}"
+                     style="{{ u.etat == 0 ? 'display:none' : '' }}" data-id="{{ u.uid }}">
+                     <div class="user-box panel-heading {{ u.uid == user.uid ? 'current' : '' }}">
+                      <h5 class="panel-title" style=";margin-left: 9px;">
+                        <a href="{{ path('outillage_utilisateur_select', {'id':u.uid}) }}"
+                            class="{% for v in u.validations %}{% if v.mois == mois and v.annee == annee %}{{ v and v.isValide == true ? 'lock-user' : '' }}{% endif %}{% endfor %} no-drapp-a"
+                            style="display: flex; position: relative">
+                            {% if u.image is not empty %}
+                            <div style="background-image: url('data:image/jpeg;base64,{{ u.image }}')"
+                               class="rounded-circle">
+                            </div>
+                            {% endif %}
+                            
+                            <span style=" padding-left: 17px;">
+                            {{ u.lastname ~ " " ~ u.firstname }}
+                            </span>
+                           
+                        </a>
+                         </h5>
+                        <div>
+                          {% if u.signatures|length > 0 %}
+                            <span class="openModalSignature" data-user="{{u.uid}}" style="cursor: pointer; margin-left: 8px;"><img src="//ssl.gstatic.com/docs/doclist/images/mediatype/icon_3_pdf_x16.png"></span>
+                          {% endif %}
+                          <span class="" style="margin-left: 8px;">
+                            <form id="formDocSigne-{{u.uid}}" method="POST" action="{{path('outillage_signature_upload', {'userId':u.uid})}}" enctype="multipart/form-data" style="display: inline-block;">
+                                <label for="document_signe-{{u.uid}}" style="cursor: pointer;">
+                                    <i class="fa fa-plus"></i>
+                                <input type="file" data-id="{{u.uid}}" name="document_signe" id="document_signe-{{u.uid}}" accept=".pdf" style="display: none;">
+                                </label>
+                            </form>
+                          </span>
+                        </div>
+
+                     </div>
+                  </div>
+                  {% endfor %}
+               </div>
+               {% if pager.haveToPaginate %}
+               {{ pagerfanta(pager, 'my_template') }}
+               {% endif %}
+            </div>
+         </div>
+      </div>
+   </div>
+   <div class="col-lg-9">
+      <div class="ibox">
+         <div class="ibox-title">
+            <div style="display: flex;align-items: center;justify-content: space-between;">
+                <h5>Outillages {% if user %}de {{ user ? user.lastname ~ ' ' ~ user.firstname : "??" }}
+                   {% endif %}
+                </h5>
+                <div>
+                  <a href="{{path('print_user_outillage', {'user_id':user.uid})}}" target="_blank" class="btn btn-primary" style="margin-right: 5px">Imprimer</a>
+                  <a href="{{path('outillage_new', {'user_id':user.uid})}}" class="btn btn-primary"><i class="fa fa-plus"></i> Ajouter</a>
+                </div>
+            </div>
+         </div>
+         <div class="ibox-content" style="padding: 0">
+            <div class="panel-body">
+               <div class="panel-group" id="accordion">
+                  {% if user %}
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>
+                                        <input type="checkbox" name="">
+                                    </th>
+                                    <th>Nom</th>
+                                    <th>Marque</th>
+                                    <th>Num Serie</th>
+                                    <th>Gestion</th>
+                                    <th>Mise_en_service</th>
+                                    <th>Derniere_inspection</th>
+                                    <th>Proprietaire</th>
+                                    <th>Status</th>
+                                    <th style="width: 65px"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for outillage in outillages %}
+                                <tr>
+                                    <td>
+                                        <input type="checkbox" name="">
+                                    </td>
+                                    <td style="text-align: left;">
+                                      <div style="display: flex; align-items: center;">
+                                        <img class="showDocument rounded-img" data-file="/uploads/image_outillage/{{outillage.serializeFirstImage}}" src="/uploads/image_outillage/compressed/{{outillage.serializeFirstImage}}">
+                                        <span style="margin-left: 6px;">{{ outillage.nom }}</span>
+                                      </div>
+                                    </td>
+                                    <td>{{ outillage.marque }}</td>
+                                    <td>{{ outillage.getNumSerie }}</td>
+                                    <td>{{ outillage.gestion }}</td>
+                                    <td>{{ outillage.miseEnService ? outillage.miseEnService|date('d/m/Y') : '' }}</td>
+                                    <td>{{ outillage.derniereInspection ? outillage.derniereInspection|date('d/m/Y') : '' }}</td>
+                                    <td>{{ outillage.proprietaire }}</td>
+                                    <td>{{ outillage.status ? 'OK' : 'HS' }}</td>
+                                    <td>
+                                        <a href="{{ path('outillage_edit', {'id':outillage.id}) }}"><i class="far fa-edit"></i></a>
+                                        <a onclick="return confirm('Confirmez-vous la suppression ?')"
+                                           href="{{ path('outillage_delete', {'id':outillage.id}) }}"><i class="fas fa-trash-alt"></i></a>
+                                    </td>
+                                </tr>
+                                {% else %}
+                                <tr>
+                                    <td colspan="34">Aucun outillage enregistré</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                  {% endif %}
+               </div>
+            </div>
+         </div>
+
+         <div class="modal fade" id="modalSignature" tabindex="-1" role="dialog">
+          <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel" style="color: #000;">Signatures Outillage</h4>
+              </div>
+              <div class="modal-body">
+                
+                <div class="content-modal-signature"></div>
+
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Fermer</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+   </div>
+</div>
+{% endblock %}
+{% block javascript_script %}
+    <script src="//cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js"></script>
+
+    <script type="text/javascript">
+
+        $('input[name="enable"]').change(function () {
+            if ($(this).val() == 0) {
+                $('.uactif').css('display', 'none');
+                $('.uinactif').css('display', 'block');
+            } else {
+                $('.uactif').css('display', 'block');
+                $('.uinactif').css('display', 'none');
+            }
+        });
+
+      $(document).on('hidden.bs.modal', function (event) {
+          if ($('.modal:visible').length) {
+            $('body').addClass('modal-open');
+          }
+      });
+
+      $(document).on('change', 'input[name=document_signe]', function(e){
+            $that = $(this);
+            let file2 = document.getElementById("document_signe-"+$that.attr('data-id'));
+            if (file2.files){
+                $("#formDocSigne-"+$that.attr('data-id')).submit();
+            }
+            
+        });
+
+
+        $('body').on('click', '.openModalSignature', function(){
+            $("#modalSignature").modal('show');
+            loadModalSignature($(this).attr('data-user'));
+        })
+        function loadModalSignature(userId){
+            $.ajax({
+                url: "{{path('outillage_signature_list_signature')}}",
+                type: "GET",
+                dataType: "json",
+                async: true,
+                data: {
+                    user_id:userId
+                },
+                success: function(response, status) {
+                  if(response.status == 200){
+                    $('.content-modal-signature').html(response.preview);
+                  }
+                  else if(response.status == 500){
+                    toastr.error(response.message);
+                  }
+                },
+                error: function(xhr, textStatus, errorThrown) {
+                  toastr.error("Ooops..., Quelque chose s'est mal passée");
+                }
+            });
+        }
+
+    </script>
+{% endblock %}
+{% block javascript %}
+$(document).ready( function () {
+    $('table').DataTable({
+        "language": {
+            "url": "//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/French.json"
+        },
+        "columnDefs": [
+            {"targets": [0, 7, 8], "orderable": false},
+        ],
+        "pageLength": 50,
+        "order": []
+    });
+} );
+{% endblock %}
+
+{% block css %}
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/sweetalert2@10.14.1/dist/sweetalert2.min.css">
+<link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote.min.css" rel="stylesheet">
+<link rel="stylesheet" href="//cdn.datatables.net/1.10.20/css/jquery.dataTables.min.css">
+<style type="text/css">   
+  .user-box{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;        
+  }
+  .ibox-title{
+  padding-right: 15px;
+  }
+  thead th, td{text-align: center;}
+  .list-outillage{
+  margin: 0;
+  padding-left: 16px;
+  margin-top: 11px;
+  }
+  .list-outillage .item-list{margin-bottom: 6px;}
+  .outil-val{
+  display: block;
+  margin-top: 1px;
+  font-size: 12px;
+  }
+  .card-container {
+  max-width: 900px;
+  margin: 0 auto;
+  }
+
+  .c-card {
+  display: inline-block;
+  width: 100%;
+  max-width: 197px;
+  margin: 2px;
+  margin-bottom: 7px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-align: left;
+  background: #fff;
+  box-shadow: 0 6px 10px -5px rgba(0, 0, 0, 0.2);
+  }
+  header.c-card__header {
+  height: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-bottom: 1px solid #CCC;
+  padding-bottom: 3px;
+  }
+  .c-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 20px 20px -15px rgba(0, 0, 0, 0.3);
+  }
+  .c-card__image {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  }
+  .c-card__body {
+  padding: 10px;
+  }
+  .c-card__title {
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1.2;
+  margin: 0;
+  padding: 0;
+  text-transform: uppercase;
+  }
+  .c-card__subtitle {
+  font-size: 13px;
+  margin-top: 5px;
+  padding: 0;
+  }
+  .c-card__intro {
+  margin-bottom: 0;
+  }
+  .c-card__footer {
+  padding: 20px;
+  border-top: 1px solid #ddd;
+  }
+
+  .c-card--center {
+  text-align: center;
+  }
+
+  .c-card--wide {
+  max-width: 740px;
+  }
+  .c-card--wide .c-card__header {
+  float: left;
+  }
+  .c-card--wide .c-card__body {
+  float: left;
+  padding-top: 10px;
+  }
+  .c-card--wide .c-card__footer {
+  clear: both;
+  text-align: center;
+  }
+
+  .c-card-flip {
+  width: 450px;
+  height: 250px;
+  margin: 20px auto;
+  cursor: pointer;
+  perspective: 1000;
+  -webkit-perspective: 1000;
+  }
+  .c-card-flip__flipper {
+  position: relative;
+  transition: 0.8s ease-in-out;
+  transform-style: preserve-3d;
+  }
+  .c-card-flip__front, .c-card-flip__back {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 450px;
+  height: 250px;
+  -webkit-perspective: 1000;
+  perspective: 1000;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  }
+  .c-card-flip__back {
+  transform: rotateY(180deg);
+  background: #ddd;
+  }
+  .c-card-flip__title {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 50px;
+  margin: auto;
+  }
+  .c-card-flip:hover .c-card-flip__flipper {
+  transform: rotateY(180deg);
+  }
+
+  .rounded-img {
+  border-radius: 50%;
+  position: relative;
+  z-index: 1;
+  width: 40px;
+  height: 40px;
+  object-fit: cover;
+  transition: easy 0.4s all;
+  }
+</style>
+{% endblock %}

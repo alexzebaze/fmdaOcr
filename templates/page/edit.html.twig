@@ -1,0 +1,56 @@
+{% extends 'base_admin.html.twig' %}
+{% block css %}
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <style type="text/css">
+        @media (min-width: 768px){
+            .modal-sm {
+                width: 525px;
+            }
+        }
+        select.form-control:not([size]):not([multiple]) {
+            height: calc(1.5em + .75rem + 9px);
+        }
+        .form-group{text-align: left;}
+        .field-mail{display: none;}
+    </style>
+{% endblock %}
+
+{% block breadcrumb %}
+
+    <div class="row wrapper border-bottom white-bg page-heading">
+        <div class="col-lg-10">
+            <h1>Edition d'une page</h1>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                    <a href="{{ path('home') }}">Accueil</a>
+                </li>
+                <li class="breadcrumb-item">
+                    <a href="{{ path('page_index') }}">Pages</a>
+                </li>
+                <li class="breadcrumb-item active">
+                    <strong>Edition d'une page</strong>
+                </li>
+            </ol>
+        </div>
+    </div>
+{% endblock %}
+
+{% block content %}
+
+    <div class="row">
+        {{ include('page/_form.html.twig') }}
+    </div>
+
+{% endblock %}
+
+{% block javascript_script %}
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script type="text/javascript">
+
+    </script>
+{% endblock %}
+{% block javascript %}
+    $(document).ready(function() {
+        $('.js-example-basic-multiple').select2();
+    });
+{% endblock %}

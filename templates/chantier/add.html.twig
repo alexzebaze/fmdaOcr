@@ -1,0 +1,58 @@
+{% extends 'base.html.twig' %}
+{% block css %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css" integrity="sha512-mSYUmp1HYZDFaVKK//63EcZq4iFWFjxSL+Z3T/aCt4IO9Cejm03q3NKKYN6pFQzY0SBOr8h+eCIAZHPXcpZaNw==" crossorigin="anonymous" />
+{% endblock %}
+{% block breadcrumb %}
+
+    <div class="row wrapper border-bottom white-bg page-heading">
+        <div class="col-lg-10">
+            <h1>Ajouter un chantier</h1>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                    <a href="{{ path('home') }}">Accueil</a>
+                </li>
+                <li class="breadcrumb-item">
+                    <a href="{{ path('chantier_list') }}">Chantier</a>
+                </li>
+                <li class="breadcrumb-item active">
+                    <strong>Ajouter un chantier</strong>
+                </li>
+            </ol>
+        </div>
+    </div>
+{% endblock %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="ibox">
+                <div class="ibox-content">
+                    {{ include('chantier/_form.html.twig') }}
+
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+
+{% block javascript_script %}
+{% endblock %}
+
+{% block js_import %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js" integrity="sha512-T/tUfKSV1bihCnd+MxKD0Hm1uBBroVYBOYSk1knyvQ9VyZJpc/ALb4P0r6ubwVPSGB2GvjeoMAJJImBG12TiaQ==" crossorigin="anonymous"></script>
+    <script>
+        $( '.datepicker' ).datepicker( );
+    </script>
+    <script type="text/javascript">
+        $('.field-number').keyup(function () {
+            var content = $(this).val();
+            $(this).val(content.replace(/[\,]+/g, '.'));
+            $(this).val(content.replace(/[\ ]+/g, ''));
+        });
+    </script>
+{% endblock %}
+
+{% block javascript %}
+
+{% endblock %}

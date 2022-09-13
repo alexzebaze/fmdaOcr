@@ -1,0 +1,4 @@
+parameters:
+    locale: 'en'
+    google_api: '%env(GOOGLE_API)%'
+    ROSSUM_API_ENDPOINT: '%env(ROSSUM_API_ENDPOINT)%'

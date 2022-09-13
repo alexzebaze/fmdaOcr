@@ -1,0 +1,100 @@
+<style type="text/css">
+    #achat_devis{display:none}
+</style>
+
+{{ form_start(form) }}
+<div class="row">
+    <div class="col-lg-12 form-group ocr-field" data-field="document_id">
+        {{ form_label(form.document_id, 'Document ID') }}
+        {{ form_row(form.document_id) }}
+        <input type="hidden" name="field[document_id]" class="field_identite" value="{{ 'document_id' in fieldsIaZone|keys ? fieldsIaZone['document_id'] : ''}}">
+    </div>
+    <div class="col-lg-12 form-group ocr-field" data-field="facturedAt">
+        {{ form_label(form.facturedAt, 'Date création') }}
+        {{ form_row(form.facturedAt) }}
+        <input type="hidden" name="field[facturedAt]" class="field_identite"  value="{{'facturedAt' in fieldsIaZone|keys ? fieldsIaZone['facturedAt'] : ''}}">
+    </div>
+    <div class="col-lg-12 form-group ocr-field" data-field="dueAt">
+        {{ form_label(form.dueAt, 'Echeance') }}
+        {{ form_row(form.dueAt) }}
+        <input type="hidden" name="field[dueAt]" class="field_identite" value="{{'dueAt' in fieldsIaZone|keys ? fieldsIaZone['dueAt'] : ''}}">
+    </div>
+    <div class="col-lg-12 form-group ocr-field" data-field="prixttc">
+        {{ form_label(form.prixttc, 'Prix TTC') }}
+        {{ form_row(form.prixttc) }}
+        <input type="hidden" name="field[prixttc]" class="field_identite" value="{{'prixttc' in fieldsIaZone|keys ? fieldsIaZone['prixttc'] : ''}}">
+    </div> 
+    <div class="col-lg-12 form-group ocr-field" data-field="prixht">
+        {{ form_label(form.prixht, 'Prix HT') }}
+        {{ form_row(form.prixht) }}
+        <input type="hidden" name="field[prixht]" class="field_identite" value="{{'prixht' in fieldsIaZone|keys ? fieldsIaZone['prixht'] : ''}}">
+    </div>
+    <div class="col-lg-12 form-group ocr-field" data-field="tva">
+        {{ form_label(form.tva, 'TVA %') }}
+        {{ form_row(form.tva) }}
+        <input type="hidden" name="field[tva]" class="field_identite" value="{{'tva' in fieldsIaZone|keys ? fieldsIaZone['tva'] : ''}}">
+    </div>
+
+    <div class="col-lg-12 form-group ocr-field" data-field="fournisseur">
+        {{ form_label(form.fournisseur, 'Fournisseur') }}
+        {{ form_row(form.fournisseur) }}
+        <input type="hidden" name="field[fournisseur]" class="field_identite"  value="{{'fournisseur' in fieldsIaZone|keys ? fieldsIaZone['fournisseur'] : ''}}">
+    </div>
+
+    <input type="hidden" name="add_mode" value="{{add_mode is defined ? add_mode : ''}}">
+
+    <div class="col-lg-12 form-group ocr-field" data-field="chantier">
+        {{ form_label(form.chantier, 'Chantier') }}
+        {{ form_row(form.chantier) }}
+        <input type="hidden" name="field[chantier]" class="field_identite"  value="{{'chantier' in fieldsIaZone|keys ?  fieldsIaZone['chantier'] : ''}}">
+    </div>
+    <div class="col-lg-12 form-group ocr-field" data-field="lot">
+        {{ form_label(form.lot, 'Lot') }}
+        {{ form_row(form.lot) }}
+    </div>
+    <div class="col-lg-12 form-group">
+        <label>Note</label>
+        <textarea rows="6" class="form-control" name="note">{{devis_pro.note|raw}}</textarea>
+    </div>
+    <div class="col-lg-12 form-group">
+        {{ form_row(form.document_file) }}
+    </div>
+    <div class="col-lg-12 form-group ocr-field" data-field="code_compta">
+        {{ form_label(form.code_compta, 'Code Compta') }}
+        {{ form_row(form.code_compta) }}
+    </div>
+    <div class="col-lg-12 form-group">
+        <label>Status</label>
+        {{ form_row(form.status) }}
+    </div>
+    <div class="col-lg-12 form-group">
+        <label>Document</label>
+        <input type="file" name="document_file2" class="form-control" id="document_file2">
+    </div>
+
+    {% if ia_launch is defined and modelDocument is defined and modelDocument is not null %}
+        <input type="hidden" name="model_document_id" value="{{ modelDocument.id }}">
+    {% endif %}
+    <input type="hidden" name="nbr_page" value="{{ nbrPage is defined ? nbrPage : ''}}">
+
+    <div class="col-lg-12 form-group text-center" style="margin-top: 40px;">
+        <button class="btn btn-danger" name="submit" value="submit" style="margin-top: 5px;"> <i class="fa fa-plus"></i> {{ button_label|default('Enregistrer') }}</button>
+        {% if ia_launch is defined and modelDocument is defined and modelDocument is not null and score > 40 %}
+            <button class="btn btn-warning btn-ajuster" name="submit" value="ajuste_ia" style="margin-top: 5px;display: none;"> <i class="fa fa-adjust"></i> Ajuster</button>
+            <button class="btn btn-primary" name="submit" value="validate_ia" style="margin-top: 5px;"> <i class="fa fa-check"></i> Confirmer</button>
+        {% endif %}
+    </div>
+</div>
+{{ form_end(form) }}
+
+<script type="text/javascript">
+    $('form[name=achat]').attr('enctype', 'multipart/form-data');
+    {% if add_mode is defined and add_mode == "manuel" %}
+        $('form[name=achat]').attr('action', "{{path('devis_pro_add_manuel')}}");
+    {% endif %}
+
+    $('.field-number').keyup(function () {
+        var content = $(this).val();
+        $(this).val(content.replace(/[\,]+/g, '.'));
+    });
+</script>

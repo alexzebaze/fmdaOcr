@@ -1,0 +1,23 @@
+<ul class="nav navbar-top-links navbar-right">
+    <li class="dropdown">
+        <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+            Choisir societé
+        <span class="caret"></span>
+        </button>
+        <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+            {% if app.user.role == "administrateur" %}
+                <li>
+                        <a href="javascript:void()" class="openEntrepriseModal">
+                        <span>Changer de Société</span> &nbsp <i class="fal fa-chevron-right"></i>
+                        </a>
+                </li>
+                <li role="separator" class="divider"></li>
+            {% endif %}
+            <li>
+                <a href="{{ path('security_logout') }}">
+                    <i class="fa fa-sign-out"></i> Déconnexion
+                </a>
+            </li>
+        </ul>
+    </li>
+</ul>

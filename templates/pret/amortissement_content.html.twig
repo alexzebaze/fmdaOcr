@@ -1,0 +1,58 @@
+<div class="totaux" style="margin-bottom: 39px;">
+<h2 style="    text-align: center;
+    font-weight: bold;">Capital restant dû: {{sumCapitalRestantDu}}</h2>
+</div>
+
+<div class="table-responsive">
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Type Evénement</th>
+                <th>No d'échéance</th>
+                <th>Capital restant dû</th>
+                <th>Capital remboursé</th>
+                <th>Intérêts</th>
+                <th>Assurance</th>
+                <th>Mensualité avec assurance</th>
+                <th>Cumul des intérêts</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>{{pret.getDateDeblocage ? pret.getDateDeblocage|date('d/m/Y') : "" }}</td>
+                <td>Déblocage </td>
+                <td></td>
+                <td>{{pret.montantDeblocage|number_format(2, ',', ' ')}}</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+        {% for amortissement in amortissements %}
+            <tr>
+                <td>{{amortissement.date ? amortissement.date|date('d/m/Y') : "" }}</td>
+                <td>
+                    {% if amortissement.capital_rembourse == 0  %}
+                        Échéance franchise
+                    {% else %}
+                        Echéance d'amortissement
+                    {% endif %}
+                </td>
+                <td>{{amortissement.num_echeance}}</td>
+                <td>{{amortissement.capital_restant_du|number_format(2, ',', ' ')}}</td>
+                <td>{{amortissement.capital_rembourse|number_format(2, ',', ' ')}}</td>
+                <td>{{amortissement.interet|number_format(2, ',', ' ')}}</td>
+                <td>{{amortissement.assurance|number_format(2, ',', ' ')}}</td>
+                <td>{{amortissement.mensualite_avec_assurance|number_format(2, ',', ' ')}}</td>
+                <td>{{amortissement.cumul_interet|number_format(2, ',', ' ')}}</td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="22">Aucun enregistrement</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>

@@ -1,0 +1,84 @@
+
+<style type="text/css">
+    .rounded-img {
+        border-radius: 50%;
+        position: relative;
+        z-index: 1;
+        width: 40px;
+        height: 40px;
+        object-fit: cover;
+        transition: easy 0.4s all;
+    }
+</style>
+
+
+
+<div style="text-align: right;padding: 0 17px">
+    <form method="post" action="{{ path('article_delete', {'id': article.id}) }}" onsubmit="return confirm('Confirmez-vous la suppression?');" style="display: inline-block;">
+        <input type="hidden" name="_method" value="DELETE">
+        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ article.id) }}">
+        <button class="btn btn-danger"><i class="fa fa-trash"></i> Supprimer</button>
+    </form>
+</div>
+<table class="table">
+    <thead>
+        <tr>
+            <th colspan="5" class="text-center">DEVIS CLIENTS</th>
+        </tr>
+        <tr>
+            <th>Client</th>
+            <th>Chantier</th>
+            <th>Date</th>
+            <th>Total HT</th>
+            <th>Total TTC</th>
+        </tr>
+    </thead>
+    <tbody>
+
+        {% for docu in docus %}
+            {% set docu = docu.entdocu %}
+            <tr>
+                <td>{{docu.getClient ? docu.getClient.nom : ''}}</td>
+                <td>{{docu.chantier ? docu.chantier.nameentreprise : ''}}</td>
+                <td>{{docu.getCreateAt|date('d/m/Y')}}</td>
+                <td>{{docu.getTotalHt}}</td>
+                <td>{{docu.getTotalTtc}}</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th colspan="6" class="text-center">NORMENCLATURES</th>
+        </tr>
+        <tr>
+            <th></th>
+            <th>Libelle</th>
+            <th>Prix d'achat</th>
+            <th>Prix vente HT</th>
+            <th>Qte</th>
+            <td>Unite</td>
+        </tr>
+    </thead>
+    <tbody>
+
+        {% for normenclature in normenclatures %}
+            {% set article = normenclature.getArticleReference %}
+            <tr>
+                <td>
+                    {% if article.image %}
+                        <img data-file="/uploads/article/{{article.image}}" src="/uploads/article/{{article.image}}" class="showDocument rounded-img">
+                    {% endif %}
+                </td>
+                <td>{{normenclature.libelle}}</td>
+                <td>{{article.prixAchat}}</td>
+                <td>{{article.getPrixVenteHt}}</td>
+                <td>{{normenclature.qte}}</td>
+                <td>{{normenclature.unite}}</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+

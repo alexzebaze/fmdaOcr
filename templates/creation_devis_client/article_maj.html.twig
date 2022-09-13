@@ -1,0 +1,67 @@
+
+
+<style type="text/css">
+    .update-value{color: red}
+</style>
+
+
+
+<div class="table-responsive">
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Code article</th>
+                <th>Libelle</th>
+                <th>Article PA</th>
+                <th>Devis PA</th>
+                <th>Article PVHT</th>
+                <th>Devis PVHT</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for docu in docus %}  
+                {% set article = docu.docu.getArticle %}              
+                <tr style="background: #dadbdbb0">
+                    <td>{{article.code}}</td>
+                    <td>{{article.libelle}}</td>
+                    <td>{{article.prixAchat}}</td>
+                    <td style="{% if docu.docu.prixAchat|round(0, 'floor') != article.prixAchat|round(0, 'floor')  %}color: red;{% endif %}">
+                        {{docu.docu.prixAchat}}
+                    </td>
+                    <td>
+                        <div>
+                            <span>{{article.prixVenteHt}}</span>    
+                        </div>
+                    </td>
+                    <td style="{% if docu.docu.pvht|round(0, 'floor') != article.prixVenteHt|round(0, 'floor')  %}color: red;{% endif %}">
+                        {{docu.docu.pvht}}
+                    </td>
+                    <td>
+                        {% if docu.docu.prixAchat|round(0, 'floor') != article.prixAchat|round(0, 'floor')  %}
+                            <span class="btn" onclick="refreshDocuMaj(this, {{docu.docu.id}})"><i class="fa fa-solid fa-retweet"></i></span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% for normenclature in docu.normenclatures %}
+                    <tr>
+                        <td><i class="fa fa-minus"></i>&nbsp &nbsp{{normenclature.codeArticle}}</td>
+                        <td>{{normenclature.libelle}}</td>
+                        <td style="{% if normenclature.prixAchat|round(0, 'floor') != normenclature.articleReference.prixAchat|round(0, 'floor')  %}color: red;{% endif %}">
+                            {{normenclature.prixAchat}}
+                        </td>
+                        <td>{{normenclature.articleReference.prixAchat}}</td>
+                        <td style="{% if normenclature.prixVente|round(0, 'floor') != normenclature.articleReference.prixVenteHt|round(0, 'floor')  %}color: red;{% endif %}">
+                            {{normenclature.prixVente}}
+                        </td>
+                        <td>{{normenclature.articleReference.prixVenteHt}}</td>
+                        <td></td>
+                    </tr>
+                {% endfor %}
+            {% endfor %}
+        </tbody>
+    </table>
+
+
+</div>

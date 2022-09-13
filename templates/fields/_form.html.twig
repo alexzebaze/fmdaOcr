@@ -1,0 +1,36 @@
+<style type="text/css">
+
+</style>
+
+{{ form_start(form) }}
+<div class="col-lg-12">
+    <div class="ibox">
+        <div class="ibox-content">
+            <div class="row">
+                <div class="col-lg-12 form-group">
+                    {{ form_label(form.cle, 'Cle') }}
+                    {{ form_row(form.cle) }}
+                </div>
+                <div class="col-lg-12 form-group">
+                    <label style="display: block;">Page</label>
+                    <select class="js-example-basic-multiple" name="pages[]" multiple="multiple" style="width: 100%">
+                        {% for page in pages %} 
+                        <option value="{{page.id}}" {% if pagesField is defined and page in pagesField %}selected{% endif %}>{{page.libelle}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+
+            <div class="row">
+            	<div class="col-lg-12 form-group text-center" style="margin-top: 15px;">
+                    <button class="btn btn-primary">{{ button_label|default('Enregistrer') }}</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{{ form_end(form) }}
+<script type="text/javascript">
+
+</script>

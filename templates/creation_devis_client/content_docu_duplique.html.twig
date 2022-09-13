@@ -1,0 +1,200 @@
+{% for document in documents %}
+
+<div class="ui-state-default group-docu-item document-row section{{section}} {% if document.type == 'sous_total' %}sous-total-row{% endif %}" data-section="{{section}}" data-row-id="{{document.id}}" id="rowId{{document.id}}">
+
+    {% if document.type == 'docu' %}
+    <div class="docu-container-row">
+        <div class="docu-content-row-val">
+            <div style="padding: 5px 10px" class="check-docu-container">
+                <input type="checkbox" class="check-docu" name="docuCheck" value="{{document.id}}" style="width: 25px;height: 18px;">
+            </div>
+            <div class="form-group" style="width: 70px">
+                <input type="text" name="documentsEdit[{{document.id}}][code]" data-field="code" class="form-control field field-code" readonly value="{{document.article is not null ? document.article.code : ''}}">
+            </div>
+            <div class="form-group" style="position: relative;flex: 1; min-width: 130px">
+                <div class="cover-article" id="cover-article{{document.id}}" data-row-id="{{document.id}}">
+                    {% if document.article is not null and document.article.type == 2 %}
+                    <span class="btn-drop-normenclature" data-field="article" onclick="displayNormenclature('{{document.article.id}}')">
+                        <i class="fa fa-solid fa-chevron-down"></i>
+                    </span>
+                    {% endif %}
+
+                    <input type="text" name="documentsEdit[{{document.id}}][libelle]" id="autoSearchArticle{{document.id}}" class="autoSearchArticle form-control field field-libelle" value="{% if  document.libelle %}{{document.libelle}}{% elseif document.article is not null %}{{document.article.libelle}}{% endif %}" data-field="article" data-row-id="{{document.id}}" style="padding-left: 20px;>
+                </div>
+                <!-- <div class="article-container">
+                    {% if document.article and document.article.image %}
+                        <img data-file="/uploads/article/{{document.article.image}}" src="/uploads/article/{{document.article.image}}" class="showDocument rounded-img">
+                    {% endif %} -->
+                    <select required class="form-control field articlefield" name="documentsEdit[{{document.id}}][article]" data-field="article" data-row-id="{{document.id}}" 
+
+                    style="height: 34px;>
+                        {% for art in articles %}
+                            <option value="{{art.id}}" {% if document.article and art.id == document.article.id %}selected{% endif %}>{{art.libelle}}</option>
+                        {% endfor %}
+                    </select>
+                    <input type="hidden" data-row-id="{{document.id}}" name="styleEdit[{{document.id}}][article][gras]" class="form-control style-article article-gras" value="">
+                    <input type="hidden" data-row-id="{{document.id}}" name="styleEdit[{{document.id}}][article][color]" data-field="article" class="form-control style-article article-color" value="">
+                    <input type="hidden" data-row-id="{{document.id}}" name="styleEdit[{{document.id}}][article][bg]" data-field="article" class="form-control style-article article-bg" value="">
+                <!-- </div> -->
+            </div>
+            <div class="form-group" style="width: 120px;">
+                <select name="documentsEdit[{{document.id}}][type_article]" data-field="type_article" class="form-control field disabled field-type_article" value="{{document.typeArticle}}">
+                    {% for key,type in typeArt %} 
+                        <option value="{{key}}" {% if key == document.typeArticle %}selected{% endif %}>{{type}}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group" style="width: 60px;">
+                <input type="text" data-row-id="{{document.id}}" name="documentsEdit[{{document.id}}][qte]" data-field="qte" class="form-control field-qte change_ht_doc field" value="{{document.qte}}">
+
+                <input type="hidden" data-row-id="{{document.id}}" name="styleEdit[{{document.id}}][qte][gras]" class="form-control style-qte qte-gras" value="">
+            </div>
+            <div class="form-group unite-container" style="width: 75px;">
+                <input type="text" data-row-id="{{document.id}}" name="documentsEdit[{{document.id}}][unite]" data-field="unite" class="form-control field-unite field" data-field="unite" value="{{document.unite}}">
+
+                <input type="hidden" data-row-id="{{document.id}}" name="styleEdit[{{document.id}}][unite][gras]" class="form-control style-unite unite-gras" value="">
+            </div>
+            <div class="form-group" style="width: 90px;">
+                <input type="text" readonly name="documentsEdit[{{document.id}}][prixAchat]" data-field="prixAchat" class="form-control field field-prixAchat change_ht_doc field-number" value="{{document.article ? document.article.prixAchat : ''}}" data-row-id="{{document.id}}">
+            </div>
+            <div class="form-group" style="width: 80px;">
+
+                {% set marge = document.pvht ? document.pvht : 0 %} 
+                {% set marge = (document.article and document.article.prixAchat) ? (marge - document.article.prixAchat) : marge %} 
+
+                {% if document.pvht != 0 %}
+                    {% set marge_percent = (marge/document.pvht)*100 %}
+                {% else %}
+                    {% set marge_percent = 0 %}
+                {% endif %}
+
+                <input type="text" name="documentsEdit[{{document.id}}][marge_percent]" data-field="marge_percent" class="form-control field field-marge_percent change_ht_doc field-number" value="{{marge_percent|number_format(2, '.', '')}}" data-row-id="{{document.id}}" style="{% if marge_percent <= 30  %}color: red;{% else %}color: #0caf0c{% endif %};font-weight: bold;">
+            </div>
+            <div class="form-group" style="width: 80px;">
+                <input type="text" name="documentsEdit[{{document.id}}][marge]" data-field="marge" class="form-control field field-marge change_ht_doc field-number" value="{{marge|number_format(2, '.', '')}}" data-row-id="{{document.id}}">
+            </div>
+            <div class="form-group" style="width: 90px;">
+                <input type="text" name="documentsEdit[{{document.id}}][pvht]" data-field="pvht" class="form-control field field-pvht change_ht_doc field-number" value="{{document.pvht}}" data-row-id="{{document.id}}"
+                >
+
+                <input type="hidden" data-row-id="{{document.id}}" name="styleEdit[{{document.id}}][pvht][gras]" class="form-control style-pvht pvht-gras" value="">
+            </div>
+            <div class="form-group" style="width: 90px;">
+                <input type="text" name="documentsEdit[{{document.id}}][total_ht]" class="form-control field total_ht field-number" data-field="total_ht" value="{{document.totalHt}}" data-row-id="{{document.id}}"
+                >
+
+                <input type="hidden" data-row-id="{{document.id}}" name="styleEdit[{{document.id}}][total_ht][gras]" class="form-control style-total_ht total_ht-gras" value="">
+            </div>
+            <div class="form-group" style="width:70px;">
+                <select class="form-control tvaField field change_ht_doc" data-field="tva" data-row-id="{{document.id}}" name="documentsEdit[{{document.id}}][tva]"
+               >
+
+                    {% for tva in tvas %}
+                        <option value="{{tva.id}}" {% if document.tva and tva.id == document.tva.id %}selected{% endif %}>{{tva.valeur}}</option>
+                    {% endfor %}
+                </select>
+
+                <input type="hidden" data-row-id="{{document.id}}" name="styleEdit[{{document.id}}][tva][gras]" class="form-control style-tva tva-gras" value="">
+            </div>
+            <div class="form-group" style="width: 70px;">
+                <input type="text" name="documentsEdit[{{document.id}}][remise]" data-field="remise" data-row-id="{{document.id}}" class="form-control field field-remise change_ht_doc field-number" value="{{document.remise}}"
+                >
+
+                <input type="hidden" name="documentsEdit[{{document.id}}][rang]" data-field="rang" class="field-rang field" data-row-id="{{document.id}}" value="{{document.rang}}">
+
+                <input type="hidden" data-row-id="{{document.id}}" name="styleEdit[{{document.id}}][remise][gras]" class="form-control style-remise remise-gras" value="">
+            </div>
+
+        </div>
+        <div class="form-group" style="width: 100px;">
+            <div style="display: flex;align-items: center;justify-content: flex-start;">
+                <span class="close-row btn" style="color: red;" onclick="removeRow({{document.id}})">X</span>
+                <span class="comment-row btn" onclick="openModalSaveArticle({{document.id}})">
+                    <i class="fas fa-save"></i>
+                </span>
+                {% if document.article is not null %}
+                    <a class="comment-row btn" target="_blank" href="{{path('article_edit', {'id':document.article.id})}}" style="color: #676a6c">
+                        <i class="fa fa-external-link" aria-hidden="true"></i>
+                    </a>
+                {% endif %}
+                <span class="comment-row btn">
+                    <i class="fa fa-arrows"></i>
+                </span>
+            </div>
+        </div>
+    </div>
+    
+    {% elseif document.type == 'sous_total' %}
+    <div class="docu-container-row">
+        <div style="padding: 5px 10px" class="check-docu-container">
+            <input type="checkbox" class="check-docu" name="docuCheck" value="{{document.id}}" style="width: 25px;height: 18px; pointer-events: auto;">
+        </div>
+        <div class="docu-content-row-val sous-total-row">
+            <div class="form-group" style="position: relative;flex: 1; min-width: 130px">
+                <input type="text" class="form-control" value="SOUS TOTAUX">
+            </div>
+            <div class="form-group" style="width: 90px;">
+                <input type="text" name="sousTotauxEdit[{{document.id}}][prixAchat]" class="form-control sst_pa" value="{{document.prixAchat}}" data-row-id="{{document.id}}" style="pointer-events: auto;">
+            </div>
+            <div class="form-group" style="width: 80px;">
+                 <input type="text" class="form-control sst_marge_percent" value="" data-row-id="{{document.id}}" style="pointer-events: auto;">
+            </div>
+            <div class="form-group" style="width: 80px;">
+                <input type="text" name="sousTotauxEdit[{{document.id}}][marge]" class="form-control sst_marge" value="{{document.marge}}" data-row-id="{{document.id}}" style="pointer-events: auto;">
+            </div>
+            <div class="form-group" style="width: 90px;">
+                 <input type="text" name="sousTotauxEdit[{{document.id}}][pvht]" class="form-control sst_pvht" value="{{document.pvht}}" data-row-id="{{document.id}}" style="pointer-events: auto;">
+            </div>
+            <div class="form-group" style="width: 90px;">
+                 <input type="text" name="sousTotauxEdit[{{document.id}}][total_ht]" class="form-control sst_totalht" value="{{document.totalHt}}" data-row-id="{{document.id}}" style="pointer-events: auto;">
+            </div>
+            <div class="form-group" style="width:70px;">
+                <input type="text" value="" class="form-control">
+            </div>
+            <div class="form-group" style="width:70px;">
+                <input type="text" value="" class="form-control">
+
+                <input type="hidden" name="sousTotauxEdit[{{document.id}}][rang]" data-field="rang" class="field-rang field" data-row-id="{{document.id}}" value="{{document.rang}}">
+            </div>
+
+        </div>
+        <div class="form-group" style="width:100px;">
+            <div style="display: flex;align-items: center;justify-content: flex-start;">
+                <span class="close-row btn" style="color: red;" onclick="removeRow({{document.id}})">X</span>
+                <span class="comment-row btn">
+                    <i class="fa fa-arrows"></i>
+                </span>
+            </div>
+        </div>
+    </div>
+    {% set section = section + 1 %}
+
+    {% elseif document.type == 'line' %}
+    <div class="docu-container-row">
+        <div class="docu-content-row-val">
+            <!-- commentaire texte -->
+            <div style="padding: 5px 10px" class="check-docu-container">
+                <input type="checkbox" class="check-docu" name="docuCheck" value="{{document.id}}" style="width: 25px;height: 18px;">
+            </div>
+            <div class="form-group commentaire-container" id="commentaire{{document.id}}" style="flex: 1">
+                <textarea rows="1" name="commentairesEdit[{{document.id}}][commentaire]" class="form-control field cc" placeholder="commentaire" data-field="commentaire" data-row-id="{{document.id}}"
+            >{{document.commentaire}}</textarea>
+
+                <input type="hidden" name="commentairesEdit[{{document.id}}][rang]" data-field="rang" class="field-rang field" data-row-id="{{document.id}}" value="{{document.rang}}">
+
+                <input type="hidden" data-row-id="{{document.id}}" name="styleEdit[{{document.id}}][commentaire][gras]" class="form-control style-commentaire commentaire-gras" value="">
+            </div>
+        </div>
+        <div class="form-group" style="width:100px;">
+            <div style="display: flex;align-items: center;justify-content: flex-start;">
+                <span class="close-row btn" style="color: red;" onclick="removeRow({{document.id}})">X</span>
+                <span class="comment-row btn">
+                    <i class="fa fa-arrows"></i>
+                </span>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+{% endfor %}

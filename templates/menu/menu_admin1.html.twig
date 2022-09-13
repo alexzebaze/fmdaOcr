@@ -1,0 +1,32 @@
+
+
+<nav class="navbar-default navbar-static-side" role="navigation">
+    <div class="sidebar-collapse">
+        <ul class="nav metismenu">
+            <li class="nav-header">
+                <div class="profile-element">
+                    <a href="{{path('home')}}">
+                        {% if app.session.get('entreprise_session_logo') %}
+                            <img alt="FDMA" class="main-logo img-fluid" src="/logo/{{app.session.get('entreprise_session_logo')}}">
+                        {% else %} 
+                            <img src="{{ asset('images/logo-admin.png') }}"  alt="FDMA" class="main-logo img-fluid">
+                        {% endif %}
+                    </a>
+                </div>
+                <div class="logo-element">
+                    FDMA
+                </div>
+            </li>
+
+            <li class="menu-item menu-admin-configuration">
+                <a href="#"><i class="fas fa-cog"></i> <span class="nav-label">Configuration Admin</span> <span class="fa arrow"></span></a>
+                <ul class="sub-nav nav nav-second-level collapse">
+                    <li><a href='{{path("entreprise_index")}}'>Entreprises</a></li>
+                    <li><a href='{{path("admin_list")}}'>Adminstrateurs</a></li>
+                    <li><a href='{{path("menu_index")}}'>Menu</a></li>
+                    <li><a href='{{path("version_list")}}'>Version</a></li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+</nav>

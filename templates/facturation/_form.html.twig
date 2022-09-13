@@ -1,0 +1,496 @@
+{{ form_start(form, {'attr': {'class': 'formAchat', 'autocomplete': 'off'}}) }}
+<style type="text/css">
+    input[type=checkbox]{
+        border: 0px;
+        width: 22px;
+        height: 2em;
+        margin-right: 8px;
+    }
+    .tva-val{
+        margin-left: 9px;
+        background: gray;
+        color: #fff;
+        border-radius: 2px;
+        font-size: 11px;
+        padding: 3px 7px;
+        cursor: pointer;
+    }
+</style>
+
+{% set ttc_ht = '' %}
+{% if entity is defined and entity.prixttc %}
+    {% set ttc_ht = 'ttc' %}
+{% elseif entity is defined and entity.prixht %}
+    {% set ttc_ht = 'ht' %}
+{% endif %}
+
+<div class="row">
+    <div class="col-lg-12 form-group ocr-field" data-field="document_id">
+        {{ form_label(form.document_id, 'Document ID') }}
+        {{ form_row(form.document_id) }}
+        <input type="hidden" name="field[document_id]" class="field_identite" value="{{ 'document_id' in fieldsIaZone|keys ? fieldsIaZone['document_id'] : ''}}">
+    </div>
+    <div class="col-lg-12 form-group ocr-field" data-field="facturedAt">
+        {{ form_label(form.facturedAt, 'Date création') }}
+        <div style="display: flex;align-items: center;">
+            <div style="flex: 1">{{ form_row(form.facturedAt) }}</div>
+            <span class="btn btn-primary findDate" style="margin-left: 6px">
+                <i class="fa fa-search"></i>
+            </span>
+        </div>
+        <input type="hidden" name="field[facturedAt]" class="field_identite"  value="{{'facturedAt' in fieldsIaZone|keys ? fieldsIaZone['facturedAt'] : ''}}">
+    </div>
+    <div class="col-lg-12 form-group ocr-field" data-field="dueAt">
+        {{ form_label(form.dueAt, 'Echeance') }}
+        {{ form_row(form.dueAt) }}
+        <input type="hidden" name="field[dueAt]" class="field_identite" value="{{'dueAt' in fieldsIaZone|keys ? fieldsIaZone['dueAt'] : ''}}">
+    </div>
+    <div class="col-lg-12 form-group ocr-field" data-field="prixttc">
+        {{ form_label(form.prixttc, 'Prix TTC') }}
+        {{ form_row(form.prixttc) }}
+        <input type="hidden" name="field[prixttc]" class="field_identite" value="{{'prixttc' in fieldsIaZone|keys ? fieldsIaZone['prixttc'] : ''}}">
+    </div> 
+
+    {% if tvaVal is defined %}
+    <div class="col-lg-12 form-group">
+        <label>TAUX TVA</label>
+        <div style="display: flex;align-items: center;">
+            <div style="color: {{color}}; font-weight: bold;">{{tvaVal}}</div>
+            <span class="tva-val" data-tva="5.5">5.5%</span>
+            <span class="tva-val"data-tva="10">10%</span>
+            <span class="tva-val" data-tva="20">20%</span>
+        </div>
+    </div>
+    {% endif %}
+
+    <div class="col-lg-12 form-group ocr-field" data-field="prixht">
+        {{ form_label(form.prixht, 'Prix HT') }}
+        {{ form_row(form.prixht) }}
+        <input type="hidden" name="field[prixht]" class="field_identite" value="{{'prixht' in fieldsIaZone|keys ? fieldsIaZone['prixht'] : ''}}">
+    </div>
+    <div class="col-lg-12 form-group ocr-field" data-field="tva" style="display: none;">
+        {{ form_label(form.tva, 'TVA %') }}
+        {{ form_row(form.tva) }}
+        <input type="hidden" name="field[tva]" class="field_identite" value="{{'tva' in fieldsIaZone|keys ? fieldsIaZone['tva'] : ''}}">
+    </div>
+
+    <div class="col-lg-12 form-group ocr-field" data-field="fournisseur">
+        {{ form_label(form.fournisseur, 'Fournisseur') }}
+
+        <div style="display: flex;align-items: center;">
+            <div class="fournisseur-select">
+                {{ form_row(form.fournisseur) }}
+
+            </div>
+            <span class="btn btn-primary" onclick="openModalFournisseurAdd()" style="margin-left: 6px">
+                <i class="fa fa-plus"></i>
+            </span>
+            <span class="btn btn-primary findFournisseur" style="margin-left: 6px">
+                <i class="fa fa-search"></i>
+            </span>
+        </div>
+
+        <input type="hidden" name="field[fournisseur]" class="field_identite"  value="{{'fournisseur' in fieldsIaZone|keys ? fieldsIaZone['fournisseur'] : ''}}">
+    </div>
+
+    <input type="hidden" name="add_mode" value="{{add_mode is defined ? add_mode : ''}}">
+
+
+    <div class="col-lg-12 form-group ocr-field" data-field="chantier">
+        {{ form_label(form.chantier, 'Chantier') }}
+
+        <div style="display: flex;">
+            {{ form_row(form.chantier) }}
+            <input type="hidden" name="field[chantier]" class="field_identite"  value="{{'chantier' in fieldsIaZone|keys ?  fieldsIaZone['chantier'] : ''}}">
+            <span class="btn btn-primary findChantier" style="margin-left: 6px">
+                <i class="fa fa-search"></i>
+            </span>
+        </div>
+    </div>
+    <div class="col-lg-12 form-group ocr-field devis-wrapper" data-field="devis">
+        {{ form_label(form.devis, 'Devis') }}
+        {{ form_row(form.devis) }}
+    </div>
+    <div class="col-lg-12 form-group ocr-field" data-field="lot">
+        {{ form_label(form.lot, 'Lot') }}
+        {{ form_row(form.lot) }}
+    </div>
+    <div class="col-lg-12 form-group ocr-field status-wrapper" data-field="status" style="display: none;">
+        {{ form_label(form.status, 'Status') }}
+        {{ form_row(form.status) }}
+    </div>
+    <div class="col-lg-12 form-group ocr-field" data-field="code_compta">
+        {{ form_label(form.code_compta, 'Code Compta') }}
+        {{ form_row(form.code_compta) }}
+    </div>
+    <div class="col-lg-12 form-group">
+        {{ form_row(form.document_file) }}
+    </div>
+    <div class="col-lg-12 form-group">
+        <label>Document</label>
+        <input type="file" name="document_file2" class="form-control" id="document_file2">
+    </div>
+
+    {% if ia_launch is defined and modelDocument is defined and modelDocument is not null %}
+        <input type="hidden" name="model_document_id" value="{{ modelDocument.id }}">
+    {% endif %}
+    <input type="hidden" name="nbr_page" value="{{ nbrPage is defined ? nbrPage : ''}}">
+
+    <div>
+        <div class="col-lg-12 form-group">
+            <label style="font-size: 18px;margin-top: 9px;display: flex;align-items: center; "><input type="checkbox" name="automatique" value="1" {% if facturation is defined and facturation.automatique %}checked{% endif %}> Automatique</label>
+        </div>
+        <div class="col-lg-12 form-group repetition-container" style="padding-left: 56px;display: none;">
+
+            <label>Periode <span style="color: red">*</span></label>
+            <select class="form-control" name="periode">
+                <option value="1">Mensuel</option>
+                <option value="3">Trimestriel</option>
+                <option value="12">Annuel</option>
+            </select>
+
+            <br>
+            <label>jour <span style="color: red">*</span></label>
+            <input type="number" name="jour_generate" class="form-control" value="1">
+
+            <br>
+            <div class="form-group">
+                <label>Date de fin</label>
+            <input type="date" name="due_generate" value="{{facturation.getDueDateGenerate ? facturation.getDueDateGenerate|date('Y-m-d') : ''}}" class="form-control datepicker">
+            </div>
+        </div>
+    </div>
+    
+
+    <div class="col-lg-12 form-group text-center" style="padding: 0">
+        <button class="btn btn-danger" name="submit" value="submit" style="margin-top: 5px;"> <i class="fa fa-plus"></i> {{ button_label|default('Enregistrer') }}</button>
+        {% if ia_launch is defined and modelDocument is defined and modelDocument is not null and score > 40 %}
+            <button class="btn btn-warning btn-ajuster" name="submit" value="ajuste_ia" style="margin-top: 5px;display: none;"> <i class="fa fa-adjust"></i> Ajuster</button>
+            <button class="btn btn-primary" name="submit" value="validate_ia" style="margin-top: 5px;"> <i class="fa fa-check"></i> Confirmer</button>
+        {% endif %}
+    </div>
+</div>
+{{ form_end(form) }}
+
+<div class="modal fade bs-example-modal-lg" id="modalAddFournisseur" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">Ajout fournisseur</h4>
+            </div>
+
+            <div class="modal-body">
+                <div class="modal-container row"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade modal-chantier-suggession" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog modal-sm" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myModalLabel">Chantiers suggeres</h4>
+      </div>
+      <div class="modal-body">
+            <ul class="chantier-list">
+            </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script type="text/javascript">
+
+    $(function(){
+        var ttc_ht = {{ ttc_ht|json_encode()|raw }};
+        
+        $(document).on('click', '.tva-val', function(){
+            let tva = $(this).attr('data-tva');
+            if($('#achat_prixttc').val() == "" && !isNaN(parseFloat($('#achat_prixht').val()))){
+                let ttc = parseFloat($('#achat_prixht').val())*(tva/100)+parseFloat($('#achat_prixht').val());
+                $('#achat_prixttc').val(ttc.toFixed(2));
+            }
+            else if($('#achat_prixht').val() == "" && !isNaN(parseFloat($('#achat_prixttc').val()))){
+                let ht = parseFloat($('#achat_prixttc').val())/(1+(tva/100));
+                $('#achat_prixht').val(ht.toFixed(2));
+            }            
+        })
+    
+
+        {% if chantierfound is defined %}
+            var chantierfound = {{ chantierfound|json_encode()|raw }};
+            if(chantierfound.length >= 2){
+                CHANTIER_ELT = "";
+                $.each( chantierfound, function( index, value ) {
+                    CHANTIER_ELT += '<li>'+
+                        '<label>'+
+                            '<input type="radio" name="chantierSuggession" value="'+value.id+'" style="display: none;">'+value.name
+                        '</label>'+
+                    '</li>';
+                });
+
+                $('.modal-chantier-suggession').modal('show');
+                $('.modal-chantier-suggession .chantier-list').html(CHANTIER_ELT);
+            }
+
+        {% endif %}
+
+    })
+
+    $('form[name=achat]').attr('enctype', 'multipart/form-data');
+    $('form[name=achat]').attr('action', "{{path('facturation_add_manuel')}}");
+
+    $('input[name=automatique]:checkbox').change(
+      function(){
+        if ($(this).is(':checked')) {
+            $('.repetition-container').css('display', 'block');
+        }
+        else{
+          $('.repetition-container').css('display', 'none');
+          $('input[name=duree]').val('');
+        }
+    });
+    $('.field-number').keyup(function () {
+        var content = $(this).val();
+        $(this).val(content.replace(/[\,]+/g, '.'));
+    });
+
+    $(document).on('click', 'form[name=fournisseurs] .submit', function(){
+        $('form[name=fournisseurs]').submit();
+    })
+
+    $(document).on("submit",'form[name=fournisseurs]', function(ev){
+
+
+        ev.preventDefault();
+        
+        var form = document.forms.namedItem("fournisseurs");
+        
+        $('form[name=fournisseurs] .submit').css('pointer-events', 'none');
+        $.ajax({
+            type: "POST",
+            url: form.getAttribute('action'),
+            data: new FormData(this),
+            dataType: 'json',
+            contentType: false,
+            cache: false,
+            processData:false,
+            success: function(response, status) {
+                $("#modalAddFournisseur").modal("hide");
+                if(response.status == 200){
+                    $fournisseurSelect = '<select id="achat_fournisseur" name="achat[fournisseur]" class="form-control select2">';
+                    $.each(response.fournisseurs, function( index, value ) {
+                        $fournisseurSelect += "<option value='"+value.id+"'>"+value.nom+"</option>";
+                    });
+                    $fournisseurSelect += "</select>";
+
+                    $('.fournisseur-select').html($fournisseurSelect);
+                    $('#achat_fournisseur option[value='+response.fournisseur_id+']').attr('selected',true);
+                    $('.select2').select2();
+
+                    $('#modalAddFournisseur').modal('hide');
+
+                }
+                else if(response.status == 500){
+                    toastr.error(response.message);
+                }
+                $('form[name=fournisseurs] .submit').css('pointer-events', 'auto');
+            },
+            error: function(xhr, textStatus, errorThrown) {
+                toastr.error("Oops, une erreur s'est produite");
+                $('form[name=fournisseurs] .submit').css('pointer-events', 'auto');
+            }
+        });
+    })
+
+
+    $(function() {
+        {% if dossier is defined and lastOcrFile %}
+            $(document).on('click', '.findFournisseur', function(){
+                $.ajax({
+                    url: "{{path('fournisseur_find')}}",
+                    type: "GET",
+                    dataType: "json",
+                    async: true,
+                    data: {
+                        dossier: "{{dossier}}",
+                        filename: "{{lastOcrFile}}",
+                        fournisseur: $('#achat_fournisseur option:selected').text()
+                    },
+                    success: function(response, status) {
+                       if(response.fournisseurs.length > 0){
+                            toastr.success('Le fournisseur a été trouvé');
+                            var FOURNISSEUR_SELECT = "";
+                            $.each( response.fournisseurs, function( index, value ) {
+                                FOURNISSEUR_SELECT += '<option value="'+value.id+'">'+value.name+'</option>';
+                                if(index == 0){
+                                    $('#achat_fournisseur').val(value.id);
+                                    console.log(value.id);
+                                }
+                            });
+                            $('#fournisseurSuggere').html(FOURNISSEUR_SELECT); 
+                        }
+                        if(response.count == 1){
+                            toastr.success("Fournisseurs trouvés");
+                        }
+                        else
+                            toastr.error("Fournisseurs non trouvés");  
+                    },
+                    error: function(xhr, textStatus, errorThrown) {
+                        toastr.error("Oops, une erreur s'est produite");
+                    }
+                });        
+            })        
+
+            $(document).on('click', '.findChantier', function(){
+                $.ajax({
+                    url: "{{path('chantier_find')}}",
+                    type: "GET",
+                    dataType: "json",
+                    async: true,
+                    data: {
+                        dossier: "{{dossier}}",
+                        filename: "{{lastOcrFile}}",
+                        chantier: $('#achat_chantier option:selected').text()
+                    },
+                    success: function(response, status) {
+                        var CHANTIER_ELT =  "";
+                       if(response.chantiers.length > 0){
+                            toastr.success('Le fournisseur a été trouvé');
+                            var CHANTIER_SELECT = "";
+                            $.each( response.chantiers, function( index, value ) {
+                                CHANTIER_SELECT += '<option value="'+value.id+'">'+value.name+'</option>';
+                                CHANTIER_ELT += '<li>'+
+                                    '<label>'+
+                                        '<input type="radio" name="chantierSuggession" value="'+value.id+'" style="display: none;">'+value.name
+                                    '</label>'+
+                                '</li>';
+
+                                if(index == 0){
+                                    $('#achat_chantier').val(value.id);
+                                }
+                            });
+                        }
+                        if(response.count == 1){
+                            toastr.success("Chantier trouvés");
+                            if(response.chantiers.length >= 2){
+                                $('.modal-chantier-suggession').modal('show');
+                                $('.modal-chantier-suggession .chantier-list').html(CHANTIER_ELT);
+                            }
+                        }
+                        else
+                            toastr.error("Chantier non trouvés");  
+                    },
+                    error: function(xhr, textStatus, errorThrown) {
+                        toastr.error("Oops, une erreur s'est produite");
+                    }
+                });        
+            })
+
+            $(document).on('click', '.findDate', function(){
+                
+                $.ajax({
+                    url: "{{path('bon_livraison_find')}}",
+                    type: "GET",
+                    dataType: "json",
+                    async: true,
+                    data: {
+                        dossier: "{{dossier}}",
+                        filename: "{{lastOcrFile}}",
+                    },
+                    success: function(response, status) {
+                        if(response.date != ""){
+                            document.getElementById('achat_facturedAt').value = response.date
+                            toastr.success("Date trouvée");
+                        }
+                        else
+                            toastr.error("Date non trouvée");
+
+                    },
+                    error: function(xhr, textStatus, errorThrown) {
+                        toastr.error("Oops, une erreur s'est produite");
+                    }
+                });  
+                      
+            })
+        {% endif %}
+    })
+
+
+    function openModalFournisseurAdd() {
+        $('#modalAddFournisseur').modal('show');
+
+        $.ajax({
+            url: "{{path('fournisseur_new_xhr')}}",
+            type: "GET",
+            dataType: "json",
+            async: true,
+            data: {},
+            success: function(response, status) {
+                if(response.status == 200){
+                    $('#modalAddFournisseur .modal-container').html(response.content);
+                    $('form[name=fournisseurs]').attr('action', "{{path('fournisseur_new_xhr')}}")
+                    $('form[name=fournisseurs] button.submit').attr('type', "button")
+                }
+                else if(response.status == 500){
+                    toastr.error(response.message);
+                }
+            },
+            error: function(xhr, textStatus, errorThrown) {
+                toastr.error("Oops, une erreur s'est produite");
+            }
+        });
+    }
+
+    $(document).on('click', 'form[name=fournisseurs] .submit', function(ev){
+        ev.preventDefault();
+        
+        var form = document.forms.namedItem("fournisseurs");
+        
+        $('form[name=fournisseurs] .submit').css('pointer-events', 'none');
+        $.ajax({
+            type: "POST",
+            url: form.getAttribute('action'),
+            data: new FormData(this),
+            dataType: 'json',
+            contentType: false,
+            cache: false,
+            processData:false,
+            success: function(response, status) {
+                $("#modalAddFournisseur").modal("hide");
+                if(response.status == 200){
+                    $fournisseurSelect = '<select id="achat_fournisseur" name="achat[fournisseur]" class="form-control select2">';
+                    $.each(response.fournisseurs, function( index, value ) {
+                        $fournisseurSelect += "<option value='"+value.id+"'>"+value.nom+"</option>";
+                    });
+                    $fournisseurSelect += "</select>";
+                    $('.fournisseur-select').html($fournisseurSelect);
+                    $('#achat_fournisseur option[value='+response.fournisseur_id+']').attr('selected',true);
+                    $('.select2').select2();
+
+                    $('#modalAddFournisseur').modal('hide');
+
+                }
+                else if(response.status == 500){
+                    toastr.error(response.message);
+                }
+                $('form[name=fournisseurs] .submit').css('pointer-events', 'auto');
+            },
+            error: function(xhr, textStatus, errorThrown) {
+                toastr.error("Oops, une erreur s'est produite");
+                $('form[name=fournisseurs] .submit').css('pointer-events', 'auto');
+            }
+        });
+    })
+
+    $(function(){
+        $(document).on('change', '[name=chantierSuggession]', function(){
+            let chantierSelect = $(this).val();
+            $('#achat_chantier').val(chantierSelect);
+            $('.modal-chantier-suggession').modal('hide');
+        })
+    })
+</script>

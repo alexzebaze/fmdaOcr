@@ -1,0 +1,1354 @@
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+<style type="text/css"  media="print">
+
+	@media print {
+		body * {
+			visibility: hidden;
+		}
+		#ct, #ct * {
+			visibility: visible;
+		}
+		.doc-container {
+			position: absolute;
+			left: 0;
+			right: 0;
+			top: 0;
+		}
+	}
+
+	@page { size: auto;  margin: 0mm; padding-bottom: 4cm}
+
+	body  
+	{ 
+		/* this affects the margin on the content before sending to printer */ 
+		margin: 0px;  
+	} 
+
+  	.actions-btn-tooltip.tooltip {
+	    opacity: 1;
+	    top: -11px!important;
+	}
+	.actions-btn-tooltip .arrow:before {
+	    border-top-color: #3b3f5c;
+	}
+	.actions-btn-tooltip .tooltip-inner {
+	    background: #3b3f5c;
+	    color: #fff;
+	    font-weight: 700;
+	    border-radius: 30px;
+	    box-shadow: 0px 5px 15px 1px rgba(113, 106, 202, 0.2);
+	    padding: 4px 16px;
+	}
+	.invoice-container {
+	    width: 100%;
+	}
+	.invoice-inbox {
+	    padding: 0;
+	    background-color: #fff;
+	    border-radius: 6px;
+	    box-shadow: rgb(145 158 171 / 24%) 0px 0px 2px 0px, rgb(145 158 171 / 24%) 0px 16px 32px -4px;
+	}
+	.invoice-inbox .inv-number {
+	    font-size: 18px;
+	    font-weight: 700;
+	    margin-bottom: 0;
+	    color: #888ea8;
+	}
+	.invoice-inbox .invoice-action svg {
+	    cursor: pointer;
+	    font-weight: 600;
+	    color: #888ea8;
+	    margin-right: 6px;
+	    vertical-align: middle;
+	    fill: rgba(0, 23, 55, 0.08);
+	}
+	.invoice-inbox .invoice-action svg:not(:last-child) {
+	    margin-right: 15px;
+	}
+	.invoice-inbox .invoice-action svg:hover {
+	    color: #4361ee;
+	    fill: rgba(27, 85, 226, 0.23921568627450981);
+	}
+
+	/*
+	===================
+
+	     Invoice
+
+	===================
+	*/
+
+	/*    Inv head section   */
+
+	.invoice .content-section .inv--head-section {
+	    padding: 36px 35px;
+	    margin-bottom: 40px;
+	    padding-bottom: 25px;
+	    border-bottom: 1px solid #ebedf2;
+	}
+
+	.inv--customer-detail-section {
+	    padding: 36px 35px;
+	    padding-top: 0;
+	}
+
+	.invoice .content-section .inv--head-section h3.in-heading {
+	    font-size: 18px;
+	    font-weight: 600;
+	    color: #0e1726;
+	    margin: 0;
+	    margin-top:10px;
+	}
+	.invoice .content-section .inv--head-section .company-logo {
+	    width: 60px;
+	    height: 60px;
+	    object-fit: cover;
+	    margin: auto;
+	    display: block;
+	}
+	.invoice .content-section .inv--head-section div.company-info {
+	    display: flex;
+	    justify-content: flex-end;
+	}
+	.invoice .content-section .inv--head-section div.company-info svg {
+	    width: 42px;
+	    height: 42px;
+	    margin-right: 10px;
+	    color: #4361ee;
+	    fill: rgba(27, 85, 226, 0.23921568627450981);
+	}
+	.invoice .content-section .inv--head-section .inv-brand-name {
+	    font-size: 23px;
+	    font-weight: 600;
+	    margin-bottom: 0;
+	    align-self: center;
+	}
+
+	/*    Inv detail section    */
+
+	.invoice .content-section .inv--detail-section .inv-to {
+	   font-weight: 700;
+	    font-size: 15px;
+	    margin-bottom: 15px;
+	}
+	.invoice .content-section .inv--detail-section .inv-customer-name {
+	    font-weight: 700;
+	    margin-bottom: 2px;
+	    font-size: 13px;
+	    color: #4361ee;
+	}
+	.invoice .content-section .inv--detail-section .inv-detail-title {
+	    font-weight: 700;
+	    margin-bottom: 0;
+	    font-size: 15px;
+	    margin-bottom: 15px;
+	}
+	.invoice .content-section .inv--detail-section .inv-details {
+	    font-weight: 700;
+	    margin-bottom: 15px;
+	}
+	.invoice .content-section .inv--detail-section .inv-street-addr {
+	    font-weight: 600;
+	    margin-bottom: 2px;
+	    font-size: 13px;
+	}
+	.invoice .content-section .inv--detail-section .inv-email-address {
+	    font-weight: 600;
+	    margin-bottom: 2px;
+	    font-size: 13px;
+	}
+
+	/*inv-list-number*/
+	.invoice .content-section .inv--detail-section .inv-list-number {
+	    margin-bottom: 2px;
+	}
+	.invoice .content-section .inv--detail-section .inv-list-number .inv-title {
+	    font-weight: 400;
+	    font-size: 20px;
+	}
+	.invoice .content-section .inv--detail-section .inv-list-number .inv-number {
+	    font-weight: 400;
+	    font-size: 18px;
+	    color: #4361ee;
+	}
+
+	/*inv-created-date*/
+	.invoice .content-section .inv--detail-section .inv-created-date {
+	    margin-bottom: 2px;
+	}
+	.invoice .content-section .inv--detail-section .inv-created-date .inv-title {
+	    font-weight: 700;
+	    font-size: 13px;
+	}
+	.invoice .content-section .inv--detail-section .inv-created-date .inv-date {
+	    font-size: 13px;
+	    font-weight: 600;
+	}
+
+	/*inv-due-date*/
+	.invoice .content-section .inv--detail-section .inv-due-date {
+	    margin-bottom: 2px;
+	}
+	.invoice .content-section .inv--detail-section .inv-due-date .inv-title {
+	    font-weight: 700;
+	    font-size: 13px;
+	}
+	.invoice .content-section .inv--detail-section .inv-due-date .inv-date {
+	    font-size: 13px;
+	    font-weight: 600;
+	}
+
+	/*    Inv product table section    */
+	.invoice .content-section .inv--product-table-section {
+	    padding: 30px 0;
+	}
+	.invoice .content-section .inv--product-table-section table {
+	    margin-bottom: 0;
+	}
+	.invoice .content-section .inv--product-table-section thead tr {
+	    border: none;
+	}
+	.invoice .content-section .inv--product-table-section th {
+	    padding: 9px 22px;
+	    font-size: 11px!important;
+	    border: none;
+	    border-top: 1px solid #e0e6ed;
+	    border-bottom: 1px solid #e0e6ed;
+	    color: #515365!important;
+	}
+	.invoice .content-section .inv--product-table-section th:first-child {
+	    padding-left: 35px;
+	}
+	.invoice .content-section .inv--product-table-section th:last-child {
+	    padding-right: 35px;
+	}
+	.invoice .content-section .inv--product-table-section tr td:first-child {
+	    padding-left: 35px;
+	}
+	.invoice .content-section .inv--product-table-section tr td:last-child {
+	    padding-right: 35px;
+	}
+	.invoice .content-section .inv--product-table-section td {
+	    color: #515365;
+	    font-weight: 600;
+	    border: none;
+	    padding: 10px 25px;
+	    vertical-align: top!important;
+	}
+	.invoice .content-section .inv--product-table-section tbody tr:nth-of-type(even) td {
+	    background-color: #fafafa;
+	}
+
+	/*inv--payment-info*/
+	.invoice .content-section .inv--payment-info {
+	    font-size: 13px;
+	    font-weight: 600;
+	}
+	.invoice .content-section .inv--payment-info .inv-title {
+	    color: #4361ee;
+	    font-weight: 600;
+	    margin-bottom: 15px;
+	    width: 65%;
+	    margin-left: auto;
+	}
+	.invoice .content-section .inv--payment-info p {
+	    margin-bottom: 0;
+	    display: flex;
+	    width: 65%;
+	    margin-left: auto;
+	    justify-content: space-between;
+	}
+	.invoice .content-section .inv--payment-info span {
+	    font-weight: 500;
+	    display: inline-block;
+	    white-space: nowrap;
+	}
+	.invoice .content-section .inv--payment-info .inv-subtitle {
+	    font-weight: 600;
+	    font-size: 13px;
+	    display: inline-block;
+	    white-space: normal;
+	    margin-right: 4px;
+	}
+
+	/*inv--total-amounts*/
+	.invoice .content-section .inv--total-amounts {
+	    padding: 0 35px;
+	    margin-bottom: 25px;
+	    padding-bottom: 25px;
+	    border-bottom: 1px solid #ebedf2;
+	    padding-top: 100px;
+	    padding-right: 70px;
+	    padding-bottom: 100px;
+	    text-align: right;
+	}
+	.invoice .content-section .inv--total-amounts .grand-total-title h4 {
+	    position: relative;
+	    font-weight: 600;
+	    font-size: 16px;
+	    margin-bottom: 0;
+	    padding: 0;
+	    color: #0e1726;
+	    display: inline-block;
+	    letter-spacing: 1px;
+	}
+	.invoice .content-section .inv--total-amounts .grand-total-amount h4 {
+	    position: relative;
+	    font-weight: 600;
+	    font-size: 16px;
+	    margin-bottom: 0;
+	    padding: 0;
+	    color: #0e1726;
+	    display: inline-block;
+	    letter-spacing: 1px;
+	}
+
+	/*inv--note*/
+	.inv--note {
+	    padding: 0 25px;
+	    padding-bottom: 25px;
+	}
+	.inv--note p {
+	    margin-bottom: 0;
+	    font-weight: 600;
+	    color: #888ea8;
+	}
+
+	/*
+	===============================
+	    Invoice Actions Button
+	===============================
+	*/
+
+	.invoice-actions-btn {
+	    padding: 25px;
+	    padding-top: 32px;
+	    padding-bottom: 32px;
+	    background-color: #fff;
+	    box-shadow: rgb(145 158 171 / 24%) 0px 0px 2px 0px, rgb(145 158 171 / 24%) 0px 16px 32px -4px;
+	    border-radius: 6px;
+	}
+	.invoice-actions-btn label {
+	    font-size: 14px;
+	    font-weight: 600;
+	    color: #515365;
+	}
+
+	/* Invoice Actions -> action-btn */
+
+	.invoice-actions-btn .invoice-action-btn a {
+	    -webkit-transform: none;
+	    transform: none;
+	}
+	.invoice-actions-btn .invoice-action-btn a.btn-send {
+	    width: 100%;
+	    margin-bottom: 20px;
+	}
+	.invoice-actions-btn .invoice-action-btn a.btn-print {
+	    width: 100%;
+	    margin-bottom: 20px;
+	}
+	.invoice-actions-btn .invoice-action-btn a.btn-download {
+	    width: 100%;
+	    margin-bottom: 20px;
+	}
+	.invoice-actions-btn .invoice-action-btn a.btn-edit {
+	    width: 100%;
+	}
+	@media (max-width: 1199px) {
+	    .invoice-actions-btn {
+	        margin-top: 25px;
+	    }
+	    .invoice-actions-btn .invoice-action-btn a.btn-send {
+	        margin-bottom: 0;
+	    }
+	    .invoice-actions-btn .invoice-action-btn a.btn-print {
+	        margin-bottom: 0;
+	    }
+	    .invoice-actions-btn .invoice-action-btn a.btn-download {
+	        margin-bottom: 0;
+	    }
+	}
+	@media (max-width: 767px) {
+	    .invoice-actions-btn .invoice-action-btn a.btn-send {
+	        margin-bottom: 20px;
+	    }
+	    .invoice-actions-btn .invoice-action-btn a.btn-print {
+	        margin-bottom: 20px;
+	    }
+	}
+	@media (max-width: 575px) {
+	    .invoice .content-section .inv--payment-info .inv-title {
+	        margin-top: 25px;
+	    }
+	    .invoice .content-section .inv--payment-info .inv-title {
+	        margin-left: 0;
+	        margin-right: auto;
+	        margin-bottom: 6px;
+	        width: auto;
+	    }
+	    .invoice .content-section .inv--payment-info p {
+	        margin-left: 0;
+	        margin-right: auto;
+	        width: auto;
+	        justify-content: flex-start;
+	    }
+	    .invoice .content-section .inv--payment-info .inv-subtitle {
+	        min-width: 140px;
+	    }
+	    .invoice-actions-btn .invoice-action-btn a.btn-download {
+	        margin-bottom: 20px;
+	    }
+	    .invoice .content-section .inv--payment-info span {
+	        white-space: normal;
+	    }
+	    
+	}
+	.rounded-img{
+		border-radius: 50%;
+	    position: relative;
+	    z-index: 1;
+	    width: 40px;
+	    height: 40px;
+	    object-fit: cover;
+	}
+	.signature-container{
+		display: flex;
+	    align-items: center;
+	    justify-content: space-between;
+	    padding: 177px 57px 69px;
+	}
+	.signature-left {
+	    width: 208px;
+	    text-align: center;
+	}
+	.cardre-signature {
+	    height: 130px;
+	    border: 1px solid gray;
+	    margin-top: 23px;
+	}
+</style>
+<style type="text/css">
+    table.dataTable tbody th, table.dataTable tbody td{height: 35px;}
+    th, td{text-align: left;}
+    .inputBudget{text-align: left;}
+    .form-control[disabled]{background: transparent!important}
+    input.no-editing{
+       cursor: default!important;
+       border: none;
+       background: none;
+       background: transparent;
+    }
+    .progress-bar, .progress-bar-inner { 
+        position: relative;
+        height: 18px;
+        border-radius: 16px;
+        -webkit-border-radius: 16px;
+        -moz-border-radius: 16px;
+    }
+    .progress-bar{
+        overflow: hidden;
+        background-color: #2f4050;
+    }
+    .progress-bar-inner {
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 0;
+        background: #18a689;
+        transition: linear width .5s;
+    }
+    .percent-val{
+        z-index: 9;
+        position: absolute;
+        left: 0;
+        right: 0;
+        font-size: 14px;
+    }
+
+    .categories-container {
+        border-radius: 8px;
+        background: #f0f0f0;
+        border: none;
+        padding: 25px 16px;
+        box-shadow: 0px 0px 6px 2px #e7e7e7;
+        margin-bottom: 21px;
+    }
+	.categories-container .title{
+		font-size:14px;
+	}
+	.table{
+		margin-bottom:0;
+	}
+    .categorie-head {
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+    .categorie-head .title{
+        font-weight: bold;
+        font-size: 18px;
+    }
+	.total-container {
+            border-radius: 8px;
+            background: #f0f0f0;
+            border: none;
+            padding: 16px 16px;
+            box-shadow: 0px 0px 6px 2px #e7e7e7;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .total-item-container:not(:first-child){
+            border-top: 1px solid #c3c3c3;
+        }
+
+        .total-item-container {
+            width: 100%;
+            padding: 15px 4px;
+            text-align: center;
+        }
+		.total-item:first-child {
+			font-weight: bold;
+			margin-bottom: 5px;
+		}
+
+
+
+		.timeline{
+            text-align: center;
+            max-height: 35px;
+            position: relative;
+        }
+       .timeline:hover .clearDate{
+          display: inline-block;
+       }
+       .clearDate {
+          display: none;
+           position: absolute;
+           right: -10px;
+           top: 50%;
+           transform: translateY(-50%);
+           background: #ccc;
+           color: #fff;
+           height: 16px;
+           width: 16px;
+           font-size: 11px;
+           line-height: 1;
+           border-radius: 50%;
+           cursor: pointer;
+       }
+       .clearDate:hover{
+          background: #888;
+       }
+       .timeline .timeline-content{
+           position: relative;
+           cursor: pointer;
+           color: #fff;
+           padding: 5px 0;
+            border-radius: 10px;
+            display: block;
+            width: 119px;
+		    margin: auto;
+		    font-size: 10px;
+           }
+       .timeline .duree{display: none;}
+       .timeline-content:hover .interval{
+        display: none;
+       }
+       .timeline-content:hover .interval+.duree{
+        display: block;
+       }
+       .timeline .timeline-content.not-date{background: #ccc!important}
+       .date-range-input{
+           background: transparent;
+           cursor: pointer;
+           width: 100%;
+           position: absolute;
+           left: 0;
+           right: 0;
+           top: 0px;
+           bottom: 0px;
+           color: transparent;
+           border: none;
+           outline: none;
+       }
+
+       .row-sum-month {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+       .row-sum-month > * {
+            flex: 1;
+            text-align: center;
+            font-weight: bold;
+            font-size: 12px;
+            margin-top: 2px;
+            transform: rotate(45deg);
+        }
+
+        .table td, .table th{
+        	padding-left: 0;
+   			padding-right: 0;
+        }
+        .inline-text{
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+        }
+</style>
+
+</head>
+<body style="-webkit-print-color-adjust: exact;">
+	<div class="" style="margin: 0 10px;">
+		{% include 'flashes.html.twig' %}
+		<div id="printableArea">
+		    <div class="invoice">
+		        <div class="invoice-container">
+		            <div class="invoice-inbox">
+		                
+		                <div id="ct" class="">
+		                    
+		                    <div class="invoice-00001">
+		                        <div class="content-section">
+
+		                            <div class="inv--head-section inv--detail-section">
+		                            
+		                                <div class="row">
+		                                
+		                                    <div class="col-sm-6 col-12 mr-auto">
+		                                        <div class="d-flex flex-column align-items-start">
+		                                            
+		                                            {% if app.session.get('entreprise_session_id') %}
+							                            <span>
+							                                {% if app.session.get('entreprise_session_logo') %}
+							                                    <img class="company-logo align-self-start" src="https://www.homekeo.fr/logo/hdbmpromo-logo-apps-608271856f397.png" style="object-fit: cover;max-width: 261px; max-height: 85px">
+							                                {% else %} 
+							                                    <img class="company-logo align-self-start" src="{{asset('images/logotransfmda.png')}}" style="object-fit: contain;max-width: 261px; max-height: 85px">
+							                                {% endif %}
+							                            </span>
+							                            <h3 class="in-heading align-self-start" style="margin-top: 15px;margin-bottom: 0;">{{ app.session.get('entreprise_session_name') }}</h3>
+							                            
+							                        {% endif %}
+		                                        </div>
+		                                    </div>
+
+		                                    <div class="col-sm-6 text-sm-right">
+		                                        <p class="inv-list-number" style="">
+		                                        	{% if chantierId %}
+		                                        	<span class="inv-title">Previsonnel Chantier : <span style="text-transform: uppercase;">{{chantier.getNameentreprise}}</span>
+		                                        	</span>
+		                                        	<br>
+		                                        	{% endif %}
+		                                        	<span class="inv-title">Date : <span style="text-transform: uppercase;">{{ "now"|date("m/d/Y") }}</span>
+		                                        	</span>
+		                                        </p>
+		                                    </div>
+
+		                                    <div class="col-sm-6 align-self-center mt-3" style="margin-top: 7px!important">
+		                                        <p class="inv-email-address" >{{entreprise.adresse|upper}}</p>
+		                                        <p class="inv-email-address">{{entreprise.postalcode|upper}} {{entreprise.ville|upper}}</p>
+		                                        <p class="inv-email-address">{{entreprise.email}}</p>
+		                                        <p class="inv-email-address">
+		                                        	{{entreprise.phone}}
+		                                        </p>
+		                                    </div>
+		                                    <div class="col-sm-6 align-self-center mt-3 text-sm-right">
+		                                    </div>
+		                                </div>
+		                                
+		                            </div>
+
+		                            <div class="inv--product-table-section" style="margin-top: 20px;">
+		                            	{% if not chantierId %}
+
+		                            	<div class="table-responsive">
+		                                    
+										<table class="table">
+								            <tbody>
+								            	<tr>
+									                <th>
+									                    {% if not chantierId %}
+									                        CHANTIER
+									                    {% else %}
+									                        LOT
+									                    {% endif %}
+									                </th>
+									                <th>BUDGET</th>
+									                <th style="width: 10%;">AVANCEMENT</th>
+									                <th>DEVIS</th>
+									                <th style="width: 10%;">AVANCEMENT</th>
+									                <th>FACTURE</th>
+									            </tr>
+							                    {% for prevision in previsionelChantier %}
+							                    <tr>
+							                        <td style="font-size: 13px; width: 197px;border-top: 1px solid #dee2e6;">
+							                            {{ prevision.chantier.nameentreprise }}
+							                        </td>
+							                        <td class="cell-budget cell-td-budget" style="border-top: 1px solid #dee2e6;">
+							                            {{prevision.budget|number_format(2, ',', ' ')}} €
+							                        </td>
+							                        <td style="width: 10%;border-top: 1px solid #dee2e6;">
+							                            <div class="progress-bar blue" data-width="60px" data-budget="{{prevision.budget}}" data-devis="{{ prevision.sum_ht ? prevision.sum_ht|number_format(2, '.', '') : '0' }}" style="width: 60px">
+							                                <div class="percent-val"></div>
+							                                <div class="progress-bar-inner"></div>
+							                            </div>
+							                        </td>
+							                        <td style="border-top: 1px solid #dee2e6;">
+							                            {{prevision.sum_ht and prevision.sum_ht > 0 ? prevision.sum_ht|number_format(2, ',', '') : "0"}} €
+							                        </td>
+							                        <td style="width: 10%;border-top: 1px solid #dee2e6;">
+							                            <div class="progress-bar blue" data-width="60px" data-budget="{{prevision.sum_ht}}" data-devis="{{ prevision.sum_ht_facture ? prevision.sum_ht_facture|number_format(2, '.', '') : '0' }}" style="width: 60px">
+							                                <div class="percent-val"></div>
+							                                <div class="progress-bar-inner"></div>
+							                            </div>
+							                        </td>
+							                        <td style="border-top: 1px solid #dee2e6;">
+							                            {{prevision.sum_ht_facture and prevision.sum_ht_facture > 0 ? prevision.sum_ht_facture|number_format(2, ',', '') : "0"}} €
+							                        </td>
+							                    </tr>
+
+							                    {% else %}
+							                    <tr>
+							                        <td colspan="34">Aucun chantier</td>
+							                    </tr>
+							                    {% endfor %}
+							                </tbody>
+						            	</table>
+						                {% else %}
+
+						                	<div class="total-container" style="margin-bottom: 45px;">
+						                        {% set sumBudgetCat = 0 %}
+						                        {% set sumDevisCat = 0 %}
+						                        {% set sumFactureCat = 0 %}
+
+						                        <table class="table">
+						                            <thead style="">
+						                                <tr>
+						                                    <th style="width: 12%; font-size: 10px">Categorie</th>
+						                                    <th style="width: 12%; font-size: 10px">Date</th>
+						                                    <th style="width: 14%; font-size: 10px">BUDGET</th>
+						                                    <th style="width: 10%; font-size: 10px">AVANCEMENT</th>
+						                                    <th style="width: 14%; font-size: 10px">DEVIS</th>
+						                                    <th style="width: 7%; font-size: 10px">AVANCEMENT</th>
+						                                    <th style="width: 16%; font-size: 10px">FACTURE</th>
+						                                </tr>
+						                                {% for catLot in categoriesLot %} 
+						                                <tr>
+						                                    <th style="width: 12%">
+						                                        <span class="title"><b>{{catLot.categorie.nom}}</b></span>
+						                                    </th>
+						                                    <th style="width: 12%">
+						                                        {% set datePrevisionnelCategorie = dureeCategorie[catLot.categorie.id]['debut'] is not null ?  dureeCategorie[catLot.categorie.id]['debut'] |date('Y-m-d')~" au "~dureeCategorie[catLot.categorie.id]['fin']|date('Y-m-d') %} 
+						                                        <div class="timeline">
+						                                            <span class="timeline-content 
+						                                            {% if  dureeCategorie[catLot.categorie.id]['debut'] is null %} not-date {% endif %}" style="{% if dureeCategorie[catLot.categorie.id]['debut'] is not null %} background: #1ab394 {% endif %}" data-date-to-calendar="{{datePrevisionnelCategorie}}">
+						                                                
+						                                               <input style="z-index: -1" type="text" class="date-range-input flatpickr-input" data-date-to-calendar="{{datePrevisionnelCategorie}}">
+
+						                                               {% if dureeCategorie[catLot.categorie.id]['debut'] is not null %} 
+						                                               <span>
+						                                                  <span class="interval"></span>
+						                                                  <span class="duree"></span>
+						                                               </span> 
+						                                               {% else %}
+						                                               <span>
+						                                                  <span class="interval">-</span>
+						                                                  <span class="duree">-</span>
+						                                               </span> 
+						                                               {% endif %}
+						                                            </span>
+						                                            
+						                                        </div>
+						                                    </th>
+						                                    <th style="width: 14%; font-size: 12px;">{{catLot.TotalbudgetLot|number_format(2, ',', '')}} €</th>
+						                                    <th style="width: 10%">
+						                                        <div class="progress-bar blue" data-width="60px" data-budget="{{catLot.TotalbudgetLot}}" data-devis="{{ catLot.totalDevisLot }}" style="width: 60px">
+						                                            <div class="percent-val"></div>
+						                                            <div class="progress-bar-inner"></div>
+						                                        </div>
+						                                    </th>
+						                                    <th style="width: 14%font-size: 12px;">{{catLot.totalDevisLot}}</th>
+						                                    <th style="width: 7%">
+						                                        <div class="progress-bar blue" data-width="60px" data-budget="{{catLot.totalDevisLot}}" data-devis="{{catLot.totalFactureLot }}" style="width: 60px">
+						                                            <div class="percent-val"></div>
+						                                            <div class="progress-bar-inner"></div>
+						                                        </div>
+						                                    </th>
+						                                    <th style="width: 16%font-size: 11px;">{{catLot.totalFactureLot|number_format(2, ',', '')}}€</th>
+
+						                                    {% set sumBudgetCat = sumBudgetCat + catLot.TotalbudgetLot %}
+						                                    {% set sumDevisCat = sumDevisCat + catLot.totalDevisLot %}
+						                                    {% set sumFactureCat = sumFactureCat + catLot.totalFactureLot %}
+						                                </tr>
+						                                {% endfor %}
+						                                <tr>
+						                                    <th style="width: 15%">TOTAUX</th>
+						                                    <th style="width: 14%"></th>
+						                                    <th class="inline-text" style="width: 14%font-size: 12px;">{{sumBudgetCat|number_format(2, ',', ' ')}} €</th>
+						                                    <th style="width: 15%"></th>
+						                                    <th class="inline-text" style="width: 14%font-size: 12px;">{{sumDevisCat|number_format(2, ',', ' ')}} €</th>
+						                                    <th style="width: 15%"></th>
+						                                    <th class="inline-text" style="width: 16%font-size: 11px;">{{sumFactureCat|number_format(2, ',', '')}}€</th>
+						                                </tr>
+						                                <tr>
+						                                    <th style="width: 15%">M2 {{chantier.m2}}</th>
+						                                    <th style="width: 14%"></th>
+						                                    <th class="inline-text" style="width: 14%">
+						                                      {% set diviseur =  (chantier.m2 is not null and chantier.m2 != 0 ) ? chantier.m2 : 1 %} 
+						                                      {{ (sumBudgetCat/diviseur)|number_format(2, ',', ' ') }} €
+						                                    </th>
+						                                    <th style="width: 15%"></th>
+						                                    <th style="width: 14%"></th>
+						                                    <th style="width: 15%"></th>
+						                                    <th style="width: 14%"></th>
+						                                </tr>
+						                            </thead>
+						                        </table>
+						                    </div>
+						                    <h3 class="text-center" style="margin-bottom: 20px;">ECHEANCIER DE TRESORIE</h3>
+						                    <div class="ibox-content" style="margin-bottom: 60px; padding-left: 0;padding-right: 0">
+						                        <div style="width: 900px; margin: auto;">
+						                            <canvas id="chartCategorie" height="350"></canvas>
+						                            
+						                        </div>
+						                        <div class="row-sum-month" style="width: 900px;margin: auto;margin-top: 16px;color: #7b7b7b">
+						                                {% for i in CHART_SUM_MOIS[0] %}
+						                                    <span class="month">{{i|number_format(2, ',', ' ')}} €</span>
+						                                {% endfor %}
+						                            </div>
+						                    </div>
+						                    <div class="ibox-content" style="margin-bottom: 45px;padding-left: 0;padding-right: 0">
+						                        <div style="width: 900px;margin: auto;">
+						                            <canvas id="chartCategorie2" height="350"></canvas>
+						                            
+						                        </div>
+						                        <div class="row-sum-month" style="width: 900px;margin: auto;margin-top: 16px;color: #7b7b7b">
+						                            {% for j in CHART_SUM_MOIS[1] %}
+						                                <span class="month">{{j|number_format(2, ',', ' ')}} €</span>
+						                            {% endfor %}
+						                        </div>
+					                    </div>
+			                            	{% for catLot in categoriesLot %}
+						                        <div class="categories-container">
+						                            {# <div class="categorie-head">
+						                                <span class="title" style="display: none;">{{catLot.categorie.nom}}</span>
+						                            </div> #}
+						                            <div class="categories-content">
+						                                <div class="table-responsive">
+						                                <table class="table">
+						                                    <tbody>
+						                                    	<tr>
+						                                            <th style="width: 12%">
+						                                                <span class="title">{{catLot.categorie.nom}}</span>
+						                                            </th>
+						                                            {% if chantierId %}
+						                                                <th style="width: 1%">
+						                                                    {% set datePrevisionnelCategorie = dureeCategorie[catLot.categorie.id]['debut'] is not null ?  dureeCategorie[catLot.categorie.id]['debut'] |date('Y-m-d')~" au "~dureeCategorie[catLot.categorie.id]['fin']|date('Y-m-d') %} 
+						                                                    <div class="timeline">
+						                                                        <span class="timeline-content 
+						                                                        {% if  dureeCategorie[catLot.categorie.id]['debut'] is null %} not-date {% endif %}" style="{% if dureeCategorie[catLot.categorie.id]['debut'] is not null %} background: #1ab394 {% endif %}" data-date-to-calendar="{{datePrevisionnelCategorie}}">
+						                                                            
+						                                                           <input style="z-index: -1" type="text" class="date-range-input flatpickr-input" data-date-to-calendar="{{datePrevisionnelCategorie}}">
+
+						                                                           {% if dureeCategorie[catLot.categorie.id]['debut'] is not null %} 
+						                                                           <span>
+						                                                              <span class="interval"></span>
+						                                                              <span class="duree"></span>
+						                                                           </span> 
+						                                                           {% else %}
+						                                                           <span>
+						                                                              <span class="interval">-</span>
+						                                                              <span class="duree">-</span>
+						                                                           </span> 
+						                                                           {% endif %}
+						                                                        </span>
+						                                                        
+						                                                    </div>
+						                                                </th>
+						                                            {% endif %}
+						                                            <th style="width: 16%font-size: 12px;"><span class="title">{{catLot.TotalbudgetLot|number_format(2, ',', ' ')}} €</span></th>
+						                                            <th style="width: 10%">
+						                                                <div class="progress-bar blue" data-width="60px" data-budget="{{catLot.TotalbudgetLot}}" data-devis="{{ catLot.totalDevisLot }}" style="width: 60px">
+						                                                    <div class="percent-val"></div>
+						                                                    <div class="progress-bar-inner"></div>
+						                                                </div>
+						                                            </th>
+						                                            <th style="width: 16%font-size: 12px;"><span class="title">{{catLot.totalDevisLot|number_format(2, ',', ' ')}} €</span></th>
+						                                            <th style="width: 10%">
+						                                                <div class="progress-bar blue" data-width="60px" data-budget="{{catLot.totalDevisLot}}" data-devis="{{catLot.totalFactureLot }}" style="width: 60px">
+						                                                    <div class="percent-val"></div>
+						                                                    <div class="progress-bar-inner"></div>
+						                                                </div>
+						                                            </th>
+						                                            <th style="width: 16%font-size: 12px;"><span class="title">{{catLot.totalFactureLot|number_format(2, ',', ' ')}} €</span></th>
+						                                        </tr>
+						                                    	<tr>
+						                                            <th  style="width: 12%;font-size: 10px">
+						                                                {% if not chantierId %}
+						                                                    CHANTIER
+						                                                {% else %}
+						                                                    LOT
+						                                                {% endif %}
+						                                            </th>
+						                                            {% if chantierId %}
+						                                                <th style="width: 1%;font-size: 10px">
+						                                                    Date
+						                                                </th>
+						                                            {% endif %}
+						                                            <th style="width: 16%;font-size: 10px;">BUDGET</th>
+						                                            <th style="width: 10%;font-size: 10px">AVANCEMENT</th>
+						                                            <th style="width: 16%;font-size: 10px">DEVIS</th>
+						                                            <th style="width: 10%;font-size: 10px">AVANCEMENT</th>
+						                                            <th style="width: 16%;font-size: 10px">FACTURE</th>
+						                                        </tr>
+						                                    {% for prevision in catLot.lots %} 
+						                                        <tr>
+						                                            <td style="width: 12% font-size: 12px;">
+						                                                {{ prevision.lot is not null ? prevision.lot.lot: "" }}
+						                                            </td>
+						                                            <td>
+						                                                {% set datePrevisionnel = (prevision.previsionel is not null and prevision.previsionel.getDateDebut is not null) ?  prevision.previsionel.getDateDebut|date('Y-m-d')~" au "~prevision.previsionel.getDateFin|date('Y-m-d') %} 
+						                                                <div class="timeline">
+						                                                    <span id="lot-input-date-container{{prevision.lot.id}}" class="timeline-content 
+						                                                    {% if prevision.previsionel is null or prevision.previsionel.getDateDebut is null %} not-date {% endif %}" style="{% if prevision.previsionel is not null and prevision.previsionel.getDateDebut %} background: #1ab394 {% endif %}" 
+						                                                    onclick="selectDate('{{prevision.lot.id}}', event)" data-date-to-calendar="{{datePrevisionnel}}">
+						                                                       <input style="z-index: -1" id="lot_date{{prevision.lot.id}}" type="text" class="date-range-input flatpickr-input" value="30 mai" data-lot="{{prevision.lot.id}}" data-chantier={{chantierId}} data-date-to-calendar="{{datePrevisionnel}}">
+						                                                       
+						                                                       {% if prevision.previsionel is not null and prevision.previsionel.getDateDebut %} 
+						                                                       <span>
+						                                                          <span class="interval"></span>
+						                                                          <span class="duree"></span>
+						                                                       </span> 
+						                                                       {% else %}
+						                                                       <span>
+						                                                          <span class="interval">-</span>
+						                                                          <span class="duree">definir date</span>
+						                                                       </span> 
+						                                                       {% endif %}
+						                                                    </span>
+						                                                    
+						                                                    {% if prevision.previsionel is not null and prevision.previsionel.getDateDebut %} 
+						                                                    <span class="clearDate" onclick="clearDate('{{prevision.lot.id}}', '{{chantierId}}')">x</span>
+						                                                    {% endif %}
+						                                                </div>
+						                                            </td>
+						                                            <td style="font-size: 12px;" class="cell-budget-{{prevision.lot.id}} cell-td-budget">
+						                                                {% set budget = 0 %}
+						                                                {% if chantierId != "" %}
+						                                                    {% if prevision.previsionel is null and prevision.count_devis > 0 %}
+						                                                        <span class="add_budget" onclick="addBudget('{{prevision.lot.id}}', '{{chantierId}}')" style="cursor: pointer;">
+						                                                            <i class="fa fa-plus" style="color: #333;font-size: 17px;"></i>
+						                                                        </span>
+						                                                    {% else %}
+						                                                        {% set budget = prevision.previsionel is not null ? prevision.previsionel.budget : '' %}
+						                                                        <span>{{budget|number_format(2, ',', ' ')}} €</span>
+						                                                    {% endif %}
+						                                                {% endif %}
+						                                            </td>
+						                                            <td>
+						                                                <div class="progress-bar blue" data-width="60px" data-budget="{{budget}}" data-devis="{{ prevision.sum_ht ? prevision.sum_ht|number_format(2, '.', '') : '0' }}" style="width: 60px">
+						                                                    <div class="percent-val"></div>
+						                                                    <div class="progress-bar-inner"></div>
+						                                                </div>
+						                                            </td>
+						                                            <td style="font-size: 12px;">
+						                                                {% if prevision.count_devis %}
+						                                                    <a href="{{path('devis_pro_list_by_lot_status', {'lotId':prevision.lot.id, 'chantierId':chantierId})}}" style="color: #000; text-decoration: none;">{{ prevision.sum_ht ? prevision.sum_ht|number_format(2, ',', ' ') : "0" }} €</a>
+						                                                {%  else %}
+						                                                    <i class="fas fa-times" style="font-size: 18px;color: #ef0a0a;"></i>
+						                                                {% endif %} 
+						                                            </td>
+						                                            <td>
+						                                                <div class="progress-bar blue" data-width="60px" data-budget="{{prevision.sum_ht}}" data-devis="{{ prevision.sum_ht_facture ? prevision.sum_ht_facture|number_format(2, '.', '') : '0' }}" style="width: 60px">
+						                                                    <div class="percent-val"></div>
+						                                                    <div class="progress-bar-inner"></div>
+						                                                </div>
+						                                            </td>
+						                                            <td style="font-size: 12px;">
+						                                                {{prevision.sum_ht_facture|number_format(2, ',', ' ')}}
+						                                            </td>
+						                                            
+						                                            
+						                                        </tr>
+						                                        {% else %}
+						                                        <tr>
+						                                            <td colspan="34">Aucune prevision</td>
+						                                        </tr>
+						                                    {% endfor %}
+						                                    </tbody>
+						                                </table>
+						                                </div>
+						                            </div>
+						                        </div>
+						                    {% endfor %}
+					                    {% endif %}
+		                            </div>
+		                            
+		                        </div>
+		                    </div> 
+		                    
+		                </div>
+		            </div>
+		        </div>
+		    </div>
+		    <div class="text-center" style="margin-bottom: 30px; margin-top: 16px;">
+		    	<a class="btn btn-primary" href="">Imprimer</a>
+		    </div>
+		</div>
+
+
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script src="https://npmcdn.com/flatpickr/dist/l10n/fr.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.4/dist/Chart.min.js"></script>
+<script type="text/javascript">
+	function printDiv(divName) {
+	     var printContents = document.getElementById(divName).innerHTML;
+	     var originalContents = document.body.innerHTML;
+
+	     document.body.innerHTML = printContents;
+
+	     window.print();
+
+	     document.body.innerHTML = originalContents;
+	     $('.progress-bar').each(function( index ) {
+            $barWidth = parseFloat($(this).data('width').replace("px", '')) ;
+            $budget = parseFloat($(this).data('budget'));
+            $devis = parseFloat($(this).data('devis'));
+
+            if(parseInt($devis) == 0 || parseInt($budget) == 0){
+                $(this).find('.percent-val').html('0%');
+            }
+            else if($devis <= $budget){
+                $progressWidth = ($devis*$barWidth)/$budget;
+                $(this).find('.progress-bar-inner').css('width', $progressWidth);
+                $(this).find('.percent-val').html(parseInt(($devis/$budget)*100)+'%');
+            }
+            else if($devis > $budget){
+                $(this).find('.progress-bar-inner').css('width', $devis);
+                $(this).find('.percent-val').html(parseInt(($devis/$budget)*100)+'%');
+                $(this).find('.progress-bar-inner').css('background', 'red');
+            }
+        })
+	}
+	printDiv('printableArea');
+
+	$('.progress-bar').each(function( index ) {
+        $barWidth = parseFloat($(this).data('width').replace("px", '')) ;
+        $budget = parseFloat($(this).data('budget'));
+        $devis = parseFloat($(this).data('devis'));
+
+        if(parseInt($devis) == 0 || parseInt($budget) == 0){
+            $(this).find('.percent-val').html('0%');
+        }
+        else if($devis <= $budget){
+            $progressWidth = ($devis*$barWidth)/$budget;
+            $(this).find('.progress-bar-inner').css('width', $progressWidth);
+            $(this).find('.percent-val').html(parseInt(($devis/$budget)*100)+'%');
+        }
+        else if($devis > $budget){
+            $(this).find('.progress-bar-inner').css('width', $devis);
+            $(this).find('.percent-val').html(parseInt(($devis/$budget)*100)+'%');
+            $(this).find('.progress-bar-inner').css('background', 'red');
+        }
+    })
+
+
+
+
+		var dateStrInput = "";
+        $(document).on("change",'input.date-range-input',function(e){
+            $that = $(e.currentTarget);
+            var lotId = $that.data('lot');
+            var chantierId = $that.data('chantier');
+            if($that.val() != $that.data('date-to-calendar')){
+                if(dateStrInput == "" || $that.val().includes("au"))
+                    dateStrInput = $that.val();
+                else
+                    dateStrInput = dateStrInput+" au "+$that.val();
+
+                if(dateStrInput.includes("au")){
+                    $dateRange = buildPlanningDate(dateStrInput);
+                    $intervalElt = $('#lot-input-date-container'+lotId+" .interval");
+                    $dureeElt = $('#lot-input-date-container'+lotId+" .duree");
+                    $intervalElt.html($dateRange.dateInterval);
+                    $dureeElt.html($dateRange.diffDay+1+"d");
+                    $('#lot-input-date-container'+lotId).removeClass('not-date');
+                    $('#lot-input-date-container'+lotId).css('background', '#1ab394');
+                    $that.attr('data-date-to-calendar', dateStrInput);
+                    $('#lot-input-date-container'+lotId).attr('data-date-to-calendar', dateStrInput);
+
+                    changeDate(lotId, dateStrInput, chantierId);
+                    dateStrInput = "";
+                    $that.val("");
+                }
+            }
+        });
+
+        $('.timeline-content').not('.not-date').each(function( index ) {
+            $input = $(this).find('.date-range-input');
+            $dateStrInput = $input.attr('data-date-to-calendar');
+
+            $dateRange = buildPlanningDate($dateStrInput);
+            $intervalElt = $(this).find('.interval');
+            $dureeElt = $(this).find('.duree');
+            $intervalElt.html($dateRange.dateInterval);
+            $dureeElt.html($dateRange.diffDay+1+"d");
+        })
+
+
+            function buildPlanningDate(date){
+            /*const optionsDate = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };*/
+            var debut = date.split(' au ')[0];
+            var fin = date.split(' au ')[1];
+            var optionsDate = { year: '2-digit', month: 'short', day: 'numeric' };
+
+            var dateInterval = '';
+            debut = (new Date(debut)).toLocaleDateString('fr-FR', optionsDate);
+            fin = (new Date(fin)).toLocaleDateString('fr-FR', optionsDate);
+
+            if(debut.split(" ")[2] == fin.split(" ")[2] ){
+                if(debut.split(" ")[1] == fin.split(" ")[1] ){
+                    dateInterval =  debut.split(" ")[0]+' - '+fin.split(" ")[0]+" "+debut.split(" ")[1]+" "+debut.split(" ")[2];
+                }
+                else{
+                    dateInterval = debut.split(" ")[0]+" "+debut.split(" ")[1]+' - '+fin.split(" ")[0]+" "+fin.split(" ")[1]+" "+debut.split(" ")[2];
+                }
+            }
+            else{
+                dateInterval = debut+' - '+fin;
+            }
+            
+            
+
+            return {
+                dateInterval:dateInterval, 
+                diffDay:datediff(new Date( date.split(' au ')[0]), new Date( date.split(' au ')[1]))
+            };
+        }   
+
+        function datediff(first, second) {
+            return Math.round((second-first)/(1000*60*60*24));
+        }
+
+
+
+
+        var graphColor = ["rgb(3, 127, 76)", "rgb(0, 200, 117)","rgb(156, 211, 38)","rgb(255, 203, 0)","rgb(120, 75, 209)","rgb(162, 93, 220)","rgb(0, 134, 192)","rgb(87, 155, 252)","rgb(102, 204, 255)","rgb(187, 51, 84)","rgb(226, 68, 92)","rgb(255, 21, 138)","rgb(255, 90, 196)","rgb(255, 100, 46)","rgb(253, 171, 61)","rgb(127, 83, 71)","rgb(196, 196, 196)","rgb(128, 128, 128)"];
+
+        var valChart = {{ dateCatGraph[0]|json_encode()|raw }};
+
+        var ctxA = document.getElementById('chartCategorie').getContext('2d');
+        $datasets = [];
+        $.each( valChart, function( key, value ) {
+            var datasetsItem = {
+                label: value.nom_categorie+": "+value.sumbudget+"€",
+                data: value.data, 
+                backgroundColor: graphColor[key],
+                hoverBackgroundColor: graphColor[key],
+                hoverBorderColor: graphColor[key],
+                borderColor: graphColor[key],
+                fontColor: "blue",
+                borderWidth: 1
+            }
+            $datasets.push(datasetsItem);
+        }); 
+
+        var data = {
+            labels:  ["jan", "Fév", 'Mars', 'Avr', 'Mai', 'Juin', 'Juil', 'Aout', 'sep', 'Oct', 'Nov', 'Déc'],
+            datasets: $datasets
+        };
+        var myChart = new Chart(ctxA, {
+            type: 'bar',
+            data: data,
+            options: {
+            	legend: {
+			    	display: false
+			    },
+                barValueSpacing: 5,
+                responsive: true,
+                maintainAspectRatio: false,
+                "hover": {
+                  "animationDuration": 0
+                },
+                "animation": {
+                  "duration": 1,
+                  "onComplete": function() {
+                    var chartInstance = this.chart,
+                      ctx = chartInstance.ctx;
+
+                    ctx.font = Chart.helpers.fontString(Chart.defaults.global.defaultFontSize, Chart.defaults.global.defaultFontStyle, Chart.defaults.global.defaultFontFamily);
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'bottom';
+
+                    this.data.datasets.forEach(function(dataset, i) {
+                      var meta = chartInstance.controller.getDatasetMeta(i);
+                      meta.data.forEach(function(bar, index) {
+                        var data = dataset.data[index];
+                        ctx.fillText(data, bar._model.x, bar._model.y - 5);
+                      });
+                    });
+                  }
+                },
+                tooltips: {
+                    "enabled": true,
+                    callbacks: {
+                        label: function(tooltipItem, data) {
+                            var label = data.datasets[tooltipItem.datasetIndex].label || '';
+                            if (label) {
+                                label += ': ';
+                            }
+                            label += Math.round(tooltipItem.yLabel * 100) / 100;
+                            return Math.round(tooltipItem.yLabel * 100) / 100;
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    },
+                  yAxes: [{
+                    display: false,
+                    gridLines: {
+                      display: false
+                    },
+                    ticks: {
+                      display: false,
+                      beginAtZero: true,
+                      min:0
+                    }
+                  }],
+                  xAxes: [{
+                    gridLines: {
+                      display: false
+                    },
+                    maxBarThickness: 10,
+                    ticks: {
+                      beginAtZero: true
+                    }
+                  }]
+                },
+                title: {
+                    display: true,
+                    fontSize: '25',
+                    text: '2021'
+                }
+            }
+        });
+
+
+
+        var valChart = {{ dateCatGraph[1]|json_encode()|raw }};
+
+        var ctxA = document.getElementById('chartCategorie2').getContext('2d');
+        $datasets = [];
+        $.each( valChart, function( key, value ) {
+            var datasetsItem = {
+                label: value.nom_categorie+": "+value.sumbudget+"€",
+                data: value.data, 
+                backgroundColor: graphColor[key],
+                hoverBackgroundColor: graphColor[key],
+                hoverBorderColor: graphColor[key],
+                borderColor: graphColor[key],
+                fontColor: "blue",
+                borderWidth: 1
+            }
+            $datasets.push(datasetsItem);
+        }); 
+
+        console.log($datasets);
+        var data = {
+            labels:  ["jan", "Fév", 'Mars', 'Avr', 'Mai', 'Juin', 'Juil', 'Aout', 'sep', 'Oct', 'Nov', 'Déc'],
+            datasets: $datasets
+        };
+        var myChart = new Chart(ctxA, {
+            type: 'bar',
+            data: data,
+            options: {
+            	legend: {
+			    	display: false
+			    },
+                barValueSpacing: 5,
+                responsive: true,
+                maintainAspectRatio: false,
+                "hover": {
+                  "animationDuration": 0
+                },
+                "animation": {
+                  "duration": 1,
+                  "onComplete": function() {
+                    var chartInstance = this.chart,
+                      ctx = chartInstance.ctx;
+
+                    ctx.font = Chart.helpers.fontString(Chart.defaults.global.defaultFontSize, Chart.defaults.global.defaultFontStyle, Chart.defaults.global.defaultFontFamily);
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'bottom';
+
+                    this.data.datasets.forEach(function(dataset, i) {
+                      var meta = chartInstance.controller.getDatasetMeta(i);
+                      meta.data.forEach(function(bar, index) {
+                        var data = dataset.data[index];
+                        ctx.fillText(data, bar._model.x, bar._model.y - 5);
+                      });
+                    });
+                  }
+                },
+                tooltips: {
+                    "enabled": true,
+                    callbacks: {
+                        label: function(tooltipItem, data) {
+                            var label = data.datasets[tooltipItem.datasetIndex].label || '';
+                            if (label) {
+                                label += ': ';
+                            }
+                            label += Math.round(tooltipItem.yLabel * 100) / 100;
+                            return Math.round(tooltipItem.yLabel * 100) / 100;
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    },
+                  yAxes: [{
+                    display: false,
+                    gridLines: {
+                      display: false
+                    },
+                    ticks: {
+                      display: false,
+                      beginAtZero: true,
+                      min:0
+                    }
+                  }],
+                  xAxes: [{
+                    gridLines: {
+                      display: false
+                    },
+                    maxBarThickness: 10,
+                    ticks: {
+                      beginAtZero: true
+                    }
+                  }]
+                },
+                title: {
+                    display: true,
+                    fontSize: '25',
+                    text: '2022'
+                }
+            }
+        });
+</script>
+
+</body>
+</html>

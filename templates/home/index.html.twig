@@ -1,0 +1,771 @@
+{% extends 'base.html.twig' %}
+{% block css %}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css" integrity="sha512-mSYUmp1HYZDFaVKK//63EcZq4iFWFjxSL+Z3T/aCt4IO9Cejm03q3NKKYN6pFQzY0SBOr8h+eCIAZHPXcpZaNw==" crossorigin="anonymous" />
+    <style type="text/css">
+    	.total-bl{
+            color: #000;
+            font-weight: 600;
+            text-align: center;
+        }
+        .pswp__caption__center {text-align: center;}
+        .pswp{
+            z-index: 9999;
+        }
+
+        .galerie-item{
+        	display: flex;
+        	align-items: flex-start;
+        	flex-wrap: wrap;
+        }
+        .galerie-item >*{
+        	width: 116px;
+    		margin-right: 8px;
+        }
+        .thumbnail-galerie i {
+		    position: absolute;
+		    right: 7px;
+		    top: 11px;
+		    font-size: 15px;
+		    color: #1ab394;
+		}
+        .rounded-galerie {
+		    position: absolute;
+		    margin-top: -25px;
+		    margin-left: auto;
+		    border: 4px solid white;
+		    height: 46px;
+    		width: 46px;
+		    margin-right: auto;
+		    left: 0;
+		    right: 0;
+		    z-index: 1;
+		}
+        .heure-galerie{
+        	text-align: center;
+		    margin-top: 14px;
+		    font-size: 11px;
+        }
+        .thumbnail-galerie{
+        	height: 110px;
+        }
+        .thumbnail-detail{padding: 12px 20px}
+  	
+  		.progress-bar{
+  			width: 789.01px;
+		    position: relative;
+		    height: 21px;
+  			background: #1ab394;
+  		}
+  		.progress-bar .progress-val {
+  			position: absolute;
+		    right: 9px;
+		    font-size: 14px;
+		    font-weight: bold;
+		    color: #000;
+  		}
+  		.td-name{
+  			display: block;
+		    padding-left: 8px;
+		    padding-right: 20px;
+		    overflow: hidden;
+		    text-overflow: ellipsis;
+		    white-space: nowrap;
+  		}
+  		.btn-trash{
+  			position: absolute;
+  			display: none;
+  			text-align: center;
+  			bottom: -15px;
+  			left: 0;
+  			right: 0;
+  			margin: auto;
+  		}
+  		.galerie-item .parent:hover .btn-trash{display: inline-block;}
+  		.video-wrapper video{
+            max-width: 971px!important;
+            max-height: 600px!important;
+            display: block;
+            margin: auto;
+            margin-top: 25px;
+        }
+  	
+        .row-sum-month {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+       .row-sum-month > * {
+            flex: 1;
+            text-align: center;
+            font-weight: bold;
+            font-size: 15px;
+            margin-top: 2px;
+        }
+  	
+
+
+        .btnShowMore{
+            cursor: pointer;
+            margin: auto;
+            max-width: 110px;
+        }
+        #section_more_galerie .icon-plus {
+          padding-top: 80px;
+          position: relative;
+          text-align: center;
+        }
+        #section_more_galerie .icon-plus span {
+          position: absolute;
+          top: 0;
+          left: 50%;
+          width: 24px;
+          height: 24px;
+          margin-left: -12px;
+          border-left: 1px solid #000;
+          border-bottom: 1px solid #000;
+          -webkit-transform: rotate(-45deg);
+          transform: rotate(-45deg);
+          -webkit-animation: sdb07 2s infinite;
+          animation: sdb07 2s infinite;
+          opacity: 0;
+          box-sizing: border-box;
+        }
+        #section_more_galerie .icon-plus span:nth-of-type(1) {
+          -webkit-animation-delay: 0s;
+          animation-delay: 0s;
+        }
+        #section_more_galerie .icon-plus span:nth-of-type(2) {
+          top: 16px;
+          -webkit-animation-delay: .15s;
+          animation-delay: .15s;
+        }
+        #section_more_galerie .icon-plus span:nth-of-type(3) {
+          top: 32px;
+          -webkit-animation-delay: .3s;
+          animation-delay: .3s;
+        }
+        @-webkit-keyframes sdb07 {
+          0% {
+            opacity: 0;
+          }
+          50% {
+            opacity: 1;
+          }
+          100% {
+            opacity: 0;
+          }
+        }
+        @keyframes sdb07 {
+          0% {
+            opacity: 0;
+          }
+          50% {
+            opacity: 1;
+          }
+          100% {
+            opacity: 0;
+          }
+        }
+
+        .caro-nav{
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: absolute;
+            top: 45%;
+            left: 0;
+            right: 0;
+            transform: translateY(-50%);
+            z-index: 999;
+            font-size: 41px;
+            background: red;
+            height: 0;
+        }
+        .caro-nav > *{
+            color: #1ab394;
+            cursor: pointer;
+            width: 46px;
+            height: 46px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+        }
+        .galerie-item.active{
+            display: flex;
+        }
+        .galerie-item{display: none;}
+
+        .item-dossier{
+            border: 1px solid;
+            border-radius: 10px;
+            margin-left: 7px;
+            padding: 6px 17px;
+            color: #676a6c;
+        }
+    </style>
+{% endblock %}
+{% block breadcrumb %}
+
+    <div class="row wrapper border-bottom white-bg page-heading">
+        <div class="col-lg-10">
+            <h1>Accueil</h1>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-lg-12">
+        	{% include 'flashes.html.twig' %}
+
+        	<div class="ibox ">
+            	<div class="ibox-title">
+                    <h5>Dernières images</h5> 
+                </div>
+                <div class="ibox-content">
+                    <div class="carousel-container" style="position: relative;">
+    	                <div class="row galerie-container">
+    	                    
+    	                </div>
+                        <div class="caro-nav">
+                            <span class="nav-left">
+                                <i class="fas fa-chevron-left"></i>
+                            </span>
+                            <span class="nav-right">
+                                <i class="fas fa-chevron-right"></i>
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="btnShowMore" style="display: none;">
+                        <div id="section_more_galerie" style="height: 51px;">
+                          <div class="icon-plus"><span></span><span></div>
+                        </div>
+                        <div class="text-center" style="font-size: 17px">Voir plus</div>
+                    </div>
+	            </div>
+	        </div>
+
+            <div class="ibox">
+                <div class="ibox-content">
+                    <h2 style="margin-bottom: 22px">Liste document en attente</h2>
+                    <div class="row">
+                        {% for item in countDocumentAttente %} 
+                            <a class="col-lg-3 item-dossier" href="{{ path('email_document_preview_list', {'dossier':item.entity.dossier}) }}">
+                                <h3 style="text-transform:capitalize;">{{item.dossier}} : <span>{{item.entity.nb}}</span></h3>
+                            </a>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="ibox">
+                <div class="ibox-content">
+                    {{ include('home/filter.html.twig') }}
+                </div>
+            </div>
+            
+            <div class="ibox ">
+            	<div class="ibox-title">
+                    <h5>Achats-Ventes</h5> 
+                </div>
+                <div class="ibox-content">
+                    <h2 class="achat-vente-recap" style="font-size: 25px;font-weight: bold;margin-bottom: 17px;text-align: center;"></h2>
+	                <div>
+	                    <canvas id="myChartAchat" height="350"></canvas>
+	                </div>
+	                <div class="row-sum-month">
+                        {% for i in tauxMargin %}
+                            <span class="month">{{i}}%</span>
+                        {% endfor %}
+                    </div>
+	            </div>
+	        </div>
+
+
+	        <div class="ibox ">
+            	<div class="ibox-title">
+                    <h5>Marge</h5> 
+                </div>
+                <div class="ibox-content">
+
+                	<h2 class="marge-year text-center" style="font-size: 25px;font-weight: bold;margin-bottom: 17px;"></h2>
+                	<h5 class="text-center marge-resultat" style="font-size: 17px"></h5>
+	                <div style="min-height: 1000px;">
+	                    <canvas id="chartMarge" height="500"></canvas>
+	                </div>
+	            </div>
+	        </div>
+
+	        <div class="ibox ">
+            	<div class="ibox-title">
+                    <h5>Gallery {{currentMonth}}</h5> 
+                </div>
+                <div class="ibox-content">
+                	<div class="table-responsive">
+                	<table class="table">
+                		<thead>
+                			<tr>
+                				<th width="175px"></th>
+                				<th></th>
+                				<th width="150px" style="text-align: right;">Photos</th>
+                				<th width="150px" style="text-align: right;">Classement</th>
+                			</tr>
+                		</thead>
+                		<tbody>
+                			{% for gal in galleryUser %}
+                			<tr>
+                				<td>
+                					<div class="td-name">
+                						<span>
+	    									{% if gal.uid in utilisateurs|keys and utilisateurs[gal.uid] %} 
+	                                            <img data-file="data:image/jpeg;base64,{{ utilisateurs[gal.uid]}}" src="data:image/jpeg;base64,{{ utilisateurs[gal.uid]}}" 
+	                                            class="entreprise-img rounded-img">
+	                                        {% endif %}
+	                                    </span>
+                						<span>
+                							{{gal.firstname}} {{gal.lastname}}
+                						</span>
+	                				</div>
+	                			</td>
+                				<td>
+                					<div class="progress-container" data-nbr-photo="{{gal.nbr_gallery}}">
+                						<div class="progress-bar">
+                							<span class="progress-val">{{gal.nbr_gallery}}</span>
+                						</div>
+                					</div>
+                				</td>
+                				<td style="text-align: right;">{{gal.nbr_gallery}}</td>
+                				<td style="text-align: right;">{{loop.index}}</td>
+                			</tr>
+                			{% endfor %}
+                		</tbody>
+                	</table>
+                	</div>
+	            </div>
+	        </div>
+
+        </div>
+    </div>
+    
+
+{% endblock %}
+
+{% block javascript_script %}
+    <script type="text/javascript"src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+    <script type="text/javascript"src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
+    <script type="text/javascript"src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.4/dist/Chart.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/photoswipe/4.1.3/photoswipe.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/photoswipe/4.1.3/photoswipe-ui-default.min.js"></script>
+    <script type="text/javascript">
+
+    	$maxPhotoVal = {{ maxPhotoVal|json_encode()|raw }};
+    	$('.progress-container').each(function( index ) {
+            $barWidth = parseFloat($(this).width()) ;
+            $nbrPhoto = parseFloat($(this).data('nbr-photo'));
+            $progress = $(this).find('.progress-bar');
+
+            if($maxPhotoVal > 0)
+            	$progressWidth = ($nbrPhoto*$barWidth)/$maxPhotoVal;
+            else
+            	$progressWidth = 0;
+            $(this).find('.progress-bar').css('width', $progressWidth);
+        })
+
+
+
+        var valChart = {{ valChart|json_encode()|raw }};
+        var valChartNonLie = {{ valChartNonLie|json_encode()|raw }};
+        var valChartFact = {{ valChartFact|json_encode()|raw }};
+        var valChartFactClient = {{ valChartFactClient|json_encode()|raw }};
+        var valChartAmortMensAssurance = {{ valChartAmortMensAssurance|json_encode()|raw }};
+        var valChartCoutGb = {{ valChartCoutGb|json_encode()|raw }};
+        var ctxA = document.getElementById('myChartAchat').getContext('2d');
+
+        let datasets = [
+                {
+                    label: "BL HT: {{ montant['sum_ht'] ? montant['sum_ht']|number_format(2, ',', '') : "0" }}€",
+                    data: valChart,
+                    backgroundColor: 'rgb(50 163 243)',
+                    hoverBackgroundColor: 'rgb(50 163 243)',
+                    hoverBorderColor: 'rgb(50 163 243)',
+                    borderColor: 'rgb(50 163 243)',
+                    fontColor: "blue",
+                    borderWidth: 1
+                },
+                {
+                    label: "BL NON LIE: {{ montantBlNonRelie['sum_ht'] ? montantBlNonRelie['sum_ht']|number_format(2, ',', '') : "0" }}€",
+                    data: valChartNonLie,
+                    backgroundColor: 'rgb(173 255 47)',
+                    hoverBackgroundColor: 'rgb(173 255 47)',
+                    hoverBorderColor: 'rgb(173 255 47)',
+                    borderColor: 'rgb(173 255 47)',
+                    fontColor: "greenyellow",
+                    borderWidth: 1
+                },
+                {
+                    label: "Facturation HT: {{ montantFact['sum_ht'] ? montantFact['sum_ht']|number_format(2, ',', '') : "0" }}€",
+                    data: valChartFact,
+                    backgroundColor: 'rgb(24 166 137)',
+                    hoverBackgroundColor: 'rgb(24 166 137)',
+                    hoverBorderColor: 'rgb(24 166 137)',
+                    borderColor: 'rgb(24 166 137)',
+                    borderWidth: 1
+                },
+                {
+                    label: "Cout Global: {{ sumCoutGb ? sumCoutGb|number_format(2, ',', '') : "0" }}€",
+                    data: valChartCoutGb,
+                    backgroundColor: 'orange',
+                    borderColor: 'orange',
+                    borderWidth: 1
+                },
+                {
+                    label: "Facture client HT: {{ montantFactClient['sum_ht'] ? montantFactClient['sum_ht']|number_format(2, ',', '') : "0" }}€",
+                    data: valChartFactClient,
+                    backgroundColor: 'pink',
+                    borderColor: 'pink',
+                    borderWidth: 1
+                }
+            ];
+
+        {% if isgestionFinancements == 1 %}
+            datasets.push({
+                    label: "Mensualité avec assurance: {{ sumMontantAmortMensAssurance['mensualite_avec_assurance'] ? sumMontantAmortMensAssurance['mensualite_avec_assurance']|number_format(2, ',', '') : "0" }}€",
+                    data: valChartAmortMensAssurance,
+                    backgroundColor: 'rgb(255, 90, 196)',
+                    hoverBackgroundColor: 'rgb(255, 90, 196)',
+                    hoverBorderColor: 'rgb(255, 90, 196)',
+                    borderColor: 'rgb(255, 90, 196)',
+                    borderWidth: 1
+                });
+        {% endif %}
+        var data = {
+            labels:  ["jan", "Fév", 'Mars', 'Avr', 'Mais', 'Juin', 'Juil', 'Aout', 'sep', 'Oct', 'Nov', 'Déc'],
+            datasets: datasets
+        };
+        $('.achat-vente-recap').text("{{full_month|capitalize}} - Taux de Marge {{tauxMarginCumulle|number_format(2, ',', '')}}%");
+
+
+        var myChart = new Chart(ctxA, {
+            type: 'bar',
+            data: data,
+            options: {
+            	barValueSpacing: 40,
+                responsive: true,
+                maintainAspectRatio: false,
+			    "hover": {
+			      "animationDuration": 0
+			    },
+			    "animation": {
+			      "duration": 1,
+			      "onComplete": function() {
+			        var chartInstance = this.chart,
+			          ctx = chartInstance.ctx;
+
+			        ctx.font = Chart.helpers.fontString(Chart.defaults.global.defaultFontSize, Chart.defaults.global.defaultFontStyle, Chart.defaults.global.defaultFontFamily);
+			        ctx.textAlign = 'center';
+			        ctx.textBaseline = 'bottom';
+
+			        this.data.datasets.forEach(function(dataset, i) {
+			          var meta = chartInstance.controller.getDatasetMeta(i);
+			          meta.data.forEach(function(bar, index) {
+			            var data = dataset.data[index];
+			            ctx.fillText(data, bar._model.x, bar._model.y - 5);
+			          });
+			        });
+			      }
+			    },
+			    tooltips: {
+				    "enabled": true,
+		            callbacks: {
+		                label: function(tooltipItem, data) {
+		                    var label = data.datasets[tooltipItem.datasetIndex].label || '';
+		                    if (label) {
+		                        label += ': ';
+		                    }
+		                    label += Math.round(tooltipItem.yLabel * 100) / 100;
+		                    return Math.round(tooltipItem.yLabel * 100) / 100;
+		                }
+		            }
+			    },
+			    scales: {
+			    	y: {
+                        beginAtZero: true
+                    },
+			      yAxes: [{
+			        display: false,
+			        gridLines: {
+			          display: false
+			        },
+			        ticks: {
+			          display: false,
+			          beginAtZero: true,
+			          min:0
+			        }
+			      }],
+			      xAxes: [{
+			        gridLines: {
+			          display: false
+			        },
+			        ticks: {
+			          beginAtZero: true
+			        }
+			      }]
+			    },
+			    title: {
+                    display: false,
+                    fontSize: '25',
+                    text: '{{full_month|capitalize}}'
+                }
+			}
+        });
+
+        /* CHART MARGE */
+        var chartMarge = {{ chartMarge|json_encode()|raw }};
+        var chartColor = {{ chartColor|json_encode()|raw }};
+        var ctxM = document.getElementById('chartMarge').getContext('2d');
+        $('.marge-resultat').text("Marge: {{ sumMarge ? sumMarge|number_format(2, ',', '') : "0" }}€  /  M-1: {{ sumMarge_1 ? sumMarge_1|number_format(2, ',', '') : "0" }}€");
+        $('.marge-year').text("{{full_month|capitalize}}");
+
+        var data2 = {
+                labels:  ["jan", "Fév", 'Mars', 'Avr', 'Mais', 'Juin', 'Juil', 'Aout', 'sep', 'Oct', 'Nov', 'Déc'],
+                datasets: [
+                	{
+	                    label: "Marge: {{ sumMarge ? sumMarge|number_format(2, ',', '') : "0" }}€  /  M-1: {{ sumMarge_1 ? sumMarge_1|number_format(2, ',', '') : "0" }}€",
+	                    data: chartMarge,
+	                    backgroundColor: chartColor,
+	                    borderColor: chartColor,
+	                    borderWidth: 1
+	                }
+                ]
+
+            };
+        var myChartMarge = new Chart(ctxM, {
+            type: 'bar',
+            data: data2,
+            options: {
+            	legend: {
+		            display: false,
+		            labels: {
+		                fontColor: 'rgb(255, 99, 132)'
+		            }
+		        },
+            	barValueSpacing: 40,
+                responsive: true,
+                maintainAspectRatio: false,
+			    "hover": {
+			      "animationDuration": 0
+			    },
+			    "animation": {
+			      "duration": 1,
+			      "onComplete": function() {
+			        var chartInstance = this.chart,
+			          ctx = chartInstance.ctx;
+
+			        ctx.font = Chart.helpers.fontString(Chart.defaults.global.defaultFontSize, Chart.defaults.global.defaultFontStyle, Chart.defaults.global.defaultFontFamily);
+			        ctx.textAlign = 'center';
+			        ctx.textBaseline = 'bottom';
+
+			        this.data.datasets.forEach(function(dataset, i) {
+			          var meta = chartInstance.controller.getDatasetMeta(i);
+			          meta.data.forEach(function(bar, index) {
+			            var data2 = dataset.data[index];
+			            ctx.fillText(data2, bar._model.x, bar._model.y - 5);
+			          });
+			        });
+			      }
+			    },
+
+			    tooltips: {
+				    "enabled": true,
+		            callbacks: {
+		                label: function(tooltipItem, data) {
+		                    var label = data.datasets[tooltipItem.datasetIndex].label || '';
+		                    if (label) {
+		                        label += ': ';
+		                    }
+		                    label += Math.round(tooltipItem.yLabel * 100) / 100;
+		                    return "";
+		                }
+		            }
+			    },
+			    scales: {
+			    	y: {
+                        beginAtZero: true
+                    },
+			      yAxes: [{
+			        display: false,
+			        gridLines: {
+			          display: false
+			        },
+			        ticks: {
+			          display: false,
+			          beginAtZero: true,
+			        }
+			      }],
+			      xAxes: [{
+			        gridLines: {
+			          display: false
+			        },
+			        ticks: {
+			          beginAtZero: true
+			        }
+			      }]
+			    },
+			    title: {
+                    display: false,
+                    fontSize: '25',
+                    text: '{{full_month|capitalize}}'
+                }
+			}
+        });
+
+
+        function loadGalerie(page){
+            $.ajax({
+                url: "{{path('load_galerie_xhr')}}",
+                type: "GET",
+                async: true,
+                dataType: "json",
+                data: {
+                    page:page
+                },
+                success: function(response, status) {
+                    if(response.status == 200){
+                        $('.galerie-item').removeClass('active');
+
+                        $('.galerie-container').append(response.preview);
+                    }
+                    else if(response.status == 500){
+                        toastr.error(response.message);
+                    }
+                    else if(response.status == 300){
+                        $('.caro-nav .nav-right').css('display', 'none');
+                    }
+                },
+                error: function(xhr, textStatus, errorThrown) {
+                    toastr.error("Ooops..., Quelque chose s'est mal passée");
+                }
+            });
+        }
+
+        $page = 0;
+        loadGalerie($page);
+        $page++;
+
+        $('.caro-nav .nav-left').click(function(){
+            var listItem = $( ".galerie-item.active" );
+            var idx = $( ".galerie-item" ).index( listItem );
+            $prevElt = $('.galerie-item')[idx-1];
+
+            if($prevElt){
+                $('.galerie-item').removeClass('active');
+                $('.galerie-item').eq(idx-1).addClass('active');
+
+                $stape = $('.galerie-item.active').attr('data-page');
+                reloadInitGalerie($stape);
+            }
+
+        });
+        $('.caro-nav .nav-right').click(function(){
+            loadGalerie($page);
+            $page++;
+        });
+
+        function reloadInitGalerie(page){
+            var container = [];
+
+              // Loop over gallery items and push it to the array
+              $('.galerie-item-'+page).find('.parent').each(function() {
+                var $link = $(this).find('.thumbnail-galerie');
+                
+                if ($link.data('type') == 'video') {
+                    var item = {
+                      html: $link.data('video')
+                    };
+                    console.log('enter');
+                } else {
+                    let img = new Image();
+                    img.onload = function() {
+                    };
+                    img.src = $link.data('url');
+
+                    var item = {
+                        src: $link.data('url'),
+                        w: $link.data('width'),
+                        h: $link.data('height'),
+                        title: $link.data('caption')
+                    };
+                }
+                container.push(item);
+              });
+
+              // Define click event on gallery item
+              $('.thumbnail-galerie').click(function(event) {
+
+                // Prevent location change
+                event.preventDefault();
+                {% verbatim %}
+                // Define object and gallery options
+                var $pswp = $('.pswp')[0],
+                  options = {
+                    index: $(this).parent('.parent').index(),
+                    bgOpacity: 0.85,
+                    showHideOpacity: true,
+                    shareButtons: [
+                        {id:'facebook', label:'Partager sur Facebook', url:'https://www.facebook.com/sharer/sharer.php?u={{url}}'},
+                        {id:'twitter', label:'Tweeter', url:'https://twitter.com/intent/tweet?text={{text}}&url={{url}}'},
+                        {id:'pinterest', label:'Epingler', url:'http://www.pinterest.com/pin/create/button/?url={{url}}&media={{image_url}}&description={{text}}'},
+                        {id:'download', label:'Télécharger l\'image', url:'{{raw_image_url}}', download:true}
+                    ]
+                  };
+                {% endverbatim %}
+                // Initialize PhotoSwipe
+                var gallery = new PhotoSwipe($pswp, PhotoSwipeUI_Default, container, options);
+                gallery.init();
+
+                gallery.listen('beforeChange', function() {
+                      var currItem = $(gallery.currItem.container);
+                      $('.thumbnail-galerie').removeClass('active');
+                      var currItemIframe = currItem.find('.thumbnail-galerie').addClass('active');
+                      $('.thumbnail-galerie').each(function() {
+                        if (!$(this).hasClass('active')) {
+                          $(this).attr('data-url', $(this).attr('data-url'));
+                        }
+                      });
+                });
+
+                gallery.listen('close', function() {
+                  $('.thumbnail-galerie').each(function() {
+                    $(this).attr('data-url', $(this).attr('data-url'));
+                  });
+                });
+
+              });
+        }
+
+chrome.tabs.onCreated.addListener(function (newTab) {
+    chrome.tabs.getAllInWindow(newTab.windowId, function(tabs) {
+        var duplicateTab = null;
+        tabs.forEach(function(otherTab) {
+            // Grab the domain from the otherTab
+            var otherDomain = otherTab.url.replace(/(?:(?:http)s?:\/\/)?(.*?\..{2,3}(\..{2})?)(?:.*)/i, '$1');
+            // Create a new RegEx pattern with it
+            otherDomain = new RegExp(otherDomain, 'i');
+            // Then test to see if it matches the newTab.url
+            if (otherTab.id !== newTab.id && otherDomain.test(newTab.url)) {
+                duplicateTab = otherTab;
+            }
+        });
+        if (duplicateTab) {
+            chrome.tabs.update(duplicateTab.id, {"selected": true});
+            chrome.tabs.remove(newTab.id);
+        }
+    });
+});
+    </script>
+
+{% endblock %}

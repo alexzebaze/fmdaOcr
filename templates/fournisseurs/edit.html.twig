@@ -1,0 +1,29 @@
+{% extends 'base.html.twig' %}
+
+{% block breadcrumb %}
+
+    <div class="row wrapper border-bottom white-bg page-heading">
+        <div class="col-lg-10">
+            <h1>Modifier un fournisseur</h1>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                    <a href="{{ path('home') }}">Accueil</a>
+                </li>
+                <li class="breadcrumb-item">
+                    <a href="{{ path('fournisseur_list') }}">Fournisseurs</a>
+                </li>
+                <li class="breadcrumb-item active">
+                    <strong>Modifier un fournisseur</strong>
+                </li>
+            </ol>
+        </div>
+    </div>
+{% endblock %}
+
+{% block content %}
+    <div class="row">
+        {{ include('fournisseurs/_form.html.twig') }}
+    </div>
+
+    <a href="{{ path('fournisseur_list') }}">Retourner à la liste des fournisseur</a>
+{% endblock %}

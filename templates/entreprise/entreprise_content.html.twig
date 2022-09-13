@@ -1,0 +1,24 @@
+
+{% if app.user.getSuperAdmin %}
+<div class="text-center" style="margin-bottom: 23px;"><a href="{{path('menu_index')}}" class="btn btn-primary admin-btn" style="padding: 10px ​44px;display: inline;color: #fff; margin-right: 0;">ADMIN</a></div>
+{% endif %}
+
+<h3>Choisissez un type d'entreprise pour continuer</h3>
+<div class="entreprise-list">
+	{% for entreprise in entreprises %}
+		<a class="switch-entreprise entreprise-item {% if app.session.get('entreprise_session_id') and app.session.get('entreprise_session_id') == entreprise.id %}active{% endif %}" data-href="{{path('entreprise_select', {'id':entreprise.id})}}" onclick="switchEntreprise(this)">
+			<span>
+				{% if entreprise.logo is not null %}
+					<img class="entreprise-img" src="/logo/{{entreprise.logo}}">
+				{% else %} 
+					<img class="entreprise-img" src="{{asset('images/logotransfmda.png')}}">
+				{% endif %}
+				<span>{{entreprise.name}}</span>
+			</span>
+			<i class="fal fa-chevron-right"></i>
+		</a>
+	{% endfor %}
+</div>
+<div class="loader-container">
+    <img src="{{asset('images/loading.gif')}}" style="width: 54px;">
+</div>

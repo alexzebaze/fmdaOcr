@@ -1,0 +1,49 @@
+
+<style type="text/css">
+    .rounded-img {
+        border-radius: 50%;
+        position: relative;
+        z-index: 1;
+        width: 40px;
+        height: 40px;
+        object-fit: cover;
+        transition: easy 0.4s all;
+    }
+</style>
+<div class="table-responsive">
+    <table class="table">
+        <thead>
+            <tr>
+                <th>IMAGE</th>
+                <th>CODE ARTICLE</th>
+                <th>LIBELLE</th>
+                <th>QTE</th>
+                <th>FOURNISSEUR</th>
+                <th>FABRICANT</th>
+                <th>CODE FOURNISSEUR</th>
+                <th>PA</th>
+                <th>HT</th>
+            </tr>
+        </thead>
+        <tbody>
+
+            {% for article in articles %}
+                <tr>
+                    <td>
+                        {% if article.image %}
+                            <img src="/uploads/article/{{article.image}}" class="rounded-img">
+                        {% endif %}
+                    </td>
+                    <td>{{article.code}}</td>
+                    <td>{{article.libelle}}</td>
+                    <td>{{article.qte}}</td>
+                    <td>{{article.fournisseur}}</td>
+                    <td>{{article.fabricant}}</td>
+                    <td>{{article.code_fournisseur}}</td>
+                    <td>{{article.prix_achat}}</td>
+                    <td>{{article.prix_vente}}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>

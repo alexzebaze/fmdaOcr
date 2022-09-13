@@ -1,0 +1,123 @@
+<div class="table-responsive">
+<table class="table">
+    <thead>
+        <tr class="normenclature-inner">
+            <th>CODE ARTICLE</th>
+            <th class="nowrap">Libelle</th>
+            <th>Qte</th>
+            <th>PA Unit</th>
+            <th>Marge</th>
+            <th>Pourcentage marge</th>
+            <th>PV UNIT HT</th>
+            <th>TT Marge</th>
+            <th>TT Unit PA</th>
+            <th>TT PV HT</th>
+            <th>Unite</th>
+            <th>Fournisseur</th>
+        </tr>
+    </thead>
+    <tbody>
+        
+    {% set prixRevient = 0 %}
+    {% set pvHt = 0 %}
+    {% set marge = 0 %}
+    {% set pourcentageMarge = 0 %}
+    {% set ttmarge = 0 %}
+    {% set ttUnitPa = 0 %}
+    {% set pvttc = 0 %}
+    {% set ttpvht = 0 %}
+
+    {% for normenclature in normenclatures %}
+        {% set prixRevientCur = 0 %}
+        {% set pvHtCur = 0 %}
+        {% set margeCur = 0 %}
+
+        <tr class="normenclature-inner normenclature-row-{{normenclature.id}}">
+            <td>
+                {{normenclature.codeArticle}}
+            </td>
+            <td class="nowrap" style="white-space: nowrap;">
+                <span>{{ normenclature.libelle }}</span>
+            </td>
+            <td class="cell-field-{{normenclature.id}} cellField">
+                {{normenclature.qte}}
+            </td>
+            <td>
+                {% if normenclature.articleReference %}
+                    {% set prixRevient = prixRevient + normenclature.articleReference.prixAchat %}
+                    {% set prixRevientCur = normenclature.articleReference.prixAchat %}
+
+                    {{ normenclature.articleReference.prixAchat ? normenclature.articleReference.prixAchat|number_format(2, ',', '')~'€': '' }}
+                    <input type="hidden" name="paUnit" value="{{prixRevientCur}}">
+                {% endif %}
+            </td>
+            <td>
+                {% if normenclature.articleReference %}
+                    {% set marge = marge + normenclature.articleReference.margeBrut %}
+                    {% set margeCur = normenclature.articleReference.margeBrut %}
+                    {{ normenclature.articleReference.margeBrut ? normenclature.articleReference.margeBrut|number_format(2, ',', '')~'€': ''}}
+
+                {% endif %}
+            </td>
+            <td>
+                {% if normenclature.articleReference %}
+                    {% set pourcentageMarge = pourcentageMarge + normenclature.articleReference.pourcentageMarge %}
+                    {{ normenclature.articleReference.pourcentageMarge}}
+                {% endif %}
+            </td>
+            <td>
+                {% if normenclature.articleReference %}
+                    {% set pvHt = pvHt + normenclature.articleReference.prixVenteHt %}
+                    {% set pvHtCur = normenclature.articleReference.prixVenteHt %}
+                    {{ normenclature.articleReference.prixVenteHt ? normenclature.articleReference.prixVenteHt|number_format(2, ',', '')~'€': '' }}
+                {% endif %}
+            </td>
+            <td id="ttMarge">
+                {% set ttmarge = ttmarge + normenclature.qte*margeCur %}
+                {{normenclature.qte*margeCur}}
+            </td>
+            <td id="ttUnitPa">
+                {% set ttUnitPa = ttUnitPa + normenclature.qte*prixRevientCur %}
+                {{normenclature.qte*prixRevientCur}}
+            </td>
+            <td>
+                {% if normenclature.articleReference %}
+                    {% set ttpvht = ttpvht + normenclature.qte*normenclature.articleReference.prixVenteHt %}
+                    {{normenclature.qte*normenclature.articleReference.prixVenteHt}}
+                {% endif %}
+            </td>
+            <td>{{normenclature.unite}}</td>
+            <td>
+                {% for four in normenclature.getArticleReference.fournisseurs %}
+                    {{four.nom}}
+                {% endfor %}
+            </td>
+        </tr>
+    {% else %}
+        <tr>
+            <td colspan="12">Aucun enregistrement</td>
+        </tr>
+    {% endfor %}
+    <tfoot>
+        <tr class="normenclature-inner">
+            <th></th>
+            <th></th>
+            <th></th>
+            <th>{{prixRevient ? prixRevient|number_format(2, ',', '')~'€': ''}}</th>
+            <th>{{marge ? marge|number_format(2, ',', '')~'€': ''}}</th>
+            <th>
+                {% if normenclatures|length > 0 %} 
+                    {{(pourcentageMarge/normenclatures|length)|number_format(2, ',', '')}}
+                {% endif %}
+            </th>
+            <th>{{pvHt ? pvHt|number_format(2, ',', '')~'€': ''}}</th>
+            <th>{{ttmarge ? ttmarge|number_format(2, ',', ''): ''}}</th>
+            <th>{{ttUnitPa ? ttUnitPa|number_format(2, ',', ''): ''}}</th>
+            <th>{{ttpvht ? ttpvht|number_format(2, ',', ''): ''}}</th>
+            <th></th>
+        </tr>
+    </tfoot>
+    </tbody>
+</table>
+
+</div>

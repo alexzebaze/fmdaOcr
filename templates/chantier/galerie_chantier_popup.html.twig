@@ -1,0 +1,50 @@
+<style type="text/css">
+    .gallery-list {
+        display: flex;
+        align-items: flex-start;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+    .gallery-item {
+        margin-right: 10px;
+        margin-bottom: 4px;
+    }
+    img.image{
+        width: 130px;
+        height: 120px;
+        object-fit: cover;
+    }
+    .label-image{
+        cursor: pointer;
+    }
+    .image-input:checked + .label-image{
+        box-shadow: 0px 0px 0px 3px #1ab394;
+        border-radius: 4px;
+    }
+</style>
+
+
+<form method="POST" action="{{path('chantier_compte_rendu_save_image', {'chantier_id':chantier.chantierId})}}">
+    <input type="hidden" name="compte_rendu_id" value="{{compte_rendu_id}}">
+    <div class="gallery-list">
+    {% for file in pager.currentPageResults %}
+            <div class="gallery-item">
+                {% set file_gallery = file.extension == 'mp4' ? file.getUrl : file.getCompressedUrl %}
+            
+                {% if file.extension != 'mp4' %}
+                <input id="image-{{file.id}}" class="image-input" type="radio" name="image" value="{{file.id}}" style="display: none;">
+                    <label class="label-image" for="image-{{file.id}}" class="image-item">                 
+                        <img  class="image" src="{{file.url}}">
+                    </label>
+                {% endif %}
+            </div>
+        
+    {% endfor %}
+    </div>
+    <div class="col-lg-12 text-center">
+        <button type="submit" class="btn btn-primary">Enregistrer</button>
+    </div>
+
+</form>
+</div>
+

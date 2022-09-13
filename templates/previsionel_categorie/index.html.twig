@@ -1,0 +1,96 @@
+{% extends 'base.html.twig' %}
+
+{% block breadcrumb %}
+
+    <div class="row wrapper border-bottom white-bg page-heading">
+        <div class="col-lg-10">
+            <h1>Categorie previsionel</h1>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                    <a href="{{ path('home') }}">Accueil</a>
+                </li>
+                <li class="breadcrumb-item active">
+                    <strong>Categorie</strong>
+                </li>
+            </ol>
+        </div>
+    </div>
+{% endblock %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-lg-12">
+            {% include 'flashes.html.twig' %}
+            <div class="ibox ">
+                <div class="ibox-title">
+                    <h5>Liste des categories previsionel</h5>
+                    <div class="ibox-tools">
+                        <a href="{{ path('previsionel_categorie_new') }}">
+                            <i class="fa fa-plus"></i>
+                            Ajouter
+                        </a>
+                    </div>
+                </div>
+                <div class="ibox-content">
+                    
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Nom</th>
+                                    <th>actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            {% for previsionel_categorie in previsionel_categories %}
+                                <tr>
+                                    <td>{{ previsionel_categorie.nom }}</td>
+                                    <td style="display: flex;align-items: center;">
+                                        <a class="btn btn-primary" href="{{ path('previsionel_categorie_edit', {'id': previsionel_categorie.id}) }}"><i class="fa fa-edit"></i></a>
+                                        <span style="margin-left: 6px;">
+                                            <form method="post" action="{{ path('previsionel_categorie_delete', {'id': previsionel_categorie.id}) }}" onsubmit="return confirm('Are you sure you want to delete this item?');">
+                                                <input type="hidden" name="_method" value="DELETE">
+                                                <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ previsionel_categorie.id) }}">
+                                                <button class="btn btn-danger"><i class="fa fa-trash"></i></button>
+                                            </form>
+                                        </span>
+                                    </td>
+                                </tr>
+                            {% else %}
+                                <tr>
+                                    <td colspan="13">no records found</td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block javascript_script %}
+    <script src="//cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/plug-ins/1.10.24/sorting/date-eu.js"></script>
+{% endblock %}
+
+{% block javascript %}
+$(document).ready( function () {
+    $('table').DataTable({
+        "language": {
+            "url": "//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/French.json"
+        },
+        "columnDefs": [
+            { type: 'date-eu', targets: 2 }
+        ],
+        "paging":   false,
+    });
+} );
+{% endblock %}
+
+{% block css %}
+    <link rel="stylesheet" href="//cdn.datatables.net/1.10.20/css/jquery.dataTables.min.css">
+{% endblock %}

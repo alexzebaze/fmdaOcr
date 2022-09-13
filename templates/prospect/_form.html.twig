@@ -1,0 +1,163 @@
+
+<style type="text/css">
+    #client_logo{display: none;}
+    .img-load{display: block;margin: auto;max-width: 201px;}
+    label[for=client_logo]{cursor: pointer;}
+    #prospect_chantiers{width: 100%!important;margin-bottom: 35px;}
+    #client_siret{display: none;}
+    #client_tva{display: none;}
+    #client_code{display: none;}
+    label[for=client_logo]{display: none;}
+    #lient_diverstwo{display: none;}
+    #client_f_facturation{display: none;}
+    .rapport-item {
+        border-bottom: 1px solid #dfdcdc;
+        padding-bottom: 8px;
+        margin-bottom: 22px;
+    }
+    .rapport-text {
+        font-size: 16px;
+        line-height: 33px;
+        text-align: justify;
+    }
+    .rapport-content{
+        background: #f7f7f7;
+        padding-top: 20px;
+        border-radius: 8px;
+    }
+    #client_lieu_naissance, #client_date_naissance, #client_diverstwo, #client_type, label[for=client_cni], #client_cni{display: none;}
+</style>
+{{ form_start(form) }}
+<div class="col-lg-8">
+    <div class="ibox">
+        <div class="ibox-content">
+            <div class="row">
+                <input type="hidden" name="prospectId" value="{{prospect.id}}">
+                <div class="col-lg-12 form-group">
+                    {{ form_label(form.nom, 'Nom du Prospect') }}
+                    {{ form_row(form.nom) }}
+                </div>
+                <div class="col-lg-6 form-group">
+                    {{ form_label(form.adresse, 'Adresse de livraison') }}
+                    {{ form_row(form.adresse) }}
+                </div>
+                <div class="col-lg-3 form-group">
+                    {{ form_label(form.cp, 'Code Postal') }}
+                    {{ form_row(form.cp) }}
+                </div>
+                <div class="col-lg-3 form-group">
+                    {{ form_label(form.ville, 'Ville') }}
+                    {{ form_row(form.ville) }}
+                </div>
+                <div class="col-lg-6 form-group">
+                    {{ form_label(form.pays, 'Pays') }}
+                    {{ form_row(form.pays) }}
+                </div>
+                <div class="col-lg-6 form-group">
+                    {{ form_label(form.telecopie, 'Télécopie') }}
+                    {{ form_row(form.telecopie) }}
+                </div>
+                <div class="col-lg-6 form-group">
+                    {{ form_label(form.telone, 'Téléphone 1') }}
+                    {{ form_row(form.telone) }}
+                </div>
+                <div class="col-lg-6 form-group">
+                    {{ form_label(form.teltwo, 'Téléphone 2') }}
+                    {{ form_row(form.teltwo) }}
+                </div>
+                <div class="col-lg-6 form-group">
+                    {{ form_label(form.email, 'E-mail') }}
+                    {{ form_row(form.email) }}
+                </div>
+                <div class="col-lg-6 form-group">
+                    {{ form_label(form.web, 'Site web') }}
+                    {{ form_row(form.web) }}
+                </div>
+                <div class="col-lg-6 form-group">
+                    {{ form_label(form.prix, 'Prix') }}
+                    {{ form_row(form.prix) }}
+                </div>
+                <div class="col-lg-6 form-group">
+                    {{ form_label(form.m2, 'M2') }}
+                    {{ form_row(form.m2) }}
+                </div>
+                <div class="col-lg-12 form-group">
+                    {{ form_label(form.chantiers, 'Chantier') }}
+                    {{ form_row(form.chantiers) }}
+                </div>
+                <div class="col-lg-12 form-group">
+                    {{ form_label(form.diversone, 'Divers 1') }}
+                    {{ form_row(form.diversone, {'attr': {'rows': '8'}}) }}
+                </div>
+
+                <div class="col-lg-12 rapport-container" style="margin-top: 12px;">
+                    <div class="col-lg-12 rapport-content">
+                        <div class="form-group">
+                            <label>Rapport</label>
+                            <textarea class="rapport form-control" rows="9" name="rapport"></textarea>
+                        </div>
+                        <div class="col-lg-12 text-right" style="margin-bottom: 32px;">
+                            <span class="btn btn-info saveRapport" onclick="saveRapport()">Valider</span>
+                        </div>
+                        {% if prospect is defined and prospect.getRapport|length > 0 %}
+                            <h1 class="col-lg-12" style="margin-bottom: 34px;">Listes Rapports</h1>
+                            <div class="col-lg-12 rapport-wrapper">
+                                {{ include('prospect/rapport.html.twig', {'rapports':prospect.getRapport}) }}
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="col-lg-3 form-group" style="margin-top: 60px;">
+                    <button class="btn btn-primary">{{ button_label|default('Enregistrer') }}</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{{ form_end(form) }}
+<script type="text/javascript">
+    let file = document.getElementById("client_logo");
+    file.onchange = function() {
+        if (this.files && this.files[0]) {
+            $that = this;
+            var reader = new FileReader();
+            reader.onload = function (e) {
+                $('.img-load').attr('src', e.target.result);
+            };
+            reader.readAsDataURL(this.files[0]);
+        };
+    }
+
+    $('.field-number').keyup(function () {
+        var content = $(this).val();
+        $(this).val(content.replace(/[\,]+/g, '.'));
+        $(this).val(content.replace(/[\ ]+/g, ''));
+    });
+
+    function saveRapport(){
+        $message = $('textarea[name=rapport]').val();
+        $('textarea[name=rapport]').val('');
+        $.ajax({
+            url: "{{path('prospect_save_rapport')}}",
+            type: "POST",
+            dataType: "json",
+            async: true,
+            data: {
+                prospect_id: $('input[name=prospectId]').val(),
+                rapport: $message,
+            },
+            success: function(response) {
+                if(response.status == 200){        
+                    $('.rapport-wrapper').html(response.datas);
+                }
+                else if(response.status == 500){
+                }
+            },
+            error: function(xhr, textStatus, errorThrown) {
+              console.log(errorThrown);
+            }
+        });
+    }
+
+</script>

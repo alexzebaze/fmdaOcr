@@ -1,0 +1,50 @@
+
+<div class="div-table planning-chantier-item">
+	<div class="table">
+		<div class="tr">
+		  <div class="td">{{horaires.chantier}}</div>
+		  <div class="td">Timeline</div>
+		  <div class="td">Personnes</div>
+		  <div class="td">Status</div>
+		  <div class="td">Nombre de jours</div>
+		</div>
+		{% if 'taches' in horaires|keys %}
+			{% for tache in horaires.taches %}
+			<div class="tr">
+			  <div class="td tache-name">{{tache.fonction|upper}}</div>
+			  <div class="td timeline">
+			  	{% if tache.dateInterval %}
+			  	<span class="timeline-content">
+			  		<span class="interval">
+						{{tache.dateInterval}}
+					</span>
+					<span class="duree">
+						{{tache.diffDay}}d
+					</span>
+				</span>	
+				{% endif %}
+			  </div>
+			  <div class="td">
+			  	<ul class="list-ouvrier list-inline">
+	                {% if tache.users is not empty %}
+	                    {% for usr in tache.users %}
+	                    <li class="avatar">
+	                        {% if usr in horaires.utilisateurs|keys and  horaires.utilisateurs[usr] %} 
+	                        <img src="data:image/jpeg;base64,{{ horaires.utilisateurs[usr]}}"
+	                            class="rounded-img">
+	                        {% endif %}
+	                    </li>
+	                    {% endfor %}
+	                {% endif %}
+	            </ul> 
+			  </div>
+			  <div class="td">-</div>
+			  <div class="td">{{tache.diffDay}}</div>
+			</div>
+			{% endfor %}
+		{% endif %}
+	</div>
+	<div class="">
+		<input type="text" class="form-control" placeholder="+ Nouvelle tache" name="">
+	</div>
+</div>

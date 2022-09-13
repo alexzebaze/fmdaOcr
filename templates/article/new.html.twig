@@ -1,0 +1,164 @@
+{% extends 'base.html.twig' %}
+{% block css %}
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <style type="text/css">
+        @media (min-width: 768px){
+            .modal-sm {
+                width: 525px;
+            }
+        }
+        select.form-control:not([size]):not([multiple]) {
+            height: calc(1.5em + .75rem + 9px);
+        }
+        .total-bl{
+            margin: 8px 0 20px 0;
+            color: #000;
+            font-weight: 600;
+            text-align: center;
+        }
+        .form-group{text-align: left;}
+        .field-mail{display: none;}
+        .select2-container{width: 100%!important;}
+        .rounded-img {
+            border-radius: 50%;
+            position: relative;
+            z-index: 1;
+            width: 40px;
+            height: 40px;
+            object-fit: cover;
+            transition: easy 0.4s all;
+        }
+        tr > td:not(.nowrap), tr > th:not(.nowrap){text-align: center; max-width: 60px}
+        .inputField{text-align: left;width: 60px}
+        .form-control[disabled]{background: transparent!important}
+        input.no-editing{
+           cursor: default!important;
+           background: none;
+           background: transparent;
+        }
+    </style>
+{% endblock %}
+
+{% block breadcrumb %}
+
+    <div class="row wrapper border-bottom white-bg page-heading">
+        <div class="col-lg-10">
+            <h1>Ajouter un articles</h1>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                    <a href="{{ path('home') }}">Accueil</a>
+                </li>
+                <li class="breadcrumb-item">
+                    <a href="{{ path('article_index') }}">Articles</a>
+                </li>
+                <li class="breadcrumb-item active">
+                    <strong>Ajouter un article</strong>
+                </li>
+            </ol>
+        </div>
+    </div>
+{% endblock %}
+
+{% block content %}
+
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="ibox ">
+
+                {{ form_start(form) }}
+                <div class="ibox-content">
+                    <div style="display: flex;align-items: center;justify-content: space-between;">
+                        <ul class="nav nav-tabs" role="tablist" id="myTabs">
+                            <li role="presentation"  class="active"><a href="#informations-tab" aria-controls="informations-tab" role="tab" data-toggle="tab">Informations</a></li>
+                            <li role="presentation"  class=""><a href="#normenclature-tab" aria-controls="normenclature-tab" role="tab" data-toggle="tab">Normenclatures</a></li>
+                        </ul>
+                        <button type="submit" class="btn btn-primary">Enregistré</button>
+                    </div>
+                    <div class="tab-content">
+                        <div role="tabpanel" class="tab-pane active" id="informations-tab">
+                            {{ include('article/_form.html.twig', {'tab':'information'}) }}
+                        </div>
+                        <div role="tabpanel" class="tab-pane normenclatures-container" id="normenclature-tab">
+                            {{ include('article/_form.html.twig', {'tab':'normenclature'}) }}
+                        </div>
+                    </div>
+                </div>
+                {{ form_end(form) }}
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block javascript_script %}
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $('.js-example-basic-single').select2();
+            $('.js-example-basic-multiple').select2();
+        });
+
+        $(document).on("blur",'.inputField',function(event){
+
+            $('input, select').css('pointer-events', 'none');
+            $elt = $(event.currentTarget);
+            $field = $elt.attr('data-field');
+            $.ajax({
+                url:"{{path('normenclature_update_field')}}",
+                type:"GET",
+                dataType: "json",
+                async: true,
+                data: {
+                    normenclature_id: $elt.attr('data-id'),
+                    val: $elt.val(),
+                    field: $elt.attr('data-field')
+                },
+                success:function(response, status) {
+                    $('input, select').css('pointer-events', 'auto');
+                    $('.normenclatures-container').html(response.content);
+
+                    $article = response.article;
+                    $('#article_prix_achat').val($article.prix_achat);
+                    $('#article_prix_vente_ht').val($article.prix_vente_ht);
+                    $('#article_marge_brut').val($article.marge_brute);
+                    $('#article_pourcentage_marge').val($article.pourcentage_marge);
+                    $('#article_prix_vente_ttc').val($article.prix_vente_ttc);
+
+
+                    // if($field == 'qte'){
+                    //     $normenclatureId = $elt.attr('data-id');
+                    //     $ttMarge = $('.normenclature-row-'+$normenclatureId+' input[name=marge]').val();
+                    //     $paUnit = $('.normenclature-row-'+$normenclatureId+' input[name=paUnit]').val();
+                    //     $qte = $('.normenclature-row-'+$normenclatureId+' input#qte').val();
+                    //     console.log([$normenclatureId, $ttMarge, $paUnit, $qte]);
+                    //     $('.normenclature-row-'+$normenclatureId+' #ttMarge').text(($ttMarge*$qte).toFixed(2));
+                    //     $('.normenclature-row-'+$normenclatureId+' #ttUnitPa').text(($paUnit*$qte).toFixed(2));
+                    // }
+                },
+                error:function(){
+                     $('input, select').css('pointer-events', 'auto');
+                    toastr.error("Ooops... Quelque chose s'est mal passée");
+                }
+            });
+        });
+
+        var isSubmit = false;
+        $('.btnEnregistre').click(function(){
+            isSubmit = true;
+            $('form[name=article]').submit();
+        })
+
+        /*var userStartedForm;
+        jQuery(document).on('focus', 'form[name=article] input', function(){
+            userStartedForm = true;
+        });
+        jQuery(document).on('focus', 'form[name=article] select', function(){
+            userStartedForm = true;
+        });
+        jQuery(window).on('beforeunload', function(){
+            if(!isSubmit && userStartedForm){ return ''; }
+        });*/
+        
+    </script>
+    
+{% endblock %}

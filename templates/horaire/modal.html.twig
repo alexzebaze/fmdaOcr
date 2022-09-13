@@ -1,0 +1,146 @@
+<div id="modal-form" class="modal fade" aria-hidden="true" style="font-family: Arial;">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-12">
+                        {% if user %}
+                            {% if user.entreprise is not null and user.entreprise.logo is not empty %}
+                                <br>
+                                <img style="max-width: 50mm;max-height: 25mm"
+                                     src="data:image/jpeg;base64,{{ logo_entreprise }}"
+                                     alt="{{ user.entreprise.name }}">
+                            {% else %}
+                                <h1>{{ user.entreprise.name }}</h1>
+                            {% endif %}
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12">
+                        <h2 style="margin-top: 20mm; font-weight: bold;text-align: center; color: black">
+                            Horaire {% if user %}de {{ user.firstname }} {{ user.lastname }} - {{ mois|upper }} {{ annee }}{% endif %}
+                        </h2>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12">
+                        <table>
+                            {% if horaires and user %}
+                                {% set total = 0 %}
+                                {% set total_fictif = 0 %}
+                                {% set absence = 0 %}
+                                {% set absence_fictive = 0 %}
+                                {% set heure_supp = 0 %}
+                                {% set heure_supp_fictif = 0 %}
+                                {% set heure_supp_50 = 0 %}
+                                {% set heure_supp_fictif_50 = 0 %}
+                                {% set nb_jour_travaille = 0 %}
+                                {% set nb_jour_travaille_fictif = 0 %}
+
+                                {% set ancien_jour = '' %}
+                                {% for num,horaire in horaires %}
+                                    {% set total_semaine = 0 %}
+                                    {% set total_semaine_fictive = 0 %}
+                                    {% for j in horaire %}
+                                        {% if j.heures is not empty %}
+                                            {% set nb_jour_travaille = j.time > 0 ? nb_jour_travaille  + 1 : nb_jour_travaille %}
+                                            {% if j.absence is not iterable %}
+                                                {% set nb_jour_travaille_fictif = j.fictif > 0 ? nb_jour_travaille_fictif  + 1 : nb_jour_travaille_fictif %}
+                                            {% endif %}
+                                            {% for h in j.heures %}
+                                                <tr>
+                                                    <td>
+                                                        {{ j.jour != ancien_jour ? j.jour : '' }}
+                                                        {% set ancien_jour = j.jour %}
+                                                        {% set total_semaine = total_semaine + h.time %}
+                                                        {% if h.absence == 0 %}
+                                                            {% set total_semaine_fictive = total_semaine_fictive + (h.fictif > 0 ? h.fictif : 0) %}
+                                                        {% endif %}
+                                                    </td>
+                                                    <td>
+                                                        {% if h.absence > 0 %}
+                                                            {{ h.absence == 1 ? 'Congés Payés' : '' }} 
+                                                            {{ h.absence == 2 ? 'En arrêt' : '' }}
+                                                            {{ h.absence == 3 ? 'Chômage Partiel' : '' }}
+                                                            {{ h.absence == 4 ? 'Absence' : '' }}
+                                                            {{ h.absence == 5 ? 'Formation' : '' }}
+                                                            {{ h.absence == 6 ? 'RTT' : '' }}
+                                                            {{ h.absence == 7 ? 'Férié' : '' }}
+                                                        {% else %}
+                                                            {{ h.fictif > 0 ?  h.fictif : '' }}
+                                                        {% endif %}
+                                                        ({{ h.chantier is defined and h.chantier != "" and  h.chantier is not null  ? h.chantier.nameentreprise : '' }})
+                                                    </td>
+                                                </tr>
+                                            {% endfor %}
+                                        {% endif %}
+                                    {% endfor %}
+                                    <tr>
+                                        <td class="total-h">
+                                            Total
+                                            {% set total = total + total_semaine %}
+                                        </td>
+                                        <td colspan="3" class="total_semaine_{{ num + 1 }}">
+                                            {% set total_fictif = total_fictif + total_semaine_fictive %}
+                                            {{ total_semaine_fictive }}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="total-h">
+                                            HEURES SUPPLEMENTAIRES à 25%
+                                            {% set hs_semaine = total_semaine - user.heureHebdo > 0 ? (total_semaine - user.heureHebdo <= 8 ? total_semaine - user.heureHebdo : 8) : 0 %}
+                                            {% set hs_semaine_50 = total_semaine - user.heureHebdo > 0 ? (total_semaine - user.heureHebdo > 8 ? total_semaine - user.heureHebdo - 8 : 0) : 0 %}
+                                            {% set heure_supp = heure_supp + hs_semaine %}
+                                            {% set heure_supp_50 = heure_supp_50 + hs_semaine_50 %}
+                                        </td>
+                                        <td colspan="3" class="hs_semaine_{{ num + 1 }}">
+                                            {% set hs_semaine_fictif = total_semaine_fictive - user.heureHebdo > 0 ? (total_semaine_fictive - user.heureHebdo <= 8 ? total_semaine_fictive - user.heureHebdo : 8) : 0 %}
+                                            {% set hs_semaine_fictif_50 = total_semaine_fictive - user.heureHebdo > 0 ? (total_semaine_fictive - user.heureHebdo > 8 ? total_semaine_fictive - user.heureHebdo - 8 : 0) : 0 %}
+                                            {% set heure_supp_fictif = heure_supp_fictif + hs_semaine_fictif %}
+                                            {% set heure_supp_fictif_50 = heure_supp_fictif_50 + hs_semaine_fictif_50 %}
+                                            {{ hs_semaine_fictif }}
+                                        </td>
+                                    </tr>
+                                    {% if hs_semaine_50 > 0 or hs_semaine_fictif_50 > 0 %}
+                                        <tr>
+                                            <td class="total-h">
+                                                HEURES SUPPLEMENTAIRES à 50%
+                                            </td>
+                                            <td colspan="3" class="hs_semaine_fictif_50_{{ num + 1 }}">
+                                                {{ hs_semaine_fictif_50 }}
+                                            </td>
+                                        </tr>
+                                    {% endif %}
+                                    <tr>
+                                        <td class="total-h">CHANTIER</td>
+                                        <td colspan="3">
+                                            
+                                        </td>
+                                    </tr>
+                                    <tr style="height: 40px; vertical-align: text-bottom;">
+                                        <td class="total-h">
+                                            ABSENCE
+                                            {% set abs_semaine =  total_semaine - user.heureHebdo < 0 ? total_semaine - user.heureHebdo : 0 %}
+                                            {% set absence = absence + abs_semaine %}
+                                        </td>
+                                        <td colspan="3" class="abs_semaine_{{ num + 1 }}">
+                                            {% set abs_semaine_fictive =  total_semaine_fictive - user.heureHebdo < 0 ? total_semaine_fictive - user.heureHebdo : 0 %}
+                                            {% set absence_fictive = absence_fictive + abs_semaine_fictive %}
+                                            {{ abs_semaine_fictive }}
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            {% else %}
+                                <tr>
+                                    <td>Aucun horaire renseigné</td>
+                                </tr>
+                            {% endif %}
+                        </table>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

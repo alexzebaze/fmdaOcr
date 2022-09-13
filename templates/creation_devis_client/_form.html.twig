@@ -1,0 +1,2180 @@
+
+<style type="text/css">
+    .form-group{text-align: left;}
+    .field-mail{display: none;}
+    .doc-container div[class^="col-lg-"] {
+        padding: 0;
+    }
+    .close-row, .comment-row{
+        font-weight: bold;
+        font-size: 16px;
+        padding: 0 4px;
+    }
+    .doc-container .form-group{margin:0;}
+    .doc-container .select2-container{width: 100%!important}
+    .select2-container{width: 100%!important;}
+    .doc-container .select2-container .select2-selection--single, .tvaField, .field-type_article{min-height: 34px; height: 100%}
+    .doc-container .select2-container--default .select2-selection--single{
+        border-radius: 0;
+        border: 1px solid #e5e6e7;
+    }
+    .disabled{pointer-events: none;background: #eee}
+    .offert-container{
+        border: 1px solid #e5e6e7;
+        height: 34px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .rounded-img {
+        border-radius: 50%;
+        width: 32px;
+        height: 32px;
+        object-fit: cover;
+        margin:0px 7px;
+    }
+    .article-container {
+        display: flex;
+        align-items: center;
+        border: 1px solid #e5e6e7;
+        padding-left: 2px;
+    }
+    .commentaire-container.hide{
+        display: none;
+    }
+    .recap_tva_item{display: none;}
+
+    .adresse-container{
+        min-height: 62px;
+        border: 1px solid #e5e6e7;
+        padding: 5px;
+    }
+    .line-color {
+        height: 14px;
+    }
+    .weight{font-weight: bold;}
+
+    .sous-total-row input {
+        background: #f09104;
+        color: #fff;
+        border: none;
+        pointer-events: none;
+    }
+    .document-row select.field-type_article{
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        text-indent: 1px;
+        text-overflow: '';
+        width: 100%;
+    }
+    .document-row select.articlefield{
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        text-indent: 1px;
+    }
+    .select2-container{
+        /*z-index: 9999;*/
+        width: 100%!important;
+    }
+    .cover-article{
+        position: absolute;
+        left: 0;
+        right: 0;
+        width: 100%;
+        height: 100%;
+    }
+    .pop-container{
+        padding-bottom: 43px;padding-right: 43px; padding-left: 43px;
+    }
+
+    .loader-container{
+        display: none;align-items: center;justify-content: center;
+        left: 0;
+        right: 0;
+        margin: auto;
+    }
+    .btn-drop-normenclature{
+        font-size: 17px;
+        cursor: pointer;
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        left: 4px;
+    }
+    .field-code{pointer-events: none;}
+    .recap-container .label-value{
+        text-align: right;
+        margin-top: 6px!important;
+        padding-right: 8px!important;
+    }
+    .recap-tva-ht td, .recap-tva-ht th{
+        border: .1px solid black;
+    }
+    .recap-tva-ht th{
+        border: none;
+    }
+    .recap-tva-ht .form-control{
+        border: none;
+        text-align: center;
+    }
+    .recap-tva-ht .label-tva{
+        text-align: right;
+        border: none;
+        padding-right: 9px;
+    }
+    .border-none{border: none;}
+    .recap-container-content{
+        display: flex;
+        align-items: start;
+        justify-content: space-between;
+        padding-right: 115px;
+    }
+    .form-control, .single-line{font-weight: normal;}
+    .docu-container-row{
+        display: flex;
+        align-items: flex-start;
+    }
+    .docu-content-row-val{
+        flex: 1;
+        display: flex;
+    }
+    .article-type-image{
+        width: 25px;
+        display: block;
+        margin: auto;
+    }
+    {% if entete.locked %}
+        .document-content, .locked, .select2{pointer-events: none;}
+        input, select, textarea{
+            pointer-events: none;
+        }
+    {% endif %}
+
+</style>
+
+{{ form_start(form, {'attr': {'autocomplete': 'off', 'id':'entdocu'}}) }}
+    {% set pannel =  ["rgb(3, 127, 76)", "rgb(255, 255, 255)", "rgb(0, 200, 117)","rgb(156, 211, 38)","rgb(255, 203, 0)","rgb(120, 75, 209)","rgb(162, 93, 220)","rgb(0, 134, 192)","rgb(87, 155, 252)","rgb(102, 204, 255)","rgb(187, 51, 84)","rgb(226, 68, 92)","rgb(255, 21, 138)","rgb(255, 90, 196)","rgb(255, 100, 46)","rgb(253, 171, 61)","rgb(127, 83, 71)", "rgb(107 110 112)"] %}
+
+    <input type="hidden" name="download" value="">
+    <input type="hidden" name="enteteId" value="{{entete.id is not null ? entete.id : ''}}">
+    <div class="ibox">
+        <div class="ibox-content">
+            <div class="row">
+                <div class="col-lg-4 form-group">
+                    {{ form_label(form.client, 'Client') }}
+                    {{ form_row(form.client) }}
+
+                    <div class="adresse-container adresse-client-container">
+                        <div class="client-adresse">
+                            {% if entete.client is not null and entete.client.adresse %}
+                                {{entete.client.adresse}}
+                            {% endif %}
+                        </div>
+                        <div class="client-ville">
+                            {% if entete.client is not null and entete.client.ville %}
+                                {{entete.client.ville}}
+                            {% endif %}
+                        </div>
+                        <div class="client-chantier">
+                            {% if entete.client is not null and entete.client.chantiers|length > 0 %}
+                                {% for ch in entete.client.chantiers %} 
+                                    {{ch.nameentreprise}}
+                                {% endfor %}
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                </div>
+                <div class="col-lg-4 form-group">
+                    {{ form_label(form.chantier, 'Chantier') }}
+                    {{ form_row(form.chantier) }}
+
+                    <div class="adresse-container adresse-chantier-container">
+                        <div class="client-adresse">
+                            {% if entete.chantier is not null and entete.chantier.address %}
+                                {{entete.chantier.address}}
+                            {% endif %}
+                        </div>
+                        <div class="client-ville">
+                            {% if entete.chantier is not null and entete.chantier.city %}
+                                {{entete.chantier.city}}
+                            {% endif %}
+                        </div>
+                        <div class="client-cp">
+                            {% if entete.chantier is not null and entete.chantier.cp %}
+                                {{entete.chantier.cp}}
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 form-group">
+                    <label>Lot</label>
+                    {{ form_row(form.lot) }}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-6 form-group">
+                    <label>Echeance</label>
+                    {{ form_row(form.echeance) }}
+                </div>
+                <div class="col-lg-6 form-group">
+                    <label>Date</label>
+                    {{ form_row(form.create_at) }}
+                </div>
+            </div>
+            <div class="row">
+                {% if entete.id %}
+                <div class="col-lg-1 form-group" style="margin-top: 24px; text-align: right;">
+                    <a href="{{path('creation_devis_client_lock', {'id':entete.id})}}" class="btn btn-primary">
+                        {% if entete.locked %} 
+                            <i class="fas fa-lock"></i>
+                        {% else %}
+                            <i class="fas fa-unlock"></i>
+                        {% endif %}
+                    </a>
+                </div>
+                {% endif %}
+                <div class="col-lg-3 form-group">
+                    <label>Document ID</label>
+                    {{ form_row(form.document_id) }}
+                </div>
+                <div class="col-lg-4 form-group">
+                    <label>TOTAL HT</label>
+                    {{ form_row(form.total_ht) }}
+                </div>
+                <div class="col-lg-4 form-group">
+                    <label>TOTAL TTC</label>
+                    {{ form_row(form.total_ttc) }}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-12 form-group">
+                    <label>INFO</label>
+                    {{ form_row(form.info) }}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-12 form-group">
+                    <label>Descriptif des travaux</label>
+                    {{ form_row(form.description_travaux) }}
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="ibox">
+        <div class="ibox-content">
+            <div class="row" style="margin-bottom: 20px">
+                <div class="col-lg-12" style="display: flex;justify-content: space-between;align-items: center;">
+                    <div class="list-style">
+                        <span class="style-item btn btn-primary" onclick="updateStyle('G')">G</span>
+                        
+                        <span class="dropdown">
+                            <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                C
+                            </button>
+                            <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+                                {% for p in pannel %} 
+                                    <li>
+                                        <a href="javascript:void()" class="line-color" style="background: {{p}}" onclick="updateStyle('C', '{{p}}')"></a>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        </span>
+                        <span class="dropdown">
+                            <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                BG
+                            </button>
+                            <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+                                {% for p in pannel %} 
+                                    <li>
+                                        <a href="javascript:void()" class="line-color" style="background: {{p}}" onclick="updateStyle('BG', '{{p}}')"></a>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        </span>
+                    </div>
+                    <div>
+                        <span class="btn btn-info dupliqueLine">Dupliquer ligne</span>
+                        <textarea name="docuDuplique" id="docuDupliqueForm" style="display: none;"></textarea>
+                        &nbsp <span class="btn btn-primary pasteDocuDuplique locked"><i class="fa fa-solid fa-paste"></i> Coller</span>
+                        {% if entete.id %}
+                            <span class="btn btn-primary" onclick="checkMaj({{entete.id}})">Vérifier MAJ</span>
+                        {% endif %}
+                        {% if entete.id is not null %}
+                            <a class="btn btn-info" href="{{path('creation_devis_client_export_docu', {'id':entete.id})}}" target="_blank">Export Excel</a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            <div class="clearfix"></div>
+
+            <div class="container-wrapper" style="overflow-x: auto;">
+                <div class="docu-container-row">
+                    <div class="docu-content-row-val">
+                        <div style="padding: 5px 10px" class="check-docu-container">
+                            <input type="checkbox" name="" class="chk-parent" style="width: 25px;height: 18px;">
+                        </div>
+                        <div class="form-group" style="width: 50px;">
+                            <label>Type</label>
+                        </div>
+                        <div class="form-group" style="width: 70px">
+                            <label>Code</label>
+                        </div>
+                        <div class="form-group" style="flex: 1; min-width: 450px">
+                            <label>Article</label>
+                        </div>
+                        <div class="form-group" style="width: 60px;">
+                            <label>Qte</label>
+                        </div>
+                        <div class="form-group" style="width: 75px;">
+                            <label>Unite</label>
+                        </div>
+                        <div class="form-group" style="width: 90px;">
+                            <label>PA</label>
+                        </div>
+                        <div class="form-group" style="width: 80px;">
+                            <label>%marge</label>
+                        </div>
+                        <div class="form-group" style="width: 80px;">
+                            <label>Marge Brut </label>
+                        </div>
+                        <div class="form-group" style="width: 90px;">
+                            <label>PVHT</label>
+                        </div>
+                        <div class="form-group" style="width: 90px;">
+                            <label>TotalHT</label>
+                        </div>
+                        <div class="form-group" style="width: 70px;">
+                            <label>Tva</label>
+                        </div>
+                        <div class="form-group" style="width: 70px;">
+                            <label>Remise</label>
+                        </div>
+                        <div class="form-group" style="width: 100px;">
+                            <label>Update</label>
+                        </div>
+                    </div>
+                    <div class="form-group" style="width: 100px;">
+                    </div>
+                </div>
+
+                <div class="doc-container">
+                    <div class="document-content" id="sortable">
+                        {% set section = 1 %}
+                        {% set sumTva = 0 %}
+                        {% set tva5 = 0 %}
+                        {% set tva10 = 0 %}
+                        {% set tva20 = 0 %}
+                        {% if documents is defined %}
+                            {% for document in documents %}
+                                {% if document.tva %}
+                                    {% set sumTva = sumTva + document.tva.valeur %}
+
+                                    {% if document.tva.valeur == 5.5 %}
+                                        {% set tva5 = tva5 + 1 %}
+                                    {% elseif document.tva.valeur == 10 %}
+                                        {% set tva10 = tva10 + 1 %}
+                                    {% elseif document.tva.valeur == 20 %}
+                                        {% set tva20 = tva20 + 1 %}
+                                    {% endif %}
+                                {% endif %}
+
+                                <div class="ui-state-default group-docu-item document-row section{{section}} {% if document.type == 'sous_total' %}sous-total-row{% endif %}" data-section="{{section}}" data-row-id="{{document.id}}" id="rowId{{document.id}}">
+
+                                    {% if document.type == 'docu' %}
+                                    <div class="docu-container-row">
+                                        <div class="docu-content-row-val">
+                                            <div style="padding: 5px 10px" class="check-docu-container">
+                                                <input type="checkbox" class="check-docu" name="docuCheck" value="{{document.id}}" style="width: 25px;height: 18px;">
+                                            </div>
+                                            <div class="form-group" style="width: 50px;">
+                                                {% if document.typeArticle == 1 %}
+                                                    <img class="article-type-image" src="/assets/images/sac.png">
+                                                {% else %} 
+                                                    <img class="article-type-image" src="/assets/images/sac-double.png">
+                                                {% endif %}
+
+                                                <select name="documentsEdit[{{document.id}}][type_article]" data-field="type_article" class="form-control field disabled field-type_article" value="{{document.typeArticle}}" style="display: none;">
+                                                    {% for key,type in typeArt %} 
+                                                        <option value="{{key}}" {% if key == document.typeArticle %}selected{% endif %}>{{type}}</option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                            <div class="form-group" style="width: 70px">
+                                                <input type="text" name="documentsEdit[{{document.id}}][code]" data-field="code" class="form-control field field-code" readonly value="{{document.article is not null ? document.article.code : ''}}">
+                                            </div>
+                                            <div class="form-group" style="position: relative;flex: 1; min-width: 450px">
+                                                <div class="cover-article" id="cover-article{{document.id}}" data-row-id="{{document.id}}">
+                                                    {% if document.article is not null and document.article.type == 2 %}
+                                                    <span class="btn-drop-normenclature" data-field="article" onclick="displayNormenclature('{{document.article.id}}')">
+                                                        <i class="fa fa-solid fa-chevron-down"></i>
+                                                    </span>
+                                                    {% endif %}
+
+                                                    <input type="text" name="documentsEdit[{{document.id}}][libelle]" id="autoSearchArticle{{document.id}}" class="autoSearchArticle form-control field field-libelle" value="{% if  document.libelle %}{{document.libelle}}{% elseif document.article is not null %}{{document.article.libelle}}{% endif %}" data-field="article" data-row-id="{{document.id}}" style="padding-left: 20px;
+                                                    {% if document.id in styles|keys and 'article' in styles[document.id]|keys %}
+                                                        {% if styles[document.id]["article"]["background"] is not null and styles[document.id]["article"]["background"] != "" %}
+                                                            background: {{styles[document.id]["article"]["background"]}};
+                                                        {% endif %}
+                                                        {% if styles[document.id]["article"]["color"] is not null and styles[document.id]["article"]["color"] != "" %}
+                                                            color: {{styles[document.id]["article"]["color"]}};
+                                                        {% endif %}
+                                                        {% if styles[document.id]["article"]["weight"] is not null and styles[document.id]["article"]["weight"] != "" %}
+                                                            font-weight: bold;
+                                                        {% endif %}
+                                                    {% endif %}">
+                                                </div>
+                                                <!-- <div class="article-container">
+                                                    {% if document.article and document.article.image %}
+                                                        <img data-file="/uploads/article/{{document.article.image}}" src="/uploads/article/{{document.article.image}}" class="showDocument rounded-img">
+                                                    {% endif %} -->
+                                                    <select required class="form-control field articlefield" name="documentsEdit[{{document.id}}][article]" data-field="article" data-row-id="{{document.id}}" 
+
+                                                    style="height: 34px;
+                                                    {% if document.id in styles|keys and 'article' in styles[document.id]|keys %}
+                                                        {% if styles[document.id]["article"]["background"] is not null and styles[document.id]["article"]["background"] != "" %}
+                                                            background: {{styles[document.id]["article"]["background"]}};
+                                                        {% endif %}
+                                                        {% if styles[document.id]["article"]["color"] is not null and styles[document.id]["article"]["color"] != "" %}
+                                                            color: {{styles[document.id]["article"]["color"]}};
+                                                        {% endif %}
+                                                        {% if styles[document.id]["article"]["weight"] is not null and styles[document.id]["article"]["weight"] != "" %}
+                                                            font-weight: bold;
+                                                        {% endif %}
+                                                    {% endif %}">
+                                                        {% for art in articles %}
+                                                            <option value="{{art.id}}" {% if document.article and art.id == document.article.id %}selected{% endif %}>{{art.libelle}}</option>
+                                                        {% endfor %}
+                                                    </select>
+                                                    <input type="hidden" data-row-id="{{document.id}}" name="styleEdit[{{document.id}}][article][gras]" class="form-control style-article article-gras" value="">
+                                                    <input type="hidden" data-row-id="{{document.id}}" name="styleEdit[{{document.id}}][article][color]" data-field="article" class="form-control style-article article-color" value="">
+                                                    <input type="hidden" data-row-id="{{document.id}}" name="styleEdit[{{document.id}}][article][bg]" data-field="article" class="form-control style-article article-bg" value="">
+                                                <!-- </div> -->
+                                            </div>
+                                            <div class="form-group" style="width: 60px;">
+                                                <input type="text" data-row-id="{{document.id}}" name="documentsEdit[{{document.id}}][qte]" data-field="qte" class="form-control field-qte float change_ht_doc" value="{{document.qte}}"
+
+                                                style="
+                                                {% if document.id in styles|keys and 'qte' in styles[document.id]|keys %}
+                                                    {% if styles[document.id]["qte"]["weight"] is not null and styles[document.id]["qte"]["weight"] != "" %}
+                                                        font-weight: bold;
+                                                    {% endif %}
+                                                {% endif %}">
+
+                                                <input type="hidden" data-row-id="{{document.id}}" name="styleEdit[{{document.id}}][qte][gras]" class="form-control style-qte qte-gras" value="">
+                                            </div>
+                                            <div class="form-group unite-container" style="width: 75px;">
+                                                <input type="text" data-row-id="{{document.id}}" name="documentsEdit[{{document.id}}][unite]" data-field="unite" class="form-control field-unite field" data-field="unite" value="{{document.unite}}"
+                                                style="
+                                                {% if document.id in styles|keys and 'unite' in styles[document.id]|keys %}
+                                                    {% if styles[document.id]["unite"]["weight"] is not null and styles[document.id]["unite"]["weight"] != "" %}
+                                                        font-weight: bold;
+                                                    {% endif %}
+                                                {% endif %}">
+
+                                                <input type="hidden" data-row-id="{{document.id}}" name="styleEdit[{{document.id}}][unite][gras]" class="form-control style-unite unite-gras" value="">
+                                            </div>
+
+                                            <div class="form-group" style="width: 90px;">
+                                                {% if document.prixAchat > 0 %}
+                                                    <input type="text" readonly name="documentsEdit[{{document.id}}][prixAchat]" data-field="prixAchat" class="form-control field field-prixAchat change_ht_doc field-number" value="{{document.prixAchat}}" data-row-id="{{document.id}}">
+                                                {% else %}
+                                                    <input type="text" readonly name="documentsEdit[{{document.id}}][prixAchat]" data-field="prixAchat" class="form-control field field-prixAchat change_ht_doc field-number" value="{{document.article  ? document.article.prixAchat : ''}}" data-row-id="{{document.id}}">
+                                                {% endif %}
+                                            </div>
+                                            <div class="form-group" style="width: 80px;">
+
+                                                {% set marge = (document.pvht - document.prixAchat)*document.qte %} 
+                                                {% set marge = marge - (marge * document.remise)/100 %}
+
+                                                {% set marge2 = document.pvht - document.prixAchat %} 
+                                                {% set marge2 = marge2 - (marge2 * document.remise)/100 %}
+
+                                                {% if document.pvht != 0 %}
+                                                    {% set marge_percent = (marge2/document.pvht)*100 %}
+                                                {% else %}
+                                                    {% set marge_percent = 0 %}
+                                                {% endif %}
+
+                                                <input type="text" readonly name="documentsEdit[{{document.id}}][marge_percent]" data-field="marge_percent" class="form-control field field-marge_percent change_ht_doc field-number" value="{{marge_percent|number_format(2, '.', '')}}" data-row-id="{{document.id}}" style="{% if document.remise > 0 %}color: #fe7c93{% elseif marge_percent < 30  %}color: red;{% else %}color: #0caf0c{% endif %};font-weight: bold;">
+                                            </div>
+                                            <div class="form-group" style="width: 80px;">
+                                                <input type="text" name="documentsEdit[{{document.id}}][marge]" data-field="marge" class="form-control readonly field field-marge change_ht_doc field-number" value="{{marge|number_format(2, '.', '')}}" data-row-id="{{document.id}}">
+                                            </div>
+                                            <div class="form-group" style="width: 90px;">
+                                                <input type="text" name="documentsEdit[{{document.id}}][pvht]" data-field="pvht" class="form-control field field-pvht change_ht_doc field-number" value="{{document.pvht}}" data-row-id="{{document.id}}"
+                                                style="
+                                                {% if document.id in styles|keys and 'pvht' in styles[document.id]|keys %}
+                                                    {% if styles[document.id]["pvht"]["weight"] is not null and styles[document.id]["pvht"]["weight"] != "" %}
+                                                        font-weight: bold;
+                                                    {% endif %}
+                                                {% endif %}">
+
+                                                <input type="hidden" data-row-id="{{document.id}}" name="styleEdit[{{document.id}}][pvht][gras]" class="form-control style-pvht pvht-gras" value="">
+                                            </div>
+                                            <div class="form-group" style="width: 90px;">
+                                                <input type="text" name="documentsEdit[{{document.id}}][total_ht]" class="form-control field total_ht field-number" data-field="total_ht" readonly value="{{document.totalHt}}" data-row-id="{{document.id}}"
+                                                style="
+                                                {% if document.id in styles|keys and 'total_ht' in styles[document.id]|keys %}
+                                                    {% if styles[document.id]["total_ht"]["weight"] is not null and styles[document.id]["total_ht"]["weight"] != "" %}
+                                                        font-weight: bold;
+                                                    {% endif %}
+                                                {% endif %}">
+
+                                                <input type="hidden" data-row-id="{{document.id}}" name="styleEdit[{{document.id}}][total_ht][gras]" class="form-control style-total_ht total_ht-gras" value="">
+                                            </div>
+                                            <div class="form-group" style="width:70px;">
+                                                <select class="form-control tvaField field change_ht_doc" data-field="tva" data-row-id="{{document.id}}" name="documentsEdit[{{document.id}}][tva]"
+
+                                                style="
+                                                {% if document.id in styles|keys and 'tva' in styles[document.id]|keys %}
+                                                    {% if styles[document.id]["tva"]["weight"] is not null and styles[document.id]["tva"]["weight"] != "" %}
+                                                        font-weight: bold;
+                                                    {% endif %}
+                                                {% endif %}">
+
+                                                    {% for tva in tvas %}
+                                                        <option value="{{tva.id}}" {% if document.tva and tva.id == document.tva.id %}selected{% endif %}>{{tva.valeur}}</option>
+                                                    {% endfor %}
+                                                </select>
+
+                                                <input type="hidden" data-row-id="{{document.id}}" name="styleEdit[{{document.id}}][tva][gras]" class="form-control style-tva tva-gras" value="">
+                                            </div>
+                                            <div class="form-group" style="width: 70px;">
+                                                <input type="text" name="documentsEdit[{{document.id}}][remise]" data-field="remise" data-row-id="{{document.id}}" class="form-control field field-remise change_ht_doc field-number" value="{{document.remise}}"
+                                                style="
+                                                {% if document.id in styles|keys and 'remise' in styles[document.id]|keys %}
+                                                    {% if styles[document.id]["remise"]["weight"] is not null and styles[document.id]["remise"]["weight"] != "" %}
+                                                        font-weight: bold;
+                                                    {% endif %}
+                                                {% endif %}">
+
+                                                <input type="hidden" name="documentsEdit[{{document.id}}][rang]" data-field="rang" class="field-rang field" data-row-id="{{document.id}}" value="{{document.rang}}">
+
+                                                <input type="hidden" data-row-id="{{document.id}}" name="styleEdit[{{document.id}}][remise][gras]" class="form-control style-remise remise-gras" value="">
+                                            </div>
+                                            <div  class="form-group text-center" style="width: 100px;text-align: center;border: 1px solid #ebeced;">
+                                                {% if document.article %}
+                                                    <span onclick="updatePriceVente({{document.id}}, {{document.article.getPrixVenteHt}})">
+                                                        {% if document.article.getPrixVenteHt|round(0, 'floor') < document.pvht|round(0, 'floor') %}
+                                                            <span class="btn" style="color: red">
+                                                                <i class="fa fa-solid fa-arrow-down"></i> {{document.article.getPrixVenteHt}}€
+                                                            </span>
+                                                        {% elseif document.article.getPrixVenteHt|round(0, 'floor') > document.pvht|round(0, 'floor') %}
+                                                            <span class="btn" style="color: #0caf0c">
+                                                                <i class="fa fa-solid fa-arrow-up"></i> {{document.article.getPrixVenteHt}}€
+                                                            </span>
+                                                        {% endif %}
+                                                    </span>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                        <div class="form-group" style="width: 100px;">
+                                            <div style="display: flex;align-items: center;justify-content: flex-start;">
+                                                <span class="close-row btn" style="color: red;" onclick="removeRow({{document.id}})">X</span>
+                                                <span class="comment-row btn" onclick="openModalSaveArticle({{document.id}})">
+                                                    <i class="fas fa-save"></i>
+                                                </span>
+                                                {% if document.article is not null %}
+                                                    <a class="comment-row btn" target="_blank" href="{{path('article_edit', {'id':document.article.id})}}" style="color: #676a6c">
+                                                        <i class="fa fa-external-link" aria-hidden="true"></i>
+                                                    </a>
+                                                {% endif %}
+                                                <span class="comment-row btn">
+                                                    <i class="fa fa-arrows"></i>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                        {% set ttOeuvreDevis = 0 %}
+                                        {% set ttAchatDevis = 0 %}
+                                        {% set ttQteMo = 0 %}
+
+                                        {% if document.article %}
+                                            {% if document.article.type == 1 %}
+                                                {% if 'oeuvre' in document.article.libelle|lower and document.article.getPrixAchat and document.qte %}
+
+                                                    {% set ttOeuvreDevis = ttOeuvreDevis + (document.article.getPrixAchat) %}
+                                                    {% if document.qte %}
+                                                    {% set ttQteMo = ttQteMo + document.qte %}
+                                                    {% endif %}
+                                                {% elseif 'oeuvre' not in document.article.libelle|lower and document.article.getPrixAchat %}
+                                                    {% set ttAchatDevis = ttAchatDevis + (document.article.getPrixAchat) %}
+                                                {% endif %}
+                                            {% elseif document.article.type == 2 %}
+
+                                                {% for norm in document.article.getNormenclatures %}
+                                                    {% if 'oeuvre' in norm.libelle|lower and norm.articleReference and norm.articleReference.prixAchat and norm.qte %}
+                                                        {% set ttOeuvreDevis = ttOeuvreDevis + (norm.articleReference.prixAchat*norm.qte) %}
+
+                                                        {% if norm.qte and document.qte%}
+                                                            {% set ttQteMo = ttQteMo + norm.qte*document.qte %}
+                                                        {% endif %}
+
+                                                    {% elseif 'oeuvre' not in norm.libelle|lower and norm.articleReference and norm.articleReference.prixAchat and norm.qte %}
+
+                                                        {% set ttAchatDevis = ttAchatDevis + (norm.articleReference.prixAchat*norm.qte) %}
+
+                                                    {% endif %}
+                                                {% endfor %}
+                                            {% endif %}
+                                        {% endif %}
+
+                                        <input type="hidden" name="" class="ttOeuvreDevis" value="{{ttOeuvreDevis}}">
+                                        <input type="hidden" name="" class="ttAchatDevis" value="{{ttAchatDevis}}">
+                                        <input type="hidden" name="" class="ttQteMo" value="{{ttQteMo}}">
+
+                                    {% elseif document.type == 'sous_total' %}
+                                    <div class="docu-container-row">
+                                        <div style="padding: 5px 10px" class="check-docu-container">
+                                            <input type="checkbox" class="check-docu" name="docuCheck" value="{{document.id}}" style="width: 25px;height: 18px; pointer-events: auto;">
+                                        </div>
+                                        <div class="docu-content-row-val sous-total-row">
+                                            <div class="form-group" style="position: relative;flex: 1; min-width: 705px">
+                                                <input type="text" class="form-control" value="SOUS TOTAUX">
+                                            </div>
+                                            <div class="form-group" style="width: 90px;">
+                                                <input type="text" name="sousTotauxEdit[{{document.id}}][prixAchat]" class="form-control sst_pa" value="{{document.prixAchat}}" data-row-id="{{document.id}}" style="pointer-events: auto;">
+                                            </div>
+                                            <div class="form-group" style="width: 80px;background: #f09104">
+                                            </div>
+                                            <div class="form-group" style="width: 80px;">
+                                                <input type="text" name="sousTotauxEdit[{{document.id}}][marge]" class="form-control sst_marge" value="{{document.marge}}" data-row-id="{{document.id}}" style="pointer-events: auto;">
+                                            </div>
+                                            <div class="form-group" style="width: 90px;">
+                                                 <input type="text" name="sousTotauxEdit[{{document.id}}][pvht]" class="form-control sst_pvht" value="{{document.pvht}}" data-row-id="{{document.id}}" style="pointer-events: auto;">
+                                            </div>
+                                            <div class="form-group" style="width: 90px;">
+                                                 <input type="text" name="sousTotauxEdit[{{document.id}}][total_ht]" class="form-control sst_totalht" value="{{document.totalHt}}" data-row-id="{{document.id}}" style="pointer-events: auto;">
+                                            </div>
+                                            <div class="form-group" style="width:70px;">
+                                                <input type="text" value="" class="form-control">
+                                            </div>
+                                            <div class="form-group" style="width:70px;">
+                                                <input type="text" value="" class="form-control">
+
+                                                <input type="hidden" name="sousTotauxEdit[{{document.id}}][rang]" data-field="rang" class="field-rang field" data-row-id="{{document.id}}" value="{{document.rang}}">
+                                            </div>
+                                            <div style="width: 100px; background: #f09104"></div>
+                                        </div>
+
+                                        <div class="form-group" style="width:100px;">
+                                            <div style="display: flex;align-items: center;justify-content: flex-start;">
+                                                <span class="close-row btn" style="color: red;" onclick="removeRow({{document.id}})">X</span>
+                                                <span class="comment-row btn">
+                                                    <i class="fa fa-arrows"></i>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {% set section = section + 1 %}
+
+                                    {% elseif document.type == 'line' %}
+                                    <div class="docu-container-row">
+                                        <div class="docu-content-row-val">
+                                            <!-- commentaire texte -->
+                                            <div style="padding: 5px 10px" class="check-docu-container">
+                                                <input type="checkbox" class="check-docu" name="docuCheck" value="{{document.id}}" style="width: 25px;height: 18px;">
+                                            </div>
+                                            <div class="form-group commentaire-container" id="commentaire{{document.id}}" style="flex: 1; min-width: 1376px;">
+                                                <textarea rows="1" name="commentairesEdit[{{document.id}}][commentaire]" class="form-control field cc" placeholder="commentaire" data-field="commentaire" data-row-id="{{document.id}}"
+                                            style="
+                                                {% if document.id in styles|keys and 'commentaire' in styles[document.id]|keys %}
+                                                    {% if styles[document.id]["commentaire"]["weight"] is not null and styles[document.id]["commentaire"]["weight"] != "" %}
+                                                        font-weight: bold;
+                                                    {% endif %}
+                                                {% endif %}">{{document.commentaire}}</textarea>
+
+                                                <input type="hidden" name="commentairesEdit[{{document.id}}][rang]" data-field="rang" class="field-rang field" data-row-id="{{document.id}}" value="{{document.rang}}">
+
+                                                <input type="hidden" data-row-id="{{document.id}}" name="styleEdit[{{document.id}}][commentaire][gras]" class="form-control style-commentaire commentaire-gras" value="">
+                                            </div>
+                                        </div>
+                                        <div class="form-group" style="width:100px;">
+                                            <div style="display: flex;align-items: center;justify-content: flex-start;">
+                                                <span class="close-row btn" style="color: red;" onclick="removeRow({{document.id}})">X</span>
+                                                <span class="comment-row btn">
+                                                    <i class="fa fa-arrows"></i>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {% endif %}
+                                </div>
+
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+
+                    <div class="locked" style="margin-top: 12px">
+                        <div class="col-lg-12" style="font-size: 10px;line-height: 26px;margin-bottom: 30px;">
+                            <div class="col-md-7">
+                                <span class="btn btn-primary" onclick="addRow('docu')">+ Ajouter une ligne</span>
+                                <span class="btn btn-info" onclick="addRow('line')">+ Ligne de texte</span>
+                                <span class="btn btn-warning" onclick="addRow('sous_total')">+ sous totaux</span>
+                            </div>
+                            <div class="col-md-5" >
+                                <div style="font-size: 15px;">Marge Brut: <b id="margeTotal"></b></div>
+                                <div style="font-size: 15px;">Marge Net: <b id="margeNetTotal"></b></div>
+                                <div style="font-size: 15px;">Matériel: <b id="totalAchatDevis"></b></div>
+                                <div style="font-size: 15px;">Coût MO: <b id="totalMODevis"></b></div>
+                                <div style="font-size: 15px;">Nombre de Jour: <b id="totalTempsDevis"></b></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="recap-container" style="margin-top: 92px">
+                        <div class="recap-container-content">
+                            <div class="" style="width: 450px">
+                                <table class="recap-tva-ht" style="border-collapse: collapse;">
+                                    <tr style="text-align: center;">
+                                        <th class="border-none" width="90" style="border: none;"></td>
+                                        <th style="text-align: center;">TOTAL HT</th>
+                                        <th style="text-align: center;">TOTAL TVA</th>
+                                    </tr>
+                                    <tr>
+                                        <td class="label-tva">TVA 20,0%</td>
+                                        <td>
+                                            <input type="text" name="recap_httva20" class="form-control recap_htTva20 recap_httva_item" data-val="20">
+                                        </td>
+                                        <td>
+                                            <input type="text" name="" class="form-control recap_tva20ht recap_tvaHT_item" >
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="label-tva">TVA 10,0%</td>
+                                        <td>
+                                            <input type="text" name="recap_httva10" class="form-control recap_htTva10 recap_httva_item" data-val="10">
+                                        </td>
+                                        <td>
+                                            <input type="text" name="" class="form-control recap_tva10ht recap_tvaHT_item">
+                                        </td>
+                                    </tr>
+                                    <tr class="label-tva">
+                                        <td class="label-tva">TVA 5,5%</td>
+                                        <td>
+                                            <input type="text" name="recap_httva5" class="form-control recap_htTva5 recap_httva_item" data-val="5">
+                                        </td>
+                                        <td>
+                                            <input type="text" name="" class="form-control recap_tva5ht recap_tvaHT_item">
+                                        </td>
+                                    </tr>
+
+                                </table>
+                            </div>
+                            <div class="recap-container-total" style="width: 300px;">
+                                <div class="row">
+                                    <div class="col-lg-12">
+                                        <div class="col-lg-3 form-group label-value">
+                                            Total HT
+                                        </div>
+                                        <div class="col-lg-9 form-group">
+                                            <input type="text" id="recap_total_ht" name="recap_total_ht" class="form-control disabled" value="{{entete.id is not null ? entete.totalHt : ''}}">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row" style="margin-top:5px">
+                                    <div class="col-lg-12">
+                                        <div class="col-lg-3 form-group label-value">
+                                            <div style="display: flex; align-items: center;">
+                                                <span> Rem </span>
+                                                <input type="text" name="recap_remise" class="form-control" id="recap_remise" value="{{entete.getRemisePercent}}" style="padding: 1px;">
+                                                <span> % </span>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-9 form-group">
+                                            <input type="text" name="recap_remise_val" class="form-control disabled" id="recap_remise_val" value="{{entete.getRemise}}">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row" style="margin-top:5px">
+                                    <div class="col-lg-12">
+                                        <div class="col-lg-3 form-group label-value">
+                                            <span>Total Net HT</span>&nbsp
+                                        </div>
+                                        <div class="col-lg-9 form-group">
+                                            <input type="text" name="recap_remise_total_ht" class="form-control disabled" id="recap_remise_total_ht" value="">
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="row" style="margin-top:5px">
+                                    <div class="col-lg-12">
+                                        <div class="col-lg-3 form-group label-value">
+                                            <div style="/*display: flex; align-items: center; */text-align: right;">
+                                                <span>TVA 5,5% </span>&nbsp
+                                            </div>&nbsp
+                                        </div>
+                                        <div class="col-lg-9 form-group">
+                                            <input type="text" name="recap_tva_val5" class="form-control recap_tva_item_val disabled" id="recap_tva_val5" value="">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row" style="margin-top:5px">
+                                    <div class="col-lg-12">
+                                        <div class="col-lg-3 form-group label-value">
+                                            <div style="/*display: flex; align-items: center;*/ text-align: right;">
+                                                <span>TVA 10,0%</span>&nbsp
+                                            </div>&nbsp
+                                        </div>
+                                        <div class="col-lg-9 form-group">
+                                            <input type="text" name="recap_tva_val10" class="form-control recap_tva_item_val disabled" id="recap_tva_val10" value="">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row" style="margin-top:5px">
+                                    <div class="col-lg-12">
+                                        <div class="col-lg-3 form-group label-value">
+                                            <div style="/*display: flex; align-items: center;*/text-align: right;">
+                                                <span>TVA 20,0% </span>&nbsp
+                                            </div>&nbsp
+                                        </div>
+                                        <div class="col-lg-9 form-group">
+                                            <input type="text" name="recap_tva_val20" class="form-control recap_tva_item_val disabled" id="recap_tva_val20" value="">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row" style="margin-top:5px">
+                                    <div class="col-lg-12">
+                                        <div class="col-lg-3 form-group label-value">
+                                            <span>Total TTC</span>&nbsp
+                                        </div>
+                                        <div class="col-lg-9 form-group">
+                                            <input type="text" name="recap_ttc" id="recap_ttc" class="form-control disabled" value="">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+{{ form_end(form) }}
+
+    <div id="modalArticle" class="modal fade bs-example-modal-sm modal-center" role="dialog" aria-labelledby="myLargeModalLabel">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header" style="border: none;">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h2 class="modal-title text-center" id="myModalLabel">Rechercher un article</h2>
+                </div>
+
+                <div class="pop-container">
+                    <div class="loader-container col-lg-12 form-group">
+                        <img src="/assets/images/loading.gif" style="width: 40px;">
+                    </div>
+                    <input type="hidden" name="article_select">
+                    <input type="text" name="searchArticle" class="form-control" placeholder="rechercher">
+
+                    <div class="pop-article-container">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="modalNormenclatureArticle" class="modal fade bs-example-modal-sm modal-center" role="dialog" aria-labelledby="myLargeModalLabel">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header" style="border: none;">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h2 class="modal-title text-center" id="myModalLabel">Liste de normenclature</h2>
+                </div>
+
+                <div class="pop-container">
+                    <div class="loader-container col-lg-12 form-group">
+                        <img src="/assets/images/loading.gif" style="width: 40px;">
+                    </div>
+                    <div class="pop-normenclature-container">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>  
+
+    <div id="modalArticleMaj" class="modal fade bs-example-modal-sm modal-center" role="dialog" aria-labelledby="myLargeModalLabel">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header" style="border: none;">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h2 class="modal-title text-center" id="myModalLabel"></h2>
+                </div>
+
+                <div class="pop-container">
+                    <div class="loader-container col-lg-12 form-group">
+                        <img src="/assets/images/loading.gif" style="width: 40px;">
+                    </div>
+                    <div class="popup-container-list">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div> 
+
+    <div class="modal fade" id="modalCommandeFournisseur" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header" style="border: none;">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h2 class="modal-title text-center" id="myModalLabel">Aperçu de commande Fournisseur</h2>
+                </div>
+
+                <div class="pop-container">
+                    <div class="loader-container col-lg-12 form-group">
+                        <img src="/assets/images/loading.gif" style="width: 40px;">
+                    </div>
+                    <div class="popup-container-list">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div> 
+
+    <div id="modalCommandeArticle" class="modal fade bs-example-modal-sm modal-center" role="dialog" aria-labelledby="myLargeModalLabel">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header" style="border: none;">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h2 class="modal-title text-center" id="myModalLabel">Aperçu articles Fournisseur</h2>
+                </div>
+
+                <div class="pop-container">
+                    <div class="loader-container col-lg-12 form-group">
+                        <img src="/assets/images/loading.gif" style="width: 40px;">
+                    </div>
+                    <div class="popup-container-list">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div> 
+
+    <div id="modalAddArticle" class="modal fade bs-example-modal-sm modal-center" role="dialog" aria-labelledby="myLargeModalLabel">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header" style="border: none;">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h2 class="modal-title text-center title-edit" style="display: none;">modification d'article</h2>
+                    <h2 class="modal-title text-center title-add" style="display: none;">Ajout article</h2>
+                </div>
+
+                <div class="pop-container">
+                    <div class="loader-container col-lg-12 form-group">
+                        <img src="/assets/images/loading.gif" style="width: 40px;">
+                    </div>
+
+
+
+                    <ul class="nav nav-tabs" role="tablist" id="myTabs">
+                        <li role="presentation"  class="active"><a href="#informations-tab" aria-controls="informations-tab" role="tab" data-toggle="tab">Informations</a></li>
+                        <!-- <li role="presentation"  class=""><a href="#normenclature-tab" aria-controls="normenclature-tab" role="tab" data-toggle="tab">Normenclatures</a></li> -->
+                    </ul>
+
+                    <form method="POST" action="{{path('article_new_xhr')}}" id="formAddArticle" name="formAddArticle" style="margin-top: 25px">
+                        <div class="tab-content">
+                            <div role="tabpanel" class="tab-pane active" id="informations-tab">
+                                <div class="pop-article-modal-container">
+                                    
+                                    <input type="hidden" name="rowId" value="">
+                                    <div class="form-group">
+                                        <input type="text" class="form-control" name="code" readonly>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Libelle</label>
+                                        <input type="text" class="form-control" name="libelle">
+                                    </div>
+                                    <div class="form-group">
+                                        <select name="type_article" class="form-control">
+                                            {% for key,type in typeArt %} 
+                                                <option value="{{key}}">{{type}}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Unite</label>
+                                        <input type="text" class="form-control" name="unite">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>PV HT</label>
+                                        <input type="text" class="form-control" name="pvht">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Taux tva</label>
+                                        <select class="form-control" name="tva">
+                                            {% for tva in tvas %}
+                                                <option value="{{tva.id}}">{{tva.valeur}}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+
+                                </div>
+                            </div>
+                            <div role="tabpanel" class="tab-pane normenclatures-container" id="normenclature-tab">
+                                <div class="loader-container col-lg-12 form-group">
+                                    <img src="/assets/images/loading.gif" style="width: 40px;">
+                                </div>
+                                <div class="normenclature-content"></div>
+                            </div>
+                        </div>
+
+                        <div class="form-group" style="text-align: right;">
+                            <button class="btn btn-primary">Enregistrer</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<script type="text/javascript">
+
+    $fieldFocus = "";
+    totauxRecap();
+    recalculSousTotal();
+    calculTotaux();
+    var rowId = 0;
+    $articles = {{ articles|json_encode()|raw }};   
+    $clients = {{ clientsArr|json_encode()|raw }};   
+    $chantiers = {{ chantierArr|json_encode()|raw }};   
+    $tvas = {{ tvas|json_encode()|raw }};
+    $typeArticles = {{ typeArticles|json_encode()|raw }};
+    $typeArt = {{ typeArt|json_encode()|raw }};
+    let sectionNb = {{section}};
+
+
+    function openModalSaveArticle(documentId){
+        $rowSelect = documentId;
+        $("#modalAddArticle").modal('show');
+        $tva = $('#rowId'+$rowSelect+ " .tvaField").val();
+        $type_article = $('#rowId'+$rowSelect+ " .field-type_article").val();
+        $code = $('#rowId'+$rowSelect+ " .field-code").val();
+
+        $('#formAddArticle input[name=libelle]').val($('#rowId'+$rowSelect+ " .field-libelle").val());
+        $('#formAddArticle input[name=pvht]').val($('#rowId'+$rowSelect+ " .field-pvht").val());
+        $('#formAddArticle input[name=code]').val($code);
+        $('#formAddArticle input[name=unite]').val($('#rowId'+$rowSelect+ " .field-unite").val());
+        $('#formAddArticle select[name=tva]').val($tva);
+        $('#formAddArticle select[name=type_article]').val($type_article);
+        $('#formAddArticle input[name=rowId]').val(documentId);
+
+        if($code ==""){
+            $('.title-edit').css('display', 'none');
+            $('.title-add').css('display', 'block');
+        }
+        else{
+            $('.title-add').css('display', 'none');
+            $('.title-edit').css('display', 'block');
+        }
+
+
+        $('#formAddArticle .loader-container').css('display','flex');
+        $.ajax({
+            url: "{{path('article_fichearticle_normenclature_xhr')}}",
+            type: "GET",
+            dataType: "json",
+            async: true,
+            data: {
+                docu_id: documentId
+            },
+            success: function(response, status) {
+                if(response.status == 200){
+                    $('.normenclature-content').html(response.content);
+                    $('.js-example-basic-multiple').select2();
+                }
+                else if(response.status == 500){
+                    toastr.error(response.message);
+                }
+
+                 $('#formAddArticle .loader-container').css('display','none');
+            },
+            error: function(xhr, textStatus, errorThrown) {
+                toastr.error("Oops, une erreur s'est produite");
+                 $('#formAddArticle .loader-container').css('display','none');
+            }
+        });
+    }
+
+
+    var form = document.forms.namedItem("formAddArticle");
+    $('form[name=formAddArticle]').submit(function(ev){
+        ev.preventDefault();
+        $('#modalAddArticle .loader-container').css('display','flex');
+        $.ajax({
+            type: "POST",
+            url: form.getAttribute('action'),
+            data: new FormData(this),
+            dataType: 'json',
+            contentType: false,
+            cache: false,
+            processData:false,
+            success: function(response, status) {
+                $('#modalAddArticle .loader-container').css('display','none');
+                $("#modalAddArticle").modal("hide");
+                if(response.status == 200){
+                    let dataArticle = response.datas
+                    let row_id = $('#formAddArticle input[name=rowId]').val();
+                    $('#rowId'+row_id+ " .field-libelle").val(dataArticle.libelle);
+                    $('#rowId'+row_id+ " .field-prixAchat").val(dataArticle.prix_achat);
+                    $('#rowId'+row_id+ " .field-marge").val(dataArticle.marge);
+                    $('#rowId'+row_id+ " .field-code").val(dataArticle.code);
+                    $('#rowId'+row_id+ " .field-unite").val(dataArticle.unite);
+                    $('#rowId'+row_id+ " .field-pvht").val(dataArticle.pvht);
+                    $('#rowId'+row_id+ " .field-tva").val(dataArticle.tva);
+                    $('#rowId'+row_id+ " .field-type_article").val(dataArticle.type_article); 
+                    $('#rowId'+row_id+ " .field-type_article").val(dataArticle.type_article); 
+
+                    if(dataArticle.type_article == 2){
+                        let chevr =  '<span class="btn-drop-normenclature" data-field="article" onclick="displayNormenclature('+dataArticle.type_article+')">'+
+                            '<i class="fa fa-solid fa-chevron-down"></i>'
+                        '</span>';
+
+                        if($('#cover-article'+row_id+' .btn-drop-normenclature').length)
+                            $('#cover-article'+row_id+' .btn-drop-normenclature').remove();
+                        
+                        $('#cover-article'+row_id).prepend(chevr);
+                    }
+
+                    toastr.success("operation effectuée avec success");
+                }
+                else if(response.status == 500){
+                    toastr.error(response.message);
+                }
+            },
+            error: function(xhr, textStatus, errorThrown) {
+                $('#modalAddArticle .loader-container').css('display','none');
+                toastr.error("Oops, une erreur s'est produite");
+            }
+        });
+    })
+
+    function buildArticleSelect(currentRowId){
+        var ARTICLE_DOM = '<div class="cover-article" data-row-id="'+currentRowId+'"">'+
+        '<input type="text" name="documents[libelle][]" id="autoSearchArticle'+currentRowId+'" class="autoSearchArticle field-libelle form-control" value="" data-row-id="'+currentRowId+'"">'+
+        '</div>'+
+        '<select class="form-control field articlefield" name="documents[article][]" data-field="article" data-row-id="'+currentRowId+'" style="height: 34px">'+
+        '<option value=""></option>';
+        $.each($articles, function( index, value ) {
+            ARTICLE_DOM += '<option value="'+value.id+'">'+value.libelle+'</option>';
+        });
+
+        ARTICLE_DOM += "</select>";
+        ARTICLE_DOM += '<input type="hidden" data-row-id="'+currentRowId+'" name="styles[article][gras][]" class="form-control data-field="article" style-article article-gras" value="">'+
+        '<input type="hidden" data-row-id="'+currentRowId+'" name="styles[article][color][]" data-field="article" class="form-control style-article article-color" value="">'+
+        '<input type="hidden" data-row-id="'+currentRowId+'" name="styles[article][bg][]" data-field="article" class="form-control style-article article-bg" value="">';
+
+        return ARTICLE_DOM;
+    }
+    function buildTvaSelect(currentRowId){
+        var TVA_DOM = '<select class="form-control field tvaField change_ht_doc" name="documents[tva][]" data-field="tva" data-row-id="'+currentRowId+'">';
+        $.each($tvas, function( index, value ) {
+            TVA_DOM += '<option value="'+value.id+'">'+value.valeur+'</option>';
+        });
+
+        TVA_DOM += "</select>";
+        TVA_DOM += '<input type="hidden" data-row-id="'+currentRowId+'" data-field="tva"  name="styles[tva][gras][]" class="form-control style-tva tva-gras" value="">';
+
+        return TVA_DOM;
+    }    
+    function buildTypeArticle(currentRowId){
+
+        var TYPE_ARTICLE_DOM = '<img class="article-type-image" src="/assets/images/sac.png">'+
+            '<select class="form-control field disabled field-type_article" name="documents[type_article][]" data-row-id="'+currentRowId+'" style="display:none">';
+        $.each($typeArt, function( index, value ) {
+            TYPE_ARTICLE_DOM += '<option value="'+index+'">'+value+'</option>';
+        });
+
+        TYPE_ARTICLE_DOM += "</select>";
+
+        return TYPE_ARTICLE_DOM;
+    }
+
+    addRow = function(type){
+        --rowId;
+
+        if(type == 'line'){
+            var ELT = '<div class="document-row section'+sectionNb+'" data-row-id="'+rowId+'" id="rowId'+rowId+'" data-section="'+sectionNb+'" >'+
+                '<div class="docu-container-row">'+
+                    '<div class="docu-content-row-val">'+
+                        '<div class="form-group commentaire-container" id="commentaire'+rowId+'" style="flex:1; min-width: 1376px;">'+
+                            '<textarea rows="1" class="form-control field" data-field="commentaire" name="commentaires[commentaire][]"  placeholder="commentaire" data-row-id="'+rowId+'"></textarea>'+
+                            '<input type="hidden" name="commentaires[rang][]" data-field="rang" data-row-id="'+rowId+'" class="field-rang field">'+
+
+                            '<input type="hidden" data-row-id="'+rowId+'" data-field="commentaire"  name="styles[commentaire][gras][]" class="form-control style-commentaire commentaire-gras" value="">'+
+                        '</div>'+
+                    '</div>'+
+                    '<div class="form-group" style="width:100px;">'+
+                        '<div style="display: flex;align-items: center;justify-content: flex-start;">'+
+                            '<span class="close-row btn" style="color:red" onclick="removeRow('+rowId+')">X</span>'+
+                            '<span class="comment-row btn">'+
+                                '<i class="fa fa-arrows"></i>'+
+                            '</span>'+
+                        '</div>'+
+                    '</div>'+
+                '</div>'+
+            '</div>';
+        }
+        else if(type == 'docu'){
+            var ELT = '<div class="document-row section'+sectionNb+'" data-row-id="'+rowId+'" id="rowId'+rowId+'" data-section="'+sectionNb+'">'+
+                '<div class="docu-container-row">'+
+                    '<div class="docu-content-row-val">'+
+                        '<div class="col-lg-1 form-group" style="width: 50px;">'+buildTypeArticle(rowId)+'</div>'+
+                        '<div class="col-lg-1 form-group" style="width: 70px">'+
+                            '<input type="text" name="documents[code][]" data-field="code" class="form-control field field-code" readonly>'+
+                        '</div>'+
+                        '<div class="col-lg-1 form-group" style="flex: 1; min-width: 450px">'+buildArticleSelect(rowId)+'</div>'+
+                        '<div class="col-lg-1 form-group" style="width: 60px;">'+
+                            '<input type="text" name="documents[qte][]" data-field="qte" class="form-control float field-qte change_ht_doc" data-row-id="'+rowId+'">'+
+                            '<input type="hidden" data-row-id="'+rowId+'" data-field="qte" name="styles[qte][gras][]" class="form-control style-qte qte-gras" value="">'+
+                        '</div>'+
+                        '<div class="col-lg-1 form-group unite-container" style="width: 75px;">'+
+                            '<input type="text" name="documents[unite][]" value="1" data-field="unite" class="form-control field-unite field" data-field="unite" data-row-id="'+rowId+'">'+
+                            '<input type="hidden" data-row-id="'+rowId+'" data-field="unite" name="styles[unite][gras][]" class="form-control style-unite unite-gras" value="">'+
+                        '</div>'+
+                        '<div class="col-lg-1 form-group" style="width: 90px;">'+
+                            '<input type="text" readonly name="documents[prixAchat][]" data-field="prixAchat" class="form-control field field-prixAchat change_ht_doc field-number" value="" data-row-id="'+rowId+'">'+
+                        '</div>'+
+                        '<div class="col-lg-1 form-group" style="width: 80px;">'+
+                            '<input type="text" readonly data-field="marge_percent" class="form-control field field-marge_percent change_ht_doc field-number" value="" data-row-id="'+rowId+'">'+
+                        '</div>'+
+                        '<div class="col-lg-1 form-group" style="width: 80px;">'+
+                            '<input type="text" name="documents[marge][]" data-field="marge" class="form-control field readonly field-marge change_ht_doc field-number" value="" data-row-id="'+rowId+'">'+
+                        '</div>'+
+                        '<div class="col-lg-1 form-group" style="width: 90px;">'+
+                            '<input type="text" name="documents[pvht][]" data-field="pvht" class="field-number field form-control field field-pvht change_ht_doc" data-row-id="'+rowId+'">'+
+                            '<input type="hidden" data-row-id="'+rowId+'" data-field="pvht" name="styles[pvht][gras][]" class="form-control style-pvht pvht-gras" value="">'+
+                        '</div>'+
+                        '<div class="col-lg-1 form-group" style="width: 90px;">'+
+                            '<input type="text" name="documents[total_ht][]" data-field="total_ht" class="field-number field form-control readonly total_ht" data-row-id="'+rowId+'">'+
+                            '<input type="hidden" data-row-id="'+rowId+'" data-field="total_ht"  name="styles[total_ht][gras][]" class="form-control style-total_ht total_ht-gras" value="">'+
+                        '</div>'+
+                        '<div class="col-lg-1 form-group" style="width: 70px;">'+buildTvaSelect(rowId)+'</div>'+
+                        '<div class="col-lg-1 form-group" style="width: 70px;">'+
+                            '<input type="text" name="documents[remise][]" data-field="remise" data-row-id="'+rowId+'" class="form-control field field-remise change_ht_doc field-number">'+
+                            '<input type="hidden" name="documents[rang][]" data-field="rang" data-row-id="'+rowId+'" class="field-rang field">'+
+                            '<input type="hidden" name="documents[type][]" data-field="type" data-row-id="'+rowId+'" class="field-type field" value="docu">'+
+                            '<input type="hidden" data-row-id="'+rowId+'" data-field="remise" name="styles[remise][gras][]" class="form-control style-remise remise-gras" value="">'+
+                        '</div>'+
+                        '<div  class="form-group text-center" style="width: 100px;text-align: center;border: 1px solid #ebeced;"></div>'+
+                    '</div>'+
+                    '<div style="width: 100px;">'+
+                        '<div style="display: flex;align-items: center;justify-content: flex-start;">'+
+                            '<span class="close-row btn" style="color:red" onclick="removeRow('+rowId+')">X</span>'+
+                            '<span class="comment-row btn" onclick="openModalSaveArticle('+rowId+')">'+
+                                '<i class="fas fa-save"></i>'+
+                            '</span>'+
+                            '<span class="comment-row btn">'+
+                                '<i class="fa fa-arrows"></i>'+
+                            '</span>'+
+                        '</div>'+
+                    '</div>'+
+                '</div>'+
+                '<input type="hidden" name="" class="ttOeuvreDevis" value="">'+
+                '<input type="hidden" name="" class="ttAchatDevis" value="">'+
+                '<input type="hidden" name="" class="ttQteMo" value="">'+
+            '</div>';
+        }
+        else{
+            var ELT = '<div class="document-row section'+sectionNb+' sous-total-row" data-row-id="'+rowId+'" id="rowId'+rowId+'" data-section="'+sectionNb+'">'+
+                '<div class="docu-container-row">'+
+                    '<div class="docu-content-row-val sous-total-row">'+
+                        '<div class="form-group" style="flex: 1; min-width: 705px">'+
+                            '<input type="text" class="form-control" value="SOUS TOTAUX">'+
+                        '</div>'+
+                        '<div class="form-group" style="width: 90px;">'+
+                            '<input type="text" name="sousTotaux[prixAchat][]" class="form-control sst_pa" data-row-id="'+rowId+'" style="pointer-events: auto;">'+
+                        '</div>'+
+                        '<div class="form-group" style="width: 80px;background: #f09104">'+
+                        '</div>'+
+                        '<div class="form-group" style="width: 80px;">'+
+                            '<input type="text" name="sousTotaux[marge][]" class="form-control sst_marge" data-row-id="'+rowId+'" style="pointer-events: auto;">'+
+                        '</div>'+
+                        '<div class="form-group" style="width: 90px;">'+
+                            '<input type="text" name="sousTotaux[pvht][]" class="form-control sst_pvht" data-row-id="'+rowId+'" style="pointer-events: auto;">'+
+                        '</div>'+
+                        '<div class="form-group" style="width: 90px;">'+
+                            '<input type="text" name="sousTotaux[total_ht][]" class="form-control sst_totalht" data-row-id="'+rowId+'" style="pointer-events: auto;">'+
+                        '</div>'+
+                        '<div class="form-group" style="width:70px;">'+
+                            '<input type="text" class="form-control">'+
+                        '</div>'+
+                        '<div class="form-group" style="width:70px;">'+
+                            '<input type="text" class="form-control">'+
+                            '<input type="hidden" name="sousTotaux[rang][]" data-field="rang" data-row-id="'+rowId+'" class="field-rang field">'+
+                        '</div>'+
+                        '<div style="width: 100px; background: #f09104"></div>'+
+                    '</div>'+
+                    '<div class="form-group" style="width: 100px;">'+
+                        '<div style="display: flex;align-items: center;justify-content: flex-start;">'+
+                            '<span class="close-row btn" style="color:red" onclick="removeRow('+rowId+')">X</span>'+
+                            '<span class="comment-row btn">'+
+                                '<i class="fa fa-arrows"></i>'+
+                            '</span>'+
+                        '</div>'+
+                    '</div>'+
+                '</div>'+
+            '</div>';
+
+            sectionNb++;
+        }
+
+        $('.document-content').append(ELT);
+        $('.js-example-basic-single').select2();
+        $( '.datepicker' ).datepicker();
+        reorderRang();
+
+        if(type == 'sous_total'){
+            recalculSousTotal();
+        }
+    }
+
+    function removeRow(rowId){
+        $sectionRemove = $('#rowId'+rowId).attr('data-section');
+        $('#rowId'+rowId).remove();
+        calculTotaux();
+        reorderRang();
+        recalculSousTotal();
+        updateRecapTvaHt()
+    }
+
+    function commentaire(documentId){
+        $('#commentaire'+documentId).toggleClass('hide');
+    }
+
+    function moveTop(documentId) {
+        updateRang(documentId, "up");
+    }
+    function moveDown(documentId) {
+        updateRang(documentId, "down");
+    }
+
+    function updateRang(documentId, direction){
+        $elt = $('#rowId'+documentId).clone( true );
+        $nbRow = $('.document-row').length;
+
+        $valArticle = $('#rowId'+documentId+" .articlefield").val();
+        if(direction == "up" && $('#rowId'+documentId).index() > 0 ){
+            $prevId = $('#rowId'+documentId).prev().attr('data-row-id');
+            $prevEltId = $('#rowId'+documentId).prev().attr('id');
+            $('#rowId'+documentId).remove();
+            $elt.insertBefore( "#"+$prevEltId );
+            $('#rowId'+documentId+" .articlefield").val($valArticle);            
+        }
+        else if(direction == "down" && $('#rowId'+documentId).index() < ($nbRow-1) ){
+            $nextId = $('#rowId'+documentId).next().attr('data-row-id');
+
+            $nexEltId = $('#rowId'+documentId).next().attr('id');
+            $('#rowId'+documentId).remove();
+            $elt.insertAfter( "#"+$nexEltId );
+
+            $('#rowId'+documentId+" .articlefield").val($valArticle);
+        }
+
+        reorderRang();
+    }
+
+    function reorderRang(){
+        $('.document-row').each(function( index ) {
+            $rowSelect = $(this).attr('data-row-id');
+            $currentIndex = $(this).index();
+            $('#rowId'+$rowSelect+ " .field-rang").val($currentIndex);
+        });
+    }
+
+
+    function recalculSousTotal(){
+        $sstPa = 0;
+        $sstMarge = 0;
+        $sstMargePercent = 0;
+        $sstPvht = 0;
+        $sstTht = 0;
+
+        $margeTotal = 0;
+        $ttAchatDevis = 0;
+        $totalMODevis = 0;
+        $totalTempsDevis = 0;
+        $('.document-row').each(function(index){
+
+            $rowSelect = $(this).attr('data-row-id');
+
+            let qteItem = $('#rowId'+$rowSelect+ " .field-qte").val();
+            if(!$(this).hasClass('sous-total-row')){
+                let ttOeuvreDevisItem = $('#rowId'+$rowSelect+ " .ttOeuvreDevis").val();
+                if(!isNaN(parseFloat(ttOeuvreDevisItem)) && !isNaN(parseInt(qteItem))){
+                    $totalMODevis += parseFloat(ttOeuvreDevisItem*qteItem);
+                }
+                let prixAchatItem = $('#rowId'+$rowSelect+ " .ttAchatDevis").val();
+                if(!isNaN(parseFloat(prixAchatItem))){
+                    $ttAchatDevis += parseFloat(prixAchatItem*qteItem);
+                }
+                let totalTempsDevisItem = $('#rowId'+$rowSelect+ " .ttQteMo").val();
+                if(!isNaN(parseFloat(totalTempsDevisItem)) && !isNaN(parseInt(qteItem))){
+                    $totalTempsDevis += parseFloat(totalTempsDevisItem);
+                }
+
+                if(!isNaN($('#rowId'+$rowSelect+ " .field-prixAchat").val()) && $('#rowId'+$rowSelect+ " .field-prixAchat").val() != "")
+                    $sstPa += parseFloat($('#rowId'+$rowSelect+ " .field-prixAchat").val());
+                if(!isNaN($('#rowId'+$rowSelect+ " .field-marge").val()) && $('#rowId'+$rowSelect+ " .field-marge").val() != ""){
+                    $sstMarge += parseFloat($('#rowId'+$rowSelect+ " .field-marge").val());
+                    $margeTotal +=  parseFloat($('#rowId'+$rowSelect+ " .field-marge").val());
+                }
+                if(!isNaN($('#rowId'+$rowSelect+ " .field-pvht").val()))
+                    $sstPvht += parseFloat($('#rowId'+$rowSelect+ " .field-pvht").val());
+                
+                if(!isNaN($('#rowId'+$rowSelect+ " .total_ht").val()))
+                    $sstTht += parseFloat($('#rowId'+$rowSelect+ " .total_ht").val());
+            }
+            else{
+                if(!isNaN($sstPa))
+                     $('#rowId'+$rowSelect+' .sst_pa').val($sstPa.toFixed(2));
+                if(!isNaN($sstMarge)){
+                    $('#rowId'+$rowSelect+' .sst_marge').val($sstMarge.toFixed(2));
+                }
+                
+                if(!isNaN($sstPvht))
+                    $('#rowId'+$rowSelect+ ' .sst_pvht').val($sstPvht.toFixed(2));
+                if(!isNaN($sstTht))
+                    $('#rowId'+$rowSelect+ ' .sst_totalht').val($sstTht.toFixed(2));
+
+                if(!isNaN($sstMargePercent)){
+
+                    if($sstPvht != 0){
+                        $sstMargePercent = ($sstMarge/$sstPvht)*100;
+                        if(!isNaN($sstMargePercent))
+                            $('#rowId'+$rowSelect+' .sst_marge_percent').val($sstMargePercent.toFixed(2));
+                    }
+                    if($sstMargePercent >= 30)
+                        $('#rowId'+$rowSelect+' .sst_marge_percent').css('color', '#0caf0c');
+                    else
+                        $('#rowId'+$rowSelect+' .sst_marge_percent').css('color', 'red');
+                }
+
+                $sstPa = 0;
+                $sstMarge = 0;
+                $sstMargePercent = 0;
+                $sstPvht = 0;
+                $sstTht = 0;
+            }
+        })
+
+
+        if(!isNaN($margeTotal)){
+            $('#margeTotal').text($margeTotal.toFixed(2)+'€');
+            $('#margeNetTotal').text(($margeTotal*0.8).toFixed(2)+'€');
+        }
+        if(!isNaN($ttAchatDevis)){
+            $('#totalAchatDevis').text($ttAchatDevis.toFixed(2)+'€');
+        }
+        if(!isNaN($totalMODevis)){
+            $('#totalMODevis').text($totalMODevis.toFixed(2)+'€');
+        }
+
+        $tempDevis = ($totalTempsDevis/8.5).toFixed(0);
+        if(!isNaN($totalTempsDevis)){
+            $('#totalTempsDevis').text($totalTempsDevis.toFixed(1)+'h et '+$tempDevis+"j");
+        }
+        // console.log($margeTotal);
+    }
+
+    $(document).on('dblclick','.cover-article',function(){
+        $('#modalArticle').modal('show');
+        $('.pop-article-container').html("");
+        $('input[name=article_select]').val($(this).attr('data-row-id'));
+    })    
+    $(document).on('keyup','.autoSearchArticle',function(e){
+        $that = $(this);
+
+        // window.clearTimeout( isTyping );
+        // isTyping = setTimeout(function(){
+        //     var val = $that.val();
+        //     if(val != "" && val.length >= 3){
+        //         loadData(val, $that.attr('data-row-id'));
+        //     }
+        // }, 2000);
+
+        if (e.keyCode === 13) {
+            var val = $that.val();
+            if(val != "" && val.length >= 3){
+                loadData(val, $that.attr('data-row-id'));
+            }
+        }
+    })
+
+
+    $(document).on('click','.articlePopup',function(){
+        $rowSelect = $('input[name=article_select]').val();
+        $articleIdSelect = $(this).attr('data-article-id');
+
+        $('#rowId'+$rowSelect+ " .articlefield").val($articleIdSelect);
+        $('#rowId'+$rowSelect+ " .ttOeuvreDevis").val($(this).parent().find('.ttOeuvreDevis').val());
+        $('#rowId'+$rowSelect+ " .ttAchatDevis").val($(this).parent().find('.ttAchatDevis').val());
+        $('#rowId'+$rowSelect+ " .ttQteMo").val($(this).parent().find('.ttQteMo').val());
+
+        $('#rowId'+$rowSelect+ " .articlefield").change();
+        $('#autoSearchArticle'+$('input[name=article_select]').val()).val($(this).attr('data-article-libelle'));
+
+        $('#modalArticle').modal('hide');
+
+        $.ajax({
+            type: "GET",
+            url: "{{path('creation_devis_client_normenclature_new')}}",
+            dataType: 'json',
+            data:{
+                article_id: $articleIdSelect,
+                entete_id: "{{entete.id}}",
+            },
+            success: function(response, status) {
+                if(response.status == 400){
+                    toastr.error(response.message); 
+                }
+            },
+            error: function(xhr, textStatus, errorThrown) {   
+                toastr.error("La requette n'a pas aboutie");              
+            }
+        }); 
+    })
+
+    $(document).on('change','.field-remise',function(){
+        let rowSelect = $(this).attr('data-row-id');
+        if($(this).val() > 0){
+            $('#rowId'+rowSelect+ " .field-marge_percent").css('color', "#fe7c93");
+        }
+        else{
+            $percentMarge =  $('#rowId'+rowSelect+ " .field-marge_percent").val();
+            if($percentMarge.toFixed(2) < 30)
+                $('#rowId'+rowSelect+ " .field-marge_percent").css('color', 'red');
+            else
+                $('#rowId'+rowSelect+ " .field-marge_percent").css('color', "#0caf0c")
+        }
+
+    })
+
+    $(document).on('change','.articlefield',function(){
+        $rowSelect = $(this).attr('data-row-id');
+        $articleIdSelect = $(this).find("option:selected").attr('value');
+        index = $articles.findIndex(x => x.id === parseInt($articleIdSelect));
+        if(index > -1){
+            $articleSelect = $articles[index];
+            $('#rowId'+$rowSelect+ " .field-pvht").val($articleSelect.pvht);
+            $('#rowId'+$rowSelect+ " .field-prixAchat").val($articleSelect.prix_achat);
+            $('#rowId'+$rowSelect+ " .field-marge").val($articleSelect.marge);
+            $('#rowId'+$rowSelect+ " .field-code").val($articleSelect.code);
+            $('#rowId'+$rowSelect+ " .field-unite").val($articleSelect.unite);
+            $('#rowId'+$rowSelect+ " .field-qte").val(1);
+            $('#rowId'+$rowSelect+ " .field-remise").val(0);
+            $('#rowId'+$rowSelect+ " .field-type_article").val($articleSelect.type_article);
+            $('#autoSearchArticle'+$rowSelect).val($articleSelect.libelle);
+
+            if($articleSelect.type_article == 1)
+                $('img.article-type-image').attr('src', '/assets/images/sac.png');
+            else
+                $('img.article-type-image').attr('src', '/assets/images/sac-double.png');
+
+            {#$val = ajustePrice($articleSelect.pvht);#}
+            $val = parseFloat($articleSelect.pvht);
+            
+            calculTotalHtDocument($rowSelect, $val);
+        }
+    });
+    $(document).on('change','#entdocu_client',function(){
+        $clientIdSelect = $(this).find("option:selected").attr('value');
+        index = $clients.findIndex(x => x.id === parseInt($clientIdSelect));
+        if(index > -1){
+            $clientSelect = $clients[index];
+            $adresse = "";
+            if($clientSelect.adresse != null){
+                $adresse += "<span class='client-adresse'>"+$clientSelect.adresse+"</span><br>";
+            }
+            else{
+                $(".adresse-client-container .client-adresse").html("");
+            }
+            if($clientSelect.ville != null){
+                $adresse += "<span class='client-ville'>"+$clientSelect.ville+"</span><br>";
+            }
+            else{
+                $(".adresse-client-container .client-ville").html("");
+            }
+            if($clientSelect.nameentreprise != null){
+                $adresse += "<span class='client-chantier'>"+$clientSelect.nameentreprise+"</span><br>";
+            }
+            else{
+                $(".adresse-client-container .client-chantier").html("");
+            }
+
+            $('.adresse-client-container').html($adresse);
+        }
+    });    
+
+    $(document).on('change','#entdocu_chantier',function(){
+        $chantierIdSelect = $(this).find("option:selected").attr('value');
+        index = $chantiers.findIndex(x => x.id === parseInt($chantierIdSelect));
+        if(index > -1){
+            $chantierSelect = $chantiers[index];
+            $adresse = "";
+            if($chantierSelect.adresse != null){
+                $adresse += "<span class='client-adresse'>"+$chantierSelect.adresse+"</span><br>";
+            }
+            else{
+                $(".adresse-chantier-container .client-adresse").html("");
+            }
+            if($chantierSelect.ville != null){
+                $adresse += "<span class='client-ville'>"+$chantierSelect.ville+"</span><br>";
+            }
+            else{
+                $(".adresse-chantier-container .client-ville").html("");
+            }
+            if($chantierSelect.cp != null){
+                $adresse += "<span class='client-cp'>"+$chantierSelect.cp+"</span><br>";
+            }
+            else{
+                $(".adresse-chantier-container .client-cp").html("");
+            }
+
+            $('.adresse-chantier-container').html($adresse);
+        }
+    });
+
+    $(document).bind("change",'.total_ht',function(e){
+        calculTotaux();
+        recalculSousTotal();
+    })      
+
+    $(document).on('keyup', "#recap_remise", function (e) {
+        totauxRecap();
+    })  
+
+    $(document).on('keyup', ".change_ht_doc", function (e) {
+        $rowSelect = $(this).attr('data-row-id');
+        $pvht = $('#rowId'+$rowSelect+ " .field-pvht").val();
+
+        {#$val = ajustePrice($pvht);#}
+        $val = parseFloat($pvht);
+        calculTotalHtDocument($rowSelect, $val);
+
+        $sectionIndex = $('#rowId'+$rowSelect).attr('data-section');
+        recalculSousTotal();
+    })
+
+    function calculSumTva(){
+        recapTva = 0;
+        $('.recap_tva_item_val').each(function( index ) {
+            recapTva += parseFloat($(this).val());
+        });
+
+        return recapTva;
+    }
+
+    function calculTotaux(){
+        $ttht = 0;
+        $('.total_ht').each(function( index ) {
+            if($(this).val() != ""){
+                $ttht += parseFloat($(this).val());
+            }
+        });
+
+        $totalHt = $ttht.toFixed(2);
+        $('#entdocu_total_ht').val($totalHt);
+
+        totauxRecap();
+    }
+
+    function totauxRecap($totalHt) {
+        $totalHt = $('#entdocu_total_ht').val();
+
+        if($totalHt != ""){
+            $('#recap_total_ht').val($totalHt);
+            $remise = $('#recap_remise').val();
+            if($remise != ""){
+                $remise = $totalHt*(parseFloat($remise)/100); 
+                $('#recap_remise_val').val($remise.toFixed(2));
+            }
+            else
+                $remise = 0;
+
+            $recap_remise_total_ht = ($totalHt-$remise).toFixed(2);
+            $('#recap_remise_total_ht').val($recap_remise_total_ht);
+
+            /*updateTvaVal();*/
+            updateRecapTvaHt();
+            $sumTva = calculSumTva();
+            if($sumTva >= 0){
+                $recap_ttc = $sumTva+parseFloat($('#recap_remise_total_ht').val());
+                $('#recap_ttc').val((parseFloat($recap_ttc)).toFixed(2));
+                $('#entdocu_total_ttc').val((parseFloat($recap_ttc)).toFixed(2));
+            }
+        }
+    }
+
+    // function updateTvaVal(){
+    //     $totalHtRemise = $('#recap_remise_total_ht').val();
+
+    //     if($totalHtRemise != ""){
+    //         $count5 = 0; $count10 = 0; $count20 = 0;
+    //         $('.tvaField').each(function( index ) {
+    //             $rowSelect = $(this).attr('data-row-id');
+    //             var e = document.querySelector('#rowId'+$rowSelect+ ' .tvaField');
+    //             $tva = parseInt(e.options[e.selectedIndex].text);
+
+    //             if(parseInt($tva) == 5){
+    //                 $count5 = 1;
+    //             }
+    //             if(parseInt($tva) == 10){
+    //                 $count10 = 1;
+    //             }
+    //             if(parseInt($tva) == 20){
+    //                 $count20 = 1;
+    //             }
+    //         })
+    //         $('#recap_tva_val5').val((parseFloat($('#recap_tva5').val())*$totalHtRemise/100).toFixed(2));
+
+    //         $('#recap_tva_val10').val((parseFloat($('#recap_tva10').val())*$totalHtRemise/100).toFixed(2));
+
+    //         $('#recap_tva_val20').val((parseFloat($('#recap_tva20').val())*$totalHtRemise/100).toFixed(2));
+    //     }
+    // }
+
+    $(document).bind("change", '#recap_total_ht, .tvaField', function(){
+        updateRecapTvaHt();
+    });
+    function updateRecapTvaHt(){
+        let totalHT5 = 0; let totalHT10 = 0; let totalHT20 = 0; 
+        $('.tvaField').each(function( index ) {
+            $rowSelect = $(this).attr('data-row-id');
+            var e = document.querySelector('#rowId'+$rowSelect+ ' .tvaField');
+            $tva = parseInt(e.options[e.selectedIndex].text);
+
+            if(parseInt($tva) == 5){
+                totalHT5 += parseFloat($('#rowId'+$rowSelect+ ' .field.total_ht').val());
+            }
+            if(parseInt($tva) == 10){
+                totalHT10 += parseFloat($('#rowId'+$rowSelect+ ' .field.total_ht').val());
+            }
+            if(parseInt($tva) == 20){
+                totalHT20 += parseFloat($('#rowId'+$rowSelect+ ' .field.total_ht').val());
+            }
+        })
+
+        $('.recap_htTva5').val(totalHT5.toFixed(2));
+        $('.recap_htTva10').val(totalHT10.toFixed(2));
+        $('.recap_htTva20').val(totalHT20.toFixed(2));
+
+        $('.recap_tva5ht, #recap_tva_val5').val((totalHT5*5.5/100).toFixed(2));
+        $('.recap_tva10ht, #recap_tva_val10').val((totalHT10*10/100).toFixed(2));
+        $('.recap_tva20ht, #recap_tva_val20').val((totalHT20*20/100).toFixed(2));
+    }
+
+    function calculTotalHtDocument(rowSelect, pvht){
+
+        var e = document.querySelector('#rowId'+rowSelect+ ' .tvaField');
+        var tva = e.options[e.selectedIndex].text;
+        tva = parseFloat("1."+tva);
+
+        $docuTotal = (pvht);
+        $qte = $('#rowId'+$rowSelect+ " .field-qte").val();
+        if($qte != "" ){
+            $docuTotal *= parseFloat($qte);
+        }
+        $remise = $('#rowId'+$rowSelect+ " .field-remise").val();
+        if($remise != ""){
+            $docuTotal -= $docuTotal*(parseFloat($remise)/100);
+        }
+        $docuTotal = parseFloat($docuTotal).toFixed(2);
+        if(!isNaN($docuTotal))
+            $('#rowId'+rowSelect+ " .total_ht").val($docuTotal);
+
+
+        // mise à jour marge
+        $article_prix_vente_ht  = parseFloat($('#rowId'+rowSelect+ " .field-pvht").val());
+        $article_prix_achat  = parseFloat($('#rowId'+rowSelect+ " .field-prixAchat").val());
+
+        $totalHt = $('#rowId'+rowSelect+ " .total_ht").val();
+        if(!isNaN($article_prix_achat) && !isNaN($article_prix_vente_ht) && !isNaN($qte)){
+            $article_marge_brut =  parseFloat(($article_prix_vente_ht - $article_prix_achat) * $qte);
+
+            $article_marge_brut -= $article_marge_brut*(parseFloat($remise)/100);
+            $('#rowId'+rowSelect+ " .field-marge").val($article_marge_brut.toFixed(2));
+        }
+
+        $margeBrute = parseFloat($('#rowId'+rowSelect+ " .field-marge").val());
+        $pvht  = parseFloat($('#rowId'+rowSelect+ " .field-pvht").val());
+        if(!isNaN($margeBrute) && ! isNaN($pvht) && $pvht != 0){
+            $marge_percent =  parseFloat( ($margeBrute/$qte/$pvht)*100);
+            $('#rowId'+rowSelect+ " .field-marge_percent").val($marge_percent.toFixed(2));
+            if($marge_percent.toFixed(2) < 30)
+                $('#rowId'+rowSelect+ " .field-marge_percent").css('color', 'red');
+            else
+                $('#rowId'+rowSelect+ " .field-marge_percent").css('color', "#0caf0c")
+                
+        }
+    }
+
+    function updateStyle(style, val = ""){
+        $field = $fieldFocus.attr('data-field');
+        $rowSelect = $fieldFocus.attr('data-row-id');
+
+        if(style.toLowerCase() == "g"){
+            $fieldFocus.toggleClass('weight');
+            if($fieldFocus.hasClass("weight")){
+                $("#rowId"+$rowSelect+" .style-"+$field+"."+$field+'-gras').val(1);
+            }
+            else{
+                $("#rowId"+$rowSelect+" .style-"+$field+"."+$field+'-gras').val("");
+            }
+        }
+        else if(style.toLowerCase() == "c"){
+            $fieldFocus.css('color', val);
+            $("#rowId"+$rowSelect+" .style-"+$field+"."+$field+'-color').val(val);
+        }
+        else if(style.toLowerCase() == "bg"){
+            $fieldFocus.css('background', val);
+            $("#rowId"+$rowSelect+" .style-"+$field+"."+$field+'-bg').val(val);
+        }
+    }
+
+    $(document).on('focusin', '.field', function(e) {
+        $fieldFocus = $(this);
+    });
+
+    $('.btn-enregistrer').click(function(){
+        $('form[name=entdocu]').attr('target', '');
+        $('input[name=download]').val(0);
+        $('form[name=entdocu]').submit();
+    })
+    $('.btn-previsualiser').click(function(){
+        $('form[name=entdocu]').attr('target', '_blank');
+        $('input[name=download]').val(1);
+        $('form[name=entdocu]').submit();
+    })
+
+    function displayNormenclature(articleId){
+        $('#modalNormenclatureArticle').modal('show');
+        $('#modalNormenclatureArticle .loader-container').css('display','flex');
+        $.ajax({
+            url: "{{path('get_normenclature_by_article')}}",
+            type: "GET",
+            dataType: "json",
+            async: true,
+            data: {
+                article_id:articleId
+            },
+            success: function(response, status) {
+                if(response.status == 200){
+                    $('.pop-normenclature-container').html(response.preview);
+                }
+                else if(response.status == 500){
+                    toastr.error(response.message);
+                }
+                $('#modalNormenclatureArticle .loader-container').css('display','none');
+            },
+            error: function(xhr, textStatus, errorThrown) {
+                toastr.error("Oops, une erreur s'est produite");
+                $('#modalNormenclatureArticle .loader-container').css('display','none');
+            }
+        });
+    }
+
+
+    function loadData(val, rowId = null){
+        $.ajax({
+            url: "{{path('creation_devis_client_filter_article')}}",
+            type: "GET",
+            dataType: "json",
+            async: true,
+            data: {
+                val: val,
+            },
+            success: function(response) {
+                if(response.status == 200){                        
+                    if(rowId != null && response.nbrResult > 0){
+                        $('input[name=searchArticle]').val(val);
+                        $('#modalArticle').modal('show');
+                        $('input[name=article_select]').val(rowId);
+                    }
+                    $('.pop-article-container').html(response.content);
+                }
+                else if(response.status == 500){
+                    toastr.error(response.message);
+                }
+                $('.loader-container').css('display','none');
+            },
+            error: function(xhr, textStatus, errorThrown) {
+              console.log(errorThrown);
+              $('.loader-container').css('display','none');
+            }
+        });
+    }
+
+    var isTyping;
+     $('body').on('keydown', 'input[name=searchArticle]', function(e){
+        $('.loader-container').css('display','flex');
+        window.clearTimeout( isTyping );
+        $that = $(e.currentTarget);
+        isTyping = setTimeout(function(){
+            loadData($that.val());
+        }, 2000);
+    });
+
+    $(document).ready(function() {
+        $('.js-example-basic-single').select2();
+        $('.js-example-basic-multiple').select2();
+    });
+
+    $(document).on('click', '.pasteDocuDuplique', function(){
+
+        var lastSection  = 0;
+        if($('.document-row').length > 0){
+            lastSection = $('.document-row').attr('data-section');
+        }
+        lastSection++;
+
+        var textpaste = "";
+        navigator.clipboard.readText()
+        .then(text => {
+            if(text != ""){
+                $('.pasteDocuDuplique').css('pointer-events', 'none');
+                $.ajax({
+                    type: "POST",
+                    url: "{{path('creation_devis_client_duplique_docu')}}",
+                    data: {
+                        entDocuId: "{{entete.id}}",
+                        list_docu: text,
+                        lastSection: lastSection
+                    },
+                    dataType: "json",
+                    async: true,
+                    success: function(response, status) {
+                        if(response.status == 200){
+                            location.href = "";
+                        }
+                        else if(response.status == 500){
+                            toastr.error("Oops quelque chose s'est mal passé");
+                        }
+                        $('.pasteDocuDuplique').css('pointer-events', 'auto');
+                    },
+                    error: function(xhr, textStatus, errorThrown) {
+                        toastr.error("Oops, une erreur s'est produite");
+                        $('.pasteDocuDuplique').css('pointer-events', 'auto');
+                    }
+                });
+            }
+            else{
+                toastr.error("Vous devez selectionner des articles");
+            }
+        })
+        .catch(err => {
+            console.log('Something went wrong', err);
+        });
+    })
+
+    function autoSaveDevis(){
+        $('.export.loader-container').css('display','flex');
+        var form = document.forms.namedItem("entdocu");
+        $.ajax({
+            url:"{{path('creation_devis_client_edit_xhr')}}",
+            type:"POST",
+            data: new FormData(form),
+            dataType: 'json',
+            contentType: false,
+            cache: false,
+            processData:false,
+            success:function(response) {
+              if(response.status == 200){
+              }
+            },
+            error:function(){
+              // toastr.error("L'enregistrement n'a pas pu etre effectué");
+            }
+        });
+    }
+
+    $(document).on('change', '.check-docu', function(){    
+        $eltCheck = $('.check-docu:checkbox:checked');
+        if( $eltCheck.length > 0){
+        }
+        else{
+        }
+
+        var docuCheck = [];
+        $eltCheck.each(function( index ) {
+            if($( this ).val() != ""){
+                docuCheck.push($( this ).val());
+            }
+        });
+        $('textarea[name=docuDuplique]').val(docuCheck.join('_'));
+
+        var copyText = document.getElementById("docuDupliqueForm");
+        /* Select the text field */
+        copyText.select();
+        copyText.setSelectionRange(0, 99999); /* For mobile devices */
+
+        /* Copy the text inside the text field */
+        navigator.clipboard.writeText(copyText.value);
+    });
+
+    $('.chk-parent').on('change', function(){  
+        $('.check-docu').prop('checked', this.checked);      
+        if($(this).is(":checked")){
+        }
+        else{
+        }
+
+        var docuCheck = [];  
+        $eltCheck = $('.check-docu:checkbox:checked'); 
+        $eltCheck.each(function( index ) {
+            if($( this ).val() != ""){
+                docuCheck.push($( this ).val());
+            }
+        });
+        $('textarea[name=docuDuplique]').val(docuCheck.join('_'));
+
+        var copyText = document.getElementById("docuDupliqueForm");
+        /* Select the text field */
+        copyText.select();
+        copyText.setSelectionRange(0, 99999); /* For mobile devices */
+
+        /* Copy the text inside the text field */
+        navigator.clipboard.writeText(copyText.value);
+    });
+
+    $(document).bind("change",'#entdocu input, #entdocu textarea, #entdocu select',function(e){
+        setTimeout(function(){
+            autoSaveDevis();
+        }, 2000)
+    })
+    $(document).on('change', '#entdocu input, #entdocu textarea, #entdocu select', function(e){
+        setTimeout(function(){
+            autoSaveDevis();
+        }, 2000)
+    })
+
+    $(document).on('click', '.openModalCommande', function(e){
+        $('#modalCommandeFournisseur').modal("show");
+        $('#modalCommandeFournisseur .loader-container').css('display', 'flex');
+
+        $.ajax({
+            type: "GET",
+            url: "{{path('apercu_commande_fournisseur')}}",
+            data: {
+                devisId: "{{entete.id}}"
+            },
+            dataType: "json",
+            async: true,
+            success: function(response, status) {
+                $('#modalCommandeFournisseur .popup-container-list').html(response.content);
+                $('#modalCommandeFournisseur .loader-container').css('display', 'none');
+            },  
+            error: function(xhr, textStatus, errorThrown) {
+                toastr.error("Oops, une erreur s'est produite");
+                $('#modalCommandeFournisseur .loader-container').css('display', 'none');
+            }            
+        });
+    })
+
+    function loadArticleCommande(fournisseurId, enteteId){
+        $('#modalCommandeArticle').modal("show");
+        $('#modalCommandeArticle .loader-container').css('display', 'flex');
+
+        $.ajax({
+            type: "GET",
+            url: "{{path('apercu_commande_article')}}",
+            data: {
+                fournisseurId: fournisseurId,
+                devisId: enteteId
+            },
+            dataType: "json",
+            async: true,
+            success: function(response, status) {
+                $('#modalCommandeArticle .popup-container-list').html(response.content);
+                $('#modalCommandeArticle .loader-container').css('display', 'none');
+            },  
+            error: function(xhr, textStatus, errorThrown) {
+                toastr.error("Oops, une erreur s'est produite");
+                $('#modalCommandeArticle .loader-container').css('display', 'none');
+            }            
+        });
+    }
+
+    function checkMaj(devisId){
+        $('#modalArticleMaj').modal('show');
+        $('#modalArticleMaj .loader-container').css('display', 'flex');
+        $.ajax({
+            type: "GET",
+            url: "{{path('check_article_devis_update')}}",
+            data: {
+                devisId: "{{entete.id}}"
+            },
+            dataType: "json",
+            async: true,
+            success: function(response, status) {
+                $('#modalArticleMaj .popup-container-list').html(response.content);
+                $('#modalArticleMaj .loader-container').css('display', 'none');
+            },  
+            error: function(xhr, textStatus, errorThrown) {
+                toastr.error("Oops, une erreur s'est produite");
+                $('#modalArticleMaj .loader-container').css('display', 'none');
+            }            
+        });
+    }
+
+    function refreshDocuMaj(e, docuId){
+        $that = $(e);
+        let qte = $('#rowId'+docuId+ " .field-qte").val();
+        $("#rowId"+docuId+ " .articlefield").change();
+        $('#rowId'+docuId+ " .field-qte").val(qte);
+
+        $that.remove();
+        toastr.success("Mise à jour appliquée");
+
+        $.ajax({
+            type: "GET",
+            url: "{{path('creation_devis_maj_normenclature')}}",
+            data: {
+                docu_id: docuId,
+            },
+            dataType: "json",
+            async: true,
+            success: function(response, status) {
+                $that.remove();
+            },  
+            error: function(xhr, textStatus, errorThrown) {
+                toastr.error("Oops, une erreur s'est produite");
+            }            
+        });   
+    }    
+
+    function updatePriceVente(rowId, price){
+        Swal.fire({
+            title: "Voulez vous appliquer le montant de "+price+"€ au prix de vente HT?",
+            text: "",
+            icon: 'info',
+            showDenyButton: true,
+            confirmButtonColor: '#18a689',
+            cancelButtonColor: '#d33',
+            denyButtonText: 'Annuler',
+            confirmButtonText: 'Oui, je confirme',
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $('#rowId'+rowId+ " .field-pvht").val(price.toFixed(2));        
+                $('#rowId'+rowId+ " .field-pvht").trigger('change');        
+            }
+            else if (result.isDenied) {
+            }
+        })
+    }
+
+    $('.modal').on('hidden.bs.modal', function (e) {
+        if($('.modal').hasClass('in')) {
+            $('body').addClass('modal-open');
+        }    
+    });
+
+</script>

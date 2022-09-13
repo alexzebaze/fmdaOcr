@@ -1,0 +1,648 @@
+{% extends 'base.html.twig' %}
+{% set devisList = [] %}
+{% set t = 'zer' %}
+{% block css %}
+    <link rel="stylesheet" href="//cdn.datatables.net/1.10.20/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/buttons/1.7.0/css/buttons.dataTables.min.css">
+    <style type="text/css">
+        
+        thead th{text-align: center;text-align: center;}
+        .send-facture{display: none;}
+        .ibox-title{padding: 26px 90px 8px 15px}
+        .ibox-tools{display: flex;align-items: center;justify-content: flex-end;margin-bottom: 7px;}
+        table.dataTable tfoot th, table.dataTable tfoot td{border-top: 1px solid #e7eaec;text-align: center; font-weight: 600;font-size: 15px;    padding-bottom: 3rem;}
+        @media (min-width: 768px){
+            .modal-sm {
+                width: 425px;
+            }
+        }
+        .total-bl{
+            margin: 8px 0 32px 0;
+            color: #000;
+            font-weight: 600;
+            text-align: center;
+        }
+        .color-status{
+            padding: 6px 16px;
+            border-radius: 5px;
+            color: #fff;
+        }
+        .status-select{
+            text-align: center;
+            height: 35px;
+            width: 140px;
+            border:none;
+            cursor: pointer;
+            text-align-last:center;
+        }
+        .status-select > option{
+            line-height: 200%;
+            padding: 50px;
+            text-align: left;
+            font-size: 20px;
+            padding-left: 45%;
+        }
+        .status-select {
+          /* for Firefox */
+          -moz-appearance: none;
+          /* for Chrome */
+          -webkit-appearance: none;
+        }
+
+            /* For IE10 */
+            select::-ms-expand {
+              display: none;
+            }   
+        .col-note{
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 1;
+            -webkit-box-orient: vertical;
+        } 
+        table.dataTable tbody th, table.dataTable tbody td{
+            height: 35px;
+            padding: 0;
+            margin: 0;
+        }
+        input[name=tri]{display: none;}
+    </style>
+{% endblock %}
+{% block breadcrumb %}
+    <div class="row wrapper border-bottom white-bg page-heading">
+        <div class="col-lg-10">
+            <h1>Liste des devis</h1>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                    <a href="{{ path('home') }}">Accueil</a>
+                </li>
+                <li class="breadcrumb-item active">
+                    <strong>Devis</strong>
+                </li>
+            </ol>
+        </div>
+    </div>
+
+{% endblock %}
+{% block content %}
+    <div class="row">
+        {% set t = 'aaaa' %}
+        <div class="col-lg-12">
+            {% include 'flashes.html.twig' %}
+            <div class="ibox">
+                <div class="ibox-content">
+                    {{ include('devis_pro/filter.html.twig') }}
+                </div>
+            </div>
+            <div class="ibox ">
+                <div class="ibox-title">
+                    <h5>
+                        <span class="btn-config-colonne">
+                            <i class="fa fa-cog"></i>
+                        </span>
+                        Liste de devis
+                    </h5> 
+                    <b>({{devis_pros|length}} Documents)</b>
+                    <div class="ibox-tools">
+                        <a href="{{path('devis_pro_print')}}" class="btn btn-primary link-export" style="margin-right: 10px">Export Excel</span>
+
+                        <a href="{{ path('email_document_preview_list', {'dossier':'devis_pro'}) }}" class="btn btn-primary" style="margin-right: 10px;">
+                            ({{countDocAttentes ? countDocAttentes.nb : 0}}) En attente
+                        </a>
+
+                        <a href="{{ path('devis_pro_add') }}" class="btn btn-primary">
+                            <i class="fa fa-plus"></i>
+                            Importer
+                        </a>
+                        <a href="{{ path('devis_pro_add_manuel') }}" class="btn btn-primary" style="margin-left: 10px">
+                            <i class="fa fa-plus"></i>
+                            Ajouter
+                        </a>
+                        <button type="submit" class="btn btn-primary send-facture" style="margin-left: 12px;">Envoyer le Devis</button>
+                    </div>
+
+                    <div class="column-container">
+                        <div class="column-content">
+                            <form method="POST" action="{{path('update_toggle_column')}}">
+                                <input type="hidden" name="page" value="DEVIS_FOURNISSEUR">
+                                <input type="hidden" name="redirect" value="devis_pro_list">
+                                <div class="column-list">
+                                    {% for column in columns  %}
+                                    <div class="column-item">
+                                        <label class="column-label">
+                                            <input class="column-check" type="checkbox" {% if columnsVisibileId|length and column.id in columnsVisibileId|keys %}checked{% endif %} name="configs[{{column.id}}]">
+                                            <span class="column-libelle">{{ tabColumns[column.cle] }}</span>
+                                        </label>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                                <br>
+                                <div class="text-center">
+                                    <button type="submit" class="btn btn-primary">Valider</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="ibox-content">
+                    <h1 class="total-bl"> {{full_month|capitalize}}</h1>
+
+                    {% if 'MONTANT_HT' in columnsVisibileId  %}
+                    <h2 class="total-bl"> Montant HT: <span>{{ montant['sum_ht'] ? montant['sum_ht']|number_format(2, ',', '') : "0" }}€</span> </h2>
+                    {% endif %}
+
+                    {% if 'MONTANT_TTC' in columnsVisibileId  %}
+                    <h2 class="total-bl"> Montant TTC: <span>{{ montant['prixttc'] ? montant['prixttc']|number_format(2, ',', '') : "0" }}€</span> </h2>
+                    {% endif %}
+                    
+                    <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                        <tr>
+                            <th>
+                                <input type="checkbox" class="chk-parent" value="">
+                            </th>
+                            {% if 'DOCUMENT_PDF' in columnsVisibileId  %}
+                                <th class="{% if 'DOCUMENT_PDF' not in columnsVisibileId  %}removeColumn{% endif %}">DOCUMENT_PDF</th>
+                            {% endif %}
+
+                            {% if 'CAUTION' in columnsVisibileId  %}
+                                <th class="{% if 'DOCUMENT_PDF' not in columnsVisibileId  %}removeColumn{% endif %}">CAUTION</th>
+                            {% endif %}
+
+                            {% if 'DATE_CREATION' in columnsVisibileId  %}
+                                <th class="{% if 'DATE_CREATION' not in columnsVisibileId  %}removeColumn{% endif %}">
+                                    <label><input type="checkbox" value="0" name="tri">DATE_CREATION</label>
+                                </th>
+                            {% endif %}
+
+                            {% if 'FOURNISSEUR' in columnsVisibileId  %}
+                            <th class="{% if 'FOURNISSEUR' not in columnsVisibileId  %}removeColumn{% endif %}">
+                                <label><input type="checkbox" value="1" name="tri">FOURNISSEUR</label>
+                            </th>
+                            {% endif %}
+
+                            {% if 'CHANTIER' in columnsVisibileId  %}
+                            <th class="{% if 'CHANTIER' not in columnsVisibileId  %}removeColumn{% endif %}">
+                                <label><input type="checkbox" value="2" name="tri">CHANTIER</label>
+                            </th>
+                            {% endif %}
+
+                            {% if 'MONTANT_TTC' in columnsVisibileId  %}
+                                <th class="{% if 'MONTANT_TTC' not in columnsVisibileId  %}removeColumn{% endif %}">
+                                    <label><input type="checkbox" value="3" name="tri">TTC</label>
+                                </th>
+                            {% endif %}
+
+                            {% if 'TVA' in columnsVisibileId  %}
+                            <th class="{% if 'TVA' not in columnsVisibileId  %}removeColumn{% endif %}">
+                                <label><input type="checkbox" value="4" name="tri">TVA</label>
+                            </th>
+                            {% endif %}
+
+                            {% if 'MONTANT_HT' in columnsVisibileId  %}
+                            <th class="{% if 'MONTANT_HT' not in columnsVisibileId  %}removeColumn{% endif %}">
+                                <label><input type="checkbox" value="5" name="tri">HT</label>
+                            </th>
+                            {% endif %}
+
+                            {% if 'LOT' in columnsVisibileId  %}
+                            <th class="{% if 'LOT' not in columnsVisibileId  %}removeColumn{% endif %}">
+                                <label><input type="checkbox" value="6" name="tri">LOT</label>
+                            </th>
+                            {% endif %}
+
+                            {% if 'NOTE' in columnsVisibileId  %}
+                            <th class="{% if 'NOTE' not in columnsVisibileId  %}removeColumn{% endif %}">
+                                NOTE
+                            </th>
+                            {% endif %}
+
+                            {% if 'STATUS' in columnsVisibileId  %}
+                            <th class="{% if 'STATUS' not in columnsVisibileId  %}removeColumn{% endif %}" style="width: 150px">
+                                <label><input type="checkbox" value="7" name="tri">STATUS</label>
+                            </th>
+                            {% endif %}
+
+                            <th></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                            {% for devis_pro in pager.currentPageResults %}
+
+                            <tr class='text-center' style="{% if devis_pro.id in tabDoublon %}color:red{% endif %}">
+                                <td>
+                                    <input type="checkbox" class="check-bl" name="blCheck" value="{{devis_pro.id}}">
+                                </td>
+
+                                {% if 'DOCUMENT_PDF' in columnsVisibileId  %}
+                                <td>
+                                    {% if devis_pro.getDocumentFile %} 
+                                    <span class="showDocument" data-file="/uploads/devis/{{devis_pro.getDocumentFile}}" style="cursor: pointer;"><img src="//ssl.gstatic.com/docs/doclist/images/mediatype/icon_3_pdf_x16.png"></span>
+                                    {% endif %}
+                                </td>
+                                {% endif %}
+
+                                {% if 'CAUTION' in columnsVisibileId  %}
+                                <td>
+                                    {% if devis_pro.caution is not null %}
+                                        <span class="doc-item-container">
+                                            <span class="showDocument" data-file="/uploads/devis/caution/{{devis_pro.caution}}" style="cursor: pointer;"><img src="//ssl.gstatic.com/docs/doclist/images/mediatype/icon_3_pdf_x16.png"></span>
+                                        </span>
+                                    {% else %}
+                                        <span style="display: none;">X</span>
+                                        <form method="POST" action="{{path('devis_pro_post_caution')}}" id="formCaution-{{devis_pro.id}}" enctype="multipart/form-data">
+                                            <input type="hidden" name="devis_id" value="{{devis_pro.id}}">
+                                            <label style="cursor: pointer;">
+                                                <i class="fas fa-times" style="font-size: 18px;color: #ef0a0a;"></i>
+                                                <input type="file"  data-id="{{devis_pro.id}}" name="caution" id="caution-{{devis_pro.id}}" style="display: none;">
+                                            </label>
+                                        </form>
+                                    {% endif %}
+                                </td>
+                                {% endif %}
+
+                                {% if 'DATE_CREATION' in columnsVisibileId  %}
+                                <td>
+                                    {{ devis_pro.facturedAt|date('d/m/Y') }}
+                                </td>
+                                {% endif %}
+
+                                {% if 'FOURNISSEUR' in columnsVisibileId  %}
+                                <td>
+                                    {% set devis_fournisseur = devis_pro.fournisseur is not null ? devis_pro.fournisseur.nom : '' %} 
+                                    {{ devis_fournisseur }}</td>
+                                {% endif %}
+
+                                {% if 'CHANTIER' in columnsVisibileId  %}
+                                <td>
+                                    {% set devis_chantier = devis_pro.chantier is not null ? devis_pro.chantier.nameentreprise : '' %}  
+                                    {{ devis_chantier }}
+                                </td>
+                                {% endif %}
+
+                                {% if 'MONTANT_TTC' in columnsVisibileId  %}
+                                <td>{{ devis_pro.prixttc|number_format(2, ',', '') }} {{ devis_pro.devise.symbol }}</td>
+                                {% endif %}
+
+                                {% set trueTva = 0 %}
+                                {% if 'TVA' in columnsVisibileId  %}
+                                <td>
+                                    {% set ht = devis_pro.getPrixht is null ? 0 : devis_pro.getPrixht %} 
+                                    {% set dividende = (ht is null or ht == 0) ? 1 : ht %} 
+
+                                    
+                                    {% set partE = ((devis_pro.prixttc - ht) / dividende * 100)|round(0, 'floor') %}
+                                    {% set partD = ((devis_pro.prixttc - ht) / dividende * 100) - partE %}
+
+                                    {% if partE == 0 %}
+                                        {% set trueTva = 0 %}
+                                        <span style="color: orange">0</span>
+                                    {% else %}
+                                        {% if partE == 5  and (partD <= 0.8 and partD >= 0.2) %}
+                                            {% set trueTva = '5.5%' %}
+                                           <span style="color: green">5.5%</span> 
+                                        {% elseif partE == 20  and (partD <= 0.3) %}
+                                            {% set trueTva = '20%' %}
+                                            <span style="color: green">20%</span>
+                                        {% elseif partE == 19  and (partD >= 0.7) %}
+                                            {% set trueTva = '20%' %}
+                                            <span style="color: green">20%</span>
+                                        {% elseif partE == 10  and (partD <= 0.3) %}
+                                            {% set trueTva = "10%" %}
+                                            <span style="color: green">10%</span>
+                                        {% elseif partE == 9  and (partD >= 0.3) %}
+                                            {% set trueTva = '10%' %} 
+                                            <span style="color: green">10%</span>
+                                        {% else %}
+                                            {% set trueTva = ((devis_pro.prixttc - ht) / dividende * 100)|number_format(2, ',', ' ') %}
+                                            <span style="color: red">{{((devis_pro.prixttc - ht) / dividende * 100)|number_format(2, ',', ' ')}}%</span>
+                                        {% endif %}
+                                    {% endif %}
+                                </td>
+                                {% endif %}
+
+                                {% if 'MONTANT_HT' in columnsVisibileId  %}
+                                <td>{{ devis_pro.getPrixht|number_format(2, ',', '') }} {{ devis_pro.devise.symbol }}</td>
+                                {% endif %}
+
+                                {% if 'LOT' in columnsVisibileId  %}
+                                <td>
+                                    {% set devis_lot = devis_pro.lot is not null ? devis_pro.lot.lot : "" %}
+                                    {{ devis_lot }}
+                                </td>
+                                {% endif %}
+
+                                {% if 'NOTE' in columnsVisibileId  %}
+                                <td>
+                                    <span style="width: 323px; overflow: hidden;
+                                    text-overflow: ellipsis;
+                                    display: -webkit-box;
+                                    -webkit-line-clamp: 1;
+                                    -webkit-box-orient: vertical">
+                                    {{devis_pro.note|raw}}</span>
+                                </td>
+                                {% endif %}
+
+                                {% if 'STATUS' in columnsVisibileId  %}
+                                <td>
+                                    <select class="form-control status-select" style="{% if devis_pro.status is not null and (devis_pro.status.color) %} background: {{devis_pro.status.color}}; color: #fff; {% else %} {% endif %}; height: 100%;width: 170px">
+                                        <option disabled selected>-Status-</option>
+                                        {% for stat in status %}
+                                            <option value="{{stat.id~'-'~devis_pro.id}}" style="height: 35px; background: {{stat.color}}; color: #fff" {% if devis_pro.status is not null and (devis_pro.status.id == stat.id) %}selected{% endif %} data-devis-id="{{devis_pro.id}}">{{stat.nom}}</option>
+                                        {% endfor %}
+                                    </select>
+                                    {% set devis_status = "" %} 
+                                    {% if devis_pro.status is not null %}
+                                        {% set devis_status = devis_pro.status.name %} 
+                                        <span class="status-visible" style="display: none;">
+                                            {{devis_status}}
+                                        </span>
+                                    {% else %}
+                                        <span style="display: none;">En attente</span>
+                                    {% endif %}
+                                </td>
+                                {% endif %}
+
+                                <td>
+                                    <a href="{{ path('devis_pro_edit', {'devis_proId': devis_pro.id} ) }}"><i class="far fa-edit"></i></a>
+                                    <a onclick="return confirm('Etes-vous sur de vouloir supprimer cette devis_pro ?')"
+                                       href="{{ path('devis_pro_delete', {'devis_proId': devis_pro.id} ) }}"><i class="fas fa-trash-alt"></i></a>
+                                </td>
+                            </tr>
+
+                            {% set devisList = devisList|merge([
+                                [devis_pro.facturedAt|date('d/m/Y'), devis_fournisseur, devis_chantier ,  devis_pro.prixttc|number_format(2, '.', ''), trueTva, devis_pro.getPrixht|number_format(2, '.', ''), devis_lot,  devis_pro.note, devis_status]
+                                ]) %}
+                            {% else %}
+                            <tr>
+                                <td colspan="34">Aucune devis_pro enregistrée</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+
+                    </div>
+                    {% if pager.haveToPaginate %}
+                        {{ pagerfanta(pager, 'my_template') }}
+                    {% endif %}
+                    <div style="width: 100%; height: 200;margin-bottom: 45px;">
+                        <canvas id="myChart"></canvas>
+                    </div>
+                    
+                    <div id="modalDocumentShow" class="modal fade bs-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel">
+                        <div class="modal-dialog modal-lg" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header" style="border: none;">
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                </div>
+                                <div class="modal-body text-center">
+                                    <h3 class="text-center no-document" style="display: none;">Aucun document rattaché.</h3>
+                                    <div class="documentFile-container" style="display: none;">
+                                        <object class="documentPdf" data="" type="application/pdf" width="100%" height="980px" style="display: none;"></object>
+                                        <img class="documentimage" src="" alt="fichier facture uploadé" width="100%"  style="display: none;">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="modalQ" class="modal fade bs-example-modal-sm modal-center" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel">
+                        <div class="modal-dialog modal-sm" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header" style="border: none;">
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                </div>
+                                <div class="modal-body text-center" style="padding: 0px 30px 51px 30px">
+                                    <form method="POST" action="{{path('devis_pro_send_bl')}}">
+                                        <input type="hidden" name="list-devis-id">
+                                        <div class="row">
+                                            <div class="col-lg-12 form-group">
+                                                <input type="email" name="email_comptable" placeholder="Email comptable" class="form-control" required>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-lg-12 form-group" style="text-align: left;">
+                                                <label style="color: #a6a4ad;">Contenu</label>
+                                                <textarea name="content" class="form-control" rows="6"></textarea>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-12 form-group text-center">
+                                            <button type="submit" class="btn btn-primary
+                                            ">Envoyer</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="text/javascript">
+        var devisList = {{ devisList|json_encode()|raw }};
+        console.log(devisList);
+
+        var exportExel = function(){
+            var ep=new ExcelPlus();
+            ep.createFile("Devis pro")
+              .writeRow(1, ["Date Création", "Fournisseur","Chantier","TTC","TVA","HT","Lot","Note","status"] );
+            devisList.forEach(element => {
+                element[3] = parseFloat(element[3]);
+                element[5] = parseFloat(element[5]);
+                ep.writeNextRow(element);
+            });
+            ep.saveAs("devis_pro.xlsx");
+        }
+    </script>
+{% endblock %}
+
+{% block javascript_script %}
+    <script type="text/javascript"src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.min.js"></script>
+    <script type="text/javascript"src="https://cdn.datatables.net/buttons/1.7.0/js/dataTables.buttons.min.js"></script>
+    <script type="text/javascript"src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+    <script type="text/javascript"src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
+    <script type="text/javascript"src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+    <script type="text/javascript"src="https://cdn.datatables.net/buttons/1.7.0/js/buttons.html5.min.js"></script>
+    <script type="text/javascript"src="https://cdn.datatables.net/buttons/1.7.0/js/buttons.print.min.js"></script>
+
+    <script type="text/javascript" src="https://cdn.datatables.net/plug-ins/1.10.24/sorting/date-eu.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/plug-ins/1.10.15/sorting/numeric-comma.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/plug-ins/1.11.2/sorting/num-html.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.4/dist/Chart.min.js"></script>
+    <script type="text/javascript">
+        var valChart = {{ valChart|json_encode()|raw }};
+        var ctx = document.getElementById('myChart').getContext('2d');
+        ctx.height = 200;
+        var myChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels:  ["jan", "Fév", 'Mars', 'Avr', 'Mais', 'Juin', 'Juil', 'Aout', 'sep', 'Oct', 'Nov', 'Déc'],
+                datasets: [{
+                    label: 'Montant TTC',
+                    data: valChart,
+                    backgroundColor: [
+                        'rgb(19 19 226)',
+                    ],
+                    borderColor: [
+                        'rgb(19 19 226)',
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    },
+                    yAxes: [{
+                        display: false //this will remove all the x-axis grid lines
+                    }],
+
+                },
+                legend: { display: false },
+                    title: {
+                    display: true,
+                    fontColor: 'black',
+                    fontSize: '25',
+                    text: '{{full_month|capitalize}}-TTC: {{ montant['prixttc'] ? montant['prixttc']|number_format(2, ',', '') : "0" }}€'
+                }
+            }
+        });
+
+        $(document).ready( function () {
+            $('body').on('click', ' .showDocument', function(){
+                $documentFile = $(this).attr('data-file');
+                $('#modalDocumentShow').modal('show');
+                if($documentFile != ""){
+                    $('.no-document').css('display','none');
+                    $('.documentFile-container').css('display','block');
+                    if($documentFile.substr($documentFile.length - 3).toLowerCase() == "pdf"){
+                        $('.documentFile-container').html('<object class="documentPdf" data="" type="application/pdf" width="100%" height="980px" style="display: none;"></object>');
+                        $('.documentPdf').css('display', 'block');
+                        $('.documentPdf').attr('data', $documentFile);
+                    }
+                    else{
+                        $('.documentimage').css('display', 'block');
+                        $('.documentimage').attr('src', $documentFile);
+                    }
+                }
+                else{
+                    $('.documentFile-container').css('display','none');
+                    $('.no-document').css('display','block');
+                }
+            })
+        } );
+
+        $( ".status-select" ).change(function() {
+            var statusId =  $(this).val().split('-')[0];
+            var devisId =  $(this).val().split('-')[1];
+            updateStatus(statusId, devisId);
+        });
+
+        $(document).on('change', 'input[name=caution]', function(e){
+            $that = $(this);
+            let file2 = document.getElementById("caution-"+$that.attr('data-id'));
+            if (file2.files){
+                $("#formCaution-"+$that.attr('data-id')).submit();
+            }
+            
+        });
+
+        function updateStatus(statusId, devisId){
+          $.ajax({
+            url:"{{path('devis_pro_update_status')}}",
+            type:"GET",
+            data: {
+                statusId : statusId,
+                devisId : devisId
+            },  
+            success:function(response) {
+                window.location.reload();
+              if(response.status == 200){
+                window.location.reload();
+              }
+              else if(response.status == 500){
+                toastr.error(response.message);
+              }
+            },
+            error:function(){
+              toastr.error("Ooops... Quelque chose s'est mal passée");
+            }
+          });
+        }
+
+        $('table').on('change', 'input[name=tri]', function(){    
+            $trieCheck = $('input[name=tri]:checkbox:checked');
+            if( $trieCheck.length > 0){
+                $('.link-export').attr('href', "{{path('devis_pro_print')}}?tri="+$(this).val());
+                $('input[name=tri]').prop('checked', false);  
+                $(this).prop('checked', true);  
+            }
+            else
+                $('.link-export').attr('href', "{{path('devis_pro_print')}}");
+
+        });
+    </script>
+
+{% endblock %}
+
+{% block javascript %}
+$(document).ready( function () {
+    $('table').DataTable({
+        columnDefs: [
+           { type: 'date-eu', targets: 3 },
+           { "type": "numeric-comma", targets: 6 },
+           { "type": "numeric-comma", targets: 8 },
+           { "type": "num-html", targets: 7 }
+        ],
+        "language": {
+            "url": "//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/French.json"
+        },
+        "pageLength": 500,
+        "order": [],
+        "paging":   false,
+    });
+
+
+    $('table').on('change', '.check-bl', function(){    
+        $eltCheck = $('.check-bl:checkbox:checked');
+        if( $eltCheck.length > 0)
+            $('.send-facture').css('display', 'block');
+        else
+            $('.send-facture').css('display', 'none');
+
+        var userCheck = [];   
+        $eltCheck.each(function( index ) {
+            if($( this ).val() != "")
+                userCheck.push($( this ).val());
+        });
+        $('input[name=list-devis-id]').val(userCheck.join('-'));
+    });
+    $('.chk-parent').on('change', function(){  
+        $('.check-bl').prop('checked', this.checked);      
+        if($(this).is(":checked"))
+            $('.send-facture').css('display', 'block');
+        else
+            $('.send-facture').css('display', 'none');
+
+        var userCheck = [];  
+        $eltCheck = $('.check-bl:checkbox:checked'); 
+        $eltCheck.each(function( index ) {
+            if($( this ).val() != "")
+                userCheck.push($( this ).val());
+        });
+        $('input[name=list-devis-id]').val(userCheck.join('-'));
+    });
+    $('body').on('click', '.send-facture', function(){
+        $('#modalQ').modal('show');
+    })
+} );
+
+{% endblock %}

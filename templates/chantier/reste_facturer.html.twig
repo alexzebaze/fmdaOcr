@@ -1,0 +1,208 @@
+{% extends 'base.html.twig' %}
+{% block css %}
+    <link rel="stylesheet" href="//cdn.datatables.net/1.10.20/css/jquery.dataTables.min.css">
+    <style type="text/css">
+        
+        thead th{text-align: center;text-align: center;}
+        .send-facture{display: none;}
+        .ibox-title{padding: 26px 90px 8px 15px}
+        .ibox-tools{display: flex;align-items: center;justify-content: flex-end;margin-bottom: 7px;}
+        table.dataTable tfoot th, table.dataTable tfoot td{border-top: 1px solid #e7eaec;text-align: center; font-weight: 600;font-size: 15px;    padding-bottom: 3rem;}
+        @media (min-width: 768px){
+            .modal-sm {
+                width: 425px;
+            }
+        }
+        .total-bl{
+            margin: 8px 0 32px 0;
+            color: #000;
+            font-weight: 600;
+            text-align: center;
+            line-height: 26px;
+            font-size: 19px;
+            line-height: 1px;
+        }
+        .btnAttachDevis{display: none;}
+    </style>
+{% endblock %}
+{% block breadcrumb %}
+    <div class="row wrapper border-bottom white-bg page-heading">
+        <div class="col-lg-10">
+            <h1>Devis</h1>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                    <a href="{{ path('home') }}">Accueil</a>
+                </li>
+                <li class="breadcrumb-item active">
+                    <strong>Devis</strong>
+                </li>
+            </ol>
+        </div>
+    </div>
+
+{% endblock %}
+{% block content %}
+    <div class="row">
+        <div class="col-lg-12">
+            {% include 'flashes.html.twig' %}
+            <div class="ibox">
+                <div class="ibox-content">
+                    {{ include('chantier/filter.html.twig') }}
+                </div>
+            </div>
+            <div class="ibox ">
+                <div class="ibox-title">
+                    <h5>Devis</h5> 
+                    <div class="ibox-tools">
+                        <a href="{{ path('bon_livraison_add') }}">
+                            <i class="fa fa-plus"></i>
+                            Ajouter
+                        </a>
+                        <button type="submit" class="btn btn-primary send-facture" style="margin-left: 12px;">Envoyer le Bon</button>
+                        <button type="button" class="btn btn-primary btnAttachDevis" style="margin-left: 6px;">
+                          Lier un devis
+                        </button>
+                    </div>
+                </div>
+                <div class="ibox-content">
+                    <h1 class="total-bl"> Reste à facturer: <span>{{ totalResteFacture ? totalResteFacture|number_format(2, ',', '') : "0" }}€</span> </h1>
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>NOM DU CLIENT</th>
+                                <th>Document ID</th>
+                                <th>LOT</th>
+                                <th>TOTAL HT</th>
+                                <th>DOC</th>
+                                <th>NB HEURES</th>
+                                <th>TX HORAIRE</th>
+                                <th>TOTAL H</th>
+                                <th>BL</th>
+                                <th>Restant</th>
+                                <th>Facturé</th>
+                                <th>Reste à Facturer</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                                {% set totalRestant = 0 %}
+                                {% set totalfacture = 0 %}
+                                {% for key, dvs in ventes %}
+                                    {% set devisGp2 = key in ventes2|keys ? ventes2[key] : '' %}
+                                <tr>
+                                    <th colspan="13" class="text-center">
+                                        <a href="{{path('chantier_show',{'chantierId':devisGp2['chantier_id']})}}">{{devisGp2['chantier']}}</a>
+                                    </th>
+                                </tr>
+
+                                {% set totalRestantChantier = 0 %}
+                                {% for devis in dvs  %}
+                                    <tr>
+                                        <td>
+                                            {{ devis.factured_at|date('d/m/Y') }}
+                                        </td>
+                                        <td>{{devis.client}}</td>
+                                        <td>{{devis.document_id}}</td>
+                                        <td>{{devis.lot}}</td>
+                                        <td>
+                                            {{devis.ht}}
+                                        </td>
+                                        <td>
+                                            <span class="showDocument" data-file="/uploads/devis/{{devis.document_file}}" style="cursor: pointer;"><img src="//ssl.gstatic.com/docs/doclist/images/mediatype/icon_3_pdf_x16.png"></span>
+                                        </td>
+                                        <td>{{devis.nbHeure}}</td>
+                                        <td>{{devis.tx_horaire|number_format(2, '.', '')}}</td>
+                                        <td>
+                                            {% set total_h = (devis.nbHeure*devis.tx_horaire)|number_format(2, '.', '') %}
+                                            <a href="{{path('chantier_info_tx_devis', {'devisId':devis.id})}}">{{total_h}}</a>
+                                        </td>
+                                        <td style="display: flex; position: relative;">
+                                            <a href="{{path('chantier_list_bl_associe_devis', {'devisId':devis.id})}}"  {% if devis.list_bl|length > 0 %}style="cursor:pointer"{% endif %}>{{devis.sum_ht|number_format(2, '.', '')}}</a>
+                                        </td>
+                                        <td>
+                                            {% set currentRestant = (devis.ht - (total_h+devis.sum_ht))|number_format(2, '.', '') %}
+                                            {% set totalRestant = totalRestant +  currentRestant %} 
+                                            {% set totalRestantChantier = totalRestantChantier +  currentRestant %} 
+                                            {{currentRestant|number_format(2, '.', '')}}
+                                        </td>
+                                        <td>
+                                            {% set sum_ht_vente = devis.sumVente.sum_ht %} 
+                                            {% set totalfacture = totalfacture + sum_ht_vente %}
+                                            {{sum_ht_vente|number_format(2, '.', '')}}
+                                        </td>
+                                        <td>
+                                            {{devis.totalResteFact|number_format(2, '.', '')}}
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                                <tr>
+                                    <th colspan="10" class="text-center">TOTAUX</th>
+                                    
+                                    <th>
+                                        {{totalRestantChantier|number_format(2, '.', '')}}
+                                    </th>
+                                    <th>
+                                        {% set sum_ht_vente = devisGp2.sumVente.sum_ht %} 
+                                        {% set totalfacture = totalfacture + sum_ht_vente %}
+                                        {{sum_ht_vente|number_format(2, '.', '')}}
+                                    </th>
+                                    <th>
+                                        {% set currentFactRestant = (devisGp2.ht - sum_ht_vente) %}
+                                        {{ currentFactRestant|number_format(2, '.', '') }}
+                                    </th>
+                                </tr>
+
+                                {% else %}
+                                <tr>
+                                    <td colspan="34" class="text-center">Aucune bon_livraison enregistrée</td>
+                                </tr>
+                                {% endfor %}
+                                <tr>
+                                    <th>TOTAUX</th>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <th>{{totalRestant}}</th>
+                                    <th>{{totalfacture}}</th>
+                                    <th>{{totalResteFacture}}</th>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+{% endblock %}
+
+{% block javascript_script %}
+    <script src="//cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/plug-ins/1.10.24/sorting/date-eu.js"></script>
+    <script type="text/javascript">
+    </script>
+{% endblock %}
+
+{% block javascript %}
+$(document).ready( function () {
+    $('table').DataTable({
+        columnDefs: [
+           { type: 'date-eu', targets: 2 }
+        ],  
+        "language": {
+            "url": "//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/French.json"
+        },
+        "pageLength": 500,
+        "order": []
+    });
+} );
+
+{% endblock %}

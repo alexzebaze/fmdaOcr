@@ -1,0 +1,74 @@
+<style type="text/css">
+    #banque_logo{display: none;}
+    .img-load{display: block;margin: auto;max-width: 201px;}
+    label[for=banque_logo]{cursor: pointer;}
+</style>
+
+{{ form_start(form) }}
+<div class="col-lg-8">
+    <div class="ibox">
+        <div class="ibox-content">
+            <div class="row">
+                <div class="col-lg-12 form-group">
+                    {{ form_label(form.nom, 'Nom de la banque') }}
+                    {{ form_row(form.nom) }}
+                </div>
+                <div class="col-lg-12 form-group">
+                    {{ form_label(form.email, 'Email') }}
+                    {{ form_row(form.email) }}
+                </div>
+                <div class="col-lg-6 form-group">
+                    {{ form_label(form.adress, 'Adresse') }}
+                    {{ form_row(form.adress) }}
+                </div>
+                <div class="col-lg-6 form-group">
+                    {{ form_label(form.telephone, 'Telephone') }}
+                    {{ form_row(form.telephone) }}
+                </div>
+                <div class="col-lg-6 form-group">
+                    {{ form_label(form.ville, 'Ville') }}
+                    {{ form_row(form.ville) }}
+                </div>
+                <div class="col-lg-6 form-group">
+                    {{ form_label(form.code_postal, 'Code postal') }}
+                    {{ form_row(form.code_postal) }}
+                </div>
+            </div>
+
+            <div class="row">
+            	<div class="col-lg-3 form-group">
+                    <button class="btn btn-primary">{{ button_label|default('Enregistrer') }}</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="col-lg-4">
+    <div class="ibox">
+        <div class="ibox-content">
+            <div class="row">
+                <div class="col-sm-12 form-group">
+                    {{ form_row(form.logo) }}
+                    {% set logo = banque.logo ? '/uploads/banque/logo/'~banque.logo : '/assets/images/loag-image.png' %}
+                    <label for="banque_logo" style="display: block;margin-top: 25px;">
+                        <img src="{{logo}}" class="img-load">
+                    </label>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{{ form_end(form) }}
+<script type="text/javascript">
+    let file = document.getElementById("banque_logo");
+    file.onchange = function() {
+        if (this.files && this.files[0]) {
+            $that = this;
+            var reader = new FileReader();
+            reader.onload = function (e) {
+                $('.img-load').attr('src', e.target.result);
+            };
+            reader.readAsDataURL(this.files[0]);
+        };
+    }
+</script>

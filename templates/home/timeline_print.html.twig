@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Timeline</title>
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu" crossorigin="anonymous">
+    <link href="{{ asset('vendor/@fortawesome/fontawesome-free/css/fontawesome.css') }}" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/photoswipe/4.1.3/photoswipe.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/photoswipe/4.1.3/default-skin/default-skin.css"/>
+    <link href="{{ asset('vendor/iCheck/custom.css') }}" rel="stylesheet">
+    <link href="{{ asset('vendor/animate.css/animate.css') }}" rel="stylesheet">
+    <link href="{{ asset('css/style.css') }}" rel="stylesheet">
+    <link rel="stylesheet" href="{{ asset('vendor/toastr/toastr.min.css') }}"/>
+    <script src="{{ asset('js/jquery-3.1.1.min.js') }}"></script>
+
+
+    <style type="text/css">
+	    .dd-empty{display: none;}
+	    .dd{max-width: 100%}
+	</style>
+	<style type="text/css">
+	   .fixed-btn{
+	      position: fixed;
+	      top: 2px;
+	   }
+	  #extSubmitFixed{display: none;}
+	   .disable{pointer-events: none;}
+	   .d-flex{display: flex;}
+	   .flex-align-center{align-items: center;}
+	   .justify-content-center{justify-content: center;}
+	   .table {
+	   display: table;
+	   border-collapse: collapse;
+	   margin-bottom: 0;
+	   }
+	   .table .tr {
+	   display: table-row;
+	   border: 1px solid #fff;
+	   }
+	   .table .tr:first-child {
+	   font-weight: bold;
+	   border:0;
+	   }
+	   .table .tr:first-child > .td-cell{
+	   border:0;
+	   text-align: center;
+	   }
+	   .table .tr:first-child > .td-cell:first-child{
+	   text-align: left;
+	   }
+	   .table .tr:not(:first-child) {
+	   background-color: #f5f6f8;
+	   border-bottom-color: #f5f6f8;
+	   }
+	   .table .tr:nth-child(2) {
+	   background-color: #fff;
+	   border: none;
+	   }
+	   .table .tr:not(:first-child):hover {
+	   background: #dbdcde;
+	   }
+	   .table .tr:nth-child(2):hover {
+	   background: #fff;
+	   }
+	   .table .tr:nth-child(2) > .col-sort{
+	      cursor: pointer;
+	   }
+	   .table .tr .td-cell {
+	      position: relative;
+	   display: table-cell;
+	   padding: 0px 8px;
+	   border-left: 1px solid #fff;
+	   text-align: center;
+	   max-height: 35px;
+	   border-bottom: 1px solid #fff;
+	   }
+	   .table .tr .td-cell:first-child {
+	   border-left: 0;
+	   }
+	   .table .tr .td-cell:nth-child(2) {
+	   }
+	   /* Not necessary for table styling */
+	   .div-table,
+	   .table-tag {
+	   margin: 6px 2em;
+	   }
+	   .div-table .title,
+	   .table-tag .title {
+	   text-align: center;
+	   padding-bottom: 0.5em;
+	   }
+	   .planning-table-container{margin-bottom: 60px;}
+	   .list-ouvrier{
+	   text-align: center;
+	   margin: 0;
+	   }
+	   .planning-chantier-item .rounded-img {
+	   border-radius: 50%;
+	   object-fit: cover;
+	   }
+	   .list-ouvrier .rounded-img {
+	   cursor: pointer;
+	   position: relative;
+	   left: -5px;
+	   margin-left: -15px;
+	   width: 27px;
+	   height: 27px;
+	   }
+	   .list-user-dispo .rounded-img {
+	   width: 25px;
+	   min-width: 25px;
+	   height: 25px;
+	   display: flex;
+	   align-items: center;
+	   margin-right: 12px;
+	   }
+	   .list-ouvrier .avatar:hover .rounded-img{
+	   z-index: 4;
+	   }
+	   .list-ouvrier {
+	   }
+	   .timeline{width: 173px}
+	   .timeline .timeline-content{
+	   position: relative;
+	   cursor: pointer;
+	   color: #fff;
+	   padding: 1px 10px;
+	   border-radius: 10px;
+	   display: block;
+	   width: 124px;
+	   margin: auto;
+	   }
+	   .timeline .duree{display: none;}
+	   .timeline-content:hover .interval{
+	   display: none;
+	   }
+	   .timeline-content:hover .interval+.duree{
+	   display: block;
+	   }
+	   .td-cell-categorie{
+	   padding-left: 0px!important;
+	   padding-right: 0px!important;
+	   }
+	   .row-new-tache{
+	   flex: 1;
+	   position: relative;
+	   display: flex;
+	   align-items: stretch;
+	   justify-content: space-between;
+	   }
+	   .row-new-tache .col-input-new{
+	   flex: 1;
+	   padding-left: 18px;
+	   }
+	   .row-new-tache .col-input-new:focus+.btn-save-new-cat{
+	   display: block;
+	   }
+	   .row-new-tache .btn-save-new-cat{
+	   position: absolute;
+	   right: 0;
+	   display: none;
+	   color: #fff;
+	   align-items: center;
+	   justify-content: center;
+	   padding: 0 35px;
+	   height: 100%;
+	   border-radius: 0;
+	   }
+	   .btn.createPlanning{
+	   border: 1px solid #e6e9ef;
+	   color: #323338;
+	   }
+	   .timeline .timeline-content.not-date{background: #ccc!important}
+	   .date-range-input{
+	   background: transparent;
+	   cursor: pointer;
+	   width: 100%;
+	   position: absolute;
+	   left: 0;
+	   right: 0;
+	   top: 0px;
+	   bottom: 0px;
+	   color: transparent;
+	   border: none;
+	   outline: none;
+	   }
+	   .user-dropdown{
+	   display: none;
+	   background: #fff;
+	   border-radius: 8px;
+	   padding: 15px 8px;
+	   position: absolute;
+	   top: 40px;
+	   z-index: 500;
+	   width: 270px;
+	   box-shadow: 0px 0px 6px 1px rgb(0 0 0 / 7%);
+	   }   
+
+	   .status-dropdown{
+	   display: none;
+	   background: #fff;
+	   padding: 14px 0 9px;
+	   position: absolute;
+	   top: 44px;
+	   z-index: 10;
+	   width: 270px;
+	   box-shadow: 0px 0px 6px 1px rgb(0 0 0 / 7%);
+	   }
+	   .carret{
+	     width: 0;
+	     height: 0;
+	     border-style: solid;
+	     border-width: 0px 8px 6px 8px;
+	     border-color: transparent transparent #fff transparent;
+	     position: absolute;
+	   }
+	   .carret.carret-dropdown-status{
+	   top: -6px;
+	   }
+	   .user-dropdown .list-select-user >*{
+	   background: #e5f4ff !important;
+	   color: #000;
+	   padding: 5px 20px 5px 3px;
+	   border-radius: 5px;
+	   font-size: 7px;
+	   margin-right: 3px;
+	   margin-bottom: 4px;
+	   }
+	   .filter-user{
+	   width: 100%;
+	   outline: none;
+	   border: none;
+	   margin: 16px 0px 13px;
+	   }
+	   .list-user-dispo{
+	   list-style: none;
+	   margin: 0;
+	   text-align: left;
+	   font-size: 13px;
+	   margin-top: 12px;
+	   padding: 0 4px 0;
+	   /*max-height: 209px;
+	   overflow: hidden;*/
+	   }
+	   .list-user-dispo >*{
+	   cursor: pointer;
+	   padding: 5px 6px;
+	   border-radius: 5px;
+	   font-size: 12px;
+	   }
+	   .list-user-dispo >*:not(:last-child){
+	   margin-bottom: 0;
+	   }
+	   .list-user-dispo >*:hover{
+	   /*background: rgb(202, 182, 65);*/
+	   color: #fff;
+	   }
+	   .table .tr:first-child > .td-cell.td-cell-personne{
+	   width: 270px;
+	   }
+	   .user-dropdown .line{
+	   height: 1px;
+	   background: #ccc;
+	   flex: 0.3;
+	   }
+	   .footer{display: none;}
+	   .remove-user {
+	   cursor: pointer;
+	   position: absolute;
+	   right: 0px;
+	   transform: translateY(-50%);
+	   top: 50%;
+	   font-size: 13px;
+	   padding: 2px 5px;
+	   line-height: 1;
+	   border-radius: 50%;
+	   }
+	   .remove-user:hover{
+	   background: #fff;
+	   }
+	   /* status menu */
+	   .menu-status {
+	   position: relative;
+	   width: 17rem;
+	   font-size: 1.2rem;
+	   font-weight: bold;
+	   color: #687F98;
+	   background-color: white;
+	   transition: transform 0.4s cubic-bezier(0.28, 0.25, 0.36, 1.28);
+	   cursor: pointer;
+	   color: #fff;
+	   margin: auto;
+	   height: 35px;
+	   display: flex;
+	   align-items: center;
+	   justify-content: center;
+	   }
+	   .menu__icon-box {
+	   width: 1rem;
+	   height: 1rem;
+	   margin-top: -0.3rem;
+	   }
+	   .menu__icon {
+	   width: 1rem;
+	   height: 1rem;
+	   border-top: 0.15rem solid #687F98;
+	   border-right: 0.15rem solid #687F98;
+	   transition: all 0.3s ease-in-out;
+	   transform: rotate(135deg);
+	   }
+	   .menu__dropdown {
+	   width: 17rem;
+	   font-weight: lighter;
+	   position: absolute;
+	   top: 4rem;
+	   opacity: 0;
+	   display: none;
+	   z-index: 2;
+	   }
+	   .menu__dropdown-option {
+	   padding: 0.8rem 1.6rem;
+	   }
+	   .menu__dropdown-option:hover {
+	   background-color: #E8F0FC;
+	   }
+	   .menu__active {
+	   }
+	   .menu__active .menu__icon {
+	   transform: rotate(-45deg);
+	   margin-top: 0.5rem;
+	   }
+	   .menu__active .menu__dropdown {
+	   opacity: 1;
+	   display: block;
+	   animation: showDropdownMenu 0.4s cubic-bezier(0.28, 0.25, 0.36, 1.28);
+	   }
+	   @keyframes showDropdownMenu {
+	   0% {
+	   opacity: 0;
+	   transform: translateY(-2rem);
+	   }
+	   100% {
+	   opacity: 1;
+	   transform: translateY(0rem);
+	   }
+	   }
+	   .filter-td{
+	   display: flex;
+	   align-items: center;
+	   flex-direction: column;
+	   justify-content: center;
+	   font-size: 11px;
+	   border-radius: 50%;
+	   width: 23px;
+	   height: 22px;
+	   color: #fff;
+	   cursor: pointer;
+	   }   
+	   .dropdown-config-planning{
+	    display: flex;
+	    align-items: center;
+	    flex-direction: column;
+	    justify-content: center;
+	    font-size: 8px;
+	    border-radius: 50%;
+	    width: 15px;
+	    height: 15px;
+	    color: #fff;
+	    cursor: pointer;
+	    margin-bottom: 5px;
+	    background: rgb(196, 196, 196);
+	   }
+	   .config-planning-container {
+	    display: none;
+	    background: #fff;
+	    border-radius: 8px;
+	    padding: 16px 0;
+	    position: absolute;
+	    top: 32px;
+	    color: #323338;
+	    left: 7px;
+	    text-align: left;
+	    z-index: 9999;
+	    width: 301px;
+	    box-shadow: 0px 0px 6px 1px rgb(0 0 0 / 15%);
+	    font-size: 14px;
+	   }
+	   .config-planning-container .config-color{
+	   width: 13px;
+	   height: 13px;
+	   display: inline-block;
+	   border-radius: 50%;
+	   background: rgb(196, 196, 196);
+	   }
+	   .config-planning-container .config-item{cursor: pointer;padding:0 18px;}
+	   .config-planning-container .config-item:not(:last-child) {
+	    margin-bottom: 12px;
+	   }
+	   .config-planning-container .config-text {
+	   margin-left: 7px;
+	   }
+	   .dropdown-config-planning .config-text {
+	    margin-left: 7px;
+	   }
+
+	   .dropdown-config-planning:after {
+	   content: '\25bc';   
+	   } 
+	   .filter-td > .fa{
+	   line-height: 0.7;
+	   }
+	   .filter-td.asc > .desc{
+	   color: #b3b3b3;
+	   }
+	   .filter-td.desc > .asc{
+	   color: #b3b3b3;
+	   }
+	   .sortorder:after {
+	   content: '\25b2';   
+	   }
+	   .sortorder.reverse:after {
+	   content: '\25bc';   
+	   }   
+	   .table .tr:hover .ds-menu-button-container{
+	   opacity: 1;
+	   }
+	   .pulse-menu-component {
+	   align-items: center;
+	   background-color: #ffffff !important;
+	   background-color: var(--primary-background-color) !important;
+	   display: flex;
+	   flex: 0 0 30px;
+	   justify-content: center;
+	   max-width: 30px;
+	   z-index: 1;
+	   }
+	   .pulse-menu-component:before {
+	   content: "";
+	   height: 100%;
+	   width: 16px;
+	   position: absolute;
+	   left: -16px;
+	   background-color: #ffffff;
+	   background-color: var(--primary-background-color);
+	   }
+	   .pulse-menu-component .ds-menu-button-container {
+	   opacity: 0;
+	   }
+	   .ds-menu-button.ds-menu-button-sm {
+	   width: 18px;
+	   height: 18px;
+	   font-size: 15px;
+	   border-radius: 4px;
+	   display: flex;
+	   justify-content: center;
+	   align-items: center;
+	   cursor: pointer;
+	   background-color: #e6e9ef;
+	   }
+	   .td-cell.col-action{
+	   background: #fff; width: 36.3px
+	   }
+	   .toggle-user .user-empty{
+	   position: relative;
+	   top: 6px;
+	   }
+	   input.no-editing{
+	   cursor: default;
+	   border: none;
+	   background: none;
+	   }
+	   .inputTache, .inputEmplacement{
+	   padding-left: 10px;
+	   width: 100%;
+	    min-height: 100%;
+	    position: absolute;
+	    top: 0px;
+	    right: 0;
+	    left: 0;
+	    color: #323338;
+	    padding-left: 17px;
+	   }
+	   .status-container .list-status{
+	   padding: 0 14px;
+	   display: flex;
+	   flex-wrap: wrap;
+	   justify-content: space-between; 
+	   }
+	   .status-container .list-status .status-item{
+	   background: rgb(202, 182, 65);
+	   width: 117px;
+	   margin-bottom: 6px;
+	   height: 32px;
+	   display: flex;
+	   align-items: center;
+	   justify-content: center;
+	   }
+	   .status-container .row-edit{
+	   color: #0085ff;
+	   font-weight: 100;
+	   border-top: 1px solid #adadad;
+	   margin-top: 15px;
+	   padding: 11px 0 1px;
+	   font-size: 13px;
+	   margin-top: 35px;
+	   }
+	   .config-color-container {
+	   display: none;
+	   position: absolute;
+	   top: 0px;
+	   z-index: 9;
+	   left: 0;
+	   }
+	   .color-selected{
+	   background: #fff;
+	   margin: 0;
+	   position: absolute;
+	   left: 0;
+	   top: 1px;
+	   padding: 0;
+	   border: 1px solid #c5c7d0;
+	   display: flex;
+	   align-items: center;
+	   justify-content: center;
+	   width: 35px;
+	   height: 34px;
+	   border-bottom: none;
+	   border-radius: 50% 50% 0 0;
+	   }
+	   .config-color-container .list-color-config {
+	   background: #fff;
+	   border: 1px solid #c5c7d0;
+	   padding: 7px 5px;
+	   width: 142px;
+	   display: flex;
+	   justify-content: start;
+	   flex-wrap: wrap;
+	   margin-top: 34px;
+	   }
+	   .list-color-config .color-item, .color-selected .color-item {
+	    width: 19px;
+	    height: 19px;
+	    display: inline-block;
+	    border-radius: 50%;
+	    margin-right: 6px;
+	    margin-bottom: 7px;
+	   }
+	   .input-planning-name{padding: 6px 12px 6px 0}
+	   .input-planning-name.focus{width: calc( 100% - 35px );}
+	   .dropdown-tache-config{
+	   width: 301px;
+	   color: #323338;
+	   font-size: 14px;
+	   }
+	   .dropdown-tache-config .icon-left-row{
+	   margin-right: 5px;
+	   }
+	   .dragable-container {
+	   display: none;
+	   border-radius: 4px 0 0 4px;
+	   cursor: pointer;
+	   background: #e6e9ef;
+	   transition: background 0.1s ease;
+	   margin-left: 36.3px;
+	   }
+	   .dragable-container > .dragable-container-content{
+	   padding-left: 8px;
+	   position: relative;
+	   min-height: 40px;
+	   font-size: 18px;
+	   font-weight: 100;
+	   display: flex;
+	   justify-content: space-between;
+	   align-items: center;
+	   padding: 0 11px;
+	   }
+	   .dragable-container:hover .planning-nom {
+	   padding-left: 5px;
+	   }
+	   .dragable-container:hover .expanded-btn-open {
+	   display: flex;
+	   }
+	   .dragable-container > .dragable-container-content > *{
+	   display: flex;
+	   align-items: center;
+	   }
+	   .expanded-btn-open{
+	   display: none;
+	   font-size: 12px;
+	   background: #d9d9d9;
+	   width: 20px;
+	   height: 20px;
+	   border-radius: 50%;
+	   align-items: center;
+	   justify-content: center;
+	   }
+	   .dragable-container .planning-nom{
+	   transition: linear padding-left .1s;
+	   }
+	   .profile-item{
+	   display: none;
+	   background: #fff;
+	   border-radius: 9px;
+	   box-shadow: 0px 0px 6px 1px rgb(0 0 0 / 7%);
+	   width: 324px;
+	   position: absolute;
+	   left: 0;
+	   right: 0;
+	   margin: auto;
+	   top: -93px;
+	   z-index: 10;
+	   }
+	   .profile-item-content {
+	   display: flex;
+	   align-items: flex-start;
+	   padding: 16px 19px;
+	   }
+	   .profile-img > img{
+	   width: 75px;
+	   height: 75px;
+	   object-fit: cover;
+	   border-radius: 50%;
+	   }
+	   .profile-info-desc {
+	   text-align: left;
+	   margin-left: 26px;
+	   line-height: 22px;
+	   }
+	   .profile-info-desc .prenom{
+	   color: #525252;
+	   font-weight: 600;
+	   font-size: 16px;
+	   margin-bottom: 4px;
+	   }
+	</style>
+</head>
+<body>
+
+
+
+	<div id="timeline-toggle" class="tab-planning-content-item">
+        <div class="d-flex flex-align-center" style="justify-content: space-between;  margin-bottom: 51px;">
+           <div></div>
+           <div class="option-right">
+              <select class="form-control" id="changeEcheance" ng-model="ECHEANCE" ng-change="changeEcheance()">
+                 <option value="JOURNALIERE">Jours</option>
+                 <option value="TRIMESTRIELLE">Trimestres</option>
+              </select>
+           </div>
+        </div>
+        <div class="timeline-container" id="timeline-container">
+           <table class="timeline-table">
+              <thead class="outer">
+                 <tr>
+                    <th class="th"></th>
+                    <th colspan="[[year.sub_head.length]]" class="th_year th_year_[[year.year]]" data-year="[[year.year]]" ng-repeat="year in timelines_year track by $index">
+                       <table>
+                          <thead class="inner">
+                             <tr>
+                                <td colspan="[[year.sub_head.length]]" style="font-weight: 100" ng-bind-html="year.head"></td>
+                             </tr>
+                             <tr  ng-if="year.echeance == 'JOURNALIERE'">
+                                <td style="position: relative;" ng-repeat="day in year.sub_head track by $index">
+                                   <div ng-repeat="date in year.date|limitTo:1:$index">
+                                      <div class="month-bar cell-date-[[date]]" data-month="[[date]]">[[day]]</div>
+                                   </div>
+                                </td>
+                             </tr>
+                             <tr ng-if="year.echeance == 'TRIMESTRIELLE'">
+                                <td class="" style="position: relative;">
+                                   <div class="td-timel-container">
+                                      <span ng-repeat="month in year.months| limitTo:1:0" class="td-timel-container">
+                                         <span ng-repeat="m in month" class="month-bar" data-month="[[m]]"></span>
+                                      </span>
+                                   </div>
+                                   <span class="content-q-th">Q1</span>
+                                </td>
+                                <td class="" style="position: relative;">
+                                   <div class="td-timel-container">
+                                      <span ng-repeat="month in year.months| limitTo:1:1" class="td-timel-container">
+                                         <span ng-repeat="m in month" class="month-bar" data-month="[[m]]"></span>
+                                      </span>
+                                   </div>
+                                   <span class="content-q-th">Q2</span>
+                                </td>
+                                <td class="" style="position: relative;">
+                                   <div class="td-timel-container">
+                                      <span ng-repeat="month in year.months| limitTo:1:2" class="td-timel-container">
+                                         <span ng-repeat="m in month" class="month-bar" data-month="[[m]]"></span>
+                                      </span>
+                                   </div>
+                                   <span class="content-q-th">Q3</span>
+                                </td>
+                                <td class="" style="position: relative;">
+                                   <div class="td-timel-container" style="position: relative;">
+                                      <span ng-repeat="month in year.months| limitTo:1:3" class="td-timel-container">
+                                         <span ng-repeat="m in month" class="month-bar" data-month="[[m]]"></span>
+                                      </span>
+                                   </div>
+                                   <span class="content-q-th">Q4</span>
+                                </td>
+                             </tr>
+                          </thead>
+                       </table>
+                       <span style="display: none;">[[isEndLoopMonth(timelines_year.length, $index)]]</span>
+                    </th>
+                 </tr>
+              </thead>
+              <tbody>
+                 <tr ng-repeat="timeline in timelines track by $index">
+                    <th>
+                       <div style="display: flex;align-items: flex-start;">
+                          <div class="timeline-avatar">
+                             <img ng-src="data:image/jpeg;base64,[[timeline.user.avatar]]"
+                                class="rounded-img" ng-if="timeline.user.avatar" width="23px">
+                          </div>
+                          <div class="timeline-info-desc">
+                             <div class="prenom" style="font-weight: bold;">[[timeline.user.firstname]]</div>
+                             <div class="nom-prenom">[[timeline.user.firstname]] [[timeline.user.lastname]]</div>
+                             <div class="nom-email">[[timeline.user.email]]</div>
+                          </div>
+                       </div>
+                    </th>
+                    <td class="td-timel" colspan="[[tmln.taches.length]]" ng-repeat="tmln in timeline.timelines track by $index">
+                       <table class="table-cell">
+                          <tbody>
+                             <tr>
+                                <td class="tmln-td-body" ng-repeat="tache in tmln.taches track by $index">
+                                   <div id="[[t.identify_cell]]" ng-repeat="t in tache track by $index" class="timeline-bar" data-debut=[[t.debut]] data-fin=[[t.date_fin]] style="[[getPostionTimeline(t.debut, t.date_fin, t.identify_cell)]]" >
+                                      <div class="tooltip-timeline-bar">
+                                         <span class="nbr-day-timeline"></span>
+                                         <span class="new-date-start"></span>
+                                         <span class="new-date-end"></span>
+                                      </div>
+                                      <span class="crok-resize resizable-w">
+                                         <span>|</span>
+                                      </span>
+                                      <span>[[t.tache]]</span>
+                                      <span class="crok-resize resizable-e">
+                                         <span>|</span>
+                                      </span>
+                                   </div>
+                                </td>
+                             </tr>
+                          </tbody>
+                       </table>
+                    </td>
+                 </tr>
+              </tbody>
+           </table>
+        </div>
+
+    </div>
+
+
+
+<script src="{{ asset('vendor/popper.js/dist/umd/popper.js') }}"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha384-aJ21OjlMXNL5UyIl/XNwTMqvzeRMZH2w8c5cRVpzpU8Y5bApTppSuUkhZXN0VxHd" crossorigin="anonymous"></script>
+<script src="{{ asset('vendor/metisMenu/jquery.metisMenu.js') }}"></script>
+<script src="{{ asset('vendor/slimscroll/jquery.slimscroll.min.js') }}"></script>
+<script src="{{ asset('vendor/peity/jquery.peity.min.js') }}"></script>
+<script src="{{ asset('vendor/toastr/toastr.min.js') }}"></script>
+
+<!-- Custom and plugin javascript -->
+<script src="{{ asset('js/inspinia.js') }}"></script>
+<script src="{{ asset('vendor/pace/pace.min.js') }}"></script>
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.15.6/xlsx.core.min.js"></script>
+<script type="text/javascript" src="{{ asset('vendor/excelplus-2.5.min.js') }}"></script>
+
+<!-- iCheck --> 
+<script src="{{ asset('vendor/iCheck/icheck.min.js') }}"></script>
+{% include "angular_module.html.twig" %}
+</body>
+</html>

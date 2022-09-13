@@ -1,0 +1,90 @@
+{% extends 'base.html.twig' %}
+
+{% block title %} {{parent()}} Logement{% endblock %}
+
+{% block body %}
+    <h1>Logement</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ logement.id }}</td>
+            </tr>
+            <tr>
+                <th>Identifiant</th>
+                <td>{{ logement.identifiant }}</td>
+            </tr>
+            <tr>
+                <th>Adresse</th>
+                <td>{{ logement.adresse }}</td>
+            </tr>
+            <tr>
+                <th>Adresse2</th>
+                <td>{{ logement.adresse2 }}</td>
+            </tr>
+            <tr>
+                <th>Batiment</th>
+                <td>{{ logement.batiment }}</td>
+            </tr>
+            <tr>
+                <th>Escalier</th>
+                <td>{{ logement.escalier }}</td>
+            </tr>
+            <tr>
+                <th>Etage</th>
+                <td>{{ logement.etage }}</td>
+            </tr>
+            <tr>
+                <th>Numero</th>
+                <td>{{ logement.numero }}</td>
+            </tr>
+            <tr>
+                <th>Ville</th>
+                <td>{{ logement.ville }}</td>
+            </tr>
+            <tr>
+                <th>Code_postal</th>
+                <td>{{ logement.codePostal }}</td>
+            </tr>
+            <tr>
+                <th>Region</th>
+                <td>{{ logement.region }}</td>
+            </tr>
+            <tr>
+                <th>Pays</th>
+                <td>{{ logement.pays }}</td>
+            </tr>
+            <tr>
+                <th>Superficie</th>
+                <td>{{ logement.superficie }}</td>
+            </tr>
+            <tr>
+                <th>Nombre_piece</th>
+                <td>{{ logement.nombrePiece }}</td>
+            </tr>
+            <tr>
+                <th>Nombre_chambre</th>
+                <td>{{ logement.nombreChambre }}</td>
+            </tr>
+            <tr>
+                <th>Annee_construction</th>
+                <td>{{ logement.anneeConstruction }}</td>
+            </tr>
+            <tr>
+                <th>Description</th>
+                <td>{{ logement.description }}</td>
+            </tr>
+            <tr>
+                <th>Notes</th>
+                <td>{{ logement.notes }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('logement_index') }}">back to list</a>
+
+    <a href="{{ path('logement_edit', {'id': logement.id}) }}">edit</a>
+
+    {{ include('logement/_delete_form.html.twig') }}
+{% endblock %}

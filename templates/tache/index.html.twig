@@ -1,0 +1,131 @@
+{% extends 'base.html.twig' %}
+
+{% block breadcrumb %}
+
+    <div class="row wrapper border-bottom white-bg page-heading">
+        <div class="col-lg-10">
+            <h1>Liste des tâches</h1>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                    <a href="{{ path('home') }}">Accueil</a>
+                </li>
+                <li class="breadcrumb-item active">
+                    <strong>Tâches</strong>
+                </li>
+            </ol>
+        </div>
+    </div>
+{% endblock %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-lg-8">
+            {% include 'flashes.html.twig' %}
+            <div class="ibox ">
+                <div class="ibox-title">
+                    <h5>Liste des tâches</h5>
+                    <div class="ibox-tools">
+                        <a href="{{ path('tache_add') }}">
+                            <i class="fa fa-plus"></i>
+                            Ajouter
+                        </a>
+                    </div>
+                </div>
+                <div class="ibox-content">
+                    <div class="dd" id="nestable2">
+                        <ol class="dd-list">
+                            {% for tache in taches %}
+
+                                {{ _self.recursiveCategory(tache) }}
+
+                            {% endfor %}
+                            <li>
+                                <a href="{{ path('tache_add') }}"><i class="fa fa-plus"></i> Ajouter une catégorie</a>
+                            </li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% macro recursiveCategory(tache) %}
+    <li class="dd-item" data-id="{{ tache.idcat }}">
+        <div class="dd-handle">
+            &nbsp;
+        </div>
+        <span class="text-tache">
+
+            {{ tache.category }}
+        </span>
+
+        <span class="float-right tache-action">
+                {#<a href="{{ path('tache_add', {'parent_id':tache.idcat}) }}"><i
+                            class="fas fa-plus"></i></a>#}
+                <a href="{{ path('tache_edit', {'idcat':tache.idcat}) }}"><i
+                            class="fas fa-edit"></i></a>
+                    <a href="{{ path('tache_delete', {'idcat':tache.idcat}) }}"
+                       onclick="return confirm('Êtes-vous sur de vouloir supprimer cette tâche ?')"><i
+                                class="fas fa-trash-alt"></i></a>
+            </span>
+            <ol class="dd-list">
+                {% if tache.children|length %}
+                {% for t in tache.children %}
+                    {{ _self.recursiveCategory(t) }}
+                {% endfor %}
+                {% endif %}
+                <li>
+                    <a href="{{ path('tache_add', {parent_id :tache.idcat}) }}"><i class="fa fa-plus"></i> Ajouter une
+                        sous catégorie</a>
+                </li>
+            </ol>
+    </li>
+{% endmacro %}
+
+    {% block javascript %}
+    $(document).ready(function () {
+        $('.children').click(function (e) {
+            e.preventDefault();
+            $(this).parent().parent().next().find('table').first().slideToggle()
+        })
+
+        var updateOutput = function (e) {
+            var list = e.length ? e : $(e.target)
+            if (window.JSON) {
+                //console.log(window.JSON.stringify(list.nestable('serialize')));
+                var request = $.ajax({
+                    url : '{{ path('tache_order') }}',
+                    data: {order: window.JSON.stringify(list.nestable('serialize')) },
+                    method: "POST",
+                });
+            }
+        };
+
+        // activate Nestable for list 2
+        $('#nestable2').nestable({
+            group: 1
+        }).on('change', updateOutput).nestable('collapseAll');
+
+        $('#nestable-menu').on('click', function (e) {
+            var target = $(e.target),
+                action = target.data('action');
+            if (action === 'expand-all') {
+                $('.dd').nestable('expandAll');
+            }
+            if (action === 'collapse-all') {
+                $('.dd').nestable('collapseAll');
+            }
+        });
+
+        $('.text-tache').click(function (){
+            $(this).parent().find('button[style=""]').first().trigger('click');
+        });
+    })
+    {% endblock %}
+
+    {% block javascript_script %}
+        <!-- Nestable List -->
+        <script src="{{ asset('vendor/nestable/jquery.nestable.js') }}"></script>
+    {% endblock %}

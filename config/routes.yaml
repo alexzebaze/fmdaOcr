@@ -1,0 +1,31 @@
+# Change route api-platform documentation
+swagger_ui_apiplatform:
+    path: /platform/doc
+    controller: api_platform.swagger.action.ui
+
+swagger_ui:
+    path: /nelmio/doc
+    methods: GET
+    defaults: { _controller: nelmio_api_doc.controller.swagger_ui }
+
+swagger:
+    path: /nelmio/doc.json
+    methods: GET
+    defaults: { _controller: nelmio_api_doc.controller.swagger }
+
+# API
+api:
+    path: /api
+    controller: App\Controller\AuthController::api
+
+api_register:
+    path: /api/user/register
+    controller: App\Controller\AuthController::registerCustomer
+    methods: ['POST'] 
+
+api_login_check:
+    path:       "/api/login_check"    
+
+gesdinet_jwt_refresh_token:
+  path:       /token/refresh
+  controller: gesdinet.jwtrefreshtoken::refresh

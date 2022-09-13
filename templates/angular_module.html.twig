@@ -1,0 +1,128 @@
+
+<script>
+    var PATH_ANGULAR_POST = "{{app.request.getSchemeAndHttpHost() ~ asset('assets/angular')}}";
+    var PATH_ASSET = "{{app.request.getSchemeAndHttpHost() ~ asset('')}}";
+    //var PATH_LOCATE = "{{app.request.getSchemeAndHttpHost()}}";
+    {% set username = app.user.username %}
+    {% if user is defined %}
+        {% set username = user.username %}
+    {% endif %}
+    var ROUTE_POST = [];
+    var REQUEST_URL_POST = [     
+        {
+            relativeUrl: "planning_load_xhr",
+            absoluteUrl: "{{path('planning_load_xhr')}}"
+        },
+        {
+            relativeUrl: "planning_load_xhr_print",
+            absoluteUrl: "{{path('planning_load_xhr_print')}}"
+        },
+        {
+            relativeUrl: "planning_create_tache_xhr",
+            absoluteUrl: "{{path('planning_create_tache_xhr')}}"
+        },
+        {
+            relativeUrl: "planning_create_new_xhr",
+            absoluteUrl: "{{path('planning_create_new_xhr')}}"
+        },
+        {
+            relativeUrl: "planning_update_new_xhr",
+            absoluteUrl: "{{path('planning_update_new_xhr')}}"
+        },
+        {
+            relativeUrl: "planning_remove_user",
+            absoluteUrl: "{{path('planning_remove_user')}}"
+        },
+        {
+            relativeUrl: "planning_add_user",
+            absoluteUrl: "{{path('planning_add_user')}}"
+        },
+        {
+            relativeUrl: "planning_update_date",
+            absoluteUrl: "{{path('planning_update_date')}}"
+        },
+        {
+            relativeUrl: "planning_update_status",
+            absoluteUrl: "{{path('planning_update_status')}}"
+        },
+        {
+            relativeUrl: "planning_delete_tache",
+            absoluteUrl: "{{path('planning_delete_tache')}}"
+        },
+        {
+            relativeUrl: "planning_update_position_tache",
+            absoluteUrl: "{{path('planning_update_position_tache')}}"
+        },
+        {
+            relativeUrl: "planning_update_tache_name",
+            absoluteUrl: "{{path('planning_update_tache_name')}}"
+        },
+        {
+            relativeUrl: "planning_update_emplacement",
+            absoluteUrl: "{{path('planning_update_emplacement')}}"
+        },
+        {
+            relativeUrl: "planning_config_color",
+            absoluteUrl: "{{path('planning_config_color')}}"
+        },
+        {
+            relativeUrl: "planning_delete",
+            absoluteUrl: "{{path('planning_delete')}}"
+        },
+        {
+            relativeUrl: "planning_archive",
+            absoluteUrl: "{{path('planning_archive')}}"
+        },
+        {
+            relativeUrl: "get_users",
+            absoluteUrl: "{{path('utilisateur_get_all_xhr')}}"
+        },
+        {
+            relativeUrl: "get_timeline",
+            absoluteUrl: "{{path('planning_get_timeline')}}"
+        },
+        {
+            relativeUrl: "planning_clear_date",
+            absoluteUrl: "{{path('planning_clear_date')}}"
+        },
+        {
+            relativeUrl: "planning_get_by_id",
+            absoluteUrl: "{{path('planning_get_by_id')}}"
+        },
+        {
+            relativeUrl: "planning_update_collapse",
+            absoluteUrl: "{{path('planning_update_collapse')}}"
+        },
+        {
+            relativeUrl: "planning_change_devis",
+            absoluteUrl: "{{path('planning_change_devis')}}"
+        }
+    ];
+
+     REQUEST_URL_POST.findUrl = function (value, attr) {
+        var element = "/";
+        var attribut = "?";
+        if (typeof (attr) == 'undefined') {
+            attribut = "";
+        } else {
+            attr.forEach(function (item, index) {
+                attribut += item.name + "=" + item.value + "&";
+            });
+        }
+
+        REQUEST_URL_POST.forEach(function (item, index) {
+            if (item.relativeUrl == value) {
+                element = item.absoluteUrl;
+                return item.absoluteUrl;
+            }
+        });
+        return element + attribut;
+    }
+</script>
+<script type="text/javascript">
+     var appPlanning = angular.module('planning',  ['ngRoute', 'ngResource','ngSanitize'], function ($interpolateProvider) {
+          $interpolateProvider.startSymbol('[[');
+          $interpolateProvider.endSymbol(']]');     
+     });
+</script>
+{% include 'angular/planning.html.twig' %}

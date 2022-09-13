@@ -1,0 +1,26 @@
+<h3>Attribuez des entreprises</h3>
+<div class="entreprise-list">
+	
+	<form action="{{path('admin_attach_entreprise')}}" method="POST" class="formEntrepriseAdmin">
+		<input type="hidden" name="admin_id" value="">
+		{% for entreprise in entreprises %}
+			<input type="checkbox" name="entreprise[]" value="{{entreprise.id}}" id="entreprise_{{entreprise.id}}" style="display: none;" {% if entreprise.id in entreprise_admin %} checked {% endif %} >
+			<label class="switch-entreprise entreprise-item" for="entreprise_{{entreprise.id}}">
+				<span>
+					{% if entreprise.logo is not null %}
+						<img class="entreprise-img" src="/logo/{{entreprise.logo}}">
+					{% else %} 
+						<img class="entreprise-img" src="{{asset('images/logotransfmda.png')}}">
+					{% endif %}
+					<span>{{entreprise.name}}</span>
+				</span>
+			</label>
+		{% endfor %}
+		<br>
+		<div class="text-center"><input type="submit" class="btn btn-primary" name="ENREGISTRER" value="ENREGISTRER"></div>
+	</form>
+	
+</div>
+<div class="loader-container">
+    <img src="{{asset('images/loading.gif')}}" style="width: 54px;">
+</div>

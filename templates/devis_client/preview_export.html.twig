@@ -1,0 +1,77 @@
+<div class="modal-document">
+    <div id="modalDocumentExist" class="modal fade bs-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header" style="border: none;">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                </div>
+                <div class="modal-body row">
+                    <div class="col-lg-6">
+                        <h2>Document existant</h2>
+                        <div>
+                            {% if devisExiste is defined and devisExiste != "" %}
+                                <span style="visibility: hidden;">{{devisExiste|slice(-3,3)|lower}}</span>
+                                {% if devisExiste|slice(-3,3)|lower == "pdf" %}
+                                    <object class="pdfupload" data="/uploads/devis/{{devisExiste}}" type="application/pdf" width="100%" height="980px">lien document : <a href="/uploads/devis/{{devisExiste}}">{{ devisExiste }}</a></object>
+                                    {% else %}
+                                    <img src="/uploads/devis/{{devisExiste}}" alt="fichier devis uploadé" width="100%">
+                                {% endif %}
+                            {% else %}
+                                <span class="text-muted">-- AUCUN FICHIER EXISTANT --</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <h2>Document extrait</h2>
+                        <div>
+                            {% if devis_client.getDocumentFile %}
+                                {% if devis_client.getDocumentFile|slice(-3,3)|lower == "pdf" %}
+                                    <object class="pdfupload" data="/uploads/devis/{{devis_client.getDocumentFile}}" type="application/pdf" width="100%" height="980px">lien document : <a href="/uploads/devis/{{devis_client.getDocumentFile}}">{{ devis_client.getDocumentFile }}</a></object>
+                                    {% else %}
+                                    <img src="/uploads/devis/{{devis_client.getDocumentFile}}" alt="fichier devis uploadé" width="100%">
+                                {% endif %}
+                            {% else %}
+                                <span class="text-muted">-- AUCUN FICHIER EXPORTE --</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="col-lg-12 text-center" style="margin-top: 34px">
+                        <a href="{{path('devis_client_delete_rossum_document_id', {'rossum_document_id':devis_client.getRossumDocumentId})}}" class="btn btn-primary">Supprimer le doublon</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    var devisExiste = "{{devisExiste}}";
+    if(devisExiste != ""){
+        $('#modalDocumentExist').modal('show');
+        toastr.warning('Une devis similaire existe déjà.');
+    }
+</script>
+
+<div class="row">
+    <div class="col-lg-4">
+        <div class="ibox">
+            <div class="ibox-content">
+                {{ include('devis_client/_form.html.twig') }}
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-8">
+        <div class="ibox">
+            <div class="ibox-content">
+            {% if devis_client.getDocumentFile %}
+                {% if devis_client.getDocumentFile|slice(-3,3)|lower == "pdf" %}
+                    <object class="pdfupload" data="/uploads/devis/{{devis_client.getDocumentFile}}" type="application/pdf" width="100%" height="980px">lien document : <a href="/uploads/devis/{{devis_client.getDocumentFile}}">{{ devis_client.getDocumentFile }}</a></object>
+                    {% else %}
+                    <img src="/uploads/devis/{{devis_client.getDocumentFile}}" alt="fichier devis uploadé" width="100%">
+                {% endif %}
+            {% else %}
+                <span class="text-muted">-- AUCUN FICHIER EXPORTE --</span>
+            {% endif %}
+            </div>
+        </div>
+    </div>         
+</div>

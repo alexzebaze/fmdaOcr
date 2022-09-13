@@ -1,0 +1,115 @@
+{% extends 'base.html.twig' %}
+
+{% block css %}
+    <link rel="stylesheet" href="//cdn.datatables.net/1.10.20/css/jquery.dataTables.min.css">
+    <style type="text/css">        
+        .rounded-img {
+            border-radius: 50%;
+            position: relative;
+            z-index: 1;
+            width: 40px;
+            height: 40px;
+            object-fit: cover;
+            transition: easy 0.4s all;
+        }
+    </style>
+{% endblock %}
+
+
+{% block breadcrumb %}
+
+    <div class="row wrapper border-bottom white-bg page-heading">
+        <div class="col-lg-10">
+            <h1>Liste des configurations</h1>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                    <a href="{{ path('home') }}">Accueil</a>
+                </li>
+                <li class="breadcrumb-item active">
+                    <strong>Configurations</strong>
+                </li>
+            </ol>
+        </div>
+    </div>
+{% endblock %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-lg-12">
+            {% include 'flashes.html.twig' %}
+            <div class="ibox ">
+                <div class="ibox-title">
+                    <h5>Liste des configurations</h5>
+                    <div class="ibox-tools">
+                        <a href="{{ path('config_imap_email_new') }}" class="btn btn-primary">
+                            <i class="fa fa-plus"></i>
+                            Ajouter
+                        </a>
+                    </div>
+                </div>
+                <div class="ibox-content">
+                    <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                        <tr>
+                            <th>Hote</th>
+                            <th>Email</th>
+                            <th>Mot de passe</th>
+                            <th>Dossier</th>
+                            <th></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                            {% for config in configurations %}
+                            <tr>
+                                <td>
+                                    {{ config.hote }}
+                                </td>
+                                <td>{{ config.email }}</td>
+                                <td>
+                                    {{ config.password }}
+                                </td>
+                                <td>
+                                    {{ dossiers[config.dossier] }}
+                                </td>
+                                <td>
+                                    <a class="btn btn-danger" href="{{ path('config_imap_email_edit', {'id':config.id}) }}"><i class="far fa-edit"></i></a>
+                                    <a class="btn btn-primary" onclick="return confirm('Confirmez-vous la suppression ?')"
+                                       href="{{ path('config_imap_email_delete', {'id':config.id}) }}"><i class="fas fa-trash-alt"></i></a>
+                                </td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td colspan="34">Aucune entrée</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block javascript_script %}
+    <script src="//cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/plug-ins/1.10.24/sorting/date-eu.js"></script>
+{% endblock %}
+
+{% block javascript %}
+$(document).ready( function () {
+    $('table').DataTable({
+        "language": {
+            "url": "//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/French.json"
+        },
+        "columnDefs": [
+        ],
+        "pageLength": 50,
+        "order": []
+    });
+} );
+{% endblock %}

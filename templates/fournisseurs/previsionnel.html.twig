@@ -1,0 +1,788 @@
+{% extends 'base.html.twig' %}
+{% block css %}
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <link rel="stylesheet" href="//cdn.datatables.net/1.10.20/css/jquery.dataTables.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+{% endblock %}
+{% block breadcrumb %}
+
+    <div class="row wrapper border-bottom white-bg page-heading">
+        <div class="col-lg-10">
+            <h1>Fournisseurs</h1>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                    <a href="{{ path('home') }}">Accueil</a>
+                </li>
+                <li class="breadcrumb-item active">
+                    <strong>Previsions</strong>
+                </li>
+            </ol>
+        </div>
+    </div>
+{% endblock %}
+
+{% block content %}
+    <style type="text/css">
+        table.dataTable tbody th, table.dataTable tbody td{height: 35px;}
+        th, td{text-align: left;}
+        .inputBudget{text-align: left;}
+        .form-control[disabled]{background: transparent!important}
+        input.no-editing{
+           cursor: default!important;
+           border: none;
+           background: none;
+           background: transparent;
+        }
+        .progress-bar, .progress-bar-inner { 
+            position: relative;
+            height: 24px;
+            border-radius: 16px;
+            -webkit-border-radius: 16px;
+            -moz-border-radius: 16px;
+        }
+        .progress-bar{
+            overflow: hidden;
+            background-color: #2f4050;
+        }
+        .progress-bar-inner {
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 0;
+            background: #18a689;
+            transition: linear width .5s;
+        }
+        .percent-val{
+            z-index: 9;
+            position: absolute;
+            left: 0;
+            right: 0;
+            font-size: 14px;
+        }   
+        .categories-container {
+            border-radius: 8px;
+            background: #f0f0f0;
+            border: none;
+            padding: 16px 16px;
+            padding-top: 9px;
+            box-shadow: 0px 0px 6px 2px #e7e7e7;
+            margin-bottom: 21px;
+        }
+        .categorie-head {
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .title-categorie{
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        .total-container {
+            border-radius: 8px;
+            background: #f0f0f0;
+            border: none;
+            padding: 16px 16px;
+            box-shadow: 0px 0px 6px 2px #e7e7e7;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .total-item-container:not(:first-child){
+            border-top: 1px solid #c3c3c3;
+        }
+
+        .total-item-container {
+            width: 100%;
+            padding: 15px 4px;
+            text-align: center;
+        }
+        .total-item:first-child {
+            font-weight: bold;
+        }  
+
+
+
+
+    
+        .timeline{
+            padding: 0px 8px;
+            text-align: center;
+            max-height: 35px;
+            position: relative;
+        }
+       .timeline:hover .clearDate{
+          display: inline-block;
+       }
+       .clearDate {
+          display: none;
+           position: absolute;
+           right: -10px;
+           top: 50%;
+           transform: translateY(-50%);
+           background: #ccc;
+           color: #fff;
+           height: 16px;
+           width: 16px;
+           font-size: 11px;
+           line-height: 1;
+           border-radius: 50%;
+           cursor: pointer;
+       }
+       .clearDate:hover{
+          background: #888;
+       }
+       .timeline .timeline-content{
+           position: relative;
+           cursor: pointer;
+           color: #fff;
+           padding: 5px 10px;
+            border-radius: 10px;
+            display: block;
+            width: 163px;
+           margin: auto;
+           }
+       .timeline .duree{display: none;}
+       .timeline-content:hover .interval{
+        display: none;
+       }
+       .timeline-content:hover .interval+.duree{
+        display: block;
+       }
+       .timeline .timeline-content.not-date{background: #ccc!important}
+       .date-range-input{
+           background: transparent;
+           cursor: pointer;
+           width: 100%;
+           position: absolute;
+           left: 0;
+           right: 0;
+           top: 0px;
+           bottom: 0px;
+           color: transparent;
+           border: none;
+           outline: none;
+       }
+
+       .row-sum-month {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+       .row-sum-month > * {
+            flex: 1;
+            text-align: center;
+            font-weight: bold;
+            font-size: 15px;
+            margin-top: 2px;
+        }
+        .inline-text{
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+        }
+        .table td, .table th{
+         border-bottom: 1px solid #d4d3d3
+        }
+    </style>
+    <div class="row">
+        <div class="col-lg-12">
+            {% include 'flashes.html.twig' %}
+            <div class="text-center col-sm-4 col-sm-offset-4" style="margin-bottom: 21px;">
+                <select class="form-control" id="chantierForm" style="height: 42px">
+                    <option value="" disabled selected>Selectionner un chantier</option>
+                    {% for chantier in chantiers %}
+                        <option value="{{chantier.chantierId}}" {% if chantierId == chantier.chantierId %} selected {% endif %}>{{chantier.nameentreprise}}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="ibox ">
+                <div class="ibox-title" style="display: flex;align-items: center;justify-content: space-between; padding-right: 20px;">
+                    <h5>Previsions</h5>
+                    <div style="display: none;">
+                        {% if chantierId %}
+                        <span class="btn-group">
+                            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="font-size: 19px;">
+                            <i class="fas fa-cog"></i> <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu">
+                            {% for cat in categories %}
+                                <li>
+                                    <a href="{{path('fournisseur_toggle_categorie_previsionel_status', {'categorie_id': cat.id, 'chantier_id': chantierId})}}">
+                                        {% if cat.status %} 
+                                        <i class="fas fa-check" style="color: green;margin-right: 5px;"></i>
+                                        {% endif %}
+                                        {{cat.nom}}
+
+                                        <i class="fal fa-chevron-right" style="margin-left: 20px;"></i>
+                                    </a>
+                                </li>
+                            {% endfor %}
+                            </ul>
+                        </span>
+                        {% endif %}
+                        <span class="dropdown">
+                          <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                            Imprimer
+                            <span class="caret"></span>
+                          </button>
+                          <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+                            <li><a href="{{path('fournisseur_previsionner_print')}}?chantier_id={{chantierId}}&print=tue" target="_blank">Tout</a></li>
+                            <li><a href="{{path('fournisseur_previsionner_print')}}?chantier_id={{chantierId}}&print2=tue" target="_blank">Sans Devis</a></li>
+                          </ul>
+                        </span>
+                    </div>
+                    
+                </div>
+                <div class="ibox-content">
+                    {% if chantierId %}
+
+                      <div class="total-container"> 
+                          <table class="table">
+                              <thead>
+                                  <tr>
+                                      <th>Identifiant</th>
+                                      <th>Type</th>
+                                      <th>Chantier</th>
+                                      <th>Numero</th>
+                                      <th>Superficie</th>
+                                      <th>Nombre de piece</th>
+                                      <th>Prix</th>
+                                      <th>STATUS</th>
+                                      <th style="display: none;">actions</th>
+                                  </tr>
+                              </thead>
+                              <tbody>
+                              {% for logement in logements %}
+                                  <tr>
+                                      <td>{{ logement.identifiant }}</td>
+                                      <td>{{ logement.type }}</td>
+                                      <td>{{logement.chantier.nameentreprise}}</td>
+                                      <td>{{ logement.numero }}</td>
+                                      <td>{{ logement.superficie }}</td>
+                                      <td>{{ logement.nombrePiece }}</td>
+                                      <td>
+                                          {{logement.prix ? logement.prix : "0"}}€
+                                      </td>
+                                      <td>{{logement.status}}</td>
+                                      <td style="display:none;">
+                                          <div style="display: flex;justify-content: center;">
+                                              <a href="{{path('logement_edit', {'id':logement.id})}}" class="btn btn-info btn-icon">
+                                                <div><i class="fa fa-edit"></i></div>
+                                              </a>
+                                              <span class="btn-icon" style="margin-left: 5px">
+                                                  <form method="post" action="{{ path('logement_delete', {'id': logement.id}) }}" onsubmit="return confirm('confirmez-vous la suppression?');">
+                                                      <input type="hidden" name="_method" value="DELETE">
+                                                      <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ logement.id) }}">
+                                                      <button class="btn btn-danger btn-icon">
+                                                          <div><i class="fa fa-trash"></i></div>
+                                                      </button>
+                                                  </form>
+                                              </span>
+                                          </div>
+                                      </td>
+                                  </tr>
+                              {% else %}
+                                  <tr>
+                                      <td colspan="19">Aucun enregistrement</td>
+                                  </tr>
+                              {% endfor %}
+                              </tbody>
+                          </table>
+                      </div>
+                      <div class="total-container" style="margin-bottom: 45px;">
+                          {% set sumBudgetCat = 0 %}
+                          {% set sumDevisCat = 0 %}
+                          {% set sumFactureCat = 0 %}
+
+                          <table class="table">
+                              <thead style="">
+                                  <tr>
+                                      <th style="width: 15%">Categorie</th>
+                                      <th style="width: 14%">Date</th>
+                                      <th style="width: 14%">BUDGET</th>
+                                      <th style="width: 15%">AVANCEMENT</th>
+                                      <th style="width: 14%">DEVIS</th>
+                                      <th style="width: 15%">AVANCEMENT</th>
+                                      <th style="width: 14%">FACTURE</th>
+                                  </tr>
+                                  {% for catLot in categoriesLot %} 
+                                  <tr>
+                                      <th style="width: 15%">
+                                          <span class="title"><b>{{catLot.categorie.nom}}</b></span>
+                                      </th>
+                                      <th style="width: 14%">
+                                          {% set datePrevisionnelCategorie = dureeCategorie[catLot.categorie.id]['debut'] is not null ?  dureeCategorie[catLot.categorie.id]['debut'] |date('Y-m-d')~" au "~dureeCategorie[catLot.categorie.id]['fin']|date('Y-m-d') %} 
+                                          <div class="timeline">
+                                              <span class="timeline-content 
+                                              {% if  dureeCategorie[catLot.categorie.id]['debut'] is null %} not-date {% endif %}" style="{% if dureeCategorie[catLot.categorie.id]['debut'] is not null %} background: #1ab394 {% endif %}" data-date-to-calendar="{{datePrevisionnelCategorie}}">
+                                                  
+                                                 <input style="z-index: -1" type="text" class="date-range-input flatpickr-input" data-date-to-calendar="{{datePrevisionnelCategorie}}">
+
+                                                 {% if dureeCategorie[catLot.categorie.id]['debut'] is not null %} 
+                                                 <span>
+                                                    <span class="interval"></span>
+                                                    <span class="duree"></span>
+                                                 </span> 
+                                                 {% else %}
+                                                 <span>
+                                                    <span class="interval">-</span>
+                                                    <span class="duree">-</span>
+                                                 </span> 
+                                                 {% endif %}
+                                              </span>
+                                              
+                                          </div>
+                                      </th>
+                                      <th style="width: 14%">{{catLot.TotalbudgetLot|number_format(2, ',', ' ')}} €</th>
+                                      <th style="width: 15%">
+                                          <div class="progress-bar blue" data-width="200px" data-budget="{{catLot.TotalbudgetLot}}" data-devis="{{ catLot.totalDevisLot }}" style="width: 200px">
+                                              <div class="percent-val"></div>
+                                              <div class="progress-bar-inner"></div>
+                                          </div>
+                                      </th>
+                                      <th style="width: 14%">{{catLot.totalDevisLot}}</th>
+                                      <th style="width: 15%">
+                                          <div class="progress-bar blue" data-width="200px" data-budget="{{catLot.totalDevisLot}}" data-devis="{{catLot.totalFactureLot }}" style="width: 200px">
+                                              <div class="percent-val"></div>
+                                              <div class="progress-bar-inner"></div>
+                                          </div>
+                                      </th>
+                                      <th style="width: 14%">{{catLot.totalFactureLot|number_format(2, ',', ' ')}} €</th>
+
+                                      {% set sumBudgetCat = sumBudgetCat + catLot.TotalbudgetLot %}
+                                      {% set sumDevisCat = sumDevisCat + catLot.totalDevisLot %}
+                                      {% set sumFactureCat = sumFactureCat + catLot.totalFactureLot %}
+                                  </tr>
+                                  {% endfor %}
+                                  <tr>
+                                      <th style="width: 15%">TOTAUX</th>
+                                      <th style="width: 14%"></th>
+                                      <th style="width: 14%">{{sumBudgetCat|number_format(2, ',', ' ')}} €</th>
+                                      <th style="width: 15%"></th>
+                                      <th style="width: 14%">{{sumDevisCat|number_format(2, ',', ' ')}} €</th>
+                                      <th style="width: 15%"></th>
+                                      <th style="width: 14%">{{sumFactureCat|number_format(2, ',', ' ')}} €</th>
+                                  </tr>
+                                  <tr>
+                                      <th style="width: 15%">M2 {{chantier.m2}}</th>
+                                      <th style="width: 14%"></th>
+                                      <th class="inline-text" style="width: 14%">
+                                        {% set diviseur =  (chantier.m2 is not null and chantier.m2 != 0 ) ? chantier.m2 : 1 %} 
+                                        {{ (sumBudgetCat/diviseur)|number_format(2, ',', ' ') }} €
+                                      </th>
+                                      <th style="width: 15%"></th>
+                                      <th style="width: 14%"></th>
+                                      <th style="width: 15%"></th>
+                                      <th style="width: 14%"></th>
+                                  </tr>
+                              </thead>
+                          </table>
+                      </div>
+
+                      {% for catLot in categoriesLot %}
+                          <div class="categories-container">
+                              <div class="categorie-head" style="display: none;">
+                                  <span class="title-categorie">{{catLot.categorie.nom}}</span>
+                              </div>
+                              <div class="categories-content">
+                                  <div class="table-responsive">
+                                  <table class="table">
+                                      <thead style="">
+                                          <tr>
+                                              <th style="width: 15%">
+                                                  <span class="title">{{catLot.categorie.nom}}</span>
+                                              </th>
+                                              {% if chantierId %}
+                                                  <th style="width: 14%">
+                                                      {% set datePrevisionnelCategorie = dureeCategorie[catLot.categorie.id]['debut'] is not null ?  dureeCategorie[catLot.categorie.id]['debut'] |date('Y-m-d')~" au "~dureeCategorie[catLot.categorie.id]['fin']|date('Y-m-d') %} 
+                                                      <div class="timeline">
+                                                          <span class="timeline-content 
+                                                          {% if  dureeCategorie[catLot.categorie.id]['debut'] is null %} not-date {% endif %}" style="{% if dureeCategorie[catLot.categorie.id]['debut'] is not null %} background: #1ab394 {% endif %}" data-date-to-calendar="{{datePrevisionnelCategorie}}">
+                                                              
+                                                             <input style="z-index: -1" type="text" class="date-range-input flatpickr-input" data-date-to-calendar="{{datePrevisionnelCategorie}}">
+
+                                                             {% if dureeCategorie[catLot.categorie.id]['debut'] is not null %} 
+                                                             <span>
+                                                                <span class="interval"></span>
+                                                                <span class="duree"></span>
+                                                             </span> 
+                                                             {% else %}
+                                                             <span>
+                                                                <span class="interval">-</span>
+                                                                <span class="duree">-</span>
+                                                             </span> 
+                                                             {% endif %}
+                                                          </span>
+                                                          
+                                                      </div>
+                                                  </th>
+                                              {% endif %}
+                                              <th style="width: 14%">{{catLot.TotalbudgetLot|number_format(2, ',', ' ')}} €</th>
+                                              <th style="width: 15%">
+                                                  <div class="progress-bar blue" data-width="200px" data-budget="{{catLot.TotalbudgetLot}}" data-devis="{{ catLot.totalDevisLot }}" style="width: 200px">
+                                                      <div class="percent-val"></div>
+                                                      <div class="progress-bar-inner"></div>
+                                                  </div>
+                                              </th>
+                                              <th style="width: 14%">{{catLot.totalDevisLot}}</th>
+                                              <th style="width: 15%">
+                                                  <div class="progress-bar blue" data-width="200px" data-budget="{{catLot.totalDevisLot}}" data-devis="{{catLot.totalFactureLot }}" style="width: 200px">
+                                                      <div class="percent-val"></div>
+                                                      <div class="progress-bar-inner"></div>
+                                                  </div>
+                                              </th>
+                                              <th style="width: 14%">{{catLot.totalFactureLot|number_format(2, ',', ' ')}} €</th>
+                                          </tr>
+                                      </thead>
+                                  </table>
+                                  <table class="table">
+                                      <thead>
+                                          <tr>
+                                              <th  style="width: 15%">
+                                                  {% if not chantierId %}
+                                                      CHANTIER
+                                                  {% else %}
+                                                      LOT
+                                                  {% endif %}
+                                              </th style="width: 16%">
+
+                                              {% if chantierId %}
+                                                  <th style="width: 14%">
+                                                      Date
+                                                  </th>
+                                              {% endif %}
+                                              
+                                              <th style="width: 14%">BUDGET</th>
+                                              <th style="width: 15%">AVANCEMENT</th>
+                                              <th style="width: 14%">DEVIS</th>
+                                              <th style="width: 15%">AVANCEMENT</th>
+                                              <th style="width: 14%">FACTURE</th>
+                                          </tr>
+                                      </thead>
+                                      <tbody>
+                                      {% for prevision in catLot.lots %} 
+                                          <tr>
+                                              <td>
+                                                  {{ prevision.lot is not null ? prevision.lot.lot: "" }}
+                                              </td>
+                                              <td>
+                                                  {% set datePrevisionnel = (prevision.previsionel is not null and prevision.previsionel.getDateDebut is not null) ?  prevision.previsionel.getDateDebut|date('Y-m-d')~" au "~prevision.previsionel.getDateFin|date('Y-m-d') %} 
+                                                  <div class="timeline">
+                                                      <span id="lot-input-date-container{{prevision.lot.id}}" class="timeline-content 
+                                                      {% if prevision.previsionel is null or prevision.previsionel.getDateDebut is null %} not-date {% endif %}" style="{% if prevision.previsionel is not null and prevision.previsionel.getDateDebut %} background: #1ab394 {% endif %}" 
+                                                      onclick="selectDate('{{prevision.lot.id}}', event)" data-date-to-calendar="{{datePrevisionnel}}">
+                                                         <input style="z-index: -1" id="lot_date{{prevision.lot.id}}" type="text" class="date-range-input flatpickr-input" value="30 mai" data-lot="{{prevision.lot.id}}" data-chantier={{chantierId}} data-date-to-calendar="{{datePrevisionnel}}">
+                                                         
+                                                         {% if prevision.previsionel is not null and prevision.previsionel.getDateDebut %} 
+                                                         <span>
+                                                            <span class="interval"></span>
+                                                            <span class="duree"></span>
+                                                         </span> 
+                                                         {% else %}
+                                                         <span>
+                                                            <span class="interval">-</span>
+                                                            <span class="duree">definir date</span>
+                                                         </span> 
+                                                         {% endif %}
+                                                      </span>
+                                                      
+                                                      {% if prevision.previsionel is not null and prevision.previsionel.getDateDebut %} 
+                                                      <span class="clearDate" onclick="clearDate('{{prevision.lot.id}}', '{{chantierId}}')">x</span>
+                                                      {% endif %}
+                                                  </div>
+                                              </td>
+                                              <td class="cell-budget-{{prevision.lot.id}} cell-td-budget">
+                                                  {% set budget = 0 %}
+                                                  {% if chantierId != "" %}
+                                                      {% if prevision.previsionel is null and prevision.count_devis > 0 %}
+                                                          <span class="add_budget" onclick="addBudget('{{prevision.lot.id}}', '{{chantierId}}')" style="cursor: pointer;">
+                                                              <i class="fa fa-plus" style="color: #333;font-size: 17px;"></i>
+                                                          </span>
+                                                      {% else %}
+                                                          {% set budget = prevision.previsionel is not null ? prevision.previsionel.budget : '' %}
+                                                          <input data-id="{{prevision.lot.id}}" data-chantier="{{chantierId}}" disabled="disabled" class="no-editing inputBudget form-control" type="text" value="{{budget|number_format(2, ',', ' ')}} €" name="lot-{{prevision.lot.id}}"style="background: transparent;">
+                                                      {% endif %}
+                                                  {% endif %}
+                                              </td>
+                                              <td>
+                                                  <div class="progress-bar blue" data-width="200px" data-budget="{{budget}}" data-devis="{{ prevision.sum_ht ? prevision.sum_ht|number_format(2, '.', '') : '0' }}" style="width: 200px">
+                                                      <div class="percent-val"></div>
+                                                      <div class="progress-bar-inner"></div>
+                                                  </div>
+                                              </td>
+                                              <td>
+                                                  {% if prevision.count_devis %}
+                                                      <a href="{{path('devis_pro_list_by_lot_status', {'lotId':prevision.lot.id, 'chantierId':chantierId})}}">{{ prevision.sum_ht ? prevision.sum_ht|number_format(2, ',', ' ') : "0" }} €</a>
+                                                  {%  else %}
+                                                      <i class="fas fa-times" style="font-size: 18px;color: #ef0a0a;"></i>
+                                                  {% endif %} 
+                                              </td>
+                                              <td>
+                                                  <div class="progress-bar blue" data-width="200px" data-budget="{{prevision.sum_ht}}" data-devis="{{ prevision.sum_ht_facture ? prevision.sum_ht_facture|number_format(2, '.', '') : '0' }}" style="width: 200px">
+                                                      <div class="percent-val"></div>
+                                                      <div class="progress-bar-inner"></div>
+                                                  </div>
+                                              </td>
+                                              <td>
+                                                  <a href="{{path('facturation_list_by_lot_status', {'lotId':prevision.lot.id, 'chantierId':chantierId})}}">{{prevision.sum_ht_facture|number_format(2, ',', ' ')}} €</a>
+                                                  
+                                              </td>
+                                          </tr>
+                                          {% else %}
+                                          <tr>
+                                              <td colspan="34">Aucune prevision</td>
+                                          </tr>
+                                      {% endfor %}
+                                      </tbody>
+                                  </table>
+                                  </div>
+                              </div>
+                          </div>
+                      {% endfor %}
+
+                    {% endif %}
+                </div>
+            </div>
+            
+        </div>
+
+    </div>
+
+{% endblock %}
+
+{% block javascript_script %}
+    <script src="//cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/plug-ins/1.10.24/sorting/date-eu.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://npmcdn.com/flatpickr/dist/l10n/fr.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.4/dist/Chart.min.js"></script>
+
+    <script type="text/javascript">
+        var idSelect = document.getElementById('chantierForm');
+        idSelect.onchange = (event) => {
+            var chantier_id = event.target.value;
+            window.location.href = "{{path('fournisseur_previsionner_2')}}?chantier_id="+chantier_id
+        };
+
+        function addBudget(lotId, chantierId){
+            $input = '<input data-id="'+lotId+'" data-chantier="'+chantierId+'" class="inputBudget form-control" type="text" name="lot-'+lotId+'">'
+            $('.cell-budget-'+lotId).html($input);
+        }
+
+        $(document).on("blur",'.inputBudget',function(event){
+            $elt = $(event.currentTarget);
+
+            $.ajax({
+                url:"{{path('fournisseur_prevision_add_budget')}}",
+                type:"GET",
+                data: {
+                    lot_id: $elt.data('id'),
+                    chantier_id: $elt.data('chantier'),
+                    budget: $elt.val()
+                },
+                success:function(response) {
+                  if(response.status == 200){
+                  }
+                  else if(response.status == 500){
+                    toastr.error(response.message);
+                  }
+                },
+                error:function(){
+                  toastr.error("Ooops... Quelque chose s'est mal passée");
+                }
+            });
+        });
+
+        $(document).mouseup(function(e) {
+            var editing_elt = $("input.inputBudget");
+            if (!editing_elt.is(e.target) && editing_elt.has(e.target).length === 0){ 
+                  $('input.inputBudget').addClass('no-editing');
+                  $('input.inputBudget').attr("disabled", true);
+            }
+        })
+        $(document).on('dblclick', '.cell-td-budget', function (e) {
+            $elt = $(this).find('input.inputBudget');
+            $val = $elt.val().replace("€", '');
+            $val = $val.replace(",00", '');
+            $val = $val.replace(" ", '');
+            $elt.val($val);
+            $elt.removeClass('no-editing');
+            $elt.attr("disabled", false);
+        });
+
+        $('.progress-bar').each(function( index ) {
+            $barWidth = parseFloat($(this).data('width').replace("px", '')) ;
+            $budget = parseFloat($(this).data('budget'));
+            $devis = parseFloat($(this).data('devis'));
+
+            if(parseInt($devis) == 0 || parseInt($budget) == 0){
+                $(this).find('.percent-val').html('0%');
+            }
+            else if($devis <= $budget){
+                $progressWidth = ($devis*$barWidth)/$budget;
+                $(this).find('.progress-bar-inner').css('width', $progressWidth);
+                $(this).find('.percent-val').html(parseInt(($devis/$budget)*100)+'%');
+            }
+            else if($devis > $budget){
+                $(this).find('.progress-bar-inner').css('width', $devis);
+                $(this).find('.percent-val').html(parseInt(($devis/$budget)*100)+'%');
+                $(this).find('.progress-bar-inner').css('background', 'red');
+            }
+        })
+
+        $(document).ready( function () {
+            $('table.table2').DataTable({
+                "language": {
+                    "url": "//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/French.json"
+                },
+                "columnDefs": [
+                    { type: 'date-eu', targets: 2 }
+                ],
+                "paging":   false,
+            });
+            $(document).ready(function() {
+                $('.js-example-basic-multiple').select2();
+            });
+        } );
+
+
+        selectDate = function(lotId, e){
+            $elt = $('#lot_date'+lotId);
+            $elt.flatpickr({
+                mode: "range",
+                locale: "fr",
+                defaultDate: $('#lot-input-date-container'+lotId).attr('data-date-to-calendar')
+            }).open();
+        }
+
+        var dateStrInput = "";
+        $(document).on("change",'input.date-range-input',function(e){
+            $that = $(e.currentTarget);
+            var lotId = $that.data('lot');
+            var chantierId = $that.data('chantier');
+            if($that.val() != $that.data('date-to-calendar')){
+                if(dateStrInput == "" || $that.val().includes("au"))
+                    dateStrInput = $that.val();
+                else
+                    dateStrInput = dateStrInput+" au "+$that.val();
+
+                if(dateStrInput.includes("au")){
+                    $dateRange = buildPlanningDate(dateStrInput);
+                    $intervalElt = $('#lot-input-date-container'+lotId+" .interval");
+                    $dureeElt = $('#lot-input-date-container'+lotId+" .duree");
+                    $intervalElt.html($dateRange.dateInterval);
+                    $dureeElt.html($dateRange.diffDay+1+"d");
+                    $('#lot-input-date-container'+lotId).removeClass('not-date');
+                    $('#lot-input-date-container'+lotId).css('background', '#1ab394');
+                    $that.attr('data-date-to-calendar', dateStrInput);
+                    $('#lot-input-date-container'+lotId).attr('data-date-to-calendar', dateStrInput);
+
+                    changeDate(lotId, dateStrInput, chantierId);
+                    dateStrInput = "";
+                    $that.val("");
+                }
+            }
+        });
+
+        function changeDate(lotId, dateStrInput, chantierId){
+            $.ajax({
+                url: "{{path('update_date_previsionel')}}",
+                type: "GET",
+                dataType: "json",
+                async: true,
+                data: {
+                    lot_id: lotId,
+                    dateStrInput: dateStrInput,
+                    chantier_id: chantierId
+                },
+                success: function(response, status) {
+                  if(response.status == 200){
+                  }
+                  else if(response.status == 500){
+                    toastr.error(response.message);
+                  }
+                },
+                error: function(xhr, textStatus, errorThrown) {
+                  toastr.error("Ooops..., Quelque chose s'est mal passée");
+                }
+            });
+        }
+
+        $('.timeline-content').not('.not-date').each(function( index ) {
+            $input = $(this).find('.date-range-input');
+            $dateStrInput = $input.attr('data-date-to-calendar');
+
+            $dateRange = buildPlanningDate($dateStrInput);
+            $intervalElt = $(this).find('.interval');
+            $dureeElt = $(this).find('.duree');
+            $intervalElt.html($dateRange.dateInterval);
+            $dureeElt.html($dateRange.diffDay+1+"d");
+        })
+
+        clearDate = function(lotId, chantierId){
+            $.ajax({
+                url: "{{path('remove_date_previsionel')}}",
+                type: "GET",
+                dataType: "json",
+                async: true,
+                data: {
+                    lot_id: lotId,
+                    chantier_id: chantierId
+                },
+                success: function(response, status) {
+                    $('#lot-input-date-container'+lotId).addClass('not-date');
+                    $('#lot-input-date-container'+lotId+" .interval").text('-');
+                    $('#lot-input-date-container'+lotId+" .duree").text('definir date');
+
+                  if(response.status == 200){
+                  }
+                  else if(response.status == 500){
+                    toastr.error(response.message);
+                  }
+                },
+                error: function(xhr, textStatus, errorThrown) {
+                  toastr.error("Ooops..., Quelque chose s'est mal passée");
+                }
+            });
+        }
+
+        function buildPlanningDate(date){
+            /*const optionsDate = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };*/
+            var debut = date.split(' au ')[0];
+            var fin = date.split(' au ')[1];
+            var optionsDate = { year: '2-digit', month: 'short', day: 'numeric' };
+
+            var dateInterval = '';
+            debut = (new Date(debut)).toLocaleDateString('fr-FR', optionsDate);
+            fin = (new Date(fin)).toLocaleDateString('fr-FR', optionsDate);
+
+            if(debut.split(" ")[2] == fin.split(" ")[2] ){
+                if(debut.split(" ")[1] == fin.split(" ")[1] ){
+                    dateInterval =  debut.split(" ")[0]+' - '+fin.split(" ")[0]+" "+debut.split(" ")[1]+" "+debut.split(" ")[2];
+                }
+                else{
+                    dateInterval = debut.split(" ")[0]+" "+debut.split(" ")[1]+' - '+fin.split(" ")[0]+" "+fin.split(" ")[1]+" "+debut.split(" ")[2];
+                }
+            }
+            else{
+                dateInterval = debut+' - '+fin;
+            }
+            
+            
+
+            return {
+                dateInterval:dateInterval, 
+                diffDay:datediff(new Date( date.split(' au ')[0]), new Date( date.split(' au ')[1]))
+            };
+        }   
+
+        function datediff(first, second) {
+            return Math.round((second-first)/(1000*60*60*24));
+        }
+
+    </script>
+{% endblock %}

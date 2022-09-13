@@ -1,0 +1,36 @@
+{% extends 'base.html.twig' %}
+
+{% block breadcrumb %}
+
+    <div class="row wrapper border-bottom white-bg page-heading">
+        <div class="col-lg-10">
+            <h1>Modifier un contrat</h1>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                    <a href="{{ path('home') }}">Accueil</a>
+                </li>
+                <li class="breadcrumb-item">
+                    <a href="{{ path('contrat_list') }}">Contrats</a>
+                </li>
+                <li class="breadcrumb-item active">
+                    <strong>Modifier un contrat</strong>
+                </li>
+            </ol>
+        </div>
+    </div>
+{% endblock %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="ibox">
+                <div class="ibox-content">
+                    {{ include('contrat/_form.html.twig') }}
+                </div>
+            </div>
+        </div>
+    </div>
+    <a href="{{ path('contrat_list') }}">Retourner à la liste des contrat</a>
+{% endblock %}
+
+

@@ -1,0 +1,66 @@
+{% extends 'base.html.twig' %}
+
+ {{parent()}} Vehicule{% endblock %}
+
+{% block body %}
+    <h1>Vehicule</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ vehicule.id }}</td>
+            </tr>
+            <tr>
+                <th>Immatriculation</th>
+                <td>{{ vehicule.immatriculation }}</td>
+            </tr>
+            <tr>
+                <th>Marque</th>
+                <td>{{ vehicule.marque }}</td>
+            </tr>
+            <tr>
+                <th>Modele</th>
+                <td>{{ vehicule.modele }}</td>
+            </tr>
+            <tr>
+                <th>Type_carburant</th>
+                <td>{{ vehicule.typeCarburant }}</td>
+            </tr>
+            <tr>
+                <th>Conso_moyenne</th>
+                <td>{{ vehicule.consoMoyenne }}</td>
+            </tr>
+            <tr>
+                <th>Cout_moyen</th>
+                <td>{{ vehicule.coutMoyen }}</td>
+            </tr>
+            <tr>
+                <th>Logo_marque</th>
+                <td>{{ vehicule.logoMarque }}</td>
+            </tr>
+            <tr>
+                <th>Carte_totale</th>
+                <td>{{ vehicule.carteTotale }}</td>
+            </tr>
+            <tr>
+                <th>Carte_grise</th>
+                <td>{{ vehicule.carteGrise }}</td>
+            </tr>
+            <tr>
+                <th>Date_service</th>
+                <td>{{ vehicule.dateService ? vehicule.dateService|date('Y-m-d H:i:s') : '' }}</td>
+            </tr>
+            <tr>
+                <th>Date_ctr_tech</th>
+                <td>{{ vehicule.dateCtrTech ? vehicule.dateCtrTech|date('Y-m-d H:i:s') : '' }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('vehicule_index') }}">back to list</a>
+
+    <a href="{{ path('vehicule_edit', {'id': vehicule.id}) }}">edit</a>
+
+    {{ include('vehicule/_delete_form.html.twig') }}
+{% endblock %}

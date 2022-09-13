@@ -1,0 +1,74 @@
+<div class="table-responsive">
+    <table class="table">
+        <thead>
+            <tr>
+                <th width="10%">Icone</th>
+                <th width="15%">Libelle</th>
+                <th width="60%">Lien</th>
+                <th width="15%">actions</th>
+            </tr>
+        </thead>
+        <tbody id="sortable">
+        {% for menu in menus %}
+            <tr class="ui-state-default group-menu-item" data-menu-id="{{menu.id}}">
+                <td colspan="4" class="ui-icon ui-icon-arrowthick-2-n-s" style="border-radius: 3px; border: 1px solid #cacaca;">
+                    <table style="width: 100%">
+                        <tbody>
+                            <tr>
+                                <td width="10%">
+                                    <i class="{{ menu.icone }}" style="font-size: 25px;"></i>
+                                </td>
+                                <td width="15%">{{ menu.libelle }}</td>
+                                <td width="60%"></td>
+                                <td width="15%">
+                                    <div style="display: flex;justify-content: center; align-items: center;">
+                                        <a href="{{path('menu_edit', {'id':menu.id})}}" class="btn btn-info btn-icon">
+                                          <div><i class="fa fa-edit"></i></div>
+                                        </a>
+                                        <input type="checkbox" class="check-menu" value="{{menu.id}}" data-menu-id="{{menu.id}}" name="checkMenu" 
+                                            {% if menu.getMenuEntrepise(entreprise_id) %}checked{% endif %}>
+
+                                        <form method="post" action="{{ path('menu_delete', {'id': menu.id}) }}" onsubmit="return confirm('Confirmez-vous la suppression?');" style="margin-left: 4px;">
+                                            <input type="hidden" name="_method" value="DELETE">
+                                            <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ menu.id) }}">
+                                            <button class="btn btn-danger"><i class="fa fa-trash"></i></button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% for child in menu.childs %}
+                                <tr style="background: #f3f3f4;">
+                                    <td width="10%">
+                                        <i class="{{ child.icone }}" style="font-size: 25px;"></i>
+                                    </td>
+                                    <td width="15%">{{ child.libelle }}</td>
+                                    <td width="60%"> <a href='{{baseUrl}}{{child.link}}' target="_blank">{{baseUrl}}{{child.link}}</a></td>
+                                    <td width="15%">
+                                        <div style="display: flex;justify-content: center;align-items: center;">
+                                            <a href="{{path('menu_edit', {'id':child.id})}}" class="btn btn-info btn-icon">
+                                              <div><i class="fa fa-edit"></i></div>
+                                            </a>
+                                            <input type="checkbox" class="check-menu" value="{{child.id}}" data-menu-id="{{child.id}}" name="checkMenu"  
+                                                {% if child.getMenuEntrepise(entreprise_id) %}checked{% endif %}>
+
+                                            <form method="post" action="{{ path('menu_delete', {'id': child.id}) }}" onsubmit="return confirm('Confirmez-vous la suppression?');" style="margin-left: 4px;">
+                                                <input type="hidden" name="_method" value="DELETE">
+                                                <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ child.id) }}">
+                                                <button class="btn btn-danger"><i class="fa fa-trash"></i></button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="15">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>

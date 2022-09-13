@@ -1,0 +1,30 @@
+{% set baseUrl = render(controller('App\\Controller\\HomeController::getBaseUrl', {})) %}
+<li class="nav-header">
+    <div class="profile-element">
+        <a href="{{path('home')}}">
+            {% if app.session.get('entreprise_session_logo') %}
+                <img alt="FDMA" class="main-logo img-fluid" src="/logo/{{app.session.get('entreprise_session_logo')}}">
+            {% else %} 
+                <img src="{{ asset('images/logo-admin.png') }}"  alt="FDMA" class="main-logo img-fluid">
+            {% endif %}
+        </a>
+    </div>
+    <div class="logo-element">
+        FDMA
+    </div>
+</li>
+
+{% for menu in menusGroup %}
+<li class="menu-item">
+    <a href="#"><i class="{{ menu.icone }}"></i> <span class="nav-label">{{menu.libelle}}</span> <span class="fa arrow"></span></a>
+    {% if menu.childs|length > 0 %}
+    <ul class="sub-nav nav nav-second-level collapse">
+    	{% for submenu in menu.childs %} 
+            {% if submenu in menusEntrepise %} 
+        	   <li><a href='{{baseUrl}}{{submenu.link}}'>{{submenu.libelle}}</a></li>
+            {% endif %}
+        {% endfor %}
+    </ul>
+    {% endif %}
+</li>
+{% endfor %}

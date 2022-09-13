@@ -1,0 +1,64 @@
+{{ form_start(formR) }}
+<div class="row">
+    <div class="col-sm-5 form-group" style="text-align:right">
+        <label>Date du règlement</label>
+    </div>
+    <div class="col-sm-6 form-group">
+        {{ form_row(formR.date_reglement) }}
+    </div>
+</div>
+<div class="row">
+    <div class="col-sm-5 form-group" style="text-align:right">
+        <label>Mode de reglement</label>
+    </div>
+    <div class="col-sm-6 form-group">
+        {{ form_row(formR.paiement) }}
+    </div>
+</div>
+<div class="row">
+    <div class="col-sm-5 form-group" style="text-align:right">
+        <label>Commentaire</label>
+    </div>
+    <div class="col-sm-6 form-group">
+        {{ form_row(formR.commentaire) }}
+    </div>
+</div>
+<div class="row">
+    <div class="col-sm-5 form-group" style="text-align:right">
+        <label>Montant non encaissé</label>
+    </div>
+    <div class="col-sm-6 form-group">
+        {{ form_row(formR.montant_non_encaisse) }}
+    </div>
+</div>
+<div class="row">
+    <div class="col-sm-5 form-group" style="text-align:right">
+        <label>Montant du règlement</label>
+    </div>
+    <div class="col-sm-6 form-group">
+        {{ form_row(formR.montant_reglement) }}
+    </div>
+</div>
+<div class="row">
+    <div class="col-sm-5 form-group" style="text-align:right">
+        <label>Restant à encaisser</label>
+    </div>
+    <div class="col-sm-6 form-group">
+        {{ form_row(formR.restant_encaisse) }}
+    </div>
+</div>
+<div class="row">
+    <div class="col-sm-5 form-group" style="text-align:right">
+        <label>Documents</label>
+    </div>
+    <div class="col-sm-6 form-group">
+        {{ form_row(formR.document) }}
+    </div>
+</div>
+<input type="hidden" name="list-facture-id">
+<input type="hidden" name="list-bl-id">
+<div class="modal-footer text-center" style="display: flex;justify-content: center;">
+<button type="button" class="btn btn-default" data-dismiss="modal">Annuler</button>
+<button type="submit" class="btn btn-primary">Valider</button>
+         
+{{ form_end(formR) }}

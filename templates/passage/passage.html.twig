@@ -1,0 +1,571 @@
+{% extends 'base.html.twig' %}
+{% block css %}
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.24/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/buttons/1.7.0/css/buttons.dataTables.min.css">
+    <script type="text/javascript" src="https://cdn.datatables.net/plug-ins/1.10.15/sorting/numeric-comma.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/plug-ins/1.11.2/sorting/num-html.js"></script>
+
+    <style type="text/css">        
+        .ibox-title{padding: 26px 90px 8px 15px}
+        .ibox-tools{display: flex;align-items: center;justify-content: flex-end;margin-bottom: 7px;}
+
+        thead th, td{text-align: center;}
+        .rounded-img {
+            border-radius: 50%;
+            position: relative;
+            z-index: 1;
+            width: 40px;
+            height: 40px;
+            object-fit: cover;
+            transition: easy 0.4s all;
+        }
+        .ibox-tools{display: flex;align-items: center;}
+        .table-passage thead th, .table-passage td{text-align: left;}
+
+
+
+
+
+        .rounded-galerie {
+            position: absolute;
+            margin-top: -25px;
+            margin-left: auto;
+            border: 4px solid white;
+            height: 46px;
+            width: 46px;
+            margin-right: auto;
+            left: 0;
+            right: 0;
+            z-index: 1;
+        }
+        .vodiapicker{
+          display: none; 
+        }
+
+        #a{
+            max-height: 400px;
+            overflow-y: auto;
+            padding-left: 0px;
+        }
+
+        #a li{
+          list-style: none;
+          cursor: pointer;
+        }
+
+        #a li:hover{
+         background-color: #F4F3F3;
+        }
+
+        #a li img, #a img, .btn-select img{
+            height: 35px;
+            width: 35px;
+            margin: 5px;
+            border-radius: 50%;
+        }
+
+        #a img, .btn-select img{
+            height: 25px;
+            width: 25px;
+        }
+
+        #a li span, .btn-select li span{
+          margin-left: 30px;
+        }
+
+        /* item list */
+
+        .b{
+            position: absolute;
+            z-index: 9;
+            background: #fff;
+          display: none;
+          width: 100%;
+          box-shadow: 0 6px 12px rgba(0,0,0,.175);
+          border: 1px solid rgba(0,0,0,.15);
+          border-radius: 5px;
+          
+        }
+
+        .open{
+          display: show !important;
+        }
+
+        .btn-select{
+          margin-top: 10px;
+          width: 100%;
+          height: 34px;
+          border-radius: 5px;
+          background-color: #fff;
+          border: 1px solid #ccc;
+         
+        }
+        .btn-select li{
+          list-style: none;
+          float: left;
+          padding-bottom: 0px;
+        }
+
+        .btn-select:hover li{
+          margin-left: 0px;
+        }
+
+        .btn-select:hover{
+          background-color: #F4F3F3;
+          border: 1px solid transparent;
+          box-shadow: inset 0 0px 0px 1px #ccc;
+          
+          
+        }
+
+        .btn-select:focus{
+           outline:none;
+        }
+
+        .lang-select{
+          text-align: left;
+          position: relative;
+        }
+    </style>
+{% endblock %}
+{% block breadcrumb %}
+
+    <div class="row wrapper border-bottom white-bg page-heading">
+        <div class="col-lg-10">
+            <h1>Liste des passages</h1>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                    <a href="{{ path('home') }}">Accueil</a>
+                </li>
+                <li class="breadcrumb-item active">
+                    <strong>Passages</strong>
+                </li>
+            </ol>
+        </div>
+    </div>
+{% endblock %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-lg-12">
+            {% include 'flashes.html.twig' %}
+            <div class="ibox">
+                <div class="ibox-content">
+                    {{ include('passage/filter.html.twig') }}
+                </div>
+            </div>
+            <div class="ibox ">
+                <div class="ibox-title">
+                    <h5>Liste des passages</h5>
+                    <div class="ibox-tools">
+
+                        <a class="btn btn-primary" href="{{path('passage_list')}}">Passages</a>&nbsp
+                        <a class="btn btn-primary" href="{{path('passage_list')}}?control=nb_passage_ouvrier">Nb Passage ouvrier
+                        </a>&nbsp
+                        <span class="btn btn-primary" data-toggle="modal" data-target="#modalformPassage">
+                            <i class="fa fa-plus"></i> Ajouter
+                        </span>
+
+                        <form method="POST" class="btnDeletePassage"  action="{{path('passage_delete_many')}}" style="margin-left: 6px; display: none;" onsubmit="return confirm('Confirmez-vous la suppression?');">
+                            <input type="hidden" name="list-passage-check">
+                            <input type="submit" class="btn btn-danger" value="Supprimer">
+                        </form>
+                    </div>
+                </div>
+
+                <div class="ibox-content">
+
+                    {% if nbPassageGroupByOuvrier is defined %}
+                    <div class="table-responsive" style="margin-bottom: 40px;">
+                        <table class="table table-passage">
+                            <thead>
+                                <tr>
+                                    <th>Utilisateur</th>
+                                    <th>Nbr passage</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for passage in nbPassageGroupByOuvrier %}
+                                    {% set nbPassage = passage[1] %}
+                                    {% set passage = passage[0]  %}
+                                <tr>
+                                    <td>
+                                        {% if passage.utilisateur %}
+                                        <div style="display: flex; align-items: center;">
+                                            <img class="rounded-img" src="data:image/jpeg;base64,{{ passage.utilisateur.image }}">
+                                            <span style="margin-left: 6px;">
+                                                {{ passage.utilisateur.lastname }} {{ passage.utilisateur.firstname }}
+                                            </span>
+                                        </div>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <a href="{{path('passage_list')}}?control=nb_passage_ouvrier&passage_ouvrier={{passage.utilisateur.uid}}">{{ nbPassage }} Passages</a>
+                                    </td>
+                                </tr>
+                                {% else %}
+                                <tr>
+                                    <td colspan="34">Aucun passage enregistré</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% endif %}
+
+                    {% if passages is defined %}
+                    <div class="table-responsive">
+                        <table class="table table-passage">
+                            <thead>
+                                <tr>
+                                    <th>
+                                        <input type="checkbox" class="chk-parent" value="">
+                                    </th>
+                                    <th>Utilisateur</th>
+                                    <th>Fournisseurs</th>
+                                    <th>Chantier</th>
+                                    <th>Date Création</th>
+                                    <th>Date Detection</th>
+                                    <th>Heure Detection</th>
+                                    <th>Bon Lv</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for passage in passages %}
+                                <tr>
+                                    <td>
+                                        <input type="checkbox" class="check-passage" name="passageCheck" value="{{passage.id}}">
+                                    </td>
+                                    <td>
+                                        {% if passage.utilisateur %}
+                                        <div style="display: flex; align-items: center;">
+                                            <img class="rounded-img" src="data:image/jpeg;base64,{{ passage.utilisateur.image }}">
+                                            <span style="margin-left: 6px;">
+                                                {{ passage.utilisateur.lastname }} {{ passage.utilisateur.firstname }}
+                                            </span>
+                                        </div>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {{ passage.fournisseur ? passage.fournisseur.nom : "" }}
+                                        <br>
+                                        <small>{{ passage.fournisseur ? passage.fournisseur.email : "" }}</small>
+                                    </td>
+                                    <td>
+                                        <a href="javascript:void()" data-passage-id="{{passage.id}}" class="openModalChantier" style="cursor: pointer;">
+                                            {{ passage.chantier ? passage.chantier.nameentreprise : "" }}
+                                        </a>
+                                        
+                                    </td>
+                                    <td>{{ passage.getCreateAt is not null ? passage.getCreateAt|date('d/m/Y H:i') : "" }}</td>
+                                    <td>{{ passage.getDateDetection is not null ? passage.getDateDetection|date('d/m/Y') : "" }}</td>
+                                    <td>{{ passage.getDateDetection is not null ? passage.getDateDetection|date('H:i') : "" }}</td>
+                                    <td>
+                                        {% if passage.getBonLivraison %}
+                                            <span class="showDocument" data-file="/uploads/factures/{{passage.getBonLivraison.getDocumentFile}}" style="cursor: pointer;"><img src="//ssl.gstatic.com/docs/doclist/images/mediatype/icon_3_pdf_x16.png"></span>
+                                        {% else %}
+                                            <span class="btn" onclick="addBl({{passage.id}})">
+                                                <i class="fa fa-plus"></i>
+                                            </span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <a href="{{path('passage_send_email', {'passage_id':passage.id})}}"><i class="fa fa-envelope" style="{% if passage.id in messagesSended %}color: green;{% else %}color: #888;{% endif %}font-size: 19px;"></i></a> 
+                                    </td>
+                                </tr>
+                                {% else %}
+                                <tr>
+                                    <td colspan="34">Aucun passage enregistré</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <div id="modalformPassage" class="modal fade bs-example-modal-sm modal-center" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel">
+                    <div class="modal-dialog modal-medium" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header" style="border: none;">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                <h2 class="modal-title text-center" id="myModalLabel">Créer un passage</h2>
+                            </div>
+                            <div class="modal-body text-center" style="padding: 0px 30px 51px 30px">
+                                <form method="POST" action="{{path('passage_new')}}">
+                                    <input type="hidden" name="passage_id">
+                                    <div class="row">
+                                        <div class="col-lg-12 form-group">
+                                            <select class="vodiapicker" name="utilisateur" class="form-control">
+                                                <option value="" data-thumbnail="" disabled selected>-- selectionner un ouvrier --</option>
+                                                {% for usr in users %} 
+                                                    <option value="{{usr.uid}}" data-thumbnail="data:image/jpeg;base64,{{ usr.image }}">{{usr.firstname~" "~usr.lastname}}</option>
+                                                {% endfor %}
+                                            </select>
+
+                                            <div class="lang-select">
+                                                <button class="btn-select" value=""></button>
+                                                <div class="b">
+                                                    <ul id="a"></ul>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-lg-12 form-group">
+                                            <select class="form-control" name="fournisseur" required>
+                                                <option value="" disabled selected>-- selectionner un fournisseur --</option>
+                                                {% for four in fournisseurs %} 
+                                                <option value="{{four.id}}">{{four.nom}}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                        <div class="col-lg-12 form-group">
+                                            <select class="form-control" name="chantier" required>
+                                                <option value="" disabled selected>-- selectionner un chantier --</option>
+                                                {% for ch in chantiers %} 
+                                                <option value="{{ch.chantierId}}">{{ch.nameentreprise}}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-lg-12">
+                                                <div class="col-lg-6 form-group">
+                                                    <input type="date" name="date_create" class="form-control" value='{{"now"|date("Y-m-d")}}'>
+                                                </div>
+                                                <div class="col-lg-6 form-group">
+                                                    <input type="time" name="heure_create" class="form-control" value='{{"now"|date("H:i")}}'>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                    <div class="col-lg-12 form-group text-center">
+                                        <button type="submit" class="btn btn-primary
+                                        ">Envoyer</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="modalBonLivraison" class="modal fade bs-example-modal-sm modal-center" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel">
+                        <div class="modal-dialog modal-medium" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header" style="border: none;">
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                    <h2 class="modal-title text-center" id="myModalLabel">Attribuer un bon de livraison</h2>
+                                </div>
+                                <div class="modal-body text-center" style="padding: 0px 30px 51px 30px">
+                                    <form method="POST" action="{{path('bon_livraison_attach_passage')}}">
+                                        <input type="hidden" name="passageId">
+                                        <div class="row">
+                                            <div class="col-lg-12 form-group select-container">
+
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-12 form-group text-center">
+                                            <button type="submit" class="btn btn-primary
+                                            ">Enregistrer</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                </div>
+
+            <div id="modalChantier" class="modal fade bs-example-modal-sm modal-center" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel">
+                <div class="modal-dialog modal-medium" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header" style="border: none;">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                            <h2 class="modal-title text-center" id="myModalLabel">Attribuer un chantier</h2>
+                        </div>
+                        <div class="modal-body text-center" style="padding: 0px 30px 51px 30px">
+                            <form method="POST" action="{{path('passage_edit_chantier')}}">
+                                <input type="hidden" name="passage_id">
+                                <div class="row">
+                                    <div class="col-lg-12 form-group">
+                                        <select class="form-control" name="chantier" required>
+                                            <option value="" disabled selected>-- selectionner un chantier --</option>
+                                            {% for ch in chantiers %} 
+                                            <option value="{{ch.chantierId}}">{{ch.nameentreprise}}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-lg-12 form-group text-center">
+                                    <button type="submit" class="btn btn-primary
+                                    ">Envoyer</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+{% block js_import %}
+    <script type="text/javascript"src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.min.js"></script>
+    <script type="text/javascript"src="https://cdn.datatables.net/buttons/1.7.0/js/dataTables.buttons.min.js"></script>
+    <script type="text/javascript"src="https://cdn.datatables.net/buttons/1.7.0/js/buttons.html5.min.js"></script>
+    <script type="text/javascript"src="https://cdn.datatables.net/buttons/1.7.0/js/buttons.print.min.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/plug-ins/1.10.24/sorting/date-eu.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/plug-ins/1.10.15/sorting/numeric-comma.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/plug-ins/1.11.2/sorting/num-html.js"></script>
+
+{% endblock %}
+
+{% block javascript_script %}
+    <script type="text/javascript">
+        $(document).ready( function () {
+            $('table').DataTable({
+                columnDefs: [
+                   { type: 'date-eu', targets: 3 },
+                ],
+                "paging":   false,
+            });
+        } );
+
+        function addBl(passageId){
+            $('#modalBonLivraison').modal('show');
+            $('#modalBonLivraison input[name=passageId]').val(passageId);
+
+            $.ajax({
+                url:"{{path('bon_livraison_get_by_passage')}}",
+                type:"GET",
+                dataType: "json",
+                async: true,
+                data: {
+                    passageId : passageId,
+                },  
+                success:function(response) {
+                    console.log(response.bonLivraisons);
+                    var listSelectBl =  "<select class='form-control' name='bonLivraisonId'>";
+                    $.each(response.bonLivraisons, function( index, value ) {
+                        listSelectBl += '<option value="'+value.id+'">#'+value.documentId+'-'+value.lot+'-'+value.prixht+'</option>';
+                    });
+                    listSelectBl +=  "</select>";
+
+                    $('#modalBonLivraison .select-container').html(listSelectBl);
+                },
+                error:function(){
+                  toastr.error("Ooops... Quelque chose s'est mal passée");
+                }
+            });
+        }
+
+        $('table').on('change', '.check-passage', function(){    
+            $eltCheck = $('.check-passage:checkbox:checked');
+            if( $eltCheck.length > 0){
+                $('.btnDeletePassage').css('display', 'block');
+            }
+            else{
+                $('.btnDeletePassage').css('display', 'none');
+            }
+
+            var passageCheck = [];   
+            $eltCheck.each(function( index ) {
+                if($( this ).val() != "")
+                    passageCheck.push($( this ).val());
+            });
+            $('input[name=list-passage-check]').val(passageCheck.join('-'));
+        });
+        $('.chk-parent').on('change', function(){  
+            $('.check-passage').prop('checked', this.checked);      
+            if($(this).is(":checked")){
+                $('.btnDeletePassage').css('display', 'block');
+            }
+            else{
+                $('.btnDeletePassage').css('display', 'none');
+            }
+
+            var passageCheck = [];  
+            $eltCheck = $('.check-passage:checkbox:checked'); 
+            $eltCheck.each(function( index ) {
+                if($( this ).val() != "")
+                    passageCheck.push($( this ).val());
+            });
+            $('input[name=list-passage-check]').val(passageCheck.join('-'));
+        });
+
+
+        $('.openModalChantier').click(function(){
+            $('input[name=passage_id]').val($(this).attr('data-passage-id'));
+            $("#modalChantier").modal('show');
+        })
+
+
+
+
+
+
+
+
+        //test for getting url value from attr
+        // var img1 = $('.test').attr("data-thumbnail");
+        // console.log(img1);
+
+        //test for iterating over child elements
+        var langArray = [];
+        $('.vodiapicker option').each(function(){
+          var img = $(this).attr("data-thumbnail");
+          var text = this.innerText;
+          var value = $(this).val();
+          var item = "";
+          if(img != ""){
+                item = '<li><img src="'+ img +'" alt="" value="'+value+'"/>';
+          }
+          item += '<span>'+ text +'</span></li>' ;
+          langArray.push(item);
+        })
+
+        $('#a').html(langArray);
+
+        //Set the button value to the first el of the array
+        $('.btn-select').html(langArray[0]);
+        $('.btn-select').attr('value', 'en');
+
+        //change button stuff on click
+        $('#a li').click(function(){
+           var img = $(this).find('img').attr("src");
+           var value = $(this).find('img').attr('value');
+           var text = this.innerText;
+           var item = '<li><img src="'+ img +'" alt="" /><span>'+ text +'</span></li>';
+          $('.btn-select').html(item);
+          $('.btn-select').attr('value', value);
+          $(".b").toggle();
+          $('.vodiapicker').val(value);
+          //console.log(value);
+        });
+
+        $(".btn-select").click(function(){
+                $(".b").toggle();
+            });
+
+        //check local storage for the lang
+        var sessionLang = localStorage.getItem('lang');
+        if (sessionLang){
+          //find an item with value of sessionLang
+          var langIndex = langArray.indexOf(sessionLang);
+          $('.btn-select').html(langArray[langIndex]);
+          $('.btn-select').attr('value', sessionLang);
+        } else {
+           var langIndex = langArray.indexOf('ch');
+          console.log(langIndex);
+          $('.btn-select').html(langArray[langIndex]);
+          //$('.btn-select').attr('value', 'en');
+        }
+
+    </script>
+{% endblock %}
+
+{% block javascript %}
+
+{% endblock %}

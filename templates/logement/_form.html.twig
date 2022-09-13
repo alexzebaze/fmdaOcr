@@ -1,0 +1,486 @@
+
+<style type="text/css">
+	.custom-radio-list >label {
+		position: relative;
+	    background: #e8e8e8;
+	    padding: 1px 18px;
+	    cursor: pointer;
+	    height: 27px;
+	    margin: 0;
+	}
+	.custom-radio-list > .radio-on:checked+label {
+		background: #0cbb0c;
+	}
+	.custom-radio-list > .radio-off:checked+label {
+		background: red;
+	}
+	.custom-radio-list > input[type="radio"]:checked+label::after {
+	    position: absolute;
+	    transform: translate(-50%, -50%);
+	    top: 50%;
+	    left: 50%;
+	    font-size: 10px;
+	    font-weight: 900;
+	    display: inline-block;
+	    font-style: normal;
+	    color: #fff;
+	    font-variant: normal;
+	    text-rendering: auto;
+	    -webkit-font-smoothing: antialiased;
+	}
+	.custom-radio-list > .radio-on:checked+label::after {
+	    content: "\f00c";
+	    font-family: "Font Awesome 5 Pro";
+	}
+	.custom-radio-list > .radio-off:checked+label::after {
+	    content: "\f00d";
+	    font-family: "Font Awesome 5 Pro";
+	}
+	.form-title{
+		font-weight: bold;
+	    margin-bottom: 35px;
+	    font-size: 22px;
+	}
+	.custom-radio-list > input {
+		display: none;
+	}
+	.form-group{
+		border-bottom: 1px solid #f1f1f1;
+	    padding-bottom: 38px;
+	    margin-bottom: 24px;
+	}
+	.label-field{
+		font-weight: 900;
+   		text-transform: uppercase;
+   		text-align: right;
+	}
+	form[name=logement] h3{
+		line-height: 25px;
+    	font-weight: 400;
+	}
+	form[name=logement] input[type=radio]{
+		border: 0px;
+	    width: 22px;
+	    height: 2em;
+	    margin-right: 8px;
+	}
+
+	.galleries-list{
+		display: flex;
+	    align-items: center;
+	    flex-wrap: wrap;
+	    margin-bottom: 15px;
+	}
+	.galleries-list >*{
+		margin-right: 5px;
+	}
+</style>
+
+<div class="col-lg-12">
+    <div class="ibox">
+        <div class="ibox-content" style="padding: 33px 35px;">
+            <div class="row">
+            	<div class="col-lg-12">
+            		<ul class="nav nav-tabs" role="tablist" id="myTabs">
+		                <li role="presentation" class="active"><a href="#informations-tab" aria-controls="informations-tab" role="tab" data-toggle="tab">Informations</a></li>
+		                <li role="presentation"  class=""><a href="#description-tab" aria-controls="description-tab" role="tab" data-toggle="tab">Description</a></li>
+		                <li role="presentation"  class=""><a href="#photo-tab" aria-controls="photo-tab" role="tab" data-toggle="tab">Documents Photos</a></li>
+		                <li role="presentation"  class=""><a href="#acquereur-tab" aria-controls="acquereur-tab" role="tab" data-toggle="tab">Acquéreur</a></li>
+		                {% if locations is defined  %}
+		                <li role="presentation"  class=""><a href="#locataire-tab" aria-controls="locataire-tab" role="tab" data-toggle="tab">Locataires</a></li>
+		                {% endif %}
+		            </ul>
+
+		            {{ form_start(form) }}
+		            <div class="tab-content" style="margin-top: 25px;">
+		                <div role="tabpanel" class="tab-pane active" id="informations-tab">
+		                	<h2 class="col-lg-12 form-title">Informations generale</h2>
+					    	<div class="col-lg-12 form-group">
+					    		<div class="col-lg-2 label-field">CHANTIER</div>
+					    		<div class="col-lg-10">
+						        	<div class="col-lg-5">{{ form_row(form.chantier) }}</div>
+						        </div>
+					    	</div>
+					    	<div class="col-lg-12 form-group">
+					    		<div class="col-lg-2 label-field">IDENTIFIANT</div>
+					    		<div class="col-lg-10">
+						        	<div class="col-lg-5">{{ form_row(form.identifiant, {'attr': {'placeholder': 'Indiquez un lieu'}}) }}</div>
+						        </div>
+					    	</div>
+					    	<div class="col-lg-12 form-group">
+					    		<div class="col-lg-2 label-field">ETAT</div>
+					    		<div class="col-lg-10">
+						        	<div class="col-lg-5">{{ form_row(form.etat) }}</div>
+						        </div>
+					    	</div>
+
+					    	<div class="col-lg-12 form-group">
+					    		<div class="col-lg-2 label-field">TYPE</div>
+					    		<div class="col-lg-10">
+						        	<div class="col-lg-5">{{ form_row(form.type) }}</div>
+						        </div>
+					    	</div>
+
+					    	<div class="col-lg-12 form-group">
+					    		<div class="col-lg-2 label-field">PRIX</div>
+					    		<div class="col-lg-10">
+						        	<div class="col-lg-5">{{ form_row(form.prix) }}</div>
+						        </div>
+					    	</div>
+
+					    	<div class="col-lg-12 form-group">
+					    		<div class="col-lg-2 label-field">BATIMENT</div>
+					    		<div class="col-lg-10">
+						        	<div class="col-lg-5">{{ form_row(form.batiment) }}</div>
+						        </div>
+					    	</div>
+					    	<div class="col-lg-12 form-group">
+					    		<div class="col-lg-2 label-field">ESCALIER</div>
+					    		<div class="col-lg-10">
+						        	<div class="col-lg-5">{{ form_row(form.escalier) }}</div>
+						        </div>
+					    	</div>
+					    	<div class="col-lg-12 form-group">
+					    		<div class="col-lg-2 label-field">ETAGE</div>
+					    		<div class="col-lg-10">
+						        	<div class="col-lg-5">{{ form_row(form.etage) }}</div>
+						        </div>
+					    	</div>
+					    	<div class="col-lg-12 form-group">
+					    		<div class="col-lg-2 label-field">NUMERO</div>
+					    		<div class="col-lg-10">
+						        	<div class="col-lg-5">{{ form_row(form.numero) }}</div>
+						        </div>
+					    	</div>
+					    	<div class="col-lg-12 form-group">
+					    		<div class="col-lg-2 label-field">STATUS</div>
+					    		<div class="col-lg-10">
+						        	<div class="col-lg-5">{{ form_row(form.status) }}</div>
+						        </div>
+					    	</div>
+					    	
+					    	<div class="col-lg-12 form-group text-center">
+						        <button class="btn btn-primary">{{ button_label|default('Enregistrer') }}</button>
+						    </div>
+		                </div>
+		                <div role="tabpanel" class="tab-pane" id="description-tab">
+		                	<h2 class="col-lg-12 form-title">Description</h2>
+					    	<div class="col-lg-12 form-group">
+					    		<div class="col-lg-2 label-field">SUPERFICIE M<sup>2</sup></div>
+					    		<div class="col-lg-10">
+						        	<div class="col-lg-5">{{ form_row(form.superficie) }}</div>
+						        </div>
+					    	</div>
+					    	<div class="col-lg-12 form-group">
+					    		<div class="col-lg-2 label-field">NOMBRES DE PIECES</div>
+					    		<div class="col-lg-10">
+						        	<div class="col-lg-5">{{ form_row(form.nombre_piece) }}</div>
+						        </div>
+					    	</div>
+					    	<div class="col-lg-12 form-group">
+					    		<div class="col-lg-2 label-field">NOMBRE DE CHAMBRES</div>
+					    		<div class="col-lg-10">
+						        	<div class="col-lg-5">{{ form_row(form.nombre_chambre) }}</div>
+						        </div>
+					    	</div>
+					    	<div class="col-lg-12 form-group">
+					    		<div class="col-lg-2 label-field">ANNEE DE CONSTRUCTION</div>
+					    		<div class="col-lg-10">
+						        	<div class="col-lg-5">{{ form_row(form.annee_construction) }}</div>
+						        </div>
+					    	</div>
+					    	<div class="col-lg-12 form-group">
+					    		<div class="col-lg-2 label-field">ANNEE ACQUISITION</div>
+					    		<div class="col-lg-10">
+						        	<div class="col-lg-5">{{ form_row(form.annee_acquisition) }}</div>
+						        </div>
+					    	</div>
+					    	<div class="col-lg-12 form-group">
+					    		<div class="col-lg-2 label-field">WEB</div>
+					    		<div class="col-lg-10">
+						        	<div class="col-lg-10">{{ form_row(form.web, {'attr': {'rows': '2'}}) }}</div>
+						        </div>
+					    	</div>
+					    	<div class="col-lg-12 form-group">
+					    		<div class="col-lg-2 label-field">PERMALIEN</div>
+					    		<div class="col-lg-10">
+						        	<div class="col-lg-10">{{ form_row(form.permalien, {'attr': {'rows': '2'}}) }}</div>
+						        </div>
+					    	</div>
+					    	<div class="col-lg-12 form-group">
+					    		<div class="col-lg-2 label-field">STATIONNEMENT</div>
+					    		<div class="col-lg-10">
+						        	<div class="col-lg-10">{{ form_row(form.stationnement) }}</div>
+						        </div>
+					    	</div>
+					    	<div class="col-lg-12 form-group">
+					    		<div class="col-lg-2 label-field">CAVE</div>
+					    		<div class="col-lg-10">
+						        	<div class="col-lg-10">{{ form_row(form.cave) }}</div>
+						        </div>
+					    	</div>
+					    	<div class="col-lg-12 form-group">
+					    		<div class="col-lg-2 label-field">SUPERFICIE CAVE</div>
+					    		<div class="col-lg-10">
+						        	<div class="col-lg-10">{{ form_row(form.superficie_cave) }}</div>
+						        </div>
+					    	</div>
+					    	<div class="col-lg-12 form-group">
+					    		<div class="col-lg-2 label-field">NOMBRE WC</div>
+					    		<div class="col-lg-10">
+						        	<div class="col-lg-10">{{ form_row(form.nombre_wc) }}</div>
+						        </div>
+					    	</div>
+					    	<div class="col-lg-12 form-group">
+					    		<div class="col-lg-2 label-field">EXPOSITION</div>
+					    		<div class="col-lg-10">
+						        	<div class="col-lg-10">{{ form_row(form.exposition) }}</div>
+						        </div>
+					    	</div>
+					    	<div class="col-lg-12 form-group">
+					    		<div class="col-lg-2 label-field">BALCON</div>
+					    		<div class="col-lg-10">
+						        	<div class="col-lg-10">{{ form_row(form.balcon) }}</div>
+						        </div>
+					    	</div>
+					    	<div class="col-lg-12 form-group">
+					    		<div class="col-lg-2 label-field">SUPERFICIE BALCON</div>
+					    		<div class="col-lg-10">
+						        	<div class="col-lg-10">{{ form_row(form.superficie_balcon) }}</div>
+						        </div>
+					    	</div>
+					    	<div class="col-lg-12 form-group">
+					    		<div class="col-lg-2 label-field">TERRASSE</div>
+					    		<div class="col-lg-10">
+						        	<div class="col-lg-10">{{ form_row(form.terrasse) }}</div>
+						        </div>
+					    	</div>
+					    	<div class="col-lg-12 form-group">
+					    		<div class="col-lg-2 label-field">SUPERFICIE TERRASSE</div>
+					    		<div class="col-lg-10">
+						        	<div class="col-lg-10">{{ form_row(form.superficie_terrasse) }}</div>
+						        </div>
+					    	</div>
+					    	<div class="col-lg-12 form-group">
+					    		<div class="col-lg-2 label-field">CELLIER</div>
+					    		<div class="col-lg-10">
+						        	<div class="col-lg-10">{{ form_row(form.cellier) }}</div>
+						        </div>
+					    	</div>
+					    	<div class="col-lg-12 form-group">
+					    		<div class="col-lg-2 label-field">NORMES</div>
+					    		<div class="col-lg-10">
+						        	<div class="col-lg-10">{{ form_row(form.normes) }}</div>
+						        </div>
+					    	</div>
+
+
+					    	<div class="col-lg-12 form-group">
+					    		<div class="col-lg-2 label-field">DESCRIPTION</div>
+					    		<div class="col-lg-10">
+						        	<div class="col-lg-10">{{ form_row(form.description, {'attr': {'rows': '5'}}) }}</div>
+						        </div>
+					    	</div>
+					    	<div class="col-lg-12 form-group">
+					    		<div class="col-lg-2 label-field">NOTES</div>
+					    		<div class="col-lg-10">
+						        	<div class="col-lg-10">{{ form_row(form.notes, {'attr': {'rows': '5'}}) }}</div>
+						        </div>
+					    	</div>
+
+					    	<div class="col-lg-12 form-group text-center">
+						        <button class="btn btn-primary">{{ button_label|default('Enregistrer') }}</button>
+						    </div>
+
+		                </div>
+		                <div role="tabpanel" class="tab-pane" id="photo-tab">
+
+		                	{% if logement.photos is defined and logement.photos is not null %}
+					    		<div class="galleries-container" onclick="">
+						    		<div class="galleries-list">
+								    	{% for photo in logement.unserializePhotos %}
+								    		<div class="photos-container" style="position: relative; cursor: pointer;">
+									    		<img data-file="/uploads/logement/{{logement.entreprise.id}}/{{photo}}" src="/uploads/logement/{{logement.entreprise.id}}/{{photo}}" class="showDocument img-preview-thumb" style="width: 250px; height: 250px;object-fit: cover;">
+									    	</div>
+									    {% endfor %}
+									    
+								    </div>
+								</div>
+					    	{% endif %}
+
+
+		                	<input class="form-control" type="file" name="photos[]" multiple accept=".jpg, .jpeg, .png" style="margin-bottom: 15px;">
+		                	<button class="btn btn-primary">{{ button_label|default('Enregistrer') }}</button>
+		                </div>
+		                <div role="tabpanel" class="tab-pane" id="acquereur-tab">
+
+		                	<input type="hidden" name="field-acquereur" value="" class="field-acquereur">
+		                	<div style="text-align: right;margin-bottom: 10px;">
+		                		<span class="btn btn-primary" data-toggle="modal" data-target="#modalClient"><i class="fa fa-plus"></i> Ajouter</span>
+		                	</div>
+		                	<div class="table-responsive">
+		                        <table class="table">
+		                            <thead>
+		                                <tr>
+		                                    <th>Nom</th>
+		                                    <th>Date de naissance</th>
+		                                    <th>Adresse</th>
+		                                    <th>Code postal</th>
+		                                    <th>Ville</th>
+		                                    <th>Email</th>
+		                                    <th>Telephone</th>
+		                                </tr>
+		                            </thead>
+		                            <tbody class="acquereur-container">
+		                            	{% for acquereur in logement.getAcquereurs %}
+			                                <tr>
+			                                    <td>{{ acquereur.nom }}</td>
+			                                    <td>{{ acquereur.getDateNaissance ? acquereur.getDateNaissance|date('d/m/Y') : '' }}</td>
+			                                    <td>{{acquereur.adresse}}</td>
+			                                    <td>{{ acquereur.code}}</td>
+			                                    <td>{{ acquereur.ville }}</td>
+			                                    <td>{{ acquereur.email }}</td>
+			                                    <td>{{ acquereur.telone }}</td>
+			                                </tr>
+			                            {% endfor %}
+		                            </tbody>
+		                        </table>
+		                    </div>
+
+		                    <div class="col-lg-12 form-group text-center">
+						        <button class="btn btn-primary">{{ button_label|default('Enregistrer') }}</button>
+						    </div>
+
+		                </div>
+		                {% if locations is defined  %}
+		                <div role="tabpanel" class="tab-pane" id="locataire-tab">
+		                	<div class="table-responsive">
+		                        <table class="table">
+		                            <thead>
+		                                <tr>
+		                                    <th>Locataire</th>
+		                                    <th>Adresse</th>
+		                                    <th>Bien</th>
+		                                    <th>Type</th>
+		                                    <th>Identifiant</th>
+		                                    <th>Debut_bail</th>
+		                                    <th>Fin_bail</th>
+		                                    <th>Renouvellement</th>
+		                                    <th>Date_paiement</th>
+		                                    <th>Periodicite</th>
+		                                    <th>Generateur_loyer</th>
+		                                    <th>Loyer_hc</th>
+		                                </tr>
+		                            </thead>
+		                            <tbody>
+		                            	{% for location in locations %}
+			                                <tr>
+			                                    <td>{{ location.locataire ? location.locataire.nom : "" }}</td>
+			                                    <td>{{ location.locataire ? location.locataire.adresse : "" }}</td>
+			                                    <td>{{ location.bien is not null ? location.bien.nameentreprise : '' }}</td>
+			                                    <td>{{ location.type ? types[location.type] : '' }}</td>
+			                                    <td>{{ location.identifiant }}</td>
+			                                    <td>{{ location.debutBail ? location.debutBail|date('d/m/Y') : '' }}</td>
+			                                    <td>{{ location.finBail ? location.finBail|date('d/m/Y') : '' }}</td>
+			                                    <td>
+			                                        {% if not location.renouvellement %}
+			                                            <span  style="font-size: 18px;color: #ef0a0a;"><i class="fas fa-times"></i><span style="visibility: hidden;">X</span></span>
+			                                        {% else %}
+			                                            <span style="font-size: 18px;color: green;"><i class="fa fa-check"></i>
+			                                            <span style="visibility: hidden;">V</span></span>
+			                                        {% endif %}
+			                                    </td>
+			                                    <td>{{ location.datePaiement ? location.datePaiement|date('d/m/Y') : '' }}</td>
+			                                    <td>{{ location.periodicite ? location.periodicite|date('d/m/Y') : '' }}</td>
+			                                    <td>{{ location.generateurLoyer }}</td>
+			                                    <td>{{ location.loyerHc }}</td>
+			                                </tr>
+			                            {% else %}
+			                                <tr>
+			                                    <td colspan="13">no records found</td>
+			                                </tr>
+			                            {% endfor %}
+		                            </tbody>
+		                        </table>
+		                    </div>
+		                </div>
+		                {% endif %}
+		            </div>
+		            {{ form_end(form) }}
+            	</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div id="modalClient" class="modal fade bs-example-modal-sm modal-center" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel">
+    <div class="modal-dialog modal-medium" role="document">
+        <div class="modal-content">
+            <div class="modal-header" style="border: none;margin-bottom: 20px">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h2 class="modal-title text-center" id="myModalLabel">Attribuer un client</h2>
+            </div>
+            <div class="modal-body text-center" style="padding: 0px 30px 0px 30px">
+                <div style="margin-bottom:20px">
+                    <select class="form-control js-example-basic-multiple" multiple name="acquereurClient" id="acquereurClient" required>
+                        {% for client in clients %} 
+                        <option value="{{client.id}}">{{client.nom}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="text-center"  style="margin-bottom: 20px">
+                    <span class="btn btn-primary addAcquereur" data-dismiss="modal" aria-label="Close"><i class="fa fa-plus"></i> Ajouter</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script type="text/javascript">
+	$('.field-number').keyup(function () {
+        var content = $(this).val();
+        $(this).val(content.replace(/[\,]+/g, '.'));
+        $(this).val(content.replace(/[\ ]+/g, ''));
+    });
+
+
+	$clientsArr = {{clients|json_encode|raw}};
+	$(document).on('click', ".addAcquereur", function(){
+		let tabClient = $('#acquereurClient').val();
+
+		$tab1 = $('input.field-acquereur').val().split(',');
+
+		if($('input.field-acquereur').val() != "")
+			$tab = [...$tab1, ...tabClient];
+		else
+			$tab = tabClient;
+
+		$('input.field-acquereur').val($tab.toString());
+
+		var list_client = tabClient.toString();
+
+		$.ajax({
+            url: "{{path('client_get_by_listId')}}",
+            type: "POST",
+            dataType: "json",
+            async: true,
+            data: {
+                list_client: list_client
+            },
+            success: function(response) {
+                if(response.status == 200){
+                    $('.acquereur-container').append(response.preview);
+                    $('.js-example-basic-multiple').empty();
+                }
+                else if(response.status == 500){
+                    toastr.error(response.message);
+                }
+            },
+            error: function(xhr, textStatus, errorThrown) {
+              console.log(errorThrown);
+            }
+        });		
+	})
+
+</script>

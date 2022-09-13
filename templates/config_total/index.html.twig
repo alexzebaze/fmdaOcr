@@ -1,0 +1,37 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}ConfigTotal index{% endblock %}
+
+{% block body %}
+    <h1>ConfigTotal index</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Ht</th>
+                <th>Ttc</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for config_total in config_totals %}
+            <tr>
+                <td>{{ config_total.id }}</td>
+                <td>{{ config_total.ht }}</td>
+                <td>{{ config_total.ttc }}</td>
+                <td>
+                    <a href="{{ path('config_total_show', {'id': config_total.id}) }}">show</a>
+                    <a href="{{ path('config_total_edit', {'id': config_total.id}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="4">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('config_total_new') }}">Create new</a>
+{% endblock %}

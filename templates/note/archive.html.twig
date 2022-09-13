@@ -1,0 +1,328 @@
+{% extends 'base.html.twig' %}
+
+{% block breadcrumb %}
+
+    <div class="row wrapper border-bottom white-bg page-heading">
+        <div class="col-lg-10">
+            <h1>Liste des notes</h1>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                    <a href="{{ path('home') }}">Accueil</a>
+                </li>
+                <li class="breadcrumb-item">
+                    <a href="{{ path('note_list') }}">Notes</a>
+                </li>
+                <li class="breadcrumb-item active">
+                    <strong>Archives</strong>
+                </li>
+            </ol>
+        </div>
+    </div>
+{% endblock %}
+
+{% block content %}
+    <style type="text/css">
+        .card {
+            position: relative;
+            display: -webkit-box;
+            display: -ms-flexbox;
+            display: flex;
+            -webkit-box-orient: vertical;
+            -webkit-box-direction: normal;
+            -ms-flex-direction: column;
+            flex-direction: column;
+            min-width: 0;
+            word-wrap: break-word;
+            background-color: #fff;
+            background-clip: border-box;
+            border: 1px solid rgba(0,0,0,.125);
+            border-radius: .25rem;
+        }
+        .card-img-top {
+            width: 100%;
+            border-top-left-radius: calc(.25rem - 1px);
+            border-top-right-radius: calc(.25rem - 1px);
+        }
+        .card-body {
+            -webkit-box-flex: 1;
+            -ms-flex: 1 1 auto;
+            flex: 1 1 auto;
+            padding: 1.25rem;
+        }
+        .card-title {
+            margin-bottom: .75rem;
+        }
+        .cke_chrome {
+            margin-bottom: 1rem;
+        }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.0.943/pdf.js"></script>
+    <script src="{{ asset('js/pdfThumbnails.js') }}"></script>
+    <div class="row">
+        <div class="col-lg-3">
+
+            <div class="ibox">
+                <div class="ibox-title">
+                    <h5>Liste des collaborateurs : {{ nb_ouvriers }}</h5>
+                </div>
+                <div class="ibox-content">
+                    <div class="align-center">
+                        <input type="radio" name="enable" id="actif" checked value="1"> <label class="filter-actif"
+                                                                                               for="actif">Actif</label>
+                        <input type="radio" name="enable" id="inactif" value="0"> <label for="inactif">Inactif</label>
+                    </div>
+                    <div class="panel-body" id="nestable2">
+                        <div class="panel-group" id="accordion">
+                            {% for u in pager.currentPageResults %}
+                                <div class="panel panel-default {{ u.etat == 1 ? 'uactif' : 'uinactif' }}"
+                                     style="{{ u.etat == 0 ? 'display:none' : '' }}" data-id="{{ u.uid }}">
+                                    <div class="panel-heading {{ u.uid == user.uid ? 'current' : '' }}">
+                                        <h5 class="panel-title">
+                                            <a href="{{ path('note_archive_list_collaborator', {'id':u.uid}) }}"
+                                               class="{% for v in u.validations %}{% if v.mois == mois and v.annee == annee %}{{ v and v.isValide == true ? 'lock-user' : '' }}{% endif %}{% endfor %} no-drapp-a"
+                                               style="display: flex; position: relative">
+                                                {% if user.image is not empty %}
+                                                    <div style="background-image: url('data:image/jpeg;base64,{{ u.image }}')"
+                                                         class="rounded-circle">
+                                                    </div>
+                                                {% endif %}
+                                                <span style="margin-left: 20px; margin-top: 10px;">
+                                                    {{ u.lastname ~ " " ~ u.firstname }}
+                                                </span>
+                                            </a>
+                                        </h5>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                        {% if pager.haveToPaginate %}
+                            {{ pagerfanta(pager, 'my_template') }}
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-9">
+            <div class="ibox">
+                <div class="ibox-title">
+                    <h5>Notes {% if user %}de {{ user ? user.lastname ~ ' ' ~ user.firstname : "??" }}
+                            {% endif %}</h5>
+                    {% if user %}
+                        <div class="ibox-tools">
+                            <a href="{{ path('note_add', {'id' : user.uid}) }}">
+                                <i class="fa fa-plus"></i>
+                                Ajouter
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+                <div class="ibox-content">
+                    <div class="panel-body">
+                        <div class="panel-group" id="accordion">
+                            {% if user %}
+                                <div class="row">
+                                    {% for note in notes %}
+                                    <div class="col-lg-3">
+                                        <div class="panel panel-default">
+                                            <div class="panel-heading">{{ note.chantier.nameentreprise }}</div>
+                                            <div class="panel-body panel-body-parent" style="padding: 0">
+                                                <div class="form-group mb-5">
+                                                    <textarea id="editor_{{ note.getId }}" class="form-control" name="editor_{{ note.getId }}" style="margin-bottom: 1rem">{{ note.getText|raw }}</textarea>
+                                                </div>
+                                        
+                                                <div class="dd-menu active" id="dd-menu{{ note.getId }}">
+                                                    <ul>
+                                                        {# <li>
+                                                            <a href="javascript:void(0)" data-toggle="tooltip" data-placement="left" title="Partager">
+                                                                <span class="material-icons md-18">person_add_alt</span>
+                                                            </a>
+                                                        </li> #}
+                                                        {# <li>
+                                                            <a href="javascript:void(0)" data-toggle="tooltip" data-placement="left" title="Rappel">
+                                                                <span class="material-icons md-18">notification_add</span>
+                                                            </a>
+                                                        </li> #}
+                                                        {# <li>
+                                                            <a href="javascript:void(0)" data-id="images{{ note.getId }}" class="add-images-note" data-toggle="tooltip" data-placement="left" title="Image">
+                                                                <span class="material-icons md-18">image</span>
+                                                            </a>
+                                                        </li> #}
+                                                        <li>
+                                                            <a href="{{ path('note_make_archive',{noteId:note.getId}) }}" class="archive-note"  data-toggle="tooltip" data-placement="left" title="{{ note.status == 1 ? 'Archiver' : 'Désarchiver' }}">
+                                                                <span class="material-icons md-18 {{ note.status == 1 ? 'active' : '' }}">archive</span>
+                                                            </a>
+                                                        </li>
+                                                        <li>
+                                                            <a href="javascript:void(0)" class="delete-note" data-toggle="tooltip" data-placement="left" title="Supprimer" data-url="{{ path('note_delete',{noteId:note.getId}) }}">
+                                                                <span class="material-icons md-18">delete</span>
+                                                            </a>
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block javascript %}
+$(function () {
+
+    $('[data-toggle="tooltip"]').tooltip()
+
+
+    {% for note in notes %}
+
+        $('#editor_{{ note.getId }}').summernote('disable');
+
+    {% endfor %}
+
+    $('input[name="enable"]').change(function () {
+        if ($(this).val() == 0) {
+            $('.uactif').css('display', 'none');
+            $('.uinactif').css('display', 'block');
+        } else {
+            $('.uactif').css('display', 'block');
+            $('.uinactif').css('display', 'none');
+        }
+    });
+
+    $(".delete-note").on('click',function(e){
+        
+        e.preventDefault();
+        url = $(this).data('url');
+        Swal.fire({
+            title: 'Êtes-vous sûr ?',
+            text: "Vous ne pourrez pas revenir en arrière !",
+            icon: 'warning',
+            showCancelButton: true,
+            cancelButtonColor: '#d33',
+            cancelButtonText: 'Annuler',
+            confirmButtonColor: '#3085d6',
+            confirmButtonText: 'Oui'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                window.location.href = url;
+            }
+        });
+
+    });
+
+    $('.add-images-note').on('click',function(e){
+        e.preventDefault();
+        $(this).parents('.panel-body-parent').find('.note-insert').find('.btn').click();
+    });
+
+
+
+});
+
+{% endblock %}
+
+{% block javascript_script %}
+    <!-- Nestable List -->
+    {#<script src="{{ asset('vendor/nestable/jquery.nestable.js') }}"></script>#}
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jquery-sortablejs@latest/jquery-sortable.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10.14.1/dist/sweetalert2.all.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote.min.js"></script>
+{% endblock %}
+
+{% block css %}
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/sweetalert2@10.14.1/dist/sweetalert2.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote.min.css" rel="stylesheet">
+    <style type="text/css">
+        textarea.note_editor {
+            overflow: hidden;
+            padding: 0;
+            outline: none;
+            background-color: white;
+            resize: none;
+        }
+
+        svg.icon {
+            height:24px;
+            width:24px;
+        }
+        svg.icon circle {
+            fill:#black; 
+        }
+
+        .dd-menu {
+            font-size: 14px;
+            text-align: left;
+            box-shadow: 0 6px 12px rgba(0,0,0,0.175);
+        }
+        .dd-menu ul {
+            padding: 5px;
+            margin: 2px;
+            list-style: none;
+            position: relative;
+            width: auto;
+            display: flex;
+            justify-content: left;
+        }
+
+        .dd-menu li {
+            color: #666;
+            margin: 0;
+            list-style: none;
+            padding: 0 0.5rem;
+            height: 18px;
+        }
+        .dd-menu a{
+            color: black;
+        }
+        .dd-menu a:hover{
+            color: #337ab7;
+        }
+        .material-icons .active{
+            color: #337ab7;
+        }
+        .p-1{
+            padding: 1rem !important;
+        }
+        /* Rules for sizing the icon. */
+        .material-icons.md-18 { font-size: 18px; }
+        .material-icons.md-24 { font-size: 24px; }
+        .material-icons.md-36 { font-size: 36px; }
+        .material-icons.md-48 { font-size: 48px; }
+
+        /* Rules for using icons as black on a light background. */
+        .material-icons.md-dark { color: rgba(0, 0, 0, 0.54); }
+        .material-icons.md-dark.md-inactive { color: rgba(0, 0, 0, 0.26); }
+
+        /* Rules for using icons as white on a dark background. */
+        .material-icons.md-light { color: rgba(255, 255, 255, 1); }
+        .material-icons.md-light.md-inactive { color: rgba(255, 255, 255, 0.3); }
+        .tooltip-inner {
+            max-width: 300px;
+        }
+        .black-color{
+            color: black;
+        }
+        .mb-5{
+            margin-bottom: 5px !important;
+        }
+        .panel-heading.note-toolbar{
+            display: none;
+        }
+        .note-editor.note-frame.panel.panel-default{
+            border-top-left-radius: unset;
+            border-top: unset;
+            border-top-right-radius: unset;
+            border-left: unset;
+            border-right: unset;
+        }
+    </style>
+{% endblock %}

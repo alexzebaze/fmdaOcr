@@ -1,0 +1,42 @@
+
+<script type="text/javascript">
+
+    var idSelect = document.getElementById('rossum_document_id');
+    idSelect.onchange = (event) => {
+      var document_id = event.target.value;
+      exportDoc(parseInt(document_id));
+    };
+
+    function exportDoc(document_id){
+      $('.export.loader-container').css('display','flex');
+      var form = document.forms.namedItem("apiExport");
+      $.ajax({
+        url:form.getAttribute('action'),
+        type:"POST",
+        data: new FormData(form),
+        dataType: 'json',
+        contentType: false,
+        cache: false,
+        processData:false,
+        success:function(response) {
+          if(response.status == 200){
+            $(".preview-container").css('display', 'block');
+            $(".preview-container-content").html(response.preview);
+            toastr.success('Extraction réussite');
+          }
+          else if(response.status == 500){
+            if(response.issue == "fournisseur"){
+              $('#modalQ').modal('show');
+              $('input[name=sender_name]').val(response.sender_name);
+            }
+            toastr.error(response.message);
+          }
+          $('.export.loader-container').css('display','none');
+        },
+        error:function(){
+          toastr.error("Ooops... Quelque chose s'est mal passée");
+          $('.export.loader-container').css('display','none');
+        }
+      });
+    }
+</script>

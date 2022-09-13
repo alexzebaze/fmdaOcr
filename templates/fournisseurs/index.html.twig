@@ -1,0 +1,204 @@
+{% extends 'base.html.twig' %}
+
+{% block breadcrumb %}
+
+    <div class="row wrapper border-bottom white-bg page-heading">
+        <div class="col-lg-10">
+            <h1>Liste des fournisseurs</h1>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                    <a href="{{ path('home') }}">Accueil</a>
+                </li>
+                <li class="breadcrumb-item active">
+                    <strong>Fournisseurs</strong>
+                </li>
+            </ol>
+        </div>
+    </div>
+{% endblock %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-lg-12">
+            {% include 'flashes.html.twig' %}
+            <div class="ibox ">
+                <div class="ibox-title">
+                    <h5><span class="btn-config-colonne">
+                            <i class="fa fa-cog"></i>
+                        </span>
+                    Liste des fournisseurs</h5>
+                    <div class="ibox-tools">
+                        <a href="{{ path('fournisseur_add') }}">
+                            <i class="fa fa-plus"></i>
+                            Ajouter
+                        </a>
+                    </div>
+                    <div class="column-container">
+                        <div class="column-content">
+                            <form method="POST" action="{{path('update_toggle_column')}}">
+                                <input type="hidden" name="page" value="FOURNISSEUR">
+                                <input type="hidden" name="redirect" value="fournisseur_list">
+                                <div class="column-list">
+                                    {% for column in columns %}
+                                    <div class="column-item">
+                                        <label class="column-label">
+                                            <input class="column-check" type="checkbox" {% if columnsVisibileId|length and column.id in columnsVisibileId|keys %}checked{% endif %} name="configs[{{column.id}}]">
+                                            <span class="column-libelle">{{ tabColumns[column.cle] }}</span>
+                                        </label>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                                <br>
+                                <div class="text-center">
+                                    <button type="submit" class="btn btn-primary">Valider</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <div class="ibox-content">
+                    <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                        <tr>
+                            <th>Photo</th>
+                            {% if 'NOM' in columnsVisibileId  %}
+                            <th>Nom</th>
+                            <th>IA</th>
+                            {% endif %}
+
+                            {% if 'ADRESSE' in columnsVisibileId  %}
+                            <th>Adresse</th>
+                            {% endif %}
+
+                            {% if 'TELEPHONE1' in columnsVisibileId  %}
+                            <th>Téléphone 1</th>
+                            {% endif %}
+
+                            {% if 'EMAIL' in columnsVisibileId  %}
+                            <th>Email</th>
+                            {% endif %}
+
+                            {% if 'CODE_FOURNISSEUR' in columnsVisibileId  %}
+                            <th>Code fournisseur</th>
+                            {% endif %}
+
+                            {% if 'CODE_COMPTA' in columnsVisibileId  %}
+                            <th>Code compta</th>
+                            {% endif %}
+
+                            {% if 'MAP' in columnsVisibileId  %}
+                            <th>Map</th>
+                            {% endif %}
+
+                            <th>Action</th>
+                            <!--                <th>actions</th>-->
+                        </tr>
+                        </thead>
+                        <tbody>
+                            {% for fournisseur in pager.currentPageResults %}
+                            <tr>
+                                <td>
+                                    {% if fournisseur.logo %} 
+                                        <img class="rounded-circle" src="/uploads/logo_fournisseur/{{fournisseur.logo}}">
+                                    {% endif %}
+                                </td>
+                                {% if 'NOM' in columnsVisibileId  %}
+                                <td>                                        
+                                    {{ fournisseur.nom }}
+                                </td>
+                                <td>   
+                                    {% if fournisseur.nom2 %}       
+                                        <span style="visibility: hidden;">V</span>                              
+                                        <i class="fa fa-check" style="color: green"></i>
+                                    {% else %}
+                                        <span style="visibility: hidden;">X</span>
+                                        <i class="fa fa-times" style="color: #ef0a0a"></i>
+                                    {% endif %}
+                                </td>
+                                {% endif %}
+
+                                {% if 'ADRESSE' in columnsVisibileId  %}
+                                <td>{{ fournisseur.adresse }}<br>{{ fournisseur.cp|default('') }} {{ fournisseur.ville|default('') }}</td>
+                                {% endif %}
+
+                                {% if 'TELEPHONE1' in columnsVisibileId  %}
+                                <td>{{ fournisseur.telone }}</td>
+                                {% endif %}
+
+                                {% if 'EMAIL' in columnsVisibileId  %}
+                                <td>
+                                    {{ fournisseur.email }}
+                                </td>
+                                {% endif %}
+
+                                {% if 'CODE_FOURNISSEUR' in columnsVisibileId  %}
+                                <td>
+                                    {{ fournisseur.code }}
+                                </td>
+                                {% endif %}
+
+                                {% if 'CODE_COMPTA' in columnsVisibileId  %}
+                                <td class="text-center">{{ fournisseur.getCodeCompta ? code_compta[fournisseur.getCodeCompta] : "" }}</td>
+                                {% endif %}
+
+                                {% if 'MAP' in columnsVisibileId  %}
+                                <td>
+                                    <a target="_blank" href="#">
+                                        <i class="fas fa-map-marker-alt"></i>
+                                    </a>
+                                </td>
+                                {% endif %}
+
+                                <td>
+                                    <a href="{{ path('fournisseur_edit', {'fournisseurId':fournisseur.id}) }}"><i class="far fa-edit"></i></a>
+                                    <a onclick="return confirm('Etes-vous sur de vouloir supprimer ce fournisseur ?')"
+                                       href="{{ path('fournisseur_delete', {'fournisseurId':fournisseur.id}) }}"><i class="fas fa-trash-alt"></i></a>
+                                </td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td colspan="34">Aucun fournisseur enregistré</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+    {% if pager.haveToPaginate %}
+        {{ pagerfanta(pager, 'my_template') }}
+    {% endif %}
+    
+
+{% endblock %}
+
+{% block javascript_script %}
+    <script src="//cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/plug-ins/1.10.24/sorting/date-eu.js"></script>
+{% endblock %}
+
+{% block javascript %}
+$(document).ready( function () {
+    $('table').DataTable({
+        "language": {
+            "url": "//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/French.json"
+        },
+        "columnDefs": [
+            { type: 'date-eu', targets: 2 }
+        ],
+        order: [
+            [ 1, "asc" ]
+        ],
+        "paging":   false,
+    });
+} );
+{% endblock %}
+
+{% block css %}
+    <link rel="stylesheet" href="//cdn.datatables.net/1.10.20/css/jquery.dataTables.min.css">
+{% endblock %}

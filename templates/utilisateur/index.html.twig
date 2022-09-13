@@ -1,0 +1,394 @@
+{% extends 'base.html.twig' %}
+
+{% block breadcrumb %}
+
+    <div class="row wrapper border-bottom white-bg page-heading">
+        <div class="col-lg-10">
+            <h1>Liste des utilisateurs</h1>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                    <a href="{{ path('home') }}">Accueil</a>
+                </li>
+                <li class="breadcrumb-item active">
+                    <strong>Utilisateurs</strong>
+                </li>
+            </ol>
+        </div>
+    </div>
+{% endblock %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-lg-12">
+            {% include 'flashes.html.twig' %}
+            <ul class="nav nav-tabs" role="tablist" id="myTabs">
+                <li role="presentation" class="active"><a href="#embauche-tab" aria-controls="embauche-tab" role="tab" data-toggle="tab">Embauché</a></li>
+                <li role="presentation"  class=""><a href="#sous-traitant-tab" aria-controls="sous-traitant-tab" role="tab" data-toggle="tab">Sous traitant</a></li>
+            </ul>
+            <div class="tab-content">
+                <div role="tabpanel" class="tab-pane active" id="embauche-tab">
+                    <div class="ibox ">
+                        <div class="ibox-title" style="padding-bottom: 20px;">
+                            <h5>utilisateur embauché</h5>
+                            <div class="ibox-tools">
+                                <a href=""></a>
+                                <div class="verif-chant">
+                                    <a href="">
+                                        <label class="switch">
+                                          <input type="checkbox" id="verif">
+                                          <span class="slider round"></span>
+                                        </label>
+                                    </a>
+                                </div>
+                                <a href="{{ path('utilisateur_add') }}">
+                                    <i class="fa fa-plus"></i>
+                                    Ajouter
+                                </a>
+                            </div>
+                        </div>
+                        <div class="ibox-content">
+                            <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                <tr>
+                                    <th>Photo</th>
+                                    <th>Nom</th>
+                                    <th>Prénom</th>
+                                    <th>Fonction</th>
+                                    <th>Sous-traitant</th>
+                                    <th>En poste ?</th>
+                                    <th>Actif</th>
+                                    <th>Map</th>
+                                    <th>Action</th>
+                                    <!--                <th>actions</th>-->
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for user in pager.currentPageResults %}
+                                    <tr>
+                                        <td>
+                                            {% if user.image is empty %}
+                                                <img height="50" width="50" src="{{ image_vide }}"
+                                                     class="rounded-circle" title="{{ user.firstname }} {{ user.lastname }}"
+                                                     alt="{{ user.firstname }} {{ user.lastname }}">
+                                            {% else %}
+                                                <div style="background-image: url('data:image/jpeg;base64,{{ user.image }}')"
+                                                     class="rounded-circle">
+                                                </div>
+                                            {% endif %}
+                                        </td>
+                                        <td>{{ user.lastname }}</td>
+                                        <td>{{ user.firstname }}</td>
+                                        <td>
+                                            <span class="label label-default">
+                                            {% if user.categoryuser == 1 %}
+                                                Ouvrier
+                                            {% elseif user.categoryuser == 2 %}
+                                                Chef de chantier
+                                            {% elseif user.categoryuser == 3 %}
+                                                Apprenti
+                                            {% endif %}
+                                            </span>
+                                        </td>
+                                        {#<td>
+                                            {% if user.panier is not empty %}
+                                                {% if user.panier == 1 %}
+                                                    <span class="label label-primary">
+                                                Oui
+                                            </span>
+                                                {% else %}
+                                                    <span class="label label-danger">
+                                                Non
+                                            </span>
+                                                {% endif %}
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if user.trajet is not empty %}
+                                                {% if user.trajet == 1 %}
+                                                    <span class="label label-primary">
+                                                Oui
+                                            </span>
+                                                {% else %}
+                                                    <span class="label label-danger">
+                                                Non
+                                            </span>
+                                                {% endif %}
+                                            {% endif %}
+                                        </td>#}
+                                        <td>
+                                            {% if user.sousTraitant is not empty %}
+                                                {% if user.sousTraitant == 1 %}
+                                                    <span class="label label-primary">
+                                                Oui
+                                            </span>
+                                                {% else %}
+                                                    <span class="label label-danger">
+                                                Non
+                                            </span>
+                                                {% endif %}
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if user.poste == 1 %}
+                                                <span class="label label-primary">
+                                                En poste
+                                            </span>
+                                            {% endif %}
+                                            {% if user.poste == 2 %}
+                                                <span class="label label-warning">
+                                                En congé
+                                            </span>
+                                            {% endif %}
+                                            {% if user.poste == 3 %}
+                                                <span class="label label-danger">
+                                                En arrêt
+                                            </span>
+                                            {% endif %}
+                                        </td>
+
+                                        <td>
+                                            <a href="{{ path('utilisateur_status', {'userId': user.uid}) }}"
+                                               onclick="return confirm('Etes-vous sur de vouloir désactiver cet utilisateur ?')">
+                                                {% if user.etat == 1 %}
+                                                    <span class="label label-success">
+                                                    Actif
+                                                    </span>
+                                                {% else %}
+                                                    <span class="label label-danger">
+                                                    Inactif
+                                                    </span>
+                                                {% endif %}
+                                            </a>
+                                        </td>
+                                        <td>
+                                            <a target="_blank" href="{{ path('utilisateur_map', {id: user.uid}) }}">
+                                                <i class="fas fa-map-marker-alt"></i>
+                                            </a>
+                                        </td>
+                                        <td>
+                                            <a href="{{ path('utilisateur_edit', {'userId':user.uid}) }}"><i
+                                                        class="far fa-edit"></i></a>
+                                            <a onclick="return confirm('Etes-vous sur de vouloir supprimer cet utilisateur ?')"
+                                               href="{{ path('utilisateur_delete', {'userId':user.uid}) }}"><i
+                                                        class="fas fa-trash-alt"></i></a>
+                                        </td>
+                                    </tr>
+                                {% else %}
+                                    <tr>
+                                        <td colspan="34">Aucun chantier enregistré</td>
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+                <div role="tabpanel" class="tab-pane" id="sous-traitant-tab">
+                    <div class="ibox ">
+                        <div class="ibox-title" style="padding-bottom: 20px;">
+                            <h5>Utilisateur sous traitant</h5>
+                            <div class="ibox-tools">
+                                <a href=""></a>
+                                <div class="verif-chant">
+                                    <a href="">
+                                        <label class="switch">
+                                          <input type="checkbox" id="verif">
+                                          <span class="slider round"></span>
+                                        </label>
+                                    </a>
+                                </div>
+                                <a href="{{ path('utilisateur_add') }}">
+                                    <i class="fa fa-plus"></i>
+                                    Ajouter
+                                </a>
+                            </div>
+                        </div>
+                        <div class="ibox-content">
+                            <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                <tr>
+                                    <th>Photo</th>
+                                    <th>Nom</th>
+                                    <th>Prénom</th>
+                                    <th>Fonction</th>
+                                    <th>Sous-traitant</th>
+                                    <th>En poste ?</th>
+                                    <th>Actif</th>
+                                    <th>Map</th>
+                                    <th>Action</th>
+                                    <!--                <th>actions</th>-->
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for user in pagerST.currentPageResults %}
+                                    <tr>
+                                        <td>
+                                            {% if user.image is empty %}
+                                                <img height="50" width="50" src="{{ image_vide }}"
+                                                     class="rounded-circle" title="{{ user.firstname }} {{ user.lastname }}"
+                                                     alt="{{ user.firstname }} {{ user.lastname }}">
+                                            {% else %}
+                                                <div style="background-image: url('data:image/jpeg;base64,{{ user.image }}')"
+                                                     class="rounded-circle">
+                                                </div>
+                                            {% endif %}
+                                        </td>
+                                        <td>{{ user.lastname }}</td>
+                                        <td>{{ user.firstname }}</td>
+                                        <td>
+                                            <span class="label label-default">
+                                            {% if user.categoryuser == 1 %}
+                                                Ouvrier
+                                            {% elseif user.categoryuser == 2 %}
+                                                Chef de chantier
+                                            {% elseif user.categoryuser == 3 %}
+                                                Apprenti
+                                            {% endif %}
+                                            </span>
+                                        </td>
+                                        {#<td>
+                                            {% if user.panier is not empty %}
+                                                {% if user.panier == 1 %}
+                                                    <span class="label label-primary">
+                                                Oui
+                                            </span>
+                                                {% else %}
+                                                    <span class="label label-danger">
+                                                Non
+                                            </span>
+                                                {% endif %}
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if user.trajet is not empty %}
+                                                {% if user.trajet == 1 %}
+                                                    <span class="label label-primary">
+                                                Oui
+                                            </span>
+                                                {% else %}
+                                                    <span class="label label-danger">
+                                                Non
+                                            </span>
+                                                {% endif %}
+                                            {% endif %}
+                                        </td>#}
+                                        <td>
+                                            {% if user.sousTraitant is not empty %}
+                                                {% if user.sousTraitant == 1 %}
+                                                    <span class="label label-primary">
+                                                Oui
+                                            </span>
+                                                {% else %}
+                                                    <span class="label label-danger">
+                                                Non
+                                            </span>
+                                                {% endif %}
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if user.poste == 1 %}
+                                                <span class="label label-primary">
+                                                En poste
+                                            </span>
+                                            {% endif %}
+                                            {% if user.poste == 2 %}
+                                                <span class="label label-warning">
+                                                En congé
+                                            </span>
+                                            {% endif %}
+                                            {% if user.poste == 3 %}
+                                                <span class="label label-danger">
+                                                En arrêt
+                                            </span>
+                                            {% endif %}
+                                        </td>
+
+                                        <td>
+                                            <a href="{{ path('utilisateur_status', {'userId': user.uid}) }}"
+                                               onclick="return confirm('Etes-vous sur de vouloir désactiver cet utilisateur ?')">
+                                                {% if user.etat == 1 %}
+                                                    <span class="label label-success">
+                                                    Actif
+                                                    </span>
+                                                {% else %}
+                                                    <span class="label label-danger">
+                                                    Inactif
+                                                    </span>
+                                                {% endif %}
+                                            </a>
+                                        </td>
+                                        <td>
+                                            <a target="_blank" href="{{ path('utilisateur_map', {id: user.uid}) }}">
+                                                <i class="fas fa-map-marker-alt"></i>
+                                            </a>
+                                        </td>
+                                        <td>
+                                            <a href="{{ path('utilisateur_edit', {'userId':user.uid}) }}"><i
+                                                        class="far fa-edit"></i></a>
+                                            <a onclick="return confirm('Etes-vous sur de vouloir supprimer cet utilisateur ?')"
+                                               href="{{ path('utilisateur_delete', {'userId':user.uid}) }}"><i
+                                                        class="fas fa-trash-alt"></i></a>
+                                        </td>
+                                    </tr>
+                                {% else %}
+                                    <tr>
+                                        <td colspan="34">Aucun chantier enregistré</td>
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% if pager.haveToPaginate %}
+        {{ pagerfanta(pager, 'my_template') }}
+    {% endif %}
+
+{% endblock %}
+
+{% block javascript_script %}
+    <script src="//cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js"></script>
+{% endblock %}
+
+{% block javascript %}
+$(document).ready( function () {
+    {% if verification == 1 %}
+        $("input#verif").attr( "checked",true );
+    {% endif %}
+    $("input#verif").change(function(){
+        {% if verification == 0 %}
+           location.href="{{ path('utilisateur_list') }}";
+        {% else %}
+           location.href="{{ path('utilisateur_list') }}?verif=0";
+        {% endif %}
+    })
+
+    $('table').DataTable({
+        "language": {
+            "url": "//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/French.json"
+        },
+        "columnDefs": [
+            {"targets": [0, 7, 8], "orderable": false},
+        ],
+        "pageLength": 500,
+        "order": []
+    });
+} );
+{% endblock %}
+
+{% block css %}
+    <link rel="stylesheet" href="//cdn.datatables.net/1.10.20/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" href="{{ asset('css/style-checked.css') }}" />
+
+{% endblock %}

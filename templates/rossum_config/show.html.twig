@@ -1,0 +1,30 @@
+{% extends 'base.html.twig' %}
+
+ {{parent()}} RossumConfig{% endblock %}
+
+{% block body %}
+    <h1>RossumConfig</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ rossum_config.id }}</td>
+            </tr>
+            <tr>
+                <th>Mkey</th>
+                <td>{{ rossum_config.mkey }}</td>
+            </tr>
+            <tr>
+                <th>Value</th>
+                <td>{{ rossum_config.value }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('rossum_config_index') }}">back to list</a>
+
+    <a href="{{ path('rossum_config_edit', {'id': rossum_config.id}) }}">edit</a>
+
+    {{ include('rossum_config/_delete_form.html.twig') }}
+{% endblock %}

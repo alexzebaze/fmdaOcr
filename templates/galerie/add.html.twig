@@ -1,0 +1,42 @@
+{% extends 'base.html.twig' %}
+
+{% block breadcrumb %}
+
+    <div class="row wrapper border-bottom white-bg page-heading">
+        <div class="col-lg-10">
+            <h1>Ajouter un fichier</h1>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                    <a href="{{ path('home') }}">Accueil</a>
+                </li>
+                <li class="breadcrumb-item">
+                    <a href="{{ path('galerie_list') }}">Galerie</a>
+                </li>
+                <li class="breadcrumb-item active">
+                    <strong>Ajouter un fichier</strong>
+                </li>
+            </ol>
+        </div>
+    </div>
+{% endblock %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-12">
+            {% include 'flashes.html.twig' %}
+        </div>
+        <div class="col-lg-8">
+            <div class="ibox">
+                <div class="ibox-content">
+                    {{ include('galerie/_form.html.twig') }}
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+{% block javascript_script %}
+    <script type="text/javascript" src="https://alexcorvi.github.io/heic2any/dist/heic2any.js"></script>
+
+{% endblock %}

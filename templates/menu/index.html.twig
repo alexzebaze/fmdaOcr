@@ -1,0 +1,206 @@
+{% extends 'base_admin.html.twig' %}
+{% block css %}
+    <link rel="stylesheet" href="//cdn.datatables.net/1.10.20/css/jquery.dataTables.min.css">
+    <style type="text/css">
+        th, td{text-align: center;text-align: center;}
+        .total-bl{
+            margin: 8px 0 32px 0;
+            color: #000;
+            font-weight: 600;
+            text-align: center;
+        }
+        .check-menu{
+            width: 32px;
+            height: 36px;
+            margin: 0!important;
+            margin-left: 5px!important;
+        }
+    </style>
+{% endblock %}
+
+{% block breadcrumb %}
+    <div class="row wrapper border-bottom white-bg page-heading">
+        <div class="col-lg-10">
+            <h1>Administration Menus</h1>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                    <a href="{{ path('home') }}">Accueil</a>
+                </li>
+                <li class="breadcrumb-item active">
+                    <strong>Menus</strong>
+                </li>
+            </ol>
+        </div>
+    </div>
+
+{% endblock %}
+{% block content %}
+    <div class="row">
+        <div class="col-lg-12">
+            {% include 'flashes.html.twig' %}
+            <div class="ibox-content">
+                <div class="">
+                    <form id="entrepriseFilterForm" name="apiExport" method="POST" style="width: 306px;margin: auto;">
+                        <div class="form-group">
+                            <select class="form-control" name="entreprise" id="entreprise_filter" style="height: 50px;">
+                                <option value="" selected>--Choisir une entreprise--</option>
+                                {% for entreprise in entreprises %}
+                                   <option value="{{entreprise.id}}" {% if entreprise.id  == entreprise_id%}selected{% endif %}>{{entreprise.name}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </form>
+                </div>
+
+                <ul class="nav nav-tabs" role="tablist" id="myTabs" style="display: none;">
+                    <li role="presentation" class="active"><a href="#menu-tab" aria-controls="menu-tab" role="tab" data-toggle="tab">Menu</a></li>
+                    <li role="presentation"  class=""><a href="#entreprise-tab" aria-controls="entreprise-tab" role="tab" data-toggle="tab">Entreprise</a></li>
+                </ul>
+
+                <div class="tab-content">
+                    <div role="tabpanel" class="tab-pane active" id="menu-tab">
+                        <div class="ibox">
+                            <div class="ibox-title" style="padding-bottom: 25px;">
+                                <h5>Liste Menus</h5>
+                                
+                                <div class="ibox-tools">
+                                    <a href="{{ path('menu_new') }}" class="btn btn-primary">
+                                        <i class="fa fa-plus"></i>
+                                        Ajouter
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="ibox-content">
+                                {% include 'menu/menu_content.html.twig' %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div role="tabpanel" class="tab-pane" id="entreprise-tab">
+                        <div class="ibox ">
+                            <div class="table-responsive">
+                                <table class="table">
+                                    <thead>
+                                    <tr>
+                                        <th>Nom</th>
+                                        <th>Type</th>
+                                        <th>Email</th>
+                                        <th>Téléphone</th>
+                                        <th></th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for entreprise in entreprises %}
+                                        <tr class='text-center'>
+                                            <td>{{entreprise.name}}</td>
+                                            <td>{{entreprise.type}}</td>
+                                            <td>{{entreprise.email}}</td>
+                                            <td>{{entreprise.phone}}</td>
+                                            <td>
+                                                <a href="{{path('entreprise_edit', {'entreprise_id':entreprise.id})}}" class="btn btn-primary"><i class="fa fa-edit"></i></a>
+                                            </td>
+                                        </tr>
+                                        {% else %}
+                                        <tr>
+                                            <td colspan="10">Aucune entreprise enregistrée</td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+{% endblock %}
+
+{% block javascript_script %}
+    <script src="//cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/plug-ins/1.10.24/sorting/date-eu.js"></script>
+    <script src="https://code.jquery.com/ui/1.11.3/jquery-ui.min.js" integrity="sha256-xI/qyl9vpwWFOXz7+x/9WkG5j/SVnSw21viy8fWwbeE=" crossorigin="anonymous"></script>
+    <script type="text/javascript">
+        $( function() {
+
+            $('#modalEntreprise').modal("hide");
+            var entrepriseSelect = document.getElementById('entreprise_filter');
+            entrepriseSelect.onchange = (event) => {
+                var document_id = event.target.value;
+                $('#entrepriseFilterForm').submit();
+            };
+
+            $( "#sortable" ).sortable({
+                stop: function( event, ui ) {
+                    var menuSort = getMenuOrder();
+                    console.log(menuSort);
+                    $.ajax({
+                        url:"{{path('menu_sortable')}}",
+                        type:"GET",
+                        data: {
+                            menu_sort : menuSort,
+                        },  
+                        success:function(response) {
+                        },
+                        error:function(){
+                          toastr.error("Ooops... Quelque chose s'est mal passée");
+                        }
+                    });
+                }
+            });
+        } );
+
+        function getMenuOrder(){
+            var menuSort = [];
+             $('.group-menu-item').each(function( index ) {
+                var menuId = $(this).data('menu-id');
+                menuSort.push(menuId);                
+            })
+
+            return menuSort.join(',');
+        }
+
+        $(document).on('change', '.check-menu', function(){   
+
+            if( !"{{entreprise_id}}"){
+                toastr.error("Veuillez selectionner une entreprise");
+                return false
+            }
+            $is_selected = ( $(this).is(":checked")) ? 1 : 0;
+
+            toggleMenuEntreprise($(this).attr('data-menu-id'), $is_selected);
+        })
+
+        function toggleMenuEntreprise(menuId, is_selected){
+            $.ajax({
+                url:"{{path('menu_toggle_entrepise')}}",
+                type:"GET",
+                data: {
+                    menu_id : menuId,
+                    is_selected : is_selected,
+                    entreprise_id : "{{entreprise_id}}"
+                },  
+                success:function(response) {
+                },
+                error:function(){
+                  toastr.error("Ooops... Quelque chose s'est mal passée");
+                }
+            });
+        }
+    </script>
+{% endblock %}
+
+{% block javascript %}
+$(document).ready( function () {
+    $('table').DataTable({
+        "language": {
+            "url": "//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/French.json"
+        },
+        "pageLength": 500,
+        "order": []
+    });
+} );
+
+{% endblock %}

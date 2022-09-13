@@ -1,0 +1,952 @@
+{% extends 'base.html.twig' %}
+
+{% block breadcrumb %}
+
+    <div class="row wrapper border-bottom white-bg page-heading">
+        <div class="col-lg-10">
+            <h1>Liste des notes</h1>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                    <a href="{{ path('home') }}">Accueil</a>
+                </li>
+                <li class="breadcrumb-item active">
+                    <strong>Notes</strong>
+                </li>
+            </ol>
+        </div>
+    </div>
+{% endblock %}
+
+{% block content %}
+
+    <style type="text/css">
+        .card {
+            position: relative;
+            display: -webkit-box;
+            display: -ms-flexbox;
+            display: flex;
+            -webkit-box-orient: vertical;
+            -webkit-box-direction: normal;
+            -ms-flex-direction: column;
+            flex-direction: column;
+            min-width: 0;
+            word-wrap: break-word;
+            background-color: #fff;
+            background-clip: border-box;
+            border: 1px solid rgba(0,0,0,.125);
+            border-radius: .25rem;
+        }
+        .card-img-top {
+            width: 100%;
+            border-top-left-radius: calc(.25rem - 1px);
+            border-top-right-radius: calc(.25rem - 1px);
+        }
+        .card-body {
+            -webkit-box-flex: 1;
+            -ms-flex: 1 1 auto;
+            flex: 1 1 auto;
+            padding: 1.25rem;
+        }
+        .card-title {
+            margin-bottom: .75rem;
+        }
+        .cke_chrome {
+            margin-bottom: 1rem;
+        }
+        .custom-dropdown{
+          position: relative;
+        }
+        /* Dropdown Content (Hidden by Default) */
+        .custom-dropdown-content {
+          display: none;
+          position: absolute;
+          background-color: #f1f1f1;
+          min-width: 250px;
+          box-shadow: 0px 3px 15px 0px rgb(0 0 0 / 20%);
+          z-index: 4;
+          max-height: 102px;
+          overflow-y: auto;
+        }
+
+        .custom-dropdown-content.show {
+            display:block !important;
+        }
+
+        /* Links inside the dropdown */
+        .custom-dropdown-content a {
+          color: black;
+          padding: 5px 10px;
+          text-decoration: none;
+          display: block;
+        }
+        .custom-dropdown-content a img {
+          height: 2rem;
+          width: 2rem;
+          border-radius: 50%;
+          object-fit: cover;
+        }
+
+        /* Change color of dropdown links on hover */
+        .custom-dropdown-content a:hover {background-color: #ddd}
+        .custom-dropdown-content a.active {display: none;}
+        .custom-dropdown-content .dropdown-image-container{border-radius: 50%;background: blue;padding: 2px;display: inline-block;}
+
+        .normal-content * {
+            /*max-width: 60px;*/
+            font-size: 11px !important;
+            text-align: center;
+            max-height: 60px;
+        }
+    </style>
+    <div class="row">
+        <div class="col-lg-3">
+
+            <div class="ibox">
+                <div class="ibox-title">
+                    <h5>Liste des collaborateurs : {{ nb_ouvriers }}</h5>
+                </div>
+                <div class="ibox-content">
+                    <div class="align-center">
+                        <input type="radio" name="enable" id="actif" checked value="1"> <label class="filter-actif"
+                                                                                               for="actif">Actif</label>
+                        <input type="radio" name="enable" id="inactif" value="0"> <label for="inactif">Inactif</label>
+                    </div>
+                    <div class="panel-body" id="nestable2">
+                        <div class="panel-group" id="accordion">
+                            {% for u in pager.currentPageResults %}
+                                <div class="panel panel-default {{ u.etat == 1 ? 'uactif' : 'uinactif' }}"
+                                     style="{{ u.etat == 0 ? 'display:none' : '' }}" data-id="{{ u.uid }}">
+                                    <div class="panel-heading {{ u.uid == user.uid ? 'current' : '' }}">
+                                        <h5 class="panel-title">
+                                            <a href="{{ path('note_list_collaborator', {'id':u.uid}) }}"
+                                               class="{% for v in u.validations %}{% if v.mois == mois and v.annee == annee %}{{ v and v.isValide == true ? 'lock-user' : '' }}{% endif %}{% endfor %} no-drapp-a"
+                                               style="display: flex; position: relative">
+                                                {% if user.image is not empty %}
+                                                    <div style="background-image: url('data:image/jpeg;base64,{{ u.image }}')"
+                                                         class="rounded-circle">
+                                                    </div>
+                                                {% endif %}
+                                                <span style="margin-left: 20px; margin-top: 10px;">
+                                                    {{ u.lastname ~ " " ~ u.firstname }}
+                                                </span>
+                                            </a>
+                                        </h5>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                        {% if pager.haveToPaginate %}
+                            {{ pagerfanta(pager, 'my_template') }}
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-9">
+            <div class="ibox">
+                <div class="ibox-title">
+                    <h5>Notes {% if user %}de {{ user ? user.lastname ~ ' ' ~ user.firstname : "??" }}
+                            {% endif %}</h5>
+                    {% if user %}
+                        <div class="ibox-tools">
+                            <a href="{{ path('note_add', {'id' : user.uid}) }}">
+                                <i class="fa fa-plus"></i>
+                                Ajouter
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+                <style type="text/css">
+                    .list-ouvrier{
+                        margin: 0;
+                    }
+
+                    .list-ouvrier .avatar .rounded-img {
+                        border-radius: 50%;
+                        position: relative;
+                        left: -5px;
+                        margin-left: -23px;
+                        z-index: 1;
+                        width: 40px;
+                        height: 40px;
+                        object-fit: cover;
+                        transition: easy 0.4s all;
+                    }
+                    .list-ouvrier {
+                      /*direction: rtl;  /* This is to get the stack with left on top */
+                      text-align: left;  /* Now need to explitly align left */
+                      padding-left: 25px;  /* Same value as the negative margin */
+                      padding-bottom: 1rem;
+                      margin-top: 0.5em;
+                    }
+                </style>
+                <div class="ibox-content">
+                    <div class="panel-body">
+                        <div class="panel-group" id="accordion">
+                            {% if user %}
+                                <div class="row kee-row">
+                                    {% for note in notes %}
+                                    <div class="keep-note" id="keep-note-{{note.id}}">
+                                        <div target="#keep-note-{{note.id}}" class="keep-title">{{ note.chantier.nameentreprise }}</div>
+                                        <ul class="list-ouvrier list-inline" id="list-ouvrier-{{note.id}}" target="#keep-note-{{note.id}}">
+                                            <li class="avatar">
+                                                <img src="{{ note.user.image is empty ? image_vide : "data:image/jpeg;base64,"~note.user.image }}"
+                                                         class="rounded-img">
+                                            </li>
+                                            {% for partageNotes in note.getPartageNotes %}
+                                            <li class="avatar" data-user-id="{{ partageNotes.user.uid }}">
+                                                <img src="{{ partageNotes.user.image is empty ? image_vide : "data:image/jpeg;base64,"~partageNotes.user.image }}"
+                                                         class="rounded-img">
+                                            </li>
+                                            {% endfor %}
+                                        </ul>
+                                        <div class="keep-content" target="#keep-note-{{note.id}}">
+                                            <div class="normal-content">
+                                            {{ note.getText|raw }}
+                                                {# <iframe src="{{path('show_frame',{noteId:note.id})}}"></iframe> #}
+                                            </div>
+                                            <div class="modal-content">
+                                                <textarea class="editor" id="editor_{{ note.id }}" name="editor-{{note.id}}">{{ note.getText }}</textarea>
+                                            </div>
+                                        </div>
+                                        <div class="keep-footer">
+                                            <ul>
+                                                <li>
+                                                    <div data-toggle="tooltip" data-placement="left" title="Partager">
+                                                        <a href="javascript:void(0)" data-toggle="modal" data-target="#sharedModal" class="person_add_share" data-users_ids="{{ note.getUserInSharing }}" data-note="{{ note.id }}" data-user-id="{{ note.user.uid }}">
+                                                            <span class="material-icons md-18">person_add_alt</span>
+                                                        </a>  
+                                                    </div>
+                                                    
+                                                </li>
+                                                <li>
+                                                    <a href="javascript:void(0)" data-toggle="tooltip" data-placement="left" title="Rappel">
+                                                        <span class="material-icons md-18">notification_add</span>
+                                                    </a>
+                                                </li>
+                                               {#  <li>
+                                                    <a href="javascript:void(0)" data-id="images{{ note.getId }}" class="add-images-note" data-toggle="tooltip" data-placement="left" title="Image">
+                                                        <span class="material-icons md-18">image</span>
+                                                    </a>
+                                                </li> #}
+                                                <li>
+                                                    <a href="{{ path('note_make_archive',{noteId:note.getId}) }}" class="archive-note" data-toggle="tooltip" data-placement="left" title="{{ note.status == 1 ? 'Archiver' : 'Désarchiver' }}">
+                                                        <span class="material-icons md-18 {{ note.status == 1 ? 'active' : '' }}">archive</span>
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a href="javascript:void(0)" class="delete-note" data-toggle="tooltip" data-placement="left" title="Supprimer" data-url="{{ path('note_delete',{noteId:note.getId}) }}">
+                                                        <span class="material-icons md-18">delete</span>
+                                                    </a>
+                                                </li>
+                                                <li class="close-button">
+                                                    <button onclick="$('#keep-note-{{note.id}}').removeClass('active')"  class="close-note" data-toggle="tooltip" data-placement="left" title="Fermer le box" >
+                                                        FERMER
+                                                    </button>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+                                    <style type="text/css">
+                                        .keep-note.active {
+                                            width: 60%;
+                                            display: block;
+                                            position: absolute;
+                                            z-index: 100;
+                                            margin-left: 15%;
+                                            top: 0;
+                                        }
+                                        .modal-content .cke_inner .cke_contents iframe{
+                                            height: 90% !important
+                                        }
+                                        .keep-note.active .keep-footer {
+                                            opacity: 1;
+                                        }
+                                        .keep-note.active .modal-content{
+                                            display: block;
+                                        }
+                                        .keep-note.active .normal-content{
+                                            display: none;
+                                        }
+                                        .keep-note.active  .keep-footer ul li.close-button{
+                                            display: inline;
+                                        }
+                                        button.close-note {
+                                            color: rgba(0,0,0,0.87);
+                                            font-family: 'Google Sans',Roboto,Arial,sans-serif;
+                                            font-size: 13px;
+                                            font-weight: 500;
+                                            line-height: 2.25rem;
+                                            border-radius: 4px;
+                                            background: none;
+                                            border: none;
+                                        }
+                                        .modal-content{
+                                            display: none;
+                                            background-clip: padding-box;
+                                            background-color: #FFFFFF;
+                                            border-radius: 4px;
+                                            box-shadow: none;
+                                            outline: 0 none;
+                                            position: relative;
+                                            border: none;
+                                        }
+                                        .normal-content {
+                                            max-height: 200px;
+                                            overflow: hidden;
+                                            margin-bottom: 40px;
+                                        }
+                                        .row.kee-row {
+                                            display: inline-block;
+                                        }
+                                        .keep-note {
+                                            background-color: #fff;
+                                            border: 1px solid #e0e0e0;
+                                            box-sizing: border-box;
+                                            position: relative;
+                                            border-radius: 8px;
+                                            transition: .3s ease-in all;
+                                            padding-top: 12px;
+                                            padding-left: 16px;
+                                            padding-right: 16px;
+                                            font-family: 'Google Sans',Roboto,Arial,sans-serif;
+                                            width: 240px;
+                                            min-height: 125px;
+                                            overflow: visible;
+                                            display: inline-grid;
+                                            margin-right: 10px;
+                                            margin-bottom: 20px;
+                                        }
+
+                                        .keep-note:hover{
+                                            box-shadow: 0 1px 2px 0 rgb(60 64 67 / 30%), 0 1px 3px 1px rgb(60 64 67 / 15%);
+                                        }
+                                        .keep-note:hover .keep-footer{
+                                            opacity: 1;
+                                        }
+                                        .modal-content .cke_top {
+                                            background: none;
+                                            border: none;
+                                        }
+                                        .modal-content .cke_bottom{
+                                            display: none;
+                                        }
+                                        .modal-content .cke_chrome {
+                                            border: none;
+                                        }
+                                        .keep-title {
+                                            letter-spacing: .005em;
+                                            font-size: 15px;
+                                            font-weight: 700;
+                                        }
+                                        .keep-content {
+                                            font-size: 15px;
+                                            font-weight: 400;
+                                            letter-spacing: 0;
+                                            line-height: 20px;
+                                            margin-bottom: 20px;
+                                        }
+                                        .keep-footer ul {
+                                            padding-left: 0;
+                                            list-style: none;
+                                            display: flex;
+                                            justify-content: space-between;
+                                            color: #202124;
+                                        }
+                                        .keep-footer ul {
+                                            color: #202124;
+                                        }   
+                                        .keep-footer ul li a {
+                                            color: #202124;
+                                        }
+                                        .keep-footer ul li.close-button{
+                                            display: none;
+                                        }
+                                        .keep-footer {
+                                            opacity: 0;
+                                            position: absolute;
+                                            width: 90%;
+                                            bottom: 0;
+                                            transition: .4s ease-in opacity;
+                                            margin-left: 5%;
+                                        }
+                                    </style>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <style type="text/css">
+        #sharedModal .modal-content{
+            display: block;
+        }
+        .container-user-share{
+            overflow-x: hidden;
+            overflow-y: auto;
+            padding: 10px 0;
+        }
+
+        .container-user-share .user-selected-list{
+            font-size: 13px;
+        }
+
+        .container-user-share .user-row{
+            -webkit-align-items: center;
+            align-items: center;
+            display: -webkit-box;
+            display: -webkit-flex;
+            display: flex;
+            padding: 5px;
+            background-color: #f3f1f1;
+            margin: 1rem 0;
+            color: #202021;
+            transition: background-color 0.2s ease-in;
+        }
+        .container-user-share .user-row:hover{
+            cursor: pointer;
+            background-color: rgb(6 118 202 / 80%);
+            color: white;
+        }
+
+        .container-user-share .user-row:hover .email{
+            color: white;
+        }
+
+        .container-user-share .user-row.active, .container-user-share .user-row.first{
+            cursor: pointer;
+            background-color: rgb(6 118 202 / 80%);
+            color: white;
+        }
+        .container-user-share .user-row.first{
+            cursor: not-allowed;
+        }
+        .container-user-share .user-row.active .email, .container-user-share .user-row.first .email{
+            color: white;
+        }
+
+        .container-user-share .image-container{
+            border: 2px solid #fff;
+            -webkit-box-sizing: border-box;
+            box-sizing: border-box;
+            -webkit-box-shadow: 0 0px 0px 2px rgb(6 118 202 / 80%);
+            box-shadow: 0 0px 0px 2px rgb(6 118 202 / 80%);
+            -webkit-border-radius: 50%;
+            border-radius: 50%;
+            height: 40px;
+            width: 40px;
+            overflow: hidden;
+        }
+        .container-user-share .image-background{
+            background-size: 100%;
+            background-position: center;
+            background-repeat: no-repeat;
+            height: 100%;
+            width: 100%;
+        }
+        .container-user-share .user-name-container{
+            -webkit-box-flex: 1;
+            -webkit-flex: 1 0 auto;
+            flex: 1 0 auto;
+            margin: 0 13px;
+        }
+        .container-user-share .email{
+            color: #202123;
+        }
+        .container-user-share .long-name{
+            font-weight: 700;
+        }
+        .container-user-share .additionnal{
+            font-style: italic;
+            margin-left: 5px;
+        }
+        .container-user-share .action-button{
+            cursor: pointer;
+            display: inline-block;
+            outline: none!important;
+            background-position: center;
+            background-repeat: no-repeat;
+            -webkit-background-size: 18px 18px;
+            background-size: 18px 18px;
+            -webkit-border-radius: 50%;
+            border-radius: 50%;
+            border: 1px solid transparent;
+            height: 24px;
+            opacity: .54;
+            width: 24px;
+        }
+        .container-user-share .action-button.add-button{
+            background-image: url(data:image/svg+xml;base64,PHN2ZyBoZWlnaHQ9IjE4cHgiIHdpZHRoPSIxOHB4IiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxOCAxOCIgZmlsbD0iIzAwMDAwMCI+CiA8cGF0aCBkPSJtMCAwaDE4djE4aC0xOHoiIGZpbGw9Im5vbmUiLz4KIDxwYXRoIGQ9Im02LjYxIDExLjg5bC0zLjExLTMuMTEtMS4wNiAxLjA2IDQuMTcgNC4xNiA4Ljk1LTguOTUtMS4wNi0xLjA1eiIvPgo8L3N2Zz4K);
+        }
+        .container-user-share .action-button.delete-button {
+            
+            background-image: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSIjMDAwIj4KICA8cGF0aCBkPSJNMTkgNi40MUwxNy41OSA1IDEyIDEwLjU5IDYuNDEgNSA1IDYuNDEgMTAuNTkgMTIgNSAxNy41OSA2LjQxIDE5IDEyIDEzLjQxIDE3LjU5IDE5IDE5IDE3LjU5IDEzLjQxIDEyIDE5IDYuNDF6Ii8+Cjwvc3ZnPgo=);
+        }
+        .container-user-share .action-button:hover {
+            opacity: .87;
+            background-color: rgba(95,99,104,0.157);
+        }
+            
+        .select-user-container{
+            -webkit-align-items: center;
+            align-items: center;
+            display: -webkit-box;
+            display: -webkit-flex;
+            display: flex;
+            padding: 5px;
+            position: relative;
+        }
+        .select-image-container {
+            border: 1px solid rgba(0,0,0,0.6);
+            -webkit-box-sizing: border-box;
+            box-sizing: border-box;
+            -webkit-border-radius: 50%;
+            border-radius: 50%;
+            height: 40px;
+            width: 40px;
+        }
+        .select-image{
+            background: url(data:image/svg+xml;base64,PHN2ZyBoZWlnaHQ9IjE4cHgiIHdpZHRoPSIxOHB4IiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxOCAxOCIgZmlsbD0iIzAwMDAwMCI+CiA8cGF0aCBkPSJtMTAgOGMxLjY2IDAgMi45OS0xLjM0IDIuOTktM3MtMS4zMy0zLTIuOTktMy0zIDEuMzQtMyAzIDEuMzQgMyAzIDN6bS02IDJ2LTJoMnYtMmgtMnYtMmgtMnYyaC0ydjJoMnYyaDJ6bTYgMGMtMi4zMyAwLTcgMS4xNy03IDMuNXYyLjVoMTR2LTIuNWMwLTIuMzMtNC42Ny0zLjUtNy0zLjV6Ii8+CiA8cGF0aCBkPSJtMCAwaDE4djE4aC0xOHoiIGZpbGw9Im5vbmUiLz4KPC9zdmc+Cg==) no-repeat center center;
+            -webkit-background-size: 18px 24px;
+            background-size: 18px 24px;
+            height: 100%;
+            opacity: .5;
+            width: 100%;
+        }
+    </style>
+    <!-- Modal -->
+    <div class="modal fade" id="sharedModal" tabindex="-1" role="dialog" aria-labelledby="sharedModalLabel">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title" id="sharedModalLabel">Collaborateurs</h4>
+          </div>
+          <div class="modal-body">
+            
+            <div class="container-user-share">
+                <div class="user-selected-list">
+                    {% for user_item in users %}
+                    <div class="user-row" data-id="{{ user_item.uid }}" data-src="{{ user_item.image is empty ? image_vide : "data:image/jpeg;base64,"~user_item.image }}">
+                        <div class="image-container">
+                            <div class="image-background" style="background-image: url({{ user_item.image is empty ? image_vide : "data:image/jpeg;base64,"~user_item.image }});"></div>
+                        </div>
+                        <div class="user-name-container">
+                            <div class="user-complete">
+                                <span class="long-name">{{ user_item.lastname }} {{ user_item.firstname }}</span>
+                                <span class="additionnal" style="display: none;">(Propriétaire)</span>
+                            </div>
+                            <div class="email">{{ user_item.email }}</div>
+                        </div>
+                        {# <div role="button" data-toggle="tooltip" data-placement="bottom" title="Ajouter" class="action-button add-button" style="user-select: none;" data-id="{{ user_item.uid }}"></div> #}
+                    </div>
+                    {% endfor %}
+                </div>
+                {# <div class="select-user-container custom-dropdown">
+                    <div class="select-image-container custom-dropdown-trigger">
+                        <div class="select-image"></div>
+                    </div>
+                    <!-- FORM ADD ITEMS BUTTON -->
+                    <div class="custom-dropdown-content">
+                    {% for user_item in users %}
+                        <a href="javascript:void(0)" data-id="{{ user.uid }}" class="add-to-sharing">
+                            <div class="dropdown-image-container">
+                                {% if user_item.image is not empty %}
+                                <img src="data:image/jpeg;base64,{{ user_item.image }}" class="rounded-circle" title="{{ user_item.firstname }} {{ user_item.lastname }}" alt="{{ user_item.firstname }} {{ user_item.lastname }}">
+                                {% else %}
+                                <img src="{{ image_vide }}" class="rounded-circle" title="{{ user_item.firstname }} {{ user_item.lastname }}" alt="{{ user_item.firstname }} {{ user_item.lastname }}">
+                                {% endif %}
+                            </div>
+                            {{ user_item.firstname }} {{ user_item.lastname }}
+                        </a>
+                    {% endfor %}
+                    </div>
+                    <!-- /FORM ADD ITEMS BUTTON --> 
+                </div> #}
+            </div>
+
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Annuler</button>
+            <button type="button" class="btn btn-primary" id="saveSharing" data-url="{{ path('note_add_user_in_share') }}">Enregistrer</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+{% endblock %}
+
+{% block js_import %}
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jquery-sortablejs@latest/jquery-sortable.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@10.14.1/dist/sweetalert2.all.min.js"></script>
+<script src="https://cdn.ckeditor.com/4.16.0/standard-all/ckeditor.js"></script>
+{% endblock %}
+
+{% block javascript %}
+$(function () {
+
+    CKEDITOR.addCss('figure[class*=easyimage-gradient]::before { content: ""; position: absolute; top: 0; bottom: 0; left: 0; right: 0; }' +
+          'figure[class*=easyimage-gradient] figcaption { position: relative; z-index: 2; }' +
+          '.easyimage-gradient-1::before { background-image: linear-gradient( 135deg, rgba( 115, 110, 254, 0 ) 0%, rgba( 66, 174, 234, .72 ) 100% ); }' +
+          '.easyimage-gradient-2::before { background-image: linear-gradient( 135deg, rgba( 115, 110, 254, 0 ) 0%, rgba( 228, 66, 234, .72 ) 100% ); }');
+    $('.editor').each(function(e){
+        CKEDITOR.replace(this, {
+          extraPlugins: 'easyimage',
+          removePlugins: 'image',
+          removeDialogTabs: 'link:advanced',
+          toolbar: [
+            // {
+            //   name: 'document',
+            //   items: ['Undo', 'Redo']
+            // },
+            {
+              name: 'styles',
+              items: ['Format']
+            },
+            {
+              name: 'basicstyles',
+              items: ['Bold', 'Italic', 'Strike']
+            },
+            {
+              name: 'paragraph',
+              items: ['NumberedList', 'BulletedList']
+            },
+            {
+              name: 'links',
+              items: ['Link', 'Unlink']
+            },
+            {
+              name: 'insert',
+              items: ['EasyImageUpload']
+            }
+          ],
+          height: 630,
+          cloudServices_uploadUrl: '{{path('note_save_ck_image')}}',
+          // Note: this is a token endpoint to be used for CKEditor 4 samples only. Images uploaded using this token may be deleted automatically at any moment.
+          // To create your own token URL please visit https://ckeditor.com/ckeditor-cloud-services/.
+          cloudServices_tokenUrl: '{{path('note_save_ck_image_token')}}',
+          easyimage_styles: {
+            gradient1: {
+              group: 'easyimage-gradients',
+              attributes: {
+                'class': 'easyimage-gradient-1'
+              },
+              label: 'Blue Gradient',
+              icon: 'https://ckeditor.com/docs/ckeditor4/4.16.0/examples/assets/easyimage/icons/gradient1.png',
+              iconHiDpi: 'https://ckeditor.com/docs/ckeditor4/4.16.0/examples/assets/easyimage/icons/hidpi/gradient1.png'
+            },
+            gradient2: {
+              group: 'easyimage-gradients',
+              attributes: {
+                'class': 'easyimage-gradient-2'
+              },
+              label: 'Pink Gradient',
+              icon: 'https://ckeditor.com/docs/ckeditor4/4.16.0/examples/assets/easyimage/icons/gradient2.png',
+              iconHiDpi: 'https://ckeditor.com/docs/ckeditor4/4.16.0/examples/assets/easyimage/icons/hidpi/gradient2.png'
+            },
+            noGradient: {
+              group: 'easyimage-gradients',
+              attributes: {
+                'class': 'easyimage-no-gradient'
+              },
+              label: 'No Gradient',
+              icon: 'https://ckeditor.com/docs/ckeditor4/4.16.0/examples/assets/easyimage/icons/nogradient.png',
+              iconHiDpi: 'https://ckeditor.com/docs/ckeditor4/4.16.0/examples/assets/easyimage/icons/hidpi/nogradient.png'
+            }
+          },
+          easyimage_toolbar: [
+            'EasyImageFull',
+            'EasyImageSide',
+            // 'EasyImageGradient1',
+            // 'EasyImageGradient2',
+            // 'EasyImageNoGradient',
+            'EasyImageAlt'
+          ]
+        });
+    });
+    
+    $(document).on("click",".keep-note .keep-content,.keep-note .keep-title, .keep-note .list-ouvrier", function(){
+        var target = $(this).attr('target');
+        var element = $(target);
+        if(element.hasClass('active')){
+
+        }else{
+            element.addClass('active');
+        }
+    });
+
+    {% for note in notes %}
+        CKEDITOR.instances['editor_{{ note.id }}'].on('change', function() { 
+            $.ajax({
+                url:"{{ path('note_edit',{noteId:note.id}) }}",
+                method:'post',
+                data:{
+                    note: {text:CKEDITOR.instances['editor_{{ note.id }}'].getData(),chantier:{{ note.chantier.chantierId }}} }
+            }).done(
+                function(){
+                    $('#editor_{{ note.id }}').val(CKEDITOR.instances['editor_{{ note.id }}'].getData());
+                    $("#keep-note-{{note.id}} .normal-content").html(CKEDITOR.instances['editor_{{ note.id }}'].getData());
+                }
+            );
+        });
+    {% endfor %}
+
+    var note_id = null;
+    var users_ids = null;
+
+    $(document).on('click','.person_add_share', function(e){
+        note_id = $(this).data('note');
+        user_id = $(this).data('user-id');
+        users_ids = (""+$(this).data('users_ids')+"").split(',');
+        $(".user-row").show();
+        $(".user-row.additionnal").hide();
+        $(".user-row.first").remove();
+        {# $('.user-row .action-button').show(); #}
+        $(".user-row").each(function() {
+            if($(this).data('id') == user_id){
+                $(this).hide();
+                $(".user-selected-list").prepend($(this).clone());
+                $('.user-row').first().show().addClass('first').find('.additionnal').show();
+                {# $('.user-row.first').find('.action-button').hide(); #}
+                return;
+            }
+
+            if(users_ids.includes(""+$(this).data('id')+"")){
+                {# $(this).find('.action-button').tooltip('hide').attr('data-original-title', 'Supprimer'); #}
+                {# $(this).find('.action-button').removeClass('add-button'); #}
+                {# $(this).find('.action-button').addClass('delete-button'); #}
+                $(this).addClass('active');
+            }
+            else{
+                {# $(this).find('.action-button').tooltip('hide').attr('data-original-title', 'Ajouter');
+                $(this).find('.action-button').removeClass('delete-button');
+                $(this).find('.action-button').addClass('add-button'); #}
+                $(this).removeClass('active');
+            }
+            {# $('[data-toggle="tooltip"]').tooltip() #}
+        });
+    });
+
+    $(document).on('click','.user-row', function(e){
+        if($(this).hasClass('.first')) return;
+
+        if(!$(this).hasClass('active')){
+            users_ids.push(""+$(this).data('id')+"");
+            $(this).addClass('active');
+        }
+        else{
+            var index = users_ids.indexOf(""+$(this).data('id')+"");
+            if (index > -1) {
+              users_ids.splice(index, 1);
+            }
+            $(this).removeClass('active');
+        }
+        
+    });
+
+    {# $(document).on('click','.action-button.add-button', function(e){
+        users_ids.push($(this).data('id'));
+        $(this).removeClass('add-button');
+        $(this).addClass('delete-button');
+        $(this).tooltip('hide').attr('data-original-title', 'Supprimer');
+    });
+
+    $(document).on('click','.action-button.delete-button', function(e){
+        var index = users_ids.indexOf(""+$(this).data('id')+"");
+        if (index > -1) {
+          users_ids.splice(index, 1);
+        }
+        $(this).removeClass('delete-button');
+        $(this).addClass('add-button');
+        $(this).tooltip('hide').attr('data-original-title', 'Ajouter');
+    }); #}
+
+    $(document).on('click','#saveSharing',function(){
+        url = $(this).data('url');
+        $.ajax({
+            url:url,
+            method:"post",
+            data:{users_ids:users_ids,note_id:note_id},
+            success:function(response){
+                if(response.status=="success"){
+                    $('#sharedModal').modal('hide');
+                    $('.person_add_share[data-note="'+note_id+'"]').data('users_ids',users_ids.join(','));
+                    toastr.success(response.message);
+
+                    $(".user-row").each(function() {
+                        if($(this).data('id') != user_id && users_ids.includes(""+$(this).data('id')+"")){
+                            
+                            if($("#list-ouvrier-"+note_id).find(".avatar[data-user-id='"+$(this).data('id')+"']").length==0){
+                                $("#list-ouvrier-"+note_id).append(`<li class="avatar" data-user-id="`+$(this).data('id')+`">
+                                                <img src="`+$(this).data('src')+`"
+                                                         class="rounded-img">
+                                            </li>`);
+                            }
+                        }
+                        else if($(this).data('id') != user_id){
+                            $("#list-ouvrier-"+note_id).find(".avatar[data-user-id='"+$(this).data('id')+"']").remove();
+                        }
+                    });
+
+                }
+                else{
+                    toastr.error(response.message);
+                }
+            },
+            error:function(){
+                toastr.error("Une erreur inconnue s'est produite");
+            }
+        });
+
+    });
+
+    $('[data-toggle="tooltip"]').tooltip()
+
+    $('input[name="enable"]').change(function () {
+        if ($(this).val() == 0) {
+            $('.uactif').css('display', 'none');
+            $('.uinactif').css('display', 'block');
+        } else {
+            $('.uactif').css('display', 'block');
+            $('.uinactif').css('display', 'none');
+        }
+    });
+
+    $(".delete-note").on('click',function(e){
+        
+        e.preventDefault();
+        url = $(this).data('url');
+        Swal.fire({
+            title: 'Êtes-vous sûr ?',
+            text: "Vous ne pourrez pas revenir en arrière !",
+            icon: 'warning',
+            showCancelButton: true,
+            cancelButtonColor: '#d33',
+            cancelButtonText: 'Annuler',
+            confirmButtonColor: '#3085d6',
+            confirmButtonText: 'Oui'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                window.location.href = url;
+            }
+        });
+
+    });
+
+    $('.add-images-note').on('click',function(e){
+        e.preventDefault();
+        $(this).parents('.panel-body-parent').find('.note-insert').find('.btn').click();
+    });
+
+    $(document).on('click','.custom-dropdown-trigger',function(e){
+        e.preventDefault();
+        $(this).nextAll().toggleClass('show');
+    });
+
+    $('body').on('click', '*:not( .custom-dropdown, .custom-dropdown-trigger )', function() {
+        $(".custom-dropdown-content").removeClass('show');
+    });
+
+});
+
+{% endblock %}
+
+{% block javascript_script %}
+    <script type="text/javascript">
+    $(document).ready(function(){
+    })
+    </script>
+{% endblock %}
+
+{% block css %}
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/sweetalert2@10.14.1/dist/sweetalert2.min.css">
+    <style type="text/css">
+        textarea.note_editor {
+            overflow: hidden;
+            padding: 0;
+            outline: none;
+            background-color: white;
+            resize: none;
+        }
+
+        svg.icon {
+            height:24px;
+            width:24px;
+        }
+        svg.icon circle {
+            fill:#black; 
+        }
+
+        .dd-menu {
+            font-size: 14px;
+            text-align: left;
+            box-shadow: 0 6px 12px rgba(0,0,0,0.175);
+        }
+        .dd-menu ul {
+            padding: 5px;
+            margin: 2px;
+            list-style: none;
+            position: relative;
+            width: auto;
+            display: flex;
+            justify-content: left;
+        }
+
+        .dd-menu li {
+            color: #666;
+            margin: 0;
+            list-style: none;
+            padding: 0 0.5rem;
+            height: 18px;
+        }
+        .dd-menu a{
+            color: black;
+        }
+        .dd-menu a:hover{
+            color: #337ab7;
+        }
+        .material-icons .active{
+            color: #337ab7;
+        }
+        .p-1{
+            padding: 1rem !important;
+        }
+        /* Rules for sizing the icon. */
+        .material-icons.md-18 { font-size: 18px; }
+        .material-icons.md-24 { font-size: 24px; }
+        .material-icons.md-36 { font-size: 36px; }
+        .material-icons.md-48 { font-size: 48px; }
+
+        /* Rules for using icons as black on a light background. */
+        .material-icons.md-dark { color: rgba(0, 0, 0, 0.54); }
+        .material-icons.md-dark.md-inactive { color: rgba(0, 0, 0, 0.26); }
+
+        /* Rules for using icons as white on a dark background. */
+        .material-icons.md-light { color: rgba(255, 255, 255, 1); }
+        .material-icons.md-light.md-inactive { color: rgba(255, 255, 255, 0.3); }
+        .tooltip-inner {
+            max-width: 300px;
+        }
+        .black-color{
+            color: black;
+        }
+        .mb-5{
+            margin-bottom: 5px !important;
+        }
+        .panel-heading.note-toolbar{
+            display: none;
+        }
+        .note-editor.note-frame.panel.panel-default{
+            border-top-left-radius: unset;
+            border-top: unset;
+            border-top-right-radius: unset;
+            border-left: unset;
+            border-right: unset;
+        }
+    </style>
+{% endblock %}

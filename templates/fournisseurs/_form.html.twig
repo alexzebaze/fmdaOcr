@@ -1,0 +1,169 @@
+
+<style type="text/css">
+    #fournisseurs_logo{display: none;}
+    .img-load{display: block;margin: auto;max-width: 201px;}
+    label[for=fournisseurs_logo]{cursor: pointer;}
+    #fournisseurs_typeBonLivraison{
+        margin: 0;
+        margin-right: 4px;
+        width: 17px;
+        height: 20px;
+    }
+</style>
+{{ form_start(form) }}
+<div class="col-lg-8">
+    <div class="ibox">
+        <div class="ibox-content">
+            <div class="row">
+                <div class="col-lg-6 form-group">
+                    {{ form_label(form.nom, 'Nom de la société') }}
+                    {{ form_row(form.nom) }}
+                </div>
+                <div class="col-lg-6 form-group">
+                    {{ form_label(form.nom2, 'Autre nom') }}
+                    {{ form_row(form.nom2) }}
+                </div>
+                <div class="col-lg-6 form-group">
+                    {{ form_label(form.totalConfig, 'Text Total HT') }}
+                    {{ form_row(form.totalConfig) }}
+                </div>
+                <div class="col-lg-6 form-group">
+                    {{ form_label(form.totalConfigTtc, 'Text Total TTC') }}
+                    {{ form_row(form.totalConfigTtc) }}
+                </div>
+                <div class="col-lg-6 form-group">
+                    {{ form_label(form.adresse, 'Adresse de livraison') }}
+                    {{ form_row(form.adresse) }}
+                </div>
+                <div class="col-lg-3 form-group">
+                    {{ form_label(form.cp, 'Code Postal') }}
+                    {{ form_row(form.cp) }}
+                </div>
+                <div class="col-lg-3 form-group">
+                    {{ form_label(form.ville, 'Ville') }}
+                    {{ form_row(form.ville) }}
+                </div>
+                <div class="col-lg-6 form-group">
+                    {{ form_label(form.pays, 'Pays') }}
+                    {{ form_row(form.pays) }}
+                </div>
+                <div class="col-lg-6 form-group">
+                    {{ form_label(form.telecopie, 'Télécopie') }}
+                    {{ form_row(form.telecopie) }}
+                </div>
+                <div class="col-lg-6 form-group">
+                    {{ form_label(form.telone, 'Téléphone 1') }}
+                    {{ form_row(form.telone) }}
+                </div>
+                <div class="col-lg-6 form-group">
+                    {{ form_label(form.teltwo, 'Téléphone 2') }}
+                    {{ form_row(form.teltwo) }}
+                </div>
+                <div class="col-lg-12 form-group">
+                    {{ form_label(form.diversone, 'Divers 1') }}
+                    {{ form_row(form.diversone) }}
+                </div>
+                <div class="col-lg-12 form-group">
+                    {{ form_label(form.diverstwo, 'Divers 2') }}
+                    {{ form_row(form.diverstwo) }}
+                </div>
+                <div class="col-lg-6 form-group">
+                    {{ form_label(form.email, 'E-mail') }}
+                    {{ form_row(form.email) }}
+                </div>
+                <div class="col-lg-6 form-group">
+                    {{ form_label(form.emailFactureElectronique, 'Email Facture Electronique') }}
+                    {{ form_row(form.emailFactureElectronique) }}
+                </div>
+                <div class="col-lg-6 form-group">
+                    {{ form_label(form.emailBl, 'Email Bon de livraison') }}
+                    {{ form_row(form.emailBl) }}
+                </div>
+
+                <div class="col-lg-6 form-group">
+                    {{ form_label(form.web, 'Site web') }}
+                    {{ form_row(form.web) }}
+                </div>
+                <div class="col-lg-6 form-group">
+                    {{ form_label(form.siret, 'N° SIRET') }}
+                    {{ form_row(form.siret) }}
+                </div>
+                <div class="col-lg-6 form-group">
+                    {{ form_label(form.f_facturation, 'Frais de facturation') }}
+                    {{ form_row(form.f_facturation) }}
+                </div>
+                <div class="col-lg-6 form-group">
+                    {{ form_label(form.tva, 'TVA Intracomm') }}
+                    {{ form_row(form.tva) }}
+                </div>
+                <div class="col-lg-6 form-group">
+                    {{ form_label(form.code, 'Code fournisseur') }}
+                    {{ form_row(form.code) }}
+                </div>
+                <div class="col-lg-6 form-group">
+                    {{ form_label(form.contact, 'Contact') }}
+                    {{ form_row(form.contact) }}
+                </div>
+                <div class="col-lg-6 form-group">
+                    {{ form_label(form.email_contact, 'Contact email') }}
+                    {{ form_row(form.email_contact) }}
+                </div>
+                <div class="col-lg-6 form-group">
+                    {{ form_label(form.tel_contact, 'Tel contact') }}
+                    {{ form_row(form.tel_contact) }}
+                </div>
+                <div class="col-lg-6 form-group">
+                    {{ form_label(form.paiement, 'Mode de reglement') }}
+                    {{ form_row(form.paiement) }}
+                </div>
+                <div class="col-lg-12 form-group">
+                    {{ form_label(form.lot, 'Lot') }}
+                    {{ form_row(form.lot) }}
+                </div>
+                <div class="col-lg-12 form-group">
+                    {{ form_label(form.code_compta, 'Code Compta') }}
+                    {{ form_row(form.code_compta) }}
+                </div>
+                <div class="col-lg-12 form-group">
+                    <label style="margin-bottom: 10px;">Type de bon de livraison</label>
+                    <div style="display: flex;align-items: center;">
+                        {{ form_row(form.typeBonLivraison) }} 
+                        <label for="fournisseurs_typeBonLivraison">HT</label>
+                    </div>
+                </div>
+                <div class="col-lg-3 form-group">
+                    <button class="btn btn-primary submit">{{ button_label|default('Enregistrer') }}</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="col-lg-4">
+    <div class="ibox">
+        <div class="ibox-content">
+            <div class="row">
+                <div class="col-sm-12 form-group">
+                    {{ form_row(form.logo) }}
+                    {% set logo = fournisseur.logo ? '/uploads/logo_fournisseur/'~fournisseur.logo : '/assets/images/loag-image.png' %}
+                    <label for="fournisseurs_logo" style="display: block;margin-top: 25px;">
+                        <img src="{{logo}}" class="img-load">
+                    </label>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{{ form_end(form) }}
+<script type="text/javascript">
+    let file = document.getElementById("fournisseurs_logo");
+    file.onchange = function() {
+        if (this.files && this.files[0]) {
+            $that = this;
+            var reader = new FileReader();
+            reader.onload = function (e) {
+                $('.img-load').attr('src', e.target.result);
+            };
+            reader.readAsDataURL(this.files[0]);
+        };
+    }
+</script>

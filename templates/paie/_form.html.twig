@@ -1,0 +1,88 @@
+
+{{ form_start(form) }}
+<div class="row">
+    <div class="col-lg-12 form-group ocr-field" data-field="date_paie">
+        {{ form_label(form.date_paie, 'Date Paie') }}
+        {{ form_row(form.date_paie) }}
+        <input type="hidden" name="field[date_paie]" class="field_identite" value="{{ 'date_paie' in fieldsIaZone|keys ? fieldsIaZone['date_paie'] : ''}}">
+    </div>
+    <div class="col-lg-12 form-group ocr-field" data-field="conges_paye">
+        {{ form_label(form.conges_paye, 'Congés payés') }}
+        {{ form_row(form.conges_paye) }}
+        <input type="hidden" name="field[conges_paye]" class="field_identite" value="{{ 'conges_paye' in fieldsIaZone|keys ? fieldsIaZone['conges_paye'] : ''}}">
+    </div>
+    <div class="col-lg-12 form-group ocr-field" data-field="heure_sup_1">
+        {{ form_label(form.heure_sup_1, 'Heure sup 25%') }}
+        {{ form_row(form.heure_sup_1) }}
+        <input type="hidden" name="field[heure_sup_1]" class="field_identite" value="{{ 'heure_sup_1' in fieldsIaZone|keys ? fieldsIaZone['heure_sup_1'] : ''}}">
+
+    </div> 
+    <div class="col-lg-12 form-group ocr-field" data-field="heure_sup_2">
+        {{ form_label(form.heure_sup_2, 'Heure sup 50%') }}
+        {{ form_row(form.heure_sup_2) }}
+        <input type="hidden" name="field[heure_sup_2]" class="field_identite" value="{{ 'heure_sup_2' in fieldsIaZone|keys ? fieldsIaZone['heure_sup_2'] : ''}}">
+    </div>
+    <div class="col-lg-12 form-group ocr-field" data-field="heure_normale">
+        {{ form_label(form.heure_normale, 'Heures Normales') }}
+        {{ form_row(form.heure_normale) }}
+        <input type="hidden" name="field[heure_normale]" class="field_identite" value="{{ 'heure_normale' in fieldsIaZone|keys ? fieldsIaZone['heure_normale'] : ''}}">
+    </div>
+    <div class="col-lg-12 form-group ocr-field" data-field="panier">
+        {{ form_label(form.panier, 'Panier repas') }}
+        {{ form_row(form.panier) }}
+        <input type="hidden" name="field[panier]" class="field_identite" value="{{ 'panier' in fieldsIaZone|keys ? fieldsIaZone['panier'] : ''}}">
+    </div> 
+    <div class="col-lg-12 form-group ocr-field" data-field="trajet">
+        {{ form_label(form.trajet, 'Trajets') }}
+        {{ form_row(form.trajet) }}
+        <input type="hidden" name="field[trajet]" class="field_identite" value="{{ 'trajet' in fieldsIaZone|keys ? fieldsIaZone['trajet'] : ''}}">
+    </div>
+    <div class="col-lg-12 form-group ocr-field" data-field="cout_global">
+        {{ form_label(form.cout_global, 'Cout Global') }}
+        {{ form_row(form.cout_global) }}
+        <input type="hidden" name="field[cout_global]" class="field_identite" value="{{ 'cout_global' in fieldsIaZone|keys ? fieldsIaZone['cout_global'] : ''}}">
+    </div>
+    <div class="col-lg-12 form-group ocr-field" data-field="salaire_net">
+        {{ form_label(form.salaire_net, 'Salaire Net') }}
+        {{ form_row(form.salaire_net) }}
+        <input type="hidden" name="field[salaire_net]" class="field_identite" value="{{ 'salaire_net' in fieldsIaZone|keys ? fieldsIaZone['salaire_net'] : ''}}">
+    </div>
+    <div class="col-lg-12 form-group ocr-field" data-field="tx_horaire">
+        {{ form_label(form.tx_horaire, 'tx horaire') }}
+        {{ form_row(form.tx_horaire) }}
+        <input type="hidden" name="field[tx_horaire]" class="field_identite" value="{{ 'tx_horaire' in fieldsIaZone|keys ? fieldsIaZone['tx_horaire'] : ''}}">
+    </div>
+    <div class="col-lg-12 form-group ocr-field" data-field="utilisateur">
+        {{ form_label(form.utilisateur, 'Utilisateur') }}
+        {{ form_row(form.utilisateur) }}
+        <input type="hidden" name="field[utilisateur]" class="field_identite" value="{{ 'utilisateur' in fieldsIaZone|keys ? fieldsIaZone['utilisateur'] : ''}}">
+    </div>
+    <div class="col-lg-12 form-group">
+        {{ form_row(form.document_file) }}
+    </div>
+
+    <div>
+        <input type="hidden" name="document_file2" value="{{paie is defined ? paie.getDocumentFile : ''}}">
+    </div>
+    
+        
+    {% if ia_launch is defined and modelDocument is defined and modelDocument is not null %}
+        <input type="hidden" name="model_document_id" value="{{ modelDocument.id }}">
+    {% endif %}
+    <input type="hidden" name="nbr_page" value="{{ nbrPage is defined ? nbrPage : ''}}">
+
+    <div class="col-lg-12 form-group text-center" style="padding: 0">
+        <button class="btn btn-danger" name="submit" value="submit" style="margin-top: 5px;"> <i class="fa fa-plus"></i> {{ button_label|default('Enregistrer') }}</button>
+        {% if ia_launch is defined and modelDocument is defined and modelDocument is not null and score > 40 %}
+            <button class="btn btn-warning btn-ajuster" name="submit" value="ajuste_ia" style="margin-top: 5px;display: none;"> <i class="fa fa-adjust"></i> Ajuster</button>
+            <button class="btn btn-primary" name="submit" value="validate_ia" style="margin-top: 5px;"> <i class="fa fa-check"></i> Confirmer</button>
+        {% endif %}
+    </div>
+</div>
+{{ form_end(form) }}
+
+<script type="text/javascript">
+    {% if add_mode is defined and add_mode == "manuel" %}
+        $('form[name=paie]').attr('action', "{{path('paie_add_manuel')}}");
+    {% endif %}
+</script>

@@ -1,0 +1,142 @@
+<table class="table">
+    <thead>
+    <tr>
+        {% if 'IMAGE' in columnsVisibileId  %}
+        <th>Image</th>
+        {% endif %}
+
+        {% if 'NOM' in columnsVisibileId  %}
+        <th>Nom</th>
+        {% endif %}
+
+        {% if 'TOTAL_HEURE' in columnsVisibileId  %}
+        <th>Total des heures</th>
+        {% endif %}
+
+        {% if 'COUT_MATERIEL' in columnsVisibileId  %}
+        <th>Cout Materiel</th>
+        {% endif %}
+
+        {% if 'MAP' in columnsVisibileId  %}
+        <th>Map</th>
+        {% endif %}
+
+        {% if 'SUIVIT' in columnsVisibileId  %}
+        <th>Suivi Temps</th>
+        {% endif %}
+
+        {% if 'DEVIS' in columnsVisibileId  %}
+        <th>Devis</th>
+        {% endif %}
+
+        {% if 'FACTURE' in columnsVisibileId  %}
+        <th>Facture client</th>
+        {% endif %}
+
+        <th></th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for chantier in chantiers %}
+        <tr>
+            {% if 'IMAGE' in columnsVisibileId  %}
+            <td>
+                <a href="javascript:void(0)" data-url="{{ path('chantier_status', {'chantierId' : chantier.chantier_id }) }}" class="changeStatus">
+                    {% if chantier.status == 1 %}
+                        {% if chantier.default_galerie_id is not null  and chantier.default_galerie_id in default_galerie|keys  %}
+                            {% set gal =  default_galerie[chantier.default_galerie_id] %}
+                            <div style="background-image: url('/galerie/{{chantier.entreprise_id}}/{{gal.created_at|date('Y-m-d')}}/compressed/{{gal.nom}}')" class="rounded-circle">
+                            </div>
+                        {% elseif app.session.get('entreprise_session_logo') %} 
+                            <div style="background-image: url('/assets/images/logotransfmda.png')" class="rounded-circle">
+                            </div>
+                        {% endif %}
+                    {% else %}
+                         <div style="background-image: url('/assets/images/logotransfmda.png')" class="rounded-circle"></div>
+                    {% endif %}
+                </a>
+            </td>
+            {% endif %}
+
+            {% if 'NOM' in columnsVisibileId  %}
+            <td>{{ chantier.nameentreprise }}</td>
+            {% endif %}
+            
+            {% if 'TOTAL_HEURE' in columnsVisibileId  %}
+            <td>
+                {{ chantier.time >= 0 ? chantier.time ~' H' : '0' }}
+            </td>
+            {% endif %}
+
+            {% if 'COUT_MATERIEL' in columnsVisibileId  %}
+            <td>{{coutMatArr[chantier.chantier_id] is not null ? coutMatArr[chantier.chantier_id]|number_format(2, ',', '') : 0}}</td>
+            {% endif %}
+
+            {% if 'MAP' in columnsVisibileId  %}
+            <td>
+                <a target="_blank" href="{{ path('chantier_map', {'id': chantier.chantier_id }) }}">
+                    <img src="{{ asset('images/google_maps.png') }}" width="15" height="15">
+                </a>
+            </td>
+            {% endif %}
+
+            {% if 'SUIVIT' in columnsVisibileId  %}
+            <td width="100">
+                <a href="{{ path('chantier_show', {'chantierId': chantier.chantier_id}) }}" style="font-size: 20px" class="open-chantier-{{chantier.chantier_id}}" onclick="openChantier('{{chantier.chantier_id}}')"><i class="fas fa-eye"></i></a>
+            </td>
+            {% endif %}
+
+            {% if 'DEVIS' in columnsVisibileId  %}
+            <td>
+                {% if devisClient[chantier.chantier_id] %}
+                    <i class="fa fa-check" style="font-size: 18px;color: green"></i>
+                    <span style="visibility: hidden;">V</span>
+                {% else %}
+                    <span style="display: none;">X</span>
+                    <i class="fas fa-times" style="font-size: 18px;color: #ef0a0a;"></i>
+                {% endif %}
+            </td>
+            {% endif %}
+
+            {% if 'FACTURE' in columnsVisibileId  %}
+            <td>
+                {% if factureClient[chantier.chantier_id] %}
+                    {% if diffDevisFactureClient[chantier.chantier_id] != 0 %}
+                        <i class="fas fa-minus" style="color: orange;font-size: 18px;"></i>
+                    {% else %}
+                        <i class="fa fa-check" style="font-size: 18px;color: green"></i>
+                        <span style="visibility: hidden;">V</span>
+                    {% endif %}
+                {% else %}
+                    <span style="display: none;">X</span>
+                    <i class="fas fa-times" style="font-size: 18px;color: #ef0a0a;"></i>
+                {% endif %}
+            </td>
+            {% endif %}
+
+            <td width="100">
+                <a href="{{ path('chantier_edit', {'chantierId':chantier.chantier_id}) }}"><i
+                            class="fas fa-edit"></i></a>
+                <a href="{{ path('chantier_delete', {'chantierId':chantier.chantier_id}) }}"
+                   onclick="return confirm('Êtes-vous sur de vouloir supprimer ce chantier ?')"><i
+                            class="fas fa-trash-alt"></i></a>
+            </td>
+        </tr>
+    {% else %}
+        <tr>
+            <td colspan="34">Aucun chantier enregistré</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+    <tfoot>
+        <th>TOTAUX</th>
+        <th></th>
+        <th></th>
+        <th>{{totalHeure|number_format(2, ',', '')}}</th>
+        <th></th>
+        <th></th>
+        <th></th>
+        <th></th>
+        <th></th>
+    </tfoot>
+</table>

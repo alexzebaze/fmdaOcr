@@ -1,0 +1,19 @@
+{{ form_start(form) }}
+<div class="row">
+    <div class="col-lg-12 form-group">
+        {{ form_label(form.name, 'Nom de la version') }}
+        {{ form_row(form.name) }}
+    </div>
+    <div class="col-lg-12 form-group">
+        {{ form_label(form.platform, 'Plateforme') }}
+        {{ form_row(form.platform) }}
+    </div>
+    <div class="col-lg-12 form-group">
+        {{ form_label(form.description, 'Description') }}
+        {{ form_row(form.description) }}
+    </div>
+    <div class="col-lg-12 form-group">
+        <button class="btn btn-primary">{{ button_label|default('Enregistrer') }}</button>
+    </div>
+</div>
+{{ form_end(form) }}

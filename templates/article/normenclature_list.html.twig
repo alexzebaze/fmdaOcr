@@ -1,0 +1,185 @@
+
+{% if action_add is not defined %}
+<div style="text-align: right;">
+    <span class="add-normenclature btn btn-primary" data-toggle="modal" data-target="#modalArticle" style="margin:15px 0 39px">
+        <i class="fa fa-plus"></i> Ajouter
+    </span>
+</div>
+{% endif %}
+
+<div>
+    {% if normenclatures|length > 0 %}
+    <h2 class="total-bl"> TT Unit PA: <span>{{ recapitulatifs['prixRevient']|number_format(2, ',', '') }}€</span> </h2>
+    <h2 class="total-bl"> TT PV HT: <span>{{ recapitulatifs['pvHt']|number_format(2, ',', '') }}€</span> </h2>
+    <h2 class="total-bl"> Marge des Articles: <span>{{ recapitulatifs['marge']|number_format(2, ',', '') }}€</span> </h2>
+    <br><br>
+    {% endif %}
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>CODE ARTICLE</th>
+                    <th class="nowrap">Libelle</th>
+                    <th>Qte</th>
+                    <th>PA Unit</th>
+                    <th>Marge</th>
+                    <th>Pourcentage marge</th>
+                    <th>PV UNIT HT</th>
+                    <th>TT Marge</th>
+                    <th>TT Unit PA</th>
+                    <th>TT PV HT</th>
+                    <th>Unite</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                
+            {% set prixRevient = 0 %}
+            {% set pvHt = 0 %}
+            {% set marge = 0 %}
+            {% set pourcentageMarge = 0 %}
+            {% set ttmarge = 0 %}
+            {% set ttUnitPa = 0 %}
+            {% set pvttc = 0 %}
+            {% set ttpvht = 0 %}
+
+            {% for normenclature in normenclatures %}
+                {% set prixRevientCur = 0 %}
+                {% set pvHtCur = 0 %}
+                {% set margeCur = 0 %}
+
+                <tr class="normenclature-row-{{normenclature.id}}">
+                    <td>
+                        {{normenclature.codeArticle}}
+                    </td>
+                    <td class="nowrap" style="white-space: nowrap;">
+                        <span>{{ normenclature.libelle }}</span>
+                    </td>
+                    <td class="cell-field-{{normenclature.id}} cellField">
+                        <input data-id="{{normenclature.id}}" data-field="qte" class="inputField form-control" type="text" value="{{normenclature.qte}}" id="qte" style="background: transparent;">
+                    </td>
+                    <td>
+
+                        {% if normenclature.libelle|upper == 'DIVERS'  %}
+                            {% set prixRevientCur = normenclature.prixAchat %}
+
+                            <input data-id="{{normenclature.id}}" data-field="prixAchat" class="inputField form-control" type="text" value="{{prixRevientCur}}" id="prixAchat" style="background: transparent;font-size: 12px;padding: 3px;">
+                        {% elseif normenclature.articleReference %}
+                            {% set prixRevientCur = normenclature.articleReference.prixAchat %}
+                            {{prixRevientCur ? prixRevientCur~'€' : ''}}
+                        {% endif %}
+                        {% set prixRevient = prixRevient + prixRevientCur %}
+                            
+                    </td>
+                    <td>
+                        {% if normenclature.articleReference %}
+                            {% set marge = marge + normenclature.articleReference.margeBrut %}
+                            {% set margeCur = normenclature.articleReference.margeBrut %}
+                            {{ normenclature.articleReference.margeBrut ? normenclature.articleReference.margeBrut|number_format(2, ',', '')~'€': ''}}
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if normenclature.pourcentageMarge == 0 and normenclature.articleReference %}
+                            {% set pourcentageMargeCur = normenclature.articleReference.pourcentageMarge %}
+                        {% else %}
+                            {% set pourcentageMargeCur = normenclature.pourcentageMarge ? normenclature.pourcentageMarge: 0 %}      
+                        {% endif %}  
+
+                        {% set pourcentageMarge = pourcentageMarge + pourcentageMargeCur %}
+                        <input data-id="{{normenclature.id}}" data-field="pourcentageMarge" class="inputField form-control" type="text" value="{{pourcentageMargeCur}}" id="pourcentageMarge" style="background: transparent;font-size: 12px;padding: 3px;">
+
+                    </td>
+                    <td>
+
+                        {% if normenclature.pvUnitHt == 0 and normenclature.articleReference %}
+                            {% set pvHtCur = normenclature.articleReference.prixVenteHt %}
+                        {% else %}
+                            {% set pvHtCur = normenclature.pvUnitHt ? normenclature.pvUnitHt: 0 %}      
+                        {% endif %}  
+
+                        {% set pvHt = pvHt + pvHtCur %}
+                        <input data-id="{{normenclature.id}}" data-field="pvUnitHt" class="inputField form-control" type="text" value="{{pvHtCur}}" id="pvUnitHt" style="background: transparent;font-size: 12px;padding: 3px;">
+
+                    </td>
+                    <td id="ttMarge">
+                        {% set ttmarge = ttmarge + normenclature.qte*margeCur %}
+                        {{normenclature.qte*margeCur}}
+                    </td>
+                    <td id="ttUnitPa">
+                        {% set ttUnitPa = ttUnitPa + normenclature.qte*prixRevientCur %}
+                        {{normenclature.qte*prixRevientCur}}
+                    </td>
+                    <td>
+                        {% if normenclature.articleReference %}
+                        {% set ttpvht = ttpvht + normenclature.qte*normenclature.articleReference.prixVenteHt %}
+                        {{normenclature.qte*normenclature.articleReference.prixVenteHt}}
+                        {% endif %}
+                    </td>
+                    <td>{{normenclature.unite}}</td>                    
+                    <td>
+                        <!-- <a class="btn btn-primary" href="{{path('normenclature_edit', {'id':normenclature.id})}}">
+                            <i class="fa fa-edit"></i>
+                        </a> -->
+                        <span style="display: inline-flex;">
+                            <!-- <a href="{{ path('article_edit', {'id': normenclature.id}) }}" class="btn btn-primary"><i class="fa fa-edit"></i></a>
+                            &nbsp -->
+                            <form method="post" action="{{ path('normenclature_delete', {'id': normenclature.id}) }}" onsubmit="return confirm('Confirmez-vous la suppression?');" style="display: inline-block;">
+                                <input type="hidden" name="_method" value="DELETE">
+                                <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ normenclature.id) }}">
+                                {% if normenclature.libelle|upper != 'DIVERS'  %}
+                                    <button class="btn btn-danger"><i class="fa fa-trash"></i></button>
+                                {% endif %}
+                            </form>
+                        </span>
+                    </td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="12">Aucun enregistrement</td>
+                </tr>
+            {% endfor %}
+            <tfoot>
+                <tr>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th>{{prixRevient ? prixRevient|number_format(2, ',', '')~'€': ''}}</th>
+                    <th>{{marge ? marge|number_format(2, ',', '')~'€': ''}}</th>
+                    <th>
+                        {% if pvHt > 0 %} 
+                            {{((marge/pvHt)*100)|number_format(2, ',', '')}}
+                        {% endif %}
+                    </th>
+                    <th>{{pvHt ? pvHt|number_format(2, ',', '')~'€': ''}}</th>
+                    <th>{{ttmarge ? ttmarge|number_format(2, ',', ''): ''}}</th>
+                    <th>{{ttUnitPa ? ttUnitPa|number_format(2, ',', ''): ''}}</th>
+                    <th>{{ttpvht ? ttpvht|number_format(2, ',', ''): ''}}</th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                </tr>
+            </tfoot>
+            </tbody>
+        </table>
+
+    </div>
+</div>
+
+<script type="text/javascript">
+    
+    // function updateField(normenclatureId, field){
+    //     $input = '<input data-id="'+normenclatureId+'" data-field="'+field+'" class="inputField form-control" type="text" name="normenclature['+normenclatureId+']['+field+']">'
+    //     $('.cell-field-'+normenclatureId).html($input);
+    // }
+
+    // $(document).on('dblclick', '.cellField', function (e) {
+    //     $elt = $(this).find('input.inputField');
+    //     $val = $elt.val().replace("€", '');
+    //     $val = $val.replace(",00", '');
+    //     $val = $val.replace(" ", '');
+    //     $elt.val($val);
+    // });
+
+
+</script>

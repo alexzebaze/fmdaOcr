@@ -1,0 +1,30 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Fields{% endblock %}
+
+{% block body %}
+    <h1>Fields</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ field.id }}</td>
+            </tr>
+            <tr>
+                <th>Label</th>
+                <td>{{ field.label }}</td>
+            </tr>
+            <tr>
+                <th>Cle</th>
+                <td>{{ field.cle }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('fields_index') }}">back to list</a>
+
+    <a href="{{ path('fields_edit', {'id': field.id}) }}">edit</a>
+
+    {{ include('fields/_delete_form.html.twig') }}
+{% endblock %}

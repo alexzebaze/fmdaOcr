@@ -1,0 +1,864 @@
+{% extends 'base.html.twig' %}
+{% block title %} {{parent()}} BON DE LIVRAISON{% endblock %}
+{% block css %}
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.24/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/buttons/1.7.0/css/buttons.dataTables.min.css">
+    <script type="text/javascript" src="https://cdn.datatables.net/plug-ins/1.10.15/sorting/numeric-comma.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/plug-ins/1.11.2/sorting/num-html.js"></script>
+
+    <style type="text/css">
+        
+        thead th{text-align: center;text-align: center;}
+        .send-facture{display: none;}
+        .ibox-title{padding: 26px 90px 8px 15px}
+        .ibox-tools{display: flex;align-items: center;justify-content: flex-end;margin-bottom: 7px;}
+        table.dataTable tfoot th, table.dataTable tfoot td{border-top: 1px solid #e7eaec;text-align: center; font-weight: 600;font-size: 15px;    padding-bottom: 3rem;}
+        @media (min-width: 768px){
+            .modal-sm {
+                width: 425px;
+            }
+        }
+        .btnAttachDevis{display: none;}
+        .total-bl{
+            margin: 8px 0 20px 0;
+            color: #000;
+            font-weight: 600;
+            text-align: center;
+        }
+        #extSubmitFixed{display: none;}
+
+        .doc-item-container{
+            position: relative;
+            height: 40px;
+            margin-left: 8px;
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .doc-item-container:hover .trash-icon{
+            display: inline-flex
+        }
+        .doc-item-container .trash-icon{
+            display: none;
+            position: absolute;
+            top: -33px;
+            z-index: 2;
+            left: -9px;
+            right: 0;
+            margin: auto;
+            background: #fff;
+            box-shadow: 0px 11px 9px 3px rgb(0 0 0 / 20%);
+            border-radius: 50%;
+            color: #d20404;
+            width: 35px;
+            height: 35px;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+        #modalDocumentShow{z-index: 999999 !important}
+        .devis-row{display: flex;align-items: flex-start;}
+
+        .rounded-img{
+            border-radius: 50%;
+            position: relative;
+            z-index: 1;
+            width: 40px;
+            height: 40px;
+            object-fit: cover;
+        }
+
+    </style>
+{% endblock %}
+{% block breadcrumb %}
+    <div class="row wrapper border-bottom white-bg page-heading">
+        <div class="col-lg-10">
+            <h1>
+                Liste des bons de livraison
+            </h1>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                    <a href="{{ path('home') }}">Accueil</a>
+                </li>
+                <li class="breadcrumb-item active">
+                    <strong>Bons de livraison</strong>
+                </li>
+            </ol>
+        </div>
+    </div>
+
+{% endblock %}
+{% block content %}
+    <div class="row">
+        <div class="col-lg-12">
+            {% include 'flashes.html.twig' %}
+            <div class="ibox">
+                <div class="ibox-content">
+                    {{ include('bon_livraison/filter.html.twig') }}
+                </div>
+            </div>
+            <div class="ibox ">
+                <div class="ibox-title" style="position: relative;">
+                    <h5>
+                        <span class="btn-config-colonne">
+                            <i class="fa fa-cog"></i>
+                        </span>
+                        Liste des bons de livraison
+                    </h5> 
+                    <b>({{bon_livraisons|length}} Documents)</b>
+                    <div class="ibox-tools">
+                        <a href="{{ path('email_document_preview_list', {'dossier':'bon_livraison'}) }}" class="btn btn-primary" style="margin-right: 10px;">
+                            ({{countDocAttentes ? countDocAttentes.nb : 0}}) En attente
+                        </a>
+
+                        <a href="{{ path('bon_livraison_add') }}" class="btn btn-primary">
+                            Importer
+                        </a>
+                        <a href="{{path('bon_livraison_add_manuel')}}" class="btn btn-primary" style="margin-left: 10px;">
+                            <i class="fa fa-plus"></i>
+                            Ajout manuel
+                        </a>
+                        <button type="submit" class="btn btn-primary send-facture" style="margin-left: 12px;">Envoyer le Bon</button>
+                        <button type="button" class="btn btn-primary btnAttachDevis" style="margin-left: 6px;">
+                          Lier un devis
+                        </button>
+                    </div>
+
+                    <div class="column-container">
+                        <div class="column-content">
+                            <form method="POST" action="{{path('update_toggle_column')}}">
+                                <input type="hidden" name="page" value="BONLIVRAISON">
+                                <input type="hidden" name="redirect" value="bon_livraison_list">
+                                <div class="column-list">
+                                    {% for column in columns  %}
+                                    <div class="column-item">
+                                        <label class="column-label">
+                                            <input class="column-check" type="checkbox" {% if columnsVisibileId|length and column.id in columnsVisibileId|keys %}checked{% endif %} name="configs[{{column.id}}]">
+                                            <span class="column-libelle">{{ tabColumns[column.cle] }}</span>
+                                        </label>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                                <br>
+                                <div class="text-center">
+                                    <button type="submit" class="btn btn-primary">Valider</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="ibox-content">
+                    <h1 class="total-bl"> {{full_month|capitalize}}</h1>
+
+                    {% if 'MONTANT_HT' in columnsVisibileId  %}
+                        {% set montant_ht = montant['sum_ht'] ? montant['sum_ht'] : 0 %}
+                        {% set montant_paye = montant_paye['sum_ht'] ? montant_paye['sum_ht'] : 0 %}
+                        {% set montant_non_relie = montant_non_relie['sum_ht'] ? montant_non_relie['sum_ht'] : 0 %}
+
+                        
+                        <h2 class="total-bl"> Montant HT: <span>{{ montant_ht|number_format(2, ',', '') }}€</span> </h2>
+
+                        <h2 class="total-bl"> Montant HT Payé: <span>{{ montant_paye|number_format(2, ',', '') }}€</span> </h2>
+                        <h2 class="total-bl"> Montant HT non lié: <span>{{ montant_non_relie|number_format(2, ',', '') }}€</span> </h2>
+
+                        <h2 class="total-bl"> Montant HT Restant: <span>{{ (montant_ht - montant_paye)|number_format(2, ',', '') }}€</span> </h2>
+                    {% endif %}
+
+                    <div class="table-responsive">
+                    <table class="table" cellspacing="0" width="100%">
+                        <thead>
+                        <tr>
+                            <th>
+                                <input type="checkbox" class="chk-parent" value="">
+                            </th>
+                            {% if 'DOCUMENT_PDF' in columnsVisibileId  %}
+                                <th class="{% if 'DOCUMENT_PDF' not in columnsVisibileId  %}removeColumn{% endif %}">DOCUMENT_PDF</th>
+                            {% endif %}
+
+                            {% if 'DATE_CREATION' in columnsVisibileId  %}
+                            <th class="{% if 'DATE_CREATION' not in columnsVisibileId  %}removeColumn{% endif %}">
+                            DATE_CREATION</th>
+                            {% endif %}
+
+                            {% if 'FOURNISSEUR' in columnsVisibileId  %}
+                            <th></th>
+                            <th class="{% if 'FOURNISSEUR' not in columnsVisibileId  %}removeColumn{% endif %}">FOURNISSEUR</th>
+                            {% endif %}
+
+                            {% if 'DOCUMENT_ID' in columnsVisibileId  %}
+                            <th class="{% if 'DOCUMENT_ID' not in columnsVisibileId  %}removeColumn{% endif %}">DOCUMENT_ID</th>{% endif %}
+
+                            {% if 'CHANTIER' in columnsVisibileId  %}
+                            <th class="{% if 'CHANTIER' not in columnsVisibileId  %}removeColumn{% endif %}">CHANTIER</th>
+                            {% endif %}
+
+                            {% if 'LOT' in columnsVisibileId  %}
+                            <th class="{% if 'LOT' not in columnsVisibileId  %}removeColumn{% endif %}">LOT</th>
+                            {% endif %}
+
+                            {% if 'MONTANT_TTC' in columnsVisibileId  %}
+                            <th class="{% if 'MONTANT_TTC' not in columnsVisibileId  %}removeColumn{% endif %}">MONTANT_TTC</th>
+                            {% endif %}
+
+                            {% if 'TVA' in columnsVisibileId  %}
+                            <th class="{% if 'TVA' not in columnsVisibileId  %}removeColumn{% endif %}">TVA</th>
+                            {% endif %}
+
+                            {% if 'MONTANT_HT' in columnsVisibileId  %}
+                            <th class="{% if 'MONTANT_HT' not in columnsVisibileId  %}removeColumn{% endif %}">MONTANT_HT</th>
+                            {% endif %}
+
+                            {% if 'DEVIS' in columnsVisibileId  %}
+                            <th class="{% if 'DEVIS' not in columnsVisibileId  %}removeColumn{% endif %}">DEVIS</th>
+                            {% endif %}
+
+                            {% if 'NUM_DEVIS' in columnsVisibileId %}
+                            <th class="{% if 'NUM_DEVIS' not in columnsVisibileId %}removeColumn{% endif %}">NUM_DEVIS</th>
+                            {% endif %}
+
+                            {% if 'FACTURE' in columnsVisibileId %}
+                            <th class="{% if 'FACTURE' not in columnsVisibileId %}removeColumn{% endif %}">FACTURE</th>
+                            {% endif %}
+
+                            {% if 'PASSAGE' in columnsVisibileId %}
+                            <th class="{% if 'PASSAGE' not in columnsVisibileId %}removeColumn{% endif %}">PASSAGE</th>
+                            {% endif %}
+
+                            <th class=""></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                            {% for bon_livraison in pager.currentPageResults %}
+                            <tr class='text-center' style="{% if bon_livraison.getBlValidation %}color:green; {% endif %} {% if bon_livraison.id in tabDoublon %}color:red;{% endif %}">
+                                <td>
+                                    <input type="checkbox" class="check-bl" name="blCheck" value="{{bon_livraison.id}}" data-chantier="{{bon_livraison.chantier is not null ? bon_livraison.chantier.chantierId : ''}}">
+                                </td>
+
+                                {% if 'DOCUMENT_PDF' in columnsVisibileId  %}
+                                <td>
+                                    {% if bon_livraison.getDocumentFile %} 
+                                    <span class="showDocument" data-file="/uploads/factures/{{bon_livraison.getDocumentFile}}" style="cursor: pointer;"><img src="//ssl.gstatic.com/docs/doclist/images/mediatype/icon_3_pdf_x16.png"></span>
+                                    {% endif %}
+                                </td>
+                                {% endif %}
+
+                                {% if 'DATE_CREATION' in columnsVisibileId  %}
+                                <td>
+                                    {{ bon_livraison.facturedAt|date('d/m/Y') }}
+                                </td>
+                                {% endif %}
+
+                                {% if 'FOURNISSEUR' in columnsVisibileId  %}
+                                <td>
+                                    {% if bon_livraison.fournisseur.logo %}
+                                        <span style="margin-right: 4px">
+                                            <img class="rounded-circle" src="/uploads/logo_fournisseur/{{bon_livraison.fournisseur.logo}}">
+                                        </span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {{ bon_livraison.fournisseur is not null ? bon_livraison.fournisseur.nom : '' }}
+                                </td>
+                                {% endif %}
+
+                                {% if 'DOCUMENT_ID' in columnsVisibileId  %}
+                                <td>
+                                    {{bon_livraison.getDocumentId}}
+                                </td>
+                                {% endif %}
+
+                                {% if 'CHANTIER' in columnsVisibileId  %}
+                                <td>
+
+                                    <a href="javascript:void()" data-bl-id="{{bon_livraison.id}}" class="openModalChantier" style="cursor: pointer;">
+                                        {% if bon_livraison.chantier %} 
+                                            {{ bon_livraison.chantier is not null ? bon_livraison.chantier.nameentreprise : '' }}
+                                        {% else %}
+                                            <span class="btn"><i class="fa fa-plus"></i></span>
+                                        {% endif %}
+                                    </a>
+                                </td>
+                                {% endif %}
+
+                                {% if 'LOT' in columnsVisibileId  %}
+                                <td>{{ bon_livraison.lot is not null ? bon_livraison.lot.lot : ''}}</td>
+                                {% endif %}
+                                
+                                {% if 'MONTANT_TTC' in columnsVisibileId  %}
+                                <td>{{ bon_livraison.prixttc|number_format(2, ',', '') }} {{ bon_livraison.devise.symbol }}</td>
+                                {% endif %}
+
+                                {% if 'TVA' in columnsVisibileId  %}
+                                <td>
+                                    {% set ht = bon_livraison.getPrixht is null ? 0 : bon_livraison.getPrixht %} 
+                                    {% set dividende = (ht is null or ht == 0) ? 1 : ht %} 
+
+                                    {% set partE = ((bon_livraison.prixttc - ht) / dividende * 100)|round(0, 'floor') %}
+                                    {% set partD = ((bon_livraison.prixttc - ht) / dividende * 100) - partE %}
+
+                                    {% if partE == 0 %}
+                                        <span style="color: orange">0</span>
+                                    {% else %}
+                                        {% if partE == 5  and (partD <= 0.8 and partD >= 0.2) %}
+                                           <span style="color: green">5.5%</span> 
+                                        {% elseif partE == 20  and (partD <= 0.3) %}
+                                            <span style="color: green">20%</span>
+                                        {% elseif partE == 19  and (partD >= 0.7) %}
+                                            <span style="color: green">20%</span>
+                                        {% elseif partE == 10  and (partD <= 0.3) %}
+                                            <span style="color: green">10%</span>
+                                        {% elseif partE == 9  and (partD >= 0.3) %}
+                                            <span style="color: green">10%</span>
+                                        {% else %}
+                                            <span style="color: red">{{((bon_livraison.prixttc - ht) / dividende * 100)|number_format(2, ',', ' ')}}%</span>
+                                        {% endif %}
+                                    {% endif %}
+                                </td>
+                                {% endif %}
+
+                                {% if 'MONTANT_HT' in columnsVisibileId  %}
+                                <td>{{ bon_livraison.getPrixht|number_format(2, ',', '') }} {{ bon_livraison.devise.symbol }}</td>
+                                {% endif %}
+
+                                {% if 'DEVIS' in columnsVisibileId  %}
+                                <td>
+                                    {% if bon_livraison.devis is not null %}
+
+                                        <span class="doc-item-container">
+                                            <span style="display: none;">V</span>
+                                            <span class="showDocument" data-file="/uploads/devis/{{bon_livraison.devis.getDocumentFile}}" style="cursor: pointer;"><img src="//ssl.gstatic.com/docs/doclist/images/mediatype/icon_3_pdf_x16.png"></span>
+
+                                            <a class="trash-icon" onclick="return confirm('Voulez-vous dissocier ce devis ?')" href="{{ path('bon_livraison_dettach_devis', {'id': bon_livraison.id} ) }}">
+                                                <i class="fa fa-trash"></i>
+                                            </a>
+                                        </span>
+                                    {% else %}
+                                        <span style="display: none;">X</span>
+                                        <span class="openDevis" data-chantier="{{bon_livraison.chantier is not null  ? bon_livraison.chantier.getChantierId : '' }}" data-id="{{bon_livraison.id}}" style="cursor: pointer;">
+                                            <i class="fas fa-times" style="font-size: 18px;color: #ef0a0a;"></i>
+                                        </span>
+                                    {% endif %}
+                                </td>
+                                {% endif %}
+
+                                {% if 'NUM_DEVIS' in columnsVisibileId  %}
+                                <td>
+                                    {% if bon_livraison.devis is not null %}
+                                        {{bon_livraison.devis.getDocumentId }}
+                                    {% endif %}
+                                </td>
+                                {% endif %}
+
+                                {% if 'FACTURE' in columnsVisibileId  %}
+                                <td>
+                                    {% if bon_livraison.getBlValidation is not null and bon_livraison.getBlValidation != 1  %}
+
+                                        <span class="doc-item-container">
+                                            <span style="display: none;">V</span>
+                                            <span class="openModalBlFactureDoc" style="cursor: pointer;" data-facture-id="{{bon_livraison.getBlValidation}}"><img src="//ssl.gstatic.com/docs/doclist/images/mediatype/icon_3_pdf_x16.png"></span>
+
+                                            <a class="trash-icon" onclick="return confirm('Voulez-vous dissocier cette facture ?')" href="{{ path('bon_livraison_dettach_facture', {'id': bon_livraison.id} ) }}">
+                                                <i class="fa fa-trash"></i>
+                                            </a>
+                                        </span>
+                                    {% else %}
+                                        <span style="display: none;">X</span>
+                                        <i class="fas fa-times" style="font-size: 18px;color: #ef0a0a;"></i>
+                                    {% endif %}
+                                </td>
+                                {% endif %}
+
+                                {% if 'PASSAGE' in columnsVisibileId  %}
+                                <td>
+                                    {% if bon_livraison.getPassage %}
+                                        <div style="display: flex;align-items: center;justify-content: center;">
+                                            <span style="font-size: 18px;color: green;position: relative;">
+                                                <span style="visibility: hidden;position: absolute;">V</span>
+                                            </span>
+                                             &nbsp
+
+                                            <span style="font-size: 11px;">
+                                                {% if bon_livraison.getPassage.utilisateur and bon_livraison.getPassage.utilisateur.uid in utilisateurs|keys %} 
+                                                    <img data-file="data:image/jpeg;base64,{{ bon_livraison.getPassage.utilisateur.image}}" src="data:image/jpeg;base64,{{ utilisateurs[bon_livraison.getPassage.utilisateur.uid]}}"
+                                                     class="showDocument rounded-img">
+                                                {% endif %}
+                                            </span>
+                                        </div>
+                                    {% else %}
+                                        <span  style="font-size: 18px;color: #ef0a0a;position: relative;cursor: pointer;" class="openModalPassage" data-bl-id="{{bon_livraison.id}}">
+                                            <i class="fas fa-times"></i><span style="visibility: hidden;position: absolute;">X</span>
+                                        </span>
+
+                                    {% endif %}
+                                </td>
+                                {% endif %}
+
+                                <td style="font-size: 18px;">
+                                   <div style="display: flex;align-items: center;justify-content: center;">
+                                        <a href="{{ path('bon_livraison_edit', {'bon_livraisonId': bon_livraison.id} ) }}"><i class="far fa-edit"></i></a>
+                                        <a onclick="return confirm('Etes-vous sur de vouloir supprimer ce bon_livraison ?')"
+                                           href="{{ path('bon_livraison_delete', {'bon_livraisonId': bon_livraison.id} ) }}"><i class="fas fa-trash-alt"></i></a>
+                                   </div>
+                                </td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td colspan="34">Aucune bon_livraison enregistrée</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+
+                    </div>
+                    {% if pager.haveToPaginate %}
+                        {{ pagerfanta(pager, 'my_template') }}
+                    {% endif %}
+
+                    {% if 'MONTANT_TTC' in columnsVisibileId  %}
+                    <div style="width: 100%; height: 200;margin-bottom: 45px;">
+                        <canvas id="myChart"></canvas>
+                    </div>
+                    {% endif %}
+                    
+                    <div id="modalBlFactureDoc" class="modal fade bs-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel">
+                        <div class="modal-dialog modal-lg" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header" style="border: none;">
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                </div>
+                                <div class="modal-body text-center">
+                                    <div class="documentFile-container" style="display: none;">
+                                        <object class="documentPdf" data="" type="application/pdf" width="100%" height="980px" style="display: none;"></object>
+                                        <img class="documentimage" src="" alt="fichier facture uploadé" width="100%"  style="display: none;">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+            
+                    <div id="modalDocumentShow" class="modal fade bs-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel">
+                        <div class="modal-dialog modal-lg" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header" style="border: none;">
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                </div>
+                                <div class="modal-body text-center">
+                                    <h3 class="text-center no-document" style="display: none;">Aucun document rattaché.</h3>
+                                    <div class="documentFile-container" style="display: none;">
+                                        <object class="documentPdf" data="" type="application/pdf" width="100%" height="980px" style="display: none;"></object>
+                                        <img class="documentimage" src="" alt="fichier facture uploadé" width="100%"  style="display: none;">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="modalQ" class="modal fade bs-example-modal-sm modal-center" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel">
+                        <div class="modal-dialog modal-sm" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header" style="border: none;">
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                </div>
+                                <div class="modal-body text-center" style="padding: 0px 30px 51px 30px">
+                                    <form method="POST" action="{{path('bon_livraison_send_bl')}}">
+                                        <input type="hidden" name="list-bl-id">
+                                        <div class="row">
+                                            <div class="col-lg-12 form-group">
+                                                <input type="email" name="email_comptable" placeholder="Email comptable" class="form-control" required value="{{emailComptableConfig}}">
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-lg-12 form-group" style="text-align: left;">
+                                                <label style="color: #a6a4ad;">Contenu</label>
+                                                <textarea name="content" class="form-control" rows="6"></textarea>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-12 form-group text-center">
+                                            <button type="submit" class="btn btn-primary
+                                            ">Envoyer</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="modal fade" id="modalDevis" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                              <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                <h2 class="modal-title text-center" id="myModalLabel">Attribuer un devis</h2>
+                              </div>
+                              <div class="modal-body" style="padding-top: 0">
+                                <div class="loader-container">
+                                    <img src="{{asset('images/loading.gif')}}" style="width: 54px;">
+                                </div>
+                                <div id="listDevisContainer"></div>
+                              </div>
+                            </div>
+                        </div>
+                        <span id="extSubmitFixed" class="btn-small btn btn-primary" style="box-shadow: 0px 0px 10px 6px rgb(119 119 119 / 25%);position: fixed;z-index: 9999;top: 18px;"><i class="fas fa-save"></i></span>
+                    </div>
+
+                    <div id="modalChantier" class="modal fade bs-example-modal-sm modal-center" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel">
+                        <div class="modal-dialog modal-medium" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header" style="border: none;">
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                    <h2 class="modal-title text-center" id="myModalLabel">Attribuer un chantier</h2>
+                                </div>
+                                <div class="modal-body text-center" style="padding: 0px 30px 51px 30px">
+                                    <form method="POST" action="{{path('bon_livraison_edit_chantier')}}">
+                                        <input type="hidden" name="bl_id">
+                                        <div class="row">
+                                            <div class="col-lg-12 form-group">
+                                                <select class="form-control" name="chantier" required>
+                                                    <option value="" disabled selected>-- selectionner un chantier --</option>
+                                                    {% for ch in chantiers %} 
+                                                    <option value="{{ch.chantierId}}">{{ch.nameentreprise}}</option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-12 form-group text-center">
+                                            <button type="submit" class="btn btn-primary
+                                            ">Envoyer</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modalPassage" tabindex="-1" role="dialog">
+      <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title" id="myModalLabel" style="color: #000;">Passages</h4>
+          </div>
+          <div class="modal-body">
+            
+            <div class="content-modal-passage">
+                <div class="loader-container">
+                    <img src="{{asset('images/loading.gif')}}" style="width: 54px;">
+                </div>
+            </div>
+
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Fermer</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+{% endblock %}
+
+{% block javascript_script %}
+    <script type="text/javascript"src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.min.js"></script>
+    <script type="text/javascript"src="https://cdn.datatables.net/buttons/1.7.0/js/dataTables.buttons.min.js"></script>
+    <script type="text/javascript"src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+    <script type="text/javascript"src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
+    <script type="text/javascript"src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+    <script type="text/javascript"src="https://cdn.datatables.net/buttons/1.7.0/js/buttons.html5.min.js"></script>
+    <script type="text/javascript"src="https://cdn.datatables.net/buttons/1.7.0/js/buttons.print.min.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/plug-ins/1.10.24/sorting/date-eu.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/plug-ins/1.10.15/sorting/numeric-comma.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/plug-ins/1.11.2/sorting/num-html.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.4/dist/Chart.min.js"></script>
+    <script type="text/javascript">
+
+        {% if score is defined and score < 20 %}
+            $('#modalScoreIa').modal('show');
+        {% endif %}
+        
+        var valChart = {{ valChart|json_encode()|raw }};
+        var ctx = document.getElementById('myChart').getContext('2d');
+        ctx.height = 200;
+        var myChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels:  ["jan", "Fév", 'Mars', 'Avr', 'Mais', 'Juin', 'Juil', 'Aout', 'sep', 'Oct', 'Nov', 'Déc'],
+                datasets: [{
+                    label: 'Montant TTC',
+                    data: valChart,
+                    backgroundColor: 'rgb(50 163 243)',
+                    borderColor: 'rgb(50 163 243)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    },
+                    yAxes: [{
+                        display: false //this will remove all the x-axis grid lines
+                    }],
+
+                },
+                legend: { display: false },
+                    title: {
+                    display: true,
+                    fontColor: 'black',
+                    fontSize: '25',
+                    text: '{{full_month|capitalize}}-TTC: {{ montant['prixttc'] ? montant['prixttc']|number_format(2, ',', '') : "0" }}€'
+                }
+            }
+        });
+
+        $(document).ready( function () {
+            $('body').on('click', ' .showDocument', function(){
+                $documentFile = $(this).attr('data-file');
+                $('#modalDocumentShow').modal('show');
+                if($documentFile != ""){
+                    $('.no-document').css('display','none');
+                    $('.documentFile-container').css('display','block');
+                    if($documentFile.substr($documentFile.length - 3).toLowerCase() == "pdf"){
+                        $('.documentFile-container').html('<object class="documentPdf" data="" type="application/pdf" width="100%" height="980px" style="display: none;"></object>');
+                        $('.documentPdf').css('display', 'block');
+                        $('.documentPdf').attr('data', $documentFile);
+                    }
+                    else{
+                        $('.documentimage').css('display', 'block');
+                        $('.documentimage').attr('src', $documentFile);
+                    }
+                }
+                else{
+                    $('.documentFile-container').css('display','none');
+                    $('.no-document').css('display','block');
+                }
+            })
+        } );
+
+        $('body').on('change', '.list-devis input[name=devis]', function() {
+            $('.list-devis label').removeClass('active');
+            $('.list-devis input[name=devis]:checked').next().addClass('active');
+        });
+
+        $('.openDevis').click(function(e){
+            $('#modalDevis').modal('show');
+            $('.loader-container').css('display','flex');
+            $eltSelect = $(this).data('id');
+            $chantierList = $(this).attr('data-chantier');
+            openDevisXhr($chantierList, $eltSelect);
+        })
+        $('.btnAttachDevis').click(function(){
+            $('#modalDevis').modal('show');
+            $('.loader-container').css('display','flex');
+            $eltCheck = $('.check-bl:checkbox:checked');
+            $chantierList = [];   
+            $eltSelect = [];
+            $eltCheck.each(function( index ) {
+                if($( this ).val() != ""){
+                    $chantierList.push($( this ).attr('data-chantier'));
+                    $eltSelect.push($( this ).val());
+                }
+            });
+            $chantierList = $chantierList.join('-');
+            $eltSelect = $eltSelect.join('-');
+            openDevisXhr($chantierList, $eltSelect);
+            
+        })
+
+        $(document).on('click', '#extSubmit', function(){
+            $('#attachDevisClient').submit();
+        })
+        $(document).on('click', '#extSubmitFixed', function(){
+            $('#attachDevisClient').submit();
+        })
+        
+        function openDevisXhr($chantierList, $eltSelect){
+            $.ajax({
+                url: "{{path('devis_client_get_by_chantier')}}",
+                type: "POST",
+                dataType: "json",
+                async: true,
+                data: {
+                    list_chantier_id: $chantierList,
+                    page: 'bon_livraison',
+                    type:'devis_client',
+                    facture_select: $eltSelect
+                },
+                success: function(response) {
+                    if(response.status == 200){                        
+                        $('#listDevisContainer').html(response.content);
+                    }
+                    else if(response.status == 500){
+                        toastr.error(response.message);
+                    }
+                    $('.loader-container').css('display','none');
+                },
+                error: function(xhr, textStatus, errorThrown) {
+                  console.log(errorThrown);
+                  $('.loader-container').css('display','none');
+                }
+            });
+        }
+
+        $('body').on('click', '.openModalBlFactureDoc', function(){
+            
+            loadModalBlFactureDoc($(this).attr('data-facture-id'));
+        })
+
+        function loadModalBlFactureDoc(factureId){
+            $.ajax({
+                url: "{{path('facturation_get_document_by_id')}}",
+                type: "GET",
+                dataType: "json",
+                async: true,
+                data: {
+                    facture_id:factureId
+                },
+                success: function(response, status) {
+                  if(response.status == 200){
+                    $("#modalBlFactureDoc").modal('show');
+                    $documentFile = "/uploads/achats/facturation/"+response.facture.document;
+                    if($documentFile != ""){
+                        $('.no-document').css('display','none');
+                        $('.documentFile-container').css('display','block');
+                        if($documentFile.substr($documentFile.length - 3).toLowerCase() == "pdf"){
+                            $('.documentFile-container').html('<object class="documentPdf" data="" type="application/pdf" width="100%" height="980px" style="display: none;"></object>');
+                            $('.documentPdf').css('display', 'block');
+                            $('.documentPdf').attr('data', $documentFile);
+                        }
+                        else{
+                            $('.documentimage').css('display', 'block');
+                            $('.documentimage').attr('src', $documentFile);
+                        }
+                    }
+                    else{
+                        $('.documentFile-container').css('display','none');
+                        $('.no-document').css('display','block');
+                    }
+                  }
+                  else if(response.status == 500){
+                    toastr.error(response.message);
+                  }
+                },
+                error: function(xhr, textStatus, errorThrown) {
+                  toastr.error("Ooops..., Quelque chose s'est mal passée");
+                }
+            });
+        }
+
+        $(document).on('hidden.bs.modal', function (event) {
+          if ($('.modal:visible').length) {
+            $('body').addClass('modal-open');
+          }
+        });
+
+        $('.openModalChantier').click(function(){
+            $('input[name=bl_id]').val($(this).attr('data-bl-id'));
+            $("#modalChantier").modal('show');
+        })
+
+        $('body').on('click', '.openModalPassage', function(){
+            $("#modalPassage").modal('show');
+            loadModalPassage($(this).attr('data-bl-id'));
+        })
+
+        function loadModalPassage(bl_id){
+            $('.loader-container').css('display','flex');
+            $.ajax({
+                url: "{{path('passage_get_passage_to_match')}}",
+                type: "GET",
+                dataType: "json",
+                async: true,
+                data: {
+                    bl_id:bl_id
+                },
+                success: function(response, status) {
+                  if(response.status == 200){
+                    $('.content-modal-passage').html(response.preview);
+                  }
+                  else if(response.status == 500){
+                    toastr.error(response.message);
+                  }
+                  $('.loader-container').css('display','none');
+                },
+                error: function(xhr, textStatus, errorThrown) {
+                  toastr.error("Ooops..., Quelque chose s'est mal passée");
+                  $('.loader-container').css('display','none');
+                }
+            });
+        }
+
+    </script>
+{% endblock %}
+
+{% block javascript %}
+
+$(document).ready( function () {
+    $('table').DataTable({
+        columnDefs: [
+           { type: 'date-eu', targets: 2 },
+           { "type": "numeric-comma", targets: 7 },
+           { "type": "numeric-comma", targets: 9 },
+           { "type": "num-html", targets: 7 }
+        ],
+        "paging":   false,
+        dom: 'Bfrtip',
+        buttons: [
+            'copy', 'csv', 'excel', 'pdf', 'print'
+        ]
+    });
+} );
+
+
+$(document).ready( function () {
+    $('table').on('change', '.check-bl', function(){    
+        $eltCheck = $('.check-bl:checkbox:checked');
+        if( $eltCheck.length > 0){
+            $('.btnAttachDevis').css('display', 'block');
+            $('.send-facture').css('display', 'block');
+        }
+        else{
+            $('.btnAttachDevis').css('display', 'none');
+            $('.send-facture').css('display', 'none');
+        }
+
+        var userCheck = [];   
+        $eltCheck.each(function( index ) {
+            if($( this ).val() != "")
+                userCheck.push($( this ).val());
+        });
+        $('input[name=list-bl-id]').val(userCheck.join('-'));
+        $('input[name=list-elt-id]').val(userCheck.join('-'));
+    });
+    $('.chk-parent').on('change', function(){  
+        $('.check-bl').prop('checked', this.checked);      
+        if($(this).is(":checked")){
+            $('.btnAttachDevis').css('display', 'block');
+            $('.send-facture').css('display', 'block');
+        }
+        else{
+            $('.btnAttachDevis').css('display', 'none');
+            $('.send-facture').css('display', 'none');
+        }
+
+        var userCheck = [];  
+        $eltCheck = $('.check-bl:checkbox:checked'); 
+        $eltCheck.each(function( index ) {
+            if($( this ).val() != "")
+                userCheck.push($( this ).val());
+        });
+        $('input[name=list-bl-id]').val(userCheck.join('-'));
+        $('input[name=list-elt-id]').val(userCheck.join('-'));
+    });
+    $('body').on('click', '.send-facture', function(){
+        $('#modalQ').modal('show');
+    })
+} );
+
+{% endblock %}

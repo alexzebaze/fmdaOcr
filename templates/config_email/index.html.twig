@@ -1,0 +1,46 @@
+{% extends 'base.html.twig' %}
+
+{% block breadcrumb %}
+
+    <div class="row wrapper border-bottom white-bg page-heading">
+        <div class="col-lg-10">
+            <h1>Email Comptable</h1>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item active">
+                    <strong>Email Comptable</strong>
+                </li>
+            </ol>
+        </div>
+    </div>
+{% endblock %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="ibox">
+                <div class="ibox-content">
+                    <form method="POST" action="{{path('config_email_add')}}">
+                    	<div class="row">
+						    <div class="col-lg-12 form-group">
+                                <label>Email comptable</label>
+						        <input type="text" class="form-control" name="cabinet_comptable" value="{{cabinetComptable is not null ? cabinetComptable.value : ''}}">
+						    </div>
+                            <div class="col-lg-12">
+                                <input type="checkbox" id="GestionFinancements" name="gestionFinancement" {% if gestionFinancement is not null and gestionFinancement.value is not null %}checked{% endif %}> <label for="GestionFinancements">Gestion des Financements</label>
+                            </div>
+                            <div class="col-lg-12 form-group">
+                                <input type="checkbox" id="GestionTresorie" name="gestionTresorie" {% if gestionTresorie is not null and gestionTresorie.value is not null %}checked{% endif %}> <label for="GestionTresorie">Gestion de la Trésorie</label>
+                            </div>
+						    <div class="col-lg-12 form-group">
+						        <button class="btn btn-primary">Enregistrer</button>
+						    </div>
+						</div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+

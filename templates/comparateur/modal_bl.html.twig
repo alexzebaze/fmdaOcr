@@ -1,0 +1,56 @@
+<div class="table-responsive">
+    <table class="table table-export table-bl">
+        <thead>
+        <tr>
+            <th>Doc</th>
+            <th>Date création</th>
+            <th>Fournisseur</th>
+            <th>DoucumentID</th>
+            <th>HT</th>
+            <th>TTC</th>
+            <th>Facture</th>
+            <td></td>
+        </tr>
+        </thead>
+        <tbody>
+                
+            {% set totalHT = 0 %}
+            {% for bl in bon_livraisons %}
+
+                <tr class='text-center'>
+                    <td>
+                        <span class="showDocument" data-file="/uploads/factures/{{bl.getDocumentFile}}" style="cursor: pointer;"><img src="//ssl.gstatic.com/docs/doclist/images/mediatype/icon_3_pdf_x16.png"></span>
+                    </td>
+                    <td>
+                        {{ bl.facturedAt|date('d/m/Y') }}
+                    </td>
+                    <td>{{ bl.fournisseur is not null ? bl.fournisseur.nom : '' }}</td>
+                    <td>{{bl.getDocumentId}}</td>
+                    <td>{{ bl.getPrixht|number_format(2, ',', '') }}{{ bl.devise.symbol }}</td>
+                    <td>{{ bl.getPrixttc|number_format(2, ',', '') }}{{ bl.devise.symbol }}</td>
+                    <td>
+                        {% if bl.getBlValidation is not null and bl.getBlValidation != 1 %}
+                            <span style="display: none;">V</span>
+                            <span class="openModalBlFactureDoc" style="cursor: pointer;" data-facture-id="{{bl.getBlValidation}}"><img src="//ssl.gstatic.com/docs/doclist/images/mediatype/icon_3_pdf_x16.png"></span>
+                        {% else %}
+                            <span style="display: none;">X</span>
+                            <i class="fas fa-times" style="font-size: 18px;color: #ef0a0a;"></i>
+                        {% endif %}
+                    </td>
+                    <td style="font-size: 15px;">
+                        <a href="{{ path('bon_livraison_edit', {'bon_livraisonId': bl.id} ) }}?page=comparateur"><i class="far fa-edit"></i></a>
+                        <a onclick="return confirm('Etes-vous sur de vouloir supprimer ce bon de livraison ?')"
+                            href="{{ path('bon_livraison_delete', {'bon_livraisonId': bl.id} ) }}?page=comparateur"><i class="fas fa-trash-alt"></i></a>
+                    </td>
+                    {% set totalHT = totalHT + bl.getPrixht %}
+                </tr>
+                {% else %}
+                
+                <tr>
+                    <td colspan="6" class="text-center">Aucun bl enregistrée</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+<h2 class="text-center"><b>TOTAL HT: {{totalHT|number_format(2, ',', ' ') }}€</b></h2>

@@ -1,0 +1,1121 @@
+
+<style type="text/css">
+	.custom-radio-list >label {
+		position: relative;
+	    background: #e8e8e8;
+	    padding: 1px 18px;
+	    cursor: pointer;
+	    height: 27px;
+	    margin: 0;
+	}
+	.custom-radio-list > .radio-on:checked+label {
+		background: #0cbb0c;
+	}
+	.custom-radio-list > .radio-off:checked+label {
+		background: red;
+	}
+	.custom-radio-list > input[type="radio"]:checked+label::after {
+	    position: absolute;
+	    transform: translate(-50%, -50%);
+	    top: 50%;
+	    left: 50%;
+	    font-size: 10px;
+	    font-weight: 900;
+	    display: inline-block;
+	    font-style: normal;
+	    color: #fff;
+	    font-variant: normal;
+	    text-rendering: auto;
+	    -webkit-font-smoothing: antialiased;
+	}
+	.custom-radio-list > .radio-on:checked+label::after {
+	    content: "\f00c";
+	    font-family: "Font Awesome 5 Pro";
+	}
+	.custom-radio-list > .radio-off:checked+label::after {
+	    content: "\f00d";
+	    font-family: "Font Awesome 5 Pro";
+	}
+	.form-title{
+		font-weight: bold;
+	    margin-bottom: 35px;
+	    font-size: 22px;
+	}
+	.custom-radio-list > input {
+		display: none;
+	}
+	.form-group{
+		border-bottom: 1px solid #f1f1f1;
+	    padding-bottom: 38px;
+	    margin-bottom: 24px;
+	}
+	.label-field{
+		font-weight: 900;
+   		text-transform: uppercase;
+   		text-align: right;
+	}
+	form[name=location] h3{
+		line-height: 25px;
+    	font-weight: 400;
+	}
+	.information-container{
+		padding: 20px 23px;
+	    margin-bottom: 53px;
+	    margin-top: 17px;
+	    border: 1px solid #cbdbd8;
+	    border-left: 4px solid #1ab394;
+	    border-radius: 6px;
+	    width: 96%;
+	    margin-left: 2%;
+	}
+	form[name=location] input[type=radio]{
+		border: 0px;
+	    width: 22px;
+	    height: 2em;
+	    margin-right: 8px;
+	}
+
+	.rounded-galerie {
+            position: absolute;
+            margin-top: -25px;
+            margin-left: auto;
+            border: 4px solid white;
+            height: 46px;
+            width: 46px;
+            margin-right: auto;
+            left: 0;
+            right: 0;
+            z-index: 1;
+        }
+        .vodiapicker{
+          display: none; 
+        }
+
+        #a{
+            max-height: 400px;
+            overflow-y: auto;
+            padding-left: 0px;
+        }
+
+        #a li{
+          list-style: none;
+          cursor: pointer;
+        }
+
+        #a li:hover{
+         background-color: #F4F3F3;
+        }
+
+        #a li img, #a img, .btn-select img{
+            height: 35px;
+            width: 35px;
+            margin: 5px;
+        }
+
+        #a img, .btn-select img{
+            height: 25px;
+            width: 25px;
+        }
+
+        #a li span, .btn-select li span{
+          margin-left: 8px;
+        }
+
+        /* item list */
+
+        .b{
+            position: absolute;
+            z-index: 9;
+            background: #fff;
+          display: none;
+          width: 100%;
+          box-shadow: 0 6px 12px rgba(0,0,0,.175);
+          border: 1px solid rgba(0,0,0,.15);
+          border-radius: 5px;
+          
+        }
+
+        .open{
+          display: show !important;
+        }
+
+        .btn-select{
+          margin-top: 10px;
+          width: 100%;
+          height: 34px;
+          border-radius: 5px;
+          background-color: #fff;
+          border: 1px solid #ccc;
+          padding-top: 0;
+         
+        }
+        .btn-select li{
+          list-style: none;
+          float: left;
+          padding-bottom: 0px;
+        }
+
+        .btn-select:hover li{
+          margin-left: 0px;
+        }
+
+        .btn-select:hover{
+          background-color: #F4F3F3;
+          border: 1px solid transparent;
+          box-shadow: inset 0 0px 0px 1px #ccc;
+          
+          
+        }
+
+        .btn-select:focus{
+           outline:none;
+        }
+
+        .lang-select{
+          text-align: left;
+          position: relative;
+        }
+
+</style>
+
+<div class="col-lg-12">
+    <div class="ibox">
+        <div class="ibox-content" style="padding: 33px 35px;">
+            <div class="row">
+            	<div class="col-lg-12">
+            		<ul class="nav nav-tabs" role="tablist" id="myTabs">
+		                <li role="presentation" class="active"><a href="#informations-tab" aria-controls="informations-tab" role="tab" data-toggle="tab">Informations</a></li>
+		                <li role="presentation"  class=""><a href="#document-tab" aria-controls="document-tab" role="tab" data-toggle="tab">Documents</a></li>
+		            </ul>
+
+					{{ form_start(form) }}
+					<div class="tab-content" style="margin-top: 25px;">
+		                <div role="tabpanel" class="tab-pane active" id="informations-tab">
+				            <div class="row">
+				            	<h2 class="col-lg-12 form-title">Bien loué</h2>
+						    	<div class="col-lg-12 form-group">
+						    		<div class="col-lg-2 label-field">BIEN*</div>
+						    		<div class="col-lg-5">{{ form_row(form.bien) }}</div>
+						    	</div>
+
+						 		<h2 class="col-lg-12 form-title">Locataires</h2>
+							    <div class="col-lg-12 form-group">
+							    	<div class="col-lg-2 label-field">
+							    		<div>LOCATAIRES</div>
+							    	</div>
+							    	<div class="col-lg-9">
+							    		<div class="col-lg-6">
+							    			{{ form_row(form.locataire) }}
+							    		</div>
+							    		<h3 class="col-lg-12" style="margin-top: 15px">
+									    	Cliquez sur le bouton pour ajouter un ou plusieurs locataires ou co-locataires.
+									    </h3>
+							    	</div>
+							    </div>
+
+							    <h2 class="col-lg-12 form-title">Logement</h2>
+							    <div class="col-lg-12 form-group">
+							    	<div class="col-lg-2 label-field">
+							    		<div>LOGEMENT</div>
+							    	</div>
+							    	<div class="col-lg-9">
+							    		<div class="col-lg-6">
+							    			{{ form_row(form.logement) }}
+							    		</div>
+							    	</div>
+							    </div>
+
+
+						    	<h2 class="col-lg-12 form-title">Détails de la location</h2>
+						    	<div class="col-lg-12 form-group">
+								    <div class="col-lg-2 label-field">
+								    	TYPE*
+								    </div>
+								    <div class="col-lg-5">
+
+								        <select class="vodiapicker" name="type" id="type" class="form-control">
+                                            <option value="">-- selectionner une type --</option>
+                                            {% for key,type in types %} 
+	                                            <option {% if location.type is not null and location.type == key %} selected {% endif %} value="{{key}}" data-thumbnail="/uploads/location/icon/{{ typesIcones[key] }}">{{type}}</option>
+                                            {% endfor %}
+                                        </select>
+
+                                        <div class="lang-select">
+                                        	{% if location.type is null or location.type == "" %}
+                                            	<span class="btn btn-select" value=""></span>
+                                            {% else %}
+                                            	<span class="btn btn-select" value="">
+                                            		<li><img src="/uploads/location/icon/{{typesIcones[location.type]}}" alt=""><span>{{types[location.type]}}</span></li>
+                                            	</span>
+                                            {% endif %}
+
+                                            <div class="b">
+                                                <ul id="a"></ul>
+                                            </div>
+                                        </div>
+								    </div>
+								</div>
+							    <div class="col-lg-12 form-group">
+							        <div class="col-lg-2 label-field">IDENTIFIANT</div>
+							        <div class="col-lg-5">
+							        	<div>{{ form_row(form.identifiant) }}</div>
+							        	<h4 class="mt-2">Saisir un identiant, référence ou numéro unique.</h4>
+							        </div>
+							    </div>
+
+							    <div class="col-lg-12 form-group">
+								    <div class="col-lg-2 label-field">
+								    	<label>Utilisation</label>
+								    </div>
+								    <div class="col-lg-9 form-group">
+								    	{% for key, use in utilisations %} 
+								    	<div>
+								    		<label style="font-size: 17px;font-weight: 400;line-height: 32px;display: flex;align-items: center; justify-content: flex-start;"> <input type="radio" {% if key == location.utilisation %}checked{% endif %} value="{{key}}" name="utilisation"> {{use}}</label>
+								    	</div>
+								    	{% endfor %}
+								    </div> 
+							    </div> 
+							    <div class="col-lg-12 form-group">
+							    	<div class="col-lg-2 label-field">
+							    		{{ form_label(form.debut_bail, 'DEBUT DU BAIL') }}
+							    	</div>
+							    	<div class="col-lg-3">
+							    		{{ form_row(form.debut_bail) }}
+							    	</div>
+							    </div>
+							    <div class="col-lg-12 form-group">
+							    	<div class="col-lg-2 label-field">
+							    		{{ form_label(form.fin_bail, 'FIN DU BAIL') }}
+							    	</div>
+							    	<div class="col-lg-3">
+							    		<div>{{ form_row(form.fin_bail) }}</div>
+							    	</div>
+							    </div>
+							    <div class="col-lg-12 form-group">
+							    	<div class="col-lg-2 label-field">
+							    		<div>RENOUVELLEMENT</div>
+							    	</div>
+								    <div class="col-lg-9">
+								    	<div class="col-lg-6 custom-radio-list" style="display: flex; ;display: flex;align-items: center;">
+								    		<input type="radio" value="1" class="radio-on" {% if location.renouvellement %}checked{% endif %} name="renouvellement" id="renouv-one">
+									        <label for="renouv-one" class="active"></label>
+									        <input type="radio" value="0" class="radio-off" {% if location.renouvellement == 0 %}checked{% endif %} name="renouvellement" id="renouv-second">
+									        <label for="renouv-second"></label>
+								    	</div>
+								        <h3 class="col-lg-12">Si vous cochez la case Renouveler par tacite, le site continuera de générer les loyers après la date de n indiquée.</h3>
+								    </div>
+								</div>
+							    <div class="col-lg-12 form-group">
+							    	<div class="col-lg-2 label-field">
+							    		<div>PAIEMENT*</div>
+							    	</div>
+							    	<div class="col-lg-5">
+							        	{{ form_row(form.echeance_paiement) }}
+							        </div>
+							    </div>
+							    <div class="col-lg-12 form-group">
+							    	<div class="col-lg-2 label-field">
+							    		<div>DATE DE PAIEMENT</div>
+							    	</div>
+							    	<div class="col-lg-5">
+							        	<div>{{ form_row(form.date_paiement) }}</div>
+							        	<h3>Date de paiement du loyer prévue dans le contrat.</h3>
+							        </div>
+							    </div>
+							    <div class="col-lg-12 form-group">
+							    	<div class="col-lg-2 label-field">
+							    		<div>DATE QUITTANCEMENT / QUITTANCE</div>
+							    	</div>
+							    	<div class="col-lg-9">
+							        	<div class="col-lg-3">
+							        		{{ form_row(form.periodicite) }}
+							        	</div>
+							        	<h3 class="col-lg-12">
+							        		Cette date dénit la période de la quiance de loyer. Si vous choisissez le 15 du mois, les quiances seront datées du 15 au 14 du mois suivant.
+							        	</h3>
+							        </div>
+							    </div>
+							    <div class="col-lg-12 form-group">
+							    	<div class="col-lg-2 label-field">
+							    		<div>GENERATEUR DU LOYER</div>
+							    	</div>
+							    	<div class="col-lg-9">
+							        	<div class="col-lg-5">
+							        		{{ form_row(form.generateur_loyer) }}
+							        	</div>
+							        	<h3 class="col-lg-12">
+							        		Si vous choisissez le J-5, le loyer et l'avis d'échéance sera généré 5 jours avant la date de quiancement. Ex. Le loyer du 1 au 30 Avril sera généré le 26 Mars. Pour chaque contrat de location, les loyers sont générés automatiquement chaque mois dans la rubrique Finances.
+							        	</h3>
+							        </div>
+							    </div>
+							    <div class="col-lg-12 form-group">
+							    	<div class="col-lg-2 label-field">
+							    		<div>MOYEN DE PAIEMENT</div>
+							    	</div>
+							    	<div class="col-lg-9">
+							        	<div class="col-lg-5">
+							        		{{ form_row(form.paiement) }}
+							        	</div>
+							        	<h3 class="col-lg-12">
+							        		En choisissant le mode Prélèvement automatique, le système générera les loyers comme payés pour vous faire gagner du temps.
+							        	</h3>
+							        </div>
+							    </div>
+							    <h2 class="col-lg-12 form-title">Loyer</h2>
+							    <div class="col-lg-12 form-group">
+							    	<div class="col-lg-2 label-field">
+							    		<div>LOYER HORS CHARGES*</div>
+							    	</div>
+							    	<div class="col-lg-9">
+							        	<div class="col-lg-5">
+							        		{{ form_row(form.loyer_hc) }}
+							        	</div>
+							        </div>
+							    </div>
+							    <div class="col-lg-12 form-group">
+							    	<div class="col-lg-2 label-field">
+							    		<div>CHARGES</div>
+							    	</div>
+							    	<div class="col-lg-9">
+							        	<div class="col-lg-5">
+						        			{{ form_row(form.loyer_charge) }}
+						        		</div>
+						        		<div class="col-lg-12" style="margin-top: 20px;">
+						        			<label style="font-size: 17px;font-weight: 400;line-height: 32px;;display: inline-flex;align-items: center ">
+									        	<input type="radio" value="1" {% if 1 == location.getChargeProvisionForfait %}checked{% endif %}  name="charge_provision_forfait"> <span>Provision pour charges</span>
+									        </label>
+									        <label style="margin-left: 36px; font-size: 20px;font-weight: 400;line-height: 32px;;display: inline-flex;align-items: center;">
+									        	<input type="radio" value="2" {% if 2 == location.getChargeProvisionForfait %}checked{% endif %} name="charge_provision_forfait"> <span>Forfait de charges</span>
+									        </label>
+						        		</div>
+							        </div>
+							    </div>
+
+							    <div class="col-lg-12 form-group">
+							    	<div class="col-lg-2 label-field">
+							    		<div>LOYER CHARGES COMPRISES*</div>
+							    	</div>
+						        	<div class="col-lg-5">
+								        {{ form_row(form.loyer_charge_comprise) }}
+								    </div>
+							    </div>
+							    <div class="col-lg-12 form-group">
+							    	<div class="col-lg-2 label-field">
+							    		<div>TVA</div>
+							    	</div>
+						        	<div class="col-lg-5">
+								        {{ form_row(form.tva) }}
+								    </div>
+							    </div>
+							    <h2 class="col-lg-12 form-title">Autres charges</h2>
+							    <div class="col-lg-12 form-group">
+							    	<div class="col-lg-2 label-field">
+							    		<div>AUTRES CHARGES</div>
+							    	</div>
+							    	<div class="col-lg-9">			    		
+							        	<div class="col-lg-12 charges-container">
+							        		{% for charge in location.paiements %}
+								        		<div class="row" style="margin-bottom: 15px">
+											        <div class="col-lg-5">
+											        	<input type="text" class="form-control" value="{{charge.description}}" placeholder="Description" name="chargesEdit[{{charge.id}}][description]">
+											        </div>
+											        <div class="col-lg-5">
+											        	<input type="text" pattern="[0-9]+(\.[0-9]{1,9})?%?" class="form-control field-number" value="{{charge.montant}}" placeholder="€    Montant" name="chargesEdit[{{charge.id}}][montant]">
+											        </div>
+											        <span class="close-charge btn col-lg-1" style="color: #b50505;">X</span>
+										        </div>
+									        {% endfor %}
+
+							        		<div class="row" style="margin-bottom: 15px">
+										        <div class="col-lg-5">
+										        	<input type="text" class="form-control" placeholder="Description" name="charges[description][]">
+										        </div>
+										        <div class="col-lg-5">
+										        	<input type="text" pattern="[0-9]+(\.[0-9]{1,9})?%?" class="form-control field-number" placeholder="€    Montant" name="charges[montant][]">
+										        </div>
+										        <span class="close-charge btn col-lg-1" style="color: #b50505;">X</span>
+									        </div>
+									    </div>
+									    <div class="col-lg-12">
+									    	<span class="btn" onclick="addPaiement()" style="border: 1px solid #f1efef;font-size: 15px;color: #000;"><i class="fas fa-plus-circle"></i> Ajouter un paiement</span>
+									    </div>
+									    <h3 class="col-lg-12" style="margin-top: 15px">
+									    	Autres paiements exceptionnels tels que le ménage, parking etc. Ces paiements gureront sur chaque quiance et s'ajoutent au Loyer.
+									    </h3>
+									</div>
+							    </div>
+							    <h2 class="col-lg-12 form-title">Dépôt de garantie</h2>
+							    <div class="col-lg-12 form-group">
+							    	<div class="col-lg-2 label-field">
+							    		<div>DÉPÔT DE GARANTIE *</div>
+							    	</div>
+							    	<div class="col-lg-5">
+							    		{{ form_row(form.depot_garantie) }}
+							    	</div>
+							    </div>
+
+							    <h2 class="col-lg-12 form-title">Allocations logement</h2>
+							    <div class="col-lg-12 form-group">
+							    	<div class="col-lg-2 label-field">
+							    		<div>PAIEMENT CAF/APL</div>
+							    	</div>
+							    	<div class="col-lg-9">
+							    		<div class="col-lg-6">
+							    			{{ form_row(form.logement_paiement) }}
+							    		</div>
+							    		<h3 class="col-lg-12" style="margin-top: 15px">
+									    	Autres paiements exceptionnels tels que le ménage, parking etc. Ces paiements gureront sur chaque quiance et s'ajoutent au Loyer.
+									    </h3>
+							    	</div>
+							    </div>
+
+							    <h2 class="col-lg-12 form-title">Frais de retard</h2>
+							    <div class="col-lg-12 form-group">
+							    	<div class="col-lg-2 label-field">
+							    		<div>FRAIS DE RETARD</div>
+							    	</div>
+							    	<div class="col-lg-9">			    		
+							        	<div class="col-lg-12">
+							        		<div class="row" style="margin-bottom: 15px">
+										        <div class="col-lg-5">
+										        	{{ form_row(form.frais_retard) }}
+										        </div>
+										        <div class="col-lg-2">
+										        	{{ form_row(form.frais_retard_percent) }}
+										        </div>
+									        </div>
+									    </div>
+									    <h3 class="col-lg-12">
+									    	Information à titre indicatif.
+									    </h3>
+									</div>
+							    </div>
+
+							    <h2 class="col-lg-12 form-title">Révision de loyer</h2>
+							    <div class="col-lg-12 form-group">
+							    	<div class="col-lg-2 label-field">
+							    		<div>INDICE DE RÉFÉRENCE</div>
+							    	</div>
+							    	<div class="col-lg-9">			    		
+							        	<div class="col-lg-12">
+							        		<div class="row">
+										        <div class="col-lg-2">
+										        	{{ form_row(form.indice_referentiel_1) }}
+										        </div>
+										        <div class="col-lg-5">
+										        	{{ form_row(form.indice_referentiel_2) }}
+										        </div>
+									        </div>
+									    </div>
+									</div>
+							    </div>	
+
+							    <div class="col-lg-12 form-group">
+							    	<div class="col-lg-2 label-field">
+							    		<div>RÉVISION AUTOMATIQUE</div>
+							    	</div>
+								    <div class="col-lg-9">
+								    	<div class="col-lg-6 custom-radio-list" style="display: flex; align-items: center;">
+								    		<input type="radio" value="1" {% if location.getRevisionAutomatique %}checked{% endif %} name="revision_automatique" class="radio-on" id="revision-one">
+									        <label for="revision-one" class="active"></label>
+									        <input type="radio" value="0" class="radio-off" {% if location.getRevisionAutomatique == 0 %}checked{% endif %} name="revision_automatique" id="revision-second">
+									        <label for="revision-second"></label>
+								    	</div>
+								        <h3 class="col-lg-12">
+								        	Si vous activez cee option, le site révisera automatiquement, chaque année à la date anniversaire, le montant du loyer. Vous recevrez un email de notication. Cee option est disponible uniquement pour les indices IRL et ILC.
+								        </h3>
+								    </div>
+								</div>
+
+							    <div class="col-lg-12 form-group">
+							    	<div class="col-lg-2 label-field">
+							    		<div>PERIODE</div>
+							    	</div>
+							    	<div class="col-lg-9">
+							    		<div class="col-lg-6">
+							    			{{ form_row(form.periode) }}
+							    		</div>
+							    		<h3 class="col-lg-12" style="margin-top: 15px">
+									    	Période de révision du loyer.
+									    </h3>
+							    	</div>
+							    </div>
+
+							    <h2 class="col-lg-12 form-title">Encadrement des loyers</h2>
+							    <div class="col-lg-12 form-group">
+							    	<div class="col-lg-2 label-field">
+							    	</div>
+							    	<div class="col-lg-9">
+							    		<h3>Le loyer du logement objet du présent contrat est-il soumis au loyer de référence majoré xé par arrêté préfectoral ?</h3>
+							    		<div>
+							    			<label style="display: flex;align-items: center; font-size: 17px;font-weight: 400;">
+							    			<input type="radio" value="1" name="is_loyer_reference" {% if 1 == location.getIsLoyerReference %}checked{% endif %}> Oui</label>
+							    		</div>
+							    		<div>
+							    			<label style="display: flex;align-items: center; font-size: 17px;font-weight: 400;">
+							    				<input type="radio" value="0" name="is_loyer_reference" {% if 0 == location.getIsLoyerReference %}checked{% endif %}> Non</label>
+							    		</div>
+							    	</div>
+							    </div>
+
+							    <div class="col-lg-12 form-group">
+							    	<div class="col-lg-2 label-field">
+							    	</div>
+							    	<div class="col-lg-9">
+							    		<h3>Le logement est-il dans une zone où l'évolution du loyer est plafonnée à l'IRL ?</h3>
+							    		<div>
+							    			<label style="display: flex;align-items: center;font-size: 17px;font-weight: 400;">
+							    				<input type="radio" value="1" name="is_loyer_majore" {% if 1 == location.getIsLoyerMajore %}checked{% endif %}> Oui</label>
+							    		</div>
+							    		<div>
+							    			<label style="display: flex;align-items: center;font-size: 17px;font-weight: 400;">
+							    				<input type="radio" value="0" name="is_loyer_majore" {% if 0 == location.getIsLoyerMajore %}checked{% endif %}> Non</label>
+							    		</div>
+							    	</div>
+							    </div>
+
+							    <div class="col-lg-12 form-group">
+							    	<div class="col-lg-2 label-field">
+							    		<div>LOYER DE RÉFÉRENCE €/M²</div>
+							    	</div>
+							    	<div class="col-lg-9">
+							    		<div class="col-lg-6">
+							    			{{ form_row(form.loyer_reference) }}
+							    		</div>
+							    		<h3 class="col-lg-12" style="margin-top: 15px">
+									    	Montant mensuel du loyer de référence €/m²
+									    </h3>
+							    	</div>
+							    </div>
+
+							    <div class="col-lg-12 form-group">
+							    	<div class="col-lg-2 label-field">
+							    		<div>LOYER MAJORÉ €/M²</div>
+							    	</div>
+							    	<div class="col-lg-9">
+							    		<div class="col-lg-6">
+							    			{{ form_row(form.loyer_majore) }}
+							    		</div>
+							    		<h3 class="col-lg-12" style="margin-top: 15px">
+									    	Montant mensuel du loyer de référence majoré €/m².
+									    </h3>
+							    	</div>
+							    </div>
+
+							    <div class="col-lg-12 form-group">
+							    	<div class="col-lg-2 label-field">
+							    		<div>COMPLÉMENT DE LOYER</div>
+							    	</div>
+							    	<div class="col-lg-9">
+							    		<div class="col-lg-6">
+							    			{{ form_row(form.complement_loyer) }}
+							    		</div>
+							    		<div class="col-lg-12" style="margin-top: 10px;">
+							    			{{ form_row(form.complement_description) }}
+							    		</div>
+							    		<h3 class="col-lg-12" style="margin-top: 15px">
+									    	A remplir si votre loyer est supérieur au loyer de référence majoré. Le complement de loyer doit être justié.
+									    </h3>
+							    	</div>
+							    </div>
+
+							    <div class="col-lg-12 form-group">
+							    	<div class="col-lg-2 label-field">
+							    	</div>
+							    	<div class="col-lg-9">
+							    		<h3>Le bail du précédent locataire est-il terminé depuis plus de 18 mois ?</h3>
+							    		<div>
+							    			<label style="display: flex;align-items: center; font-size: 17px;font-weight: 400;">
+							    				<input type="radio" value="1" name="fin_dernier_bail" {% if 1 == location.getFinDernierBail %}checked{% endif %}> Oui</label>
+							    		</div>
+							    		<div>
+							    			<label style="display: flex;align-items: center; font-size: 17px;font-weight: 400;">
+							    				<input type="radio" value="0" name="fin_dernier_bail" {% if 0 == location.getFinDernierBail %}checked{% endif %}> Non</label>
+							    		</div>
+							    	</div>
+							    </div>
+
+							    <div class="col-lg-12 form-group">
+							    	<div class="col-lg-2 label-field">
+							    		<div>DERNIER LOYER APPLIQUÉ</div>
+							    	</div>
+							    	<div class="col-lg-9">
+							    		<div class="col-lg-6">
+							    			{{ form_row(form.dernier_loyer) }}
+							    		</div>
+							    		<h3 class="col-lg-12" style="margin-top: 15px">
+									    	Montant du dernier loyer acquié par le précédent locataire.
+									    </h3>
+							    	</div>
+							    </div>
+
+							    <div class="col-lg-12 form-group">
+							    	<div class="col-lg-2 label-field">
+							    		<div>DATE DE VERSEMENT</div>
+							    	</div>
+						    		<div class="col-lg-3">
+						    			{{ form_row(form.date_versement) }}
+						    		</div>
+							    </div>
+
+							    <div class="col-lg-12 form-group">
+							    	<div class="col-lg-2 label-field">
+							    		<div>DERNIÈRE RÉVISION</div>
+							    	</div>
+						    		<div class="col-lg-3">
+						    			{{ form_row(form.date_derniere_revision) }}
+						    		</div>
+							    </div>
+
+							    <div class="col-lg-12 form-group">
+							    	<div class="col-lg-2 label-field">
+							    	</div>
+							    	<div class="col-lg-9">
+							    		<h3>Le loyer fait-il l'objet d'une réévaluation?</h3>
+							    		<div>
+							    			<label style="display: flex;align-items: center; font-size: 17px;font-weight: 400;">
+							    				<input type="radio" value="1" name="is_loyer_reevalue" {% if 1 == location.getIsLoyerReevalue %}checked{% endif %}> Oui</label>
+							    		</div>
+							    		<div>
+							    			<label style="display: flex;align-items: center; font-size: 17px;font-weight: 400;">
+							    				<input type="radio" value="0" name="is_loyer_reevalue" {% if 0 == location.getIsLoyerReevalue %}checked{% endif %}> Non</label>
+							    		</div>
+							    	</div>
+							    </div>
+
+							    <div class="information-container col-lg-12">
+							    	<h2>Information</h2>
+							    	<p style="font-size: 18px;">
+							    		Pour chaque contrat de location, les loyers et les quiances sont générés automatiquement chaque 1 du mois (sauf indiqué autrement dans le
+										formulaire ci-dessus) et apparaissent dans la rubrique Finances. <br><br>
+										Si la location est avec une date de début antérieure, le système génèrera automatiquement (toutes les 5 minutes) les Quiances pour la
+										période écoulée. Soyez patient le temps que les données soient générés et apparaissent dans la rubrique Finances.
+							    	</p>
+							    </div>
+
+							    <div class="col-lg-12 form-group text-center">
+							        <button class="btn btn-primary">{{ button_label|default('Enregistrer') }}</button>
+							    </div>
+							</div>
+						</div>
+
+						<div role="tabpanel" class="tab-pane" id="document-tab">
+							<div class="row">
+						    	<div class="col-lg-12 form-group">
+						    		<div class="col-lg-2 label-field">Mandat Sepa</div>
+						    		<div class="col-lg-5">
+						    			{{ form_row(form.mandat_sepa) }}
+
+						    			{% if location.getMandatSepa %}
+
+							        	{{location.getMandatSepa|length > 40 ? location.getMandatSepa|slice(0, 40) ~ '...' : location.getMandatSepa}}
+						    			<br>
+						    			<div class="col-lg-12" style="display: flex;align-items: center;">
+							    			<span class="showDocument" data-file="/uploads/location/{{location.getMandatSepa}}" style="cursor: pointer;"><img src="//ssl.gstatic.com/docs/doclist/images/mediatype/icon_3_pdf_x16.png"></span>
+							    			<a href="{{path('location_delete_document', {'id':location.id, 'type_document':'mandat_sepa'})}}" onclick="return confirm('Voulez-vous la suppression ?')"  style="margin-left: 15px;font-size: 11px; padding: 2px 7px;" class="btn btn-danger"><i class="fa fa-trash"></i>
+							    			</a>
+							    		</div>
+							    		{% endif %}
+						    		</div>
+						    	</div>
+						    	<div class="col-lg-12 form-group">
+								    <div class="col-lg-2 label-field">
+								    	Etats des Lieux
+								    </div>
+								    <div class="col-lg-5">
+								        {{ form_row(form.etat_lieux) }}
+
+								        {% if location.getEtatLieux %}
+
+							        	{{location.getEtatLieux|length > 40 ? location.getEtatLieux|slice(0, 40) ~ '...' : location.getEtatLieux}}
+								        <br>
+						    			<div class="col-lg-12" style="display: flex;align-items: center;">
+							    			<span class="showDocument" data-file="/uploads/location/{{location.getEtatLieux}}" style="cursor: pointer;"><img src="//ssl.gstatic.com/docs/doclist/images/mediatype/icon_3_pdf_x16.png"></span>
+							    			<a href="{{path('location_delete_document', {'id':location.id, 'type_document':'etat_lieux'})}}" onclick="return confirm('Voulez-vous la suppression ?')"  style="margin-left: 15px;font-size: 11px; padding: 2px 7px;" class="btn btn-danger"><i class="fa fa-trash"></i>
+							    			</a>
+							    		</div>
+							    		{% endif %}
+								    </div>
+								</div>
+							    <div class="col-lg-12 form-group">
+							        <div class="col-lg-2 label-field">DPE</div>
+							        <div class="col-lg-5">
+							        	<div>{{ form_row(form.diagnostique) }}</div>
+							        	
+							        	{% if location.getDiagnostique %}
+
+							        	{{location.getDiagnostique|length > 40 ? location.getDiagnostique|slice(0, 40) ~ '...' : location.getDiagnostique}}
+							        	<br>
+						    			<div class="col-lg-12" style="display: flex;align-items: center;">
+							    			<span class="showDocument" data-file="/uploads/location/{{location.getDiagnostique}}" style="cursor: pointer;"><img src="//ssl.gstatic.com/docs/doclist/images/mediatype/icon_3_pdf_x16.png"></span>
+							    			<a href="{{path('location_delete_document', {'id':location.id, 'type_document':'diagnostique'})}}" onclick="return confirm('Voulez-vous la suppression ?')"  style="margin-left: 15px;font-size: 11px; padding: 2px 7px;" class="btn btn-danger"><i class="fa fa-trash"></i>
+							    			</a>
+							    		</div>
+							    		{% endif %}
+							        </div>
+							    </div>
+							    <div class="col-lg-12 form-group">
+							        <div class="col-lg-2 label-field">Attestation Assurance</div>
+							        <div class="col-lg-5">
+							        	<div>{{ form_row(form.attestation_assurance) }}</div>
+
+							        	{% if location.getAttestationAssurance %}
+
+							        	{{location.getAttestationAssurance|length > 40 ? location.getAttestationAssurance|slice(0, 40) ~ '...' : location.getAttestationAssurance}}
+							        	<br>
+						    			<div class="col-lg-12" style="display: flex;align-items: center;">
+							    			<span class="showDocument" data-file="/uploads/location/{{location.getAttestationAssurance}}" style="cursor: pointer;"><img src="//ssl.gstatic.com/docs/doclist/images/mediatype/icon_3_pdf_x16.png"></span>
+							    			<a href="{{path('location_delete_document', {'id':location.id, 'type_document':'attestation_assurance'})}}" onclick="return confirm('Voulez-vous la suppression ?')"  style="margin-left: 15px;font-size: 11px; padding: 2px 7px;" class="btn btn-danger"><i class="fa fa-trash"></i>
+							    			</a>
+							    		</div>
+							    		{% endif %}
+							        </div>
+							    </div>
+							    <div class="col-lg-12 form-group">
+							        <div class="col-lg-2 label-field">Chéque de Dépot de Garantie</div>
+							        <div class="col-lg-5">
+							        	<div>{{ form_row(form.cheque_depot_garantie) }}</div>
+
+							        	{% if location.getChequeDepotGarantie %}
+							        		{{location.getChequeDepotGarantie|length > 40 ? location.getChequeDepotGarantie|slice(0, 40) ~ '...' : location.getChequeDepotGarantie}}
+							        	<br>
+						    			<div class="col-lg-12" style="display: flex;align-items: center;">
+							    			<span class="showDocument" data-file="/uploads/location/{{location.getChequeDepotGarantie}}" style="cursor: pointer;"><img src="//ssl.gstatic.com/docs/doclist/images/mediatype/icon_3_pdf_x16.png"></span>
+							    			<a href="{{path('location_delete_document', {'id':location.id, 'type_document':'cheque_depot_garantie'})}}" onclick="return confirm('Voulez-vous la suppression ?')"  style="margin-left: 15px;font-size: 11px; padding: 2px 7px;" class="btn btn-danger"><i class="fa fa-trash"></i>
+							    			</a>
+							    		</div>
+							    		{% endif %}
+							        </div>
+							    </div>
+							    <div class="col-lg-12 form-group">
+							        <div class="col-lg-2 label-field">Offre de Location Signé</div>
+							        <div class="col-lg-5">
+							        	
+							        	<div>{{ form_row(form.offre_location_signe) }}</div>
+
+							        	{% if location.getOffreLocationSigne %}
+							        	{{location.getOffreLocationSigne|length > 40 ? location.getOffreLocationSigne|slice(0, 40) ~ '...' : location.getOffreLocationSigne}}
+							        	<br>
+							        	<div class="col-lg-12" style="display: flex;align-items: center;">
+							    			<span class="showDocument" data-file="/uploads/location/{{location.getOffreLocationSigne}}" style="cursor: pointer;"><img src="//ssl.gstatic.com/docs/doclist/images/mediatype/icon_3_pdf_x16.png"></span>
+							    			<a href="{{path('location_delete_document', {'id':location.id, 'type_document':'offre_location_signe'})}}" onclick="return confirm('Voulez-vous la suppression ?')"  style="margin-left: 15px;font-size: 11px; padding: 2px 7px;" class="btn btn-danger"><i class="fa fa-trash"></i>
+							    			</a>
+							    		</div>
+							    		{% endif %}
+							        </div>
+							    </div>
+							    <div class="col-lg-12 form-group">
+							        <div class="col-lg-2 label-field">Facture eau</div>
+							        <div class="col-lg-5">
+							        	<div>{{ form_row(form.facture_eau) }}</div>
+							        	
+							        	{% if location.getFactureEau %}
+
+							        	{{location.getFactureEau|length > 40 ? location.getFactureEau|slice(0, 40) ~ '...' : location.getFactureEau}}
+							        	<br>
+							        	<div class="col-lg-12" style="display: flex;align-items: center;">
+							    			<span class="showDocument" data-file="/uploads/location/{{location.getFactureEau}}" style="cursor: pointer;"><img src="//ssl.gstatic.com/docs/doclist/images/mediatype/icon_3_pdf_x16.png"></span>
+							    			<a href="{{path('location_delete_document', {'id':location.id, 'type_document':'facture_eau'})}}" onclick="return confirm('Voulez-vous la suppression ?')"  style="margin-left: 15px;font-size: 11px; padding: 2px 7px;" class="btn btn-danger"><i class="fa fa-trash"></i>
+							    			</a>
+							    		</div>
+							    		{% endif %}
+							        </div>
+							    </div>
+							    <div class="col-lg-12 form-group">
+							        <div class="col-lg-2 label-field">Plan</div>
+							        <div class="col-lg-5">
+							        	<div>{{ form_row(form.plan) }}</div>
+							        	
+							        	{% if location.getPlan %}
+
+							        	{{location.getPlan|length > 40 ? location.getPlan|slice(0, 40) ~ '...' : location.getPlan}}
+							        	<br>
+							        	<div class="col-lg-12" style="display: flex;align-items: center;">
+							    			<span class="showDocument" data-file="/uploads/location/{{location.getPlan}}" style="cursor: pointer;"><img src="//ssl.gstatic.com/docs/doclist/images/mediatype/icon_3_pdf_x16.png"></span>
+							    			<a href="{{path('location_delete_document', {'id':location.id, 'type_document':'plan'})}}" onclick="return confirm('Voulez-vous la suppression ?')"  style="margin-left: 15px;font-size: 11px; padding: 2px 7px;" class="btn btn-danger"><i class="fa fa-trash"></i>
+							    			</a>
+							    		</div>
+							    		{% endif %}
+							        </div>
+							    </div>
+							    <div class="col-lg-12 form-group">
+							        <div class="col-lg-2 label-field">Bail</div>
+							        <div class="col-lg-5">
+							        	<div>{{ form_row(form.bail) }}</div>
+							        	
+							        	{% if location.getBail %}
+
+							        	{{location.getBail|length > 40 ? location.getBail|slice(0, 40) ~ '...' : location.getBail}}
+							        	<br>
+							        	<div class="col-lg-12" style="display: flex;align-items: center;">
+							    			<span class="showDocument" data-file="/uploads/location/{{location.getBail}}" style="cursor: pointer;"><img src="//ssl.gstatic.com/docs/doclist/images/mediatype/icon_3_pdf_x16.png"></span>
+							    			<a href="{{path('location_delete_document', {'id':location.id, 'type_document':'bail'})}}" onclick="return confirm('Voulez-vous la suppression ?')"  style="margin-left: 15px;font-size: 11px; padding: 2px 7px;" class="btn btn-danger"><i class="fa fa-trash"></i>
+							    			</a>
+							    		</div>
+							    		{% endif %}
+							        </div>
+							    </div>
+							    <div class="col-lg-12 form-group">
+							        <div class="col-lg-2 label-field">DIAG PLOMB</div>
+							        <div class="col-lg-5">
+							        	<div>{{ form_row(form.diag_plomb) }}</div>
+							        	
+							        	{% if location.getDiagPlomb %}
+
+							        	{{location.getDiagPlomb|length > 40 ? location.getDiagPlomb|slice(0, 40) ~ '...' : location.getDiagPlomb}}
+							        	<br>
+							        	<div class="col-lg-12" style="display: flex;align-items: center;">
+							    			<span class="showDocument" data-file="/uploads/location/{{location.getDiagPlomb}}" style="cursor: pointer;"><img src="//ssl.gstatic.com/docs/doclist/images/mediatype/icon_3_pdf_x16.png"></span>
+							    			<a href="{{path('location_delete_document', {'id':location.id, 'type_document':'bail'})}}" onclick="return confirm('Voulez-vous la suppression ?')"  style="margin-left: 15px;font-size: 11px; padding: 2px 7px;" class="btn btn-danger"><i class="fa fa-trash"></i>
+							    			</a>
+							    		</div>
+							    		{% endif %}
+							        </div>
+							    </div>
+							    <div class="col-lg-12 form-group">
+							        <div class="col-lg-2 label-field">CERTIFICAT DE MESURAGE</div>
+							        <div class="col-lg-5">
+							        	<div>{{ form_row(form.certificat_mesurage) }}</div>
+							        	
+							        	{% if location.getCertificatMesurage %}
+
+							        	{{location.getCertificatMesurage|length > 40 ? location.getCertificatMesurage|slice(0, 40) ~ '...' : location.getCertificatMesurage}}
+							        	<br>
+							        	<div class="col-lg-12" style="display: flex;align-items: center;">
+							    			<span class="showDocument" data-file="/uploads/location/{{location.getCertificatMesurage}}" style="cursor: pointer;"><img src="//ssl.gstatic.com/docs/doclist/images/mediatype/icon_3_pdf_x16.png"></span>
+							    			<a href="{{path('location_delete_document', {'id':location.id, 'type_document':'bail'})}}" onclick="return confirm('Voulez-vous la suppression ?')"  style="margin-left: 15px;font-size: 11px; padding: 2px 7px;" class="btn btn-danger"><i class="fa fa-trash"></i>
+							    			</a>
+							    		</div>
+							    		{% endif %}
+							        </div>
+							    </div>
+							    <div class="col-lg-12 form-group">
+							        <div class="col-lg-2 label-field">DIAG AMIANTE</div>
+							        <div class="col-lg-5">
+							        	<div>{{ form_row(form.diag_amiante) }}</div>
+							        	
+							        	{% if location.getDiagAmiante %}
+
+							        	{{location.getDiagAmiante|length > 40 ? location.getDiagAmiante|slice(0, 40) ~ '...' : location.getDiagAmiante}}
+							        	<br>
+							        	<div class="col-lg-12" style="display: flex;align-items: center;">
+							    			<span class="showDocument" data-file="/uploads/location/{{location.getDiagAmiante}}" style="cursor: pointer;"><img src="//ssl.gstatic.com/docs/doclist/images/mediatype/icon_3_pdf_x16.png"></span>
+							    			<a href="{{path('location_delete_document', {'id':location.id, 'type_document':'bail'})}}" onclick="return confirm('Voulez-vous la suppression ?')"  style="margin-left: 15px;font-size: 11px; padding: 2px 7px;" class="btn btn-danger"><i class="fa fa-trash"></i>
+							    			</a>
+							    		</div>
+							    		{% endif %}
+							        </div>
+							    </div>
+
+
+								<h2 class="col-lg-12 form-title">RELEVE</h2>
+							    <div class="col-lg-12 form-group">
+							    	<div class="releve-container">
+							    		{% for releve in location.releves %}
+								    		<div class="releve-content">
+								    			<div class="col-lg-2 label-field">
+										    		<div>RELEVE</div>
+										    	</div>
+
+										    	<div class="col-lg-9 form-group">	
+										    		<div class="row">
+										    			<div class="col-lg-12">
+										    				<div class="row">
+															    <div class="col-lg-12">
+															    	<select name="relevesEdit[{{releve.id}}][releve]" class="form-control">
+															    		{% for key,rel in releves_types %} 
+														    			<option value="{{key}}" {% if releve.releve == key %}selected{% endif %}>{{rel}}</option>
+														    			{% endfor %}
+															    	</select> 
+															    </div>
+															</div>
+															<div class="row" style="margin-top: 20px;">
+																<div class="col-lg-6">
+															        <label>Date du relevé</label>
+															        <div>
+															        	<div><input type="date" required name="relevesEdit[{{releve.id}}][date]" class="form-control" value="{{releve.getDateReleve|date('Y-m-d')}}"></div>
+															        </div>
+															    </div>
+															    <div class="col-lg-6">
+															        <label>Quantite</label>
+															        <div>
+															        	<div><input type="text" class="field-number form-control" name="relevesEdit[{{releve.id}}][qte]" value="{{releve.quantite}}"></div>
+															        </div>
+															    </div>
+															</div>
+										    			</div>
+										    		</div>		
+												</div>
+												<span class="close-releve btn col-lg-1" style="color: #b50505;">X</span>
+								    		</div>
+							    		{% endfor %}
+							    	</div>
+
+							    	<div class="col-lg-12 text-center" style="margin-top: 34px;">
+								    	<span class="btn" onclick="addReleve()" style="border: 1px solid #f1efef;font-size: 15px;color: #000;"><i class="fas fa-plus-circle"></i> Ajouter un relevé</span>
+								    </div>
+
+							    </div>
+
+								<div class="col-lg-12 form-group text-center">
+							        <button class="btn btn-primary">{{ button_label|default('Enregistrer') }}</button>
+							    </div>
+							</div>
+						</div>
+					</div>
+					{{ form_end(form) }}
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script type="text/javascript">
+
+	$('.field-number').keyup(function () {
+        var content = $(this).val();
+        $(this).val(content.replace(/[\,]+/g, '.'));
+    });
+
+	addPaiement = function(){
+		var ELT = '<div class="row" style="margin-bottom: 15px;">'+
+			        '<div class="col-lg-5">'+
+			        	'<input type="text" class="form-control" placeholder="Description" name="charges[description][]">'+
+			        '</div>'+
+			        '<div class="col-lg-5">'+
+			        	'<input type="text" class="form-control field-number" placeholder="€    Montant" name="charges[montant][]">'+
+			        '</div>'+
+			        '<span class="close-charge btn col-lg-1" style="color: #b50505;">X</span>'+
+		        '</div>';
+		$('.charges-container').append(ELT);
+	}
+
+	addReleve = function(){
+		var ELT = '<div class="releve-content">'+
+	    			'<div class="col-lg-2 label-field">'+
+			    		'<div>RELEVE</div>'+
+			    	'</div>'+
+			    	'<div class="col-lg-9 form-group">'+
+			    		'<div class="row">'+
+			    			'<div class="col-lg-12">'+
+			    				'<div class="row">'+
+								    '<div class="col-lg-12">'+
+								    	'<select name="releves[releve][]" class="form-control">'+
+								    		'<option value=""></option>'+
+								    		{% for key,rel in releves_types %} 
+								    			'<option value="{{key}}">{{rel}}</option>'+
+								    		{% endfor %}
+								    	'</select>'+
+								    '</div>'+
+								'</div>'+
+								'<div class="row" style="margin-top: 20px;">'+
+									'<div class="col-lg-6">'+
+								        '<label>Date du relevé</label>'+
+								        '<div>'+
+								        	'<div><input type="date" required name="releves[date][]" class="form-control"></div>'+
+								        '</div>'+
+								    '</div>'+
+								    '<div class="col-lg-6">'+
+								        '<label>Quantite</label>'+
+								        '<div>'+
+								        	'<div><input type="number" name="releves[qte][]" class="form-control field-number"></div>'+
+								        '</div>'+
+								    '</div>'+
+								'</div>'+
+			    			'</div>'+
+			    		'</div>'+		    		
+					'</div>'+
+					'<span class="close-releve btn col-lg-1" style="color: #b50505;">X</span>'+
+	    		'</div>';
+		$('.releve-container').append(ELT);
+	}
+
+	$(document).on('click', '.close-charge', function(){
+		$(this).parent().remove();
+	})
+
+	$(document).on('click', '.close-releve', function(){
+		$(this).parent().remove();
+	})
+
+	var idSelect = document.getElementById('location_bien');
+    idSelect.onchange = (event) => {
+        $.ajax({
+            url: "{{path('client_get_by_chantier')}}",
+            type: "GET",
+            dataType: "json",
+            async: true,
+            data: {	
+                chantier_id: event.target.value
+            },
+            success: function(response) {
+                if(response.status == 200){
+                    var OPTIONS = "<option value='' disabled></option>";
+                    $.each(response.clients, function( index, value ) {
+                        OPTIONS += "<option value="+value.id+">"+value.nom+"</option>";
+                    });
+                    $('select[name=locataire]').html(OPTIONS);
+                }
+                else if(response.status == 500){
+                    toastr.error("Nous n'avons pas pu reccuperer la liste de clients de ce chantier");
+                }
+            },
+            error: function(xhr, textStatus, errorThrown) {
+              console.log(errorThrown);
+            }
+        });
+    };
+
+
+     var langArray = [];
+        $('.vodiapicker option').each(function(){
+          var img = $(this).attr("data-thumbnail");
+          var text = this.innerText;
+          var value = $(this).val();
+          var item = "";
+          if(img != ""){
+                item = '<li><img src="'+ img +'" alt="" value="'+value+'"/>';
+          }
+          item += '<span>'+ text +'</span></li>' ;
+          langArray.push(item);
+        })
+
+        $('#a').html(langArray);
+
+        {% if location.type is null or location.type == "" %}
+	        //Set the button value to the first el of the array
+	        $('.btn-select').attr('value', 'en');
+        {% endif %}
+
+        //change button stuff on click
+        $('#a li').click(function(){
+           var img = $(this).find('img').attr("src");
+           var value = $(this).find('img').attr('value');
+           var text = this.innerText;
+           var item = '<li><img src="'+ img +'" alt="" /><span>'+ text +'</span></li>';
+          $('.btn-select').html(item);
+          $('.btn-select').attr('value', value);
+          $(".b").toggle();
+          $('.vodiapicker').val(value);
+          //console.log(value);
+        });
+
+        $(".btn-select").click(function(){
+                $(".b").toggle();
+            });
+
+        //check local storage for the lang
+        var sessionLang = localStorage.getItem('lang');
+        if (sessionLang){
+          //find an item with value of sessionLang
+          var langIndex = langArray.indexOf(sessionLang);
+          $('.btn-select').html(langArray[langIndex]);
+          $('.btn-select').attr('value', sessionLang);
+        } else {
+           var langIndex = langArray.indexOf('ch');
+          console.log(langIndex);
+          $('.btn-select').html(langArray[langIndex]);
+          //$('.btn-select').attr('value', 'en');
+        }
+
+</script>

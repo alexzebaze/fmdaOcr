@@ -1,0 +1,220 @@
+<style type="text/css">
+    #vehicule_logo_marque{display: none;}
+    .img-load{display: block;margin: auto;max-width: 201px;}
+    label[for=vehicule_logo_marque]{cursor: pointer;}
+    .select2-container{width: 100%!important;margin-bottom: 35px;}
+    .date-credit-bail{display: none;}
+</style>
+
+{{ form_start(form) }}
+<div class="col-lg-8">
+    <div class="ibox">
+        <div class="ibox-content">
+			<div class="row">
+			    <div class="col-lg-6 form-group">
+			        {{ form_label(form.immatriculation, 'Immatriculation') }}
+			        {{ form_row(form.immatriculation) }}
+			    </div>
+			    <div class="col-lg-6 form-group">
+			        {{ form_label(form.marque, 'Marque') }}
+			        {{ form_row(form.marque) }}
+			    </div>
+			    <div class="col-lg-6 form-group">
+			        {{ form_label(form.modele, 'Modele') }}
+			        {{ form_row(form.modele) }}
+			    </div> 
+			    <div class="col-lg-6 form-group">
+			        {{ form_label(form.type_carburant, 'Type carburant') }}
+			        {{ form_row(form.type_carburant) }}
+			    </div>
+			    <div class="col-lg-6 form-group">
+			        {{ form_label(form.conso_moyenne, 'Consomation moyenne') }}
+			        {{ form_row(form.conso_moyenne) }}
+			    </div>
+			    <div class="col-lg-6 form-group">
+			        {{ form_label(form.cout_moyen, 'Cout moyen') }}
+			        {{ form_row(form.cout_moyen) }}
+			    </div> 
+			   	<div class="col-lg-6 form-group">
+			        {{ form_label(form.date_service, 'Date service') }}
+			        {{ form_row(form.date_service) }}
+			    </div>
+			    <div class="col-lg-6 form-group">
+			        {{ form_label(form.date_ctr_tech, 'Date controle technique') }}
+			        {{ form_row(form.date_ctr_tech) }}
+			    </div>
+			</div>
+			<div class="row">
+			    <div class="col-lg-6 form-group">
+			        {{ form_row(form.carte_grise) }}
+			        {% if vehicule.carteGrise %}
+			        	<br>
+			        	<span class="showDocument" data-file="/uploads/vehicule/document/{{vehicule.carteGrise}}" style="cursor: pointer;"><img src="//ssl.gstatic.com/docs/doclist/images/mediatype/icon_3_pdf_x16.png"></span>
+		    			<a href="{{path('vehicule_delete_document', {'id':vehicule.id, 'type_document':'carte_grise'})}}" style="margin-left: 15px;font-size: 15px;color: #ef0a0a;text-decoration: underline;">Supprimer
+		    			</a>
+			    	{% endif %}
+			    </div>
+			    <div class="col-lg-6 form-group">
+			        {{ form_row(form.carte_totale) }}
+			        {% if vehicule.carteTotale %}
+			        	<span class="showDocument" data-file="/uploads/vehicule/document/{{vehicule.carteTotale}}" style="cursor: pointer;"><img src="//ssl.gstatic.com/docs/doclist/images/mediatype/icon_3_pdf_x16.png"></span>
+		    			<a href="{{path('vehicule_delete_document', {'id':vehicule.id, 'type_document':'carte_totale'})}}" style="margin-left: 15px;font-size: 15px;color: #ef0a0a;text-decoration: underline;">Supprimer
+		    			</a>
+			    	{% endif %}
+			    </div>
+			</div>
+			<div class="row">
+			    <div class="col-lg-6 form-group">
+			        {{ form_row(form.assurance) }}
+			        {% if vehicule.assurance %}
+			        	<span class="showDocument" data-file="/uploads/vehicule/document/{{vehicule.assurance}}" style="cursor: pointer;"><img src="//ssl.gstatic.com/docs/doclist/images/mediatype/icon_3_pdf_x16.png"></span>
+		    			<a href="{{path('vehicule_delete_document', {'id':vehicule.id, 'type_document':'assurance'})}}" style="margin-left: 15px;font-size: 15px;color: #ef0a0a;text-decoration: underline;">Supprimer
+		    			</a>
+			    	{% endif %}
+			    </div>
+			    <div class="col-lg-6 form-group">
+			        {{ form_label(form.status, 'Status') }}
+			        {{ form_row(form.status) }}
+			    </div>
+			</div>
+			<div class="row">
+
+			    <div class="col-lg-6 form-group">
+			    	<label>Conducteurs</label>
+			    	<select class="js-example-basic-multiple" name="conducteurs[]" multiple="multiple">
+			    		{% for user in utilisateurs %}
+			    			<option value="{{user.uid}}" {% if conducteurs is defined and user in conducteurs %}selected{% endif %}>{{user.firstname}} {{user.lastname}}</option>
+			    		{% endfor %}
+			    	</select>
+			    </div>
+			    <div class="col-lg-6 form-group">
+			        {{ form_label(form.financement, 'Financement') }}
+			        {{ form_row(form.financement) }}
+			    </div>
+			</div>
+		    
+		    <div class="row date-credit-bail" style="{% if vehicule.id is not null and vehicule.financement == 2 %}display: block;{% endif %}">
+		    	<div class="col-lg-6 form-group">
+			        {{ form_label(form.debut_credit_bail, 'Debut credit bail') }}
+			        {{ form_row(form.debut_credit_bail) }}
+			    </div>
+			    <div class="col-lg-6 form-group">
+			        {{ form_label(form.fin_credit_bail, 'Fin credit bail') }}
+			        {{ form_row(form.fin_credit_bail) }}
+			    </div>
+		    </div>
+
+		    <div class="row">
+			    <h2 class="col-lg-12 form-title">Kilometrages</h2>
+			    <div class="col-lg-12 form-group">
+			    	<div class="kilometrage-container">
+			    		{% for kilometre in vehicule.kilometrages %}
+				    		<div class="releve-content">
+						    	<div class="col-lg-9 form-group">	
+						    		<div class="row">
+						    			<div class="col-lg-11">
+											<div class="row" style="margin-top: 20px;">
+												<div class="col-lg-6">
+											        <label>Date du relevé</label>
+											        <div>
+											        	<div><input type="date" required name="kilometragesEdit[{{kilometre.id}}][date]" class="form-control" value="{{kilometre.getDateReleve|date('Y-m-d')}}"></div>
+											        </div>
+											    </div>
+											    <div class="col-lg-6">
+											        <label>Quantite</label>
+											        <div>
+											        	<div><input type="text" class="field-number form-control" name="kilometragesEdit[{{kilometre.id}}][qte]" value="{{kilometre.quantite}}"></div>
+											        </div>
+											    </div>
+											</div>
+						    			</div>
+						    			<span class="close-kilometrage btn col-lg-1" style="color: #b50505;position: absolute;bottom: 0;">X</span>
+						    		</div>		
+								</div>
+								
+				    		</div>
+			    		{% endfor %}
+			    	</div>
+
+			    	<div class="col-lg-12 text-center" style="margin-top: 34px;">
+				    	<span class="btn" onclick="addReleve()" style="border: 1px solid #f1efef;font-size: 15px;color: #000;"><i class="fas fa-plus-circle"></i> Ajouter un kilometrage</span>
+				    </div>
+
+			    </div>
+
+			    <div class="col-lg-12 form-group text-center" style="margin-top: 35px;">
+			        <button class="btn btn-primary">{{ button_label|default('Enregistrer') }}</button>
+			    </div>
+			</div>
+        </div>
+    </div>
+</div>
+<div class="col-lg-4">
+    <div class="ibox">
+        <div class="ibox-content">
+            <div class="row">
+                <div class="col-sm-12 form-group" style="margin-top: 25px">
+                    {{ form_row(form.logo_marque) }}
+                    {% set logo_marque = vehicule.getLogoMarque ? '/uploads/vehicule/logo/'~vehicule.getLogoMarque : '/assets/images/loag-image.png' %}
+                    <label for="vehicule_logo_marque" style="display: block;margin-top: 25px;">
+                        <img src="{{logo_marque}}" class="img-load">
+                    </label>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{{ form_end(form) }}
+<script type="text/javascript">
+    let file = document.getElementById("vehicule_logo_marque");
+    file.onchange = function() {
+        if (this.files && this.files[0]) {
+            $that = this;
+            var reader = new FileReader();
+            reader.onload = function (e) {
+                $('.img-load').attr('src', e.target.result);
+            };
+            reader.readAsDataURL(this.files[0]);
+        };
+    }
+
+   	addReleve = function(){
+		var ELT = '<div class="releve-content">'+
+			    	'<div class="col-lg-9 form-group">'+
+			    		'<div class="row">'+
+			    			'<div class="col-lg-11">'+
+								'<div class="row" style="margin-top: 20px;">'+
+									'<div class="col-lg-6">'+
+								        '<label>Date du relevé</label>'+
+								        '<div>'+
+								        	'<div><input type="date" required name="kilometrages[date][]" class="form-control"></div>'+
+								        '</div>'+
+								    '</div>'+
+								    '<div class="col-lg-6">'+
+								        '<label>Quantite</label>'+
+								        '<div>'+
+								        	'<div><input type="number" name="kilometrages[qte][]" class="form-control field-number"></div>'+
+								        '</div>'+
+								    '</div>'+
+								'</div>'+
+			    			'</div>'+
+			    			'<span class="close-kilometrage btn col-lg-1" style="color: #b50505;position: absolute;bottom: 0;">X</span>'+
+			    		'</div>'+		    		
+					'</div>'+
+	    		'</div>';
+		$('.kilometrage-container').append(ELT);
+	}
+
+	$(document).on('click', '.close-kilometrage', function(){
+		$(this).parent().remove();
+	})
+
+	$(document).on('change', '#vehicule_financement', function(){
+		if($(this).val() == 2)
+			$('.date-credit-bail').css('display', 'block');
+		else{
+			$('.date-credit-bail input').val('');
+			$('.date-credit-bail').css('display', 'none');
+		}
+	})
+</script>

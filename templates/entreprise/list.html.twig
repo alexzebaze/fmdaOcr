@@ -1,0 +1,108 @@
+{% extends 'base_admin.html.twig' %}
+
+{% block css %}
+    <link rel="stylesheet" href="//cdn.datatables.net/1.10.20/css/jquery.dataTables.min.css">
+    <style type="text/css">
+    </style>
+{% endblock %}
+
+{% block breadcrumb %}
+
+    <div class="row wrapper border-bottom white-bg page-heading">
+        <div class="col-lg-10">
+            <h1>Liste Entreprises</h1>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                    <a href="{{ path('home') }}">Accueil</a>
+                </li>
+                <li class="breadcrumb-item active">
+                    <strong>Entreprises</strong>
+                </li>
+            </ol>
+        </div>
+    </div>
+{% endblock %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-lg-12">
+            {% include 'flashes.html.twig' %}
+            <div class="tab-content">
+                <div role="tabpanel" class="tab-pane active" id="embauche-tab">
+                    <div class="ibox ">
+                        <div class="ibox-title" style="padding-bottom: 20px;">
+                            <h5>Entreprises</h5>
+                            <div class="ibox-tools">
+                                <a href="{{path('entreprise_new')}}?page=control" class="btn btn-primary">
+                                    <i class="fa fa-plus"></i>
+                                    Ajouter
+                                </a>
+                            </div>
+                        </div>
+                        <div class="ibox-content">
+                            <div class="ibox-content">
+                                <div class="table-responsive">
+                                    <table class="table">
+                                        <thead>
+                                        <tr>
+                                            <th>Nom</th>
+                                            <th>Type</th>
+                                            <th>Email</th>
+                                            <th>Téléphone</th>
+                                            <th></th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for entreprise in entreprises %}
+                                            <tr>
+                                                <td>{{entreprise.name}}</td>
+                                                <td>{{entreprise.type}}</td>
+                                                <td>{{entreprise.email}}</td>
+                                                <td>{{entreprise.phone}}</td>
+                                                <td>
+                                                    <a href="{{path('entreprise_infos', {'id':entreprise.id})}}" class="btn btn-primary"><i class="fa fa-eye"></i></a>
+                                                    <a href="{{path('entreprise_edit', {'entreprise_id':entreprise.id})}}?page=control" class="btn btn-primary"><i class="fa fa-edit"></i></a>
+                                                </td>
+                                            </tr>
+                                            {% else %}
+                                            <tr>
+                                                <td colspan="10">Aucune entreprise enregistrée</td>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block javascript_script %}
+    <script type="text/javascript"src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.min.js"></script>
+    <script type="text/javascript">
+        $('#modalEntreprise').modal("hide");
+
+        $(document).ready( function () {
+            $('table').DataTable({
+                "language": {
+                    "url": "//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/French.json"
+                },
+                "columnDefs": [
+                    {"targets": [0, 7, 8], "orderable": false},
+                ],
+                "pageLength": 500,
+                "order": []
+            });
+        } );
+    </script>
+{% endblock %}
+
+{% block javascript %}
+
+{% endblock %}

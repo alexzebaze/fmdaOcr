@@ -1,0 +1,38 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}PreferenceField{% endblock %}
+
+{% block body %}
+    <h1>PreferenceField</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ preference_field.id }}</td>
+            </tr>
+            <tr>
+                <th>Label</th>
+                <td>{{ preference_field.label }}</td>
+            </tr>
+            <tr>
+                <th>Required</th>
+                <td>{{ preference_field.required ? 'Yes' : 'No' }}</td>
+            </tr>
+            <tr>
+                <th>Type</th>
+                <td>{{ preference_field.type }}</td>
+            </tr>
+            <tr>
+                <th>Identifiant</th>
+                <td>{{ preference_field.identifiant }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('preference_field_index') }}">back to list</a>
+
+    <a href="{{ path('preference_field_edit', {'id': preference_field.id}) }}">edit</a>
+
+    {{ include('preference_field/_delete_form.html.twig') }}
+{% endblock %}

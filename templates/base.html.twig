@@ -1,0 +1,1168 @@
+
+
+{% set emailComptableConfig = render(controller('App\\Controller\\MetaConfigController::getConfigMeta', { 'key': 'cabinet_comptable' })) %}
+{% set baseUrl = render(controller('App\\Controller\\HomeController::getBaseUrl', {})) %}
+
+{% set base_api_ocr_url = "https://www.homekeo.fr" %}
+
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/ico" href="{{ asset('favicon.ico') }}"/>
+
+    {% block seo %}
+        <title>{% block title %} {{ app.session.get('entreprise_session_name') }}  {% endblock %}</title>
+        <meta name="description" content=""/>
+    {% endblock %}
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu" crossorigin="anonymous">
+    <link href="{{ asset('vendor/@fortawesome/fontawesome-free/css/fontawesome.css') }}" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/photoswipe/4.1.3/photoswipe.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/photoswipe/4.1.3/default-skin/default-skin.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/11.1.9/sweetalert2.min.css" referrerpolicy="no-referrer" />
+    <link href="{{ asset('vendor/iCheck/custom.css') }}" rel="stylesheet">
+    <link href="{{ asset('vendor/animate.css/animate.css') }}" rel="stylesheet">
+    <link href="{{ asset('css/style.css') }}" rel="stylesheet">
+    <link rel="stylesheet" href="{{ asset('vendor/toastr/toastr.min.css') }}"/>
+    <script src="{{ asset('js/jquery-3.1.1.min.js') }}"></script>
+    <style type="text/css">
+    
+        .inline-text{
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+        }
+        body::-webkit-scrollbar {
+            width: .75rem;
+        }
+        *::-webkit-scrollbar-track {
+            background-color: #edf2f7;
+        }
+        *::-webkit-scrollbar-thumb {
+            background-color: #718096;
+            border-radius: 9999px;
+        }
+        body {
+            scrollbar-width: thin;
+            /* The color of thumb and track areas */
+            scrollbar-color: #718096 #edf2f7;
+        }
+        .modal-body {
+            padding: 20px 60px 57px 60px;
+        }
+        .pagination-block{
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        .entreprise-list{
+            margin-top: 38px;
+        }
+        .loader-container{display: none;align-items: center;justify-content: center;}
+        .switch-entreprise.entreprise-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border: 1px solid #dcdcdc;
+            padding: 4px 12px;
+            font-size: 11px;
+            border-radius: 5px;
+            margin-top: 7px;
+            color: #888;
+            font-weight: bold;
+        }
+        .switch-entreprise.entreprise-item.active, .switch-entreprise.entreprise-item:hover {
+            border-color: #14c179;
+            background: #14c179;
+            color: #fff;
+        }
+        .entreprise-img{
+            width: 35px;
+            height: 35px;
+            border-radius: 100%;
+            margin-right: 8px;
+            /*background-color: #18a689;*/
+            object-fit: cover;
+            border: 2px solid #18a689;
+        }
+        .navbar-top-links {
+            text-align: right;
+            margin-right: 8px;
+            margin-top: 8px;
+        }
+        .showDocument{cursor: pointer;}
+        .main-logo{
+            object-fit: contain;
+            width: 174px;
+            margin: auto;
+            display: block;
+        }
+        .footer{position: fixed;}
+        .nav.navbar-top-links > li > a.admin-btn:hover, .nav.navbar-top-links > li > a.admin-btn:focus{
+            background-color: #1ab394;
+            border-color: #1ab394;
+        }
+
+
+        .custom-dropdown {
+          display: inline-block;
+          position: relative;
+        }
+
+        .custom-dropdown .dd-button {
+          display: inline-block;
+          border: 1px solid gray;
+          border-radius: 4px;
+          padding: 7px 28px 7px 4px;
+          background-color: #ffffff;
+          cursor: pointer;
+          white-space: nowrap;
+        }
+
+        .dd-button:after {
+          content: '';
+          position: absolute;
+          top: 50%;
+          right: 15px;
+          transform: translateY(-50%);
+          width: 0; 
+          height: 0; 
+          border-left: 5px solid transparent;
+          border-right: 5px solid transparent;
+          border-top: 5px solid black;
+        }
+
+        .dd-button:hover {
+          background-color: #eeeeee;
+        }
+
+
+        .dd-input {
+          display: none;
+        }
+
+        .dd-menu {
+          position: absolute;
+          top: 100%;
+          border: 1px solid #ccc;
+          border-radius: 4px;
+          padding: 0;
+          margin: 2px 0 0 0;
+          box-shadow: 0 0 6px 0 rgba(0,0,0,0.1);
+          background-color: #ffffff;
+          list-style-type: none;
+        }
+
+        .dd-input + .dd-menu {
+          display: none;
+        } 
+
+        .dd-input:checked + .dd-menu {
+          display: block;
+        } 
+
+        .dd-menu li {
+          padding: 10px 20px;
+          cursor: pointer;
+          white-space: nowrap;
+          cursor: pointer;
+        }
+
+        .dd-menu li:hover {
+          background-color: #f6f6f6;
+        }
+
+        .btn-config-colonne{
+            cursor: pointer;
+            font-size: 20px;
+        }
+        .column-container {
+            position: absolute;
+            border: 1px solid #ccc;
+            padding: 13px;
+            border-radius: 5px;
+            width: 260px;
+            top: 59px;
+            box-shadow: 0px 1px 1px 3px rgb(183 183 190 / 20%);
+            background: #fff;
+            left: 0;
+            z-index: 9;
+            display: none;
+        }
+        .column-item label.column-label{
+            display: flex;
+            margin-bottom: 10px;
+        }
+        .column-item .column-libelle{
+            margin-left: 14px;
+        }
+    </style>
+    {% block css %}
+    {% endblock %}
+</head>
+
+<body style="-webkit-print-color-adjust: exact;">
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+  <!-- Background of PhotoSwipe. 
+           It's a separate element as animating opacity is faster than rgba(). -->
+  <div class="pswp__bg"></div>
+  <!-- Slides wrapper with overflow:hidden. -->
+  <div class="pswp__scroll-wrap">
+    <!-- Container that holds slides. 
+              PhotoSwipe keeps only 3 of them in the DOM to save memory.
+              Don't modify these 3 pswp__item elements, data is added later on. -->
+    <div class="pswp__container">
+      <div class="pswp__item"></div>
+      <div class="pswp__item"></div>
+      <div class="pswp__item"></div>
+    </div>
+    <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+    <div class="pswp__ui pswp__ui--hidden">
+      <div class="pswp__top-bar">
+        <!--  Controls are self-explanatory. Order can be changed. -->
+        <div class="pswp__counter"></div>
+        <button class="pswp__button pswp__button--close" title="Fermer (Esc)"></button>
+        <button class="pswp__button pswp__button--share" title="Partager"></button>
+        <button class="pswp__button pswp__button--fs" title="Plein écran"></button>
+        <button class="pswp__button pswp__button--zoom" title="Zoom +/-"></button>
+        <!-- Preloader demo https://codepen.io/dimsemenov/pen/yyBWoR -->
+        <!-- element will get class pswp__preloader--active when preloader is running -->
+        <div class="pswp__preloader">
+          <div class="pswp__preloader__icn">
+            <div class="pswp__preloader__cut">
+              <div class="pswp__preloader__donut"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+        <div class="pswp__share-tooltip"></div>
+      </div>
+      <button class="pswp__button pswp__button--arrow--left" title="Précedent">
+      </button>
+      <button class="pswp__button pswp__button--arrow--right" title="Suivant">
+      </button>
+      <div class="pswp__caption">
+        <div class="pswp__caption__center"></div>
+      </div>
+    </div>
+  </div>
+</div>
+<div id="wrapper">
+
+    {% block menu1 %}
+        <nav class="navbar-default navbar-static-side" role="navigation" style="margin-bottom: 49px;">
+            <div class="sidebar-collapse">
+                <ul class="nav metismenu" id="side-menu">
+                    <li class="nav-header">
+                        <div class="profile-element">
+                            <a href="{{path('home')}}">
+                                {% if app.session.get('entreprise_session_logo') %}
+                                    <img alt="FDMA" class="main-logo img-fluid" src="/logo/{{app.session.get('entreprise_session_logo')}}">
+                                {% else %} 
+                                    <img src="{{ asset('images/logo-admin.png') }}"  alt="FDMA" class="main-logo img-fluid">
+                                {% endif %}
+                            </a>
+                        </div>
+                        <div class="logo-element">
+                            FDMA
+                        </div>
+                    </li>
+                </ul>
+
+            </div>
+        </nav>
+    {% endblock %}
+
+        <div id="page-wrapper" class="gray-bg">
+            <div class="row border-bottom">
+                <nav class="navbar navbar-static-top" role="navigation" style="margin-bottom: 0">
+                    <div class="navbar-header">
+                        <a class="navbar-minimalize minimalize-styl-2 btn btn-primary " href="#"><i class="fa fa-bars"></i> </a>
+                    </div>
+                    <div class="navbar-header">
+                    </div>
+                    {% block menu2 %}
+                    <ul class="nav navbar-top-links navbar-right">
+                        <li>
+                            <span class="m-r-sm text-muted welcome-message">Bienvenue sur l'admin FMDA</span>
+                        </li>
+                        <li style="display: none;">
+                            <a href="{{path('admin_control')}}" class="btn btn-primary admin-btn" style="padding: 12px 19px;display: inline;color: #fff; margin-right: 0;">ADMINISTRATION</a>
+                        </li>
+                        <li class="dropdown">
+                            <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                            {% if app.session.get('entreprise_session_id') %}
+                                <span>
+                                    {% if app.session.get('entreprise_session_logo') %}
+                                        <img class="entreprise-img" src="/logo/{{app.session.get('entreprise_session_logo')}}">
+                                    {% else %} 
+                                        <img class="entreprise-img" src="{{asset('images/logotransfmda.png')}}">
+                                    {% endif %}
+                                </span>
+                                {{ app.session.get('entreprise_session_name') }}
+                            {% endif %}
+                            <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+                                {% if app.user.role == "administrateur" %}
+                                    <li>
+                                        {% if app.session.get('entreprise_session_id') %}
+                                            <a href="javascript:void()" class="openEntrepriseModal">
+                                            <span>Changer de Société</span> &nbsp <i class="fal fa-chevron-right"></i>
+                                            </a>
+                                        {% endif %}
+                                    </li>
+                                    <li role="separator" class="divider"></li>
+                                {% endif %}
+                                <li>
+                                    <a href="{{ path('security_logout') }}">
+                                        <i class="fa fa-sign-out"></i> Déconnexion
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                    {% endblock %}
+                </nav>
+            </div>
+            {% block breadcrumb %}
+            <div class="row wrapper border-bottom white-bg page-heading">
+                <div class="col-lg-10">
+                    <h2>Accueil</h2>
+                </div>
+            </div>
+            {% endblock %}
+            <div class="wrapper wrapper-content animated fadeInRight">
+                {% block content %}
+                {% endblock %}
+            </div>
+            <div class="footer">
+                <div class="float-right">
+                </div>
+                <div>
+                    <strong>Copyright</strong> FMDA &copy; 2020
+                </div>
+            </div>
+            <div class="modal-entreprise-container">
+                <div id="modalEntreprise" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header" style="border: none;">
+                                {% if app.session.get('entreprise_session_id') %} 
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true" style="position: absolute;right: 14px;top: 10px;">&times;</span></button>
+                                {% endif %}
+                            </div>
+                            <div class="modal-body row entreprise-container">
+                                <div class="loader-container">
+                                    <img src="{{asset('images/loading.gif')}}" style="width: 54px;">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="modalDocumentShow" class="modal fade bs-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel">
+                <div class="modal-dialog modal-lg" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header" style="border: none;">
+                            <!-- <div class="text-center">
+                                <label class="custom-dropdown" id="btnRotation" style="display: none;z-index: 10">
+                                  <div class="dd-button">&nbsp
+                                    Orientation <i class="fad fa-redo"></i>&nbsp
+                                  </div>
+                                  <input type="checkbox" class="dd-input" id="test">
+                                  <ul class="dd-menu">
+                                    <li class="rotationChoice" data-rotation="90" data-pdf="">rotation 90</li>
+                                    <li class="rotationChoice" data-rotation="180" data-pdf="">rotation 180</li>
+                                    <li class="rotationChoice" data-rotation="270" data-pdf="">rotation 270</li>
+                                  </ul>
+                                </label>
+                            </div> -->
+
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="position: absolute;top: 11px; right: 15px;"><span aria-hidden="true">&times;</span></button>
+                        </div>
+                        <div class="modal-body text-center">
+                            <h3 class="text-center no-document" style="display: none;">Aucun document rattaché.</h3>
+                            <div class="documentFile-container" style="display: none;">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="modalScoreIa" class="modal fade bs-example-modal-sm modal-center" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel">
+              <div class="modal-dialog modal-sm" role="document">
+                <div class="modal-content">
+                    <div class="modal-header" style="border: none;">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title text-center" id="gridSystemModalLabel" style="padding-top: 27px;">
+                          <span style="color: red">ATTENTION RECONNAISSANCE INFERIEUR A 20% !!!</span> <br><br>Ce document est succeptible de n'avoir aucun modèle de reconnaissance IA enregistré. <br>Vous devrez selectionner manuellement les champs sur ce document
+                        </h4>
+                    </div>
+                    <div class="modal-body text-center">
+                        <button type="button" class="btn btn-primary" class="close" data-dismiss="modal" aria-label="Close">OK</button>
+                    </div>
+                </div>
+              </div>
+            </div>
+        </div>
+</div>
+
+
+
+<!-- Mainly scripts -->
+<script src="{{ asset('vendor/popper.js/dist/umd/popper.js') }}"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha384-aJ21OjlMXNL5UyIl/XNwTMqvzeRMZH2w8c5cRVpzpU8Y5bApTppSuUkhZXN0VxHd" crossorigin="anonymous"></script>
+<script src="{{ asset('vendor/metisMenu/jquery.metisMenu.js') }}"></script>
+<script src="{{ asset('vendor/slimscroll/jquery.slimscroll.min.js') }}"></script>
+<script src="{{ asset('vendor/peity/jquery.peity.min.js') }}"></script>
+<script src="{{ asset('vendor/toastr/toastr.min.js') }}"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.4.10/dist/sweetalert2.all.min.js"></script>
+
+<!-- Custom and plugin javascript -->
+<script src="{{ asset('js/inspinia.js') }}"></script>
+<script src="{{ asset('vendor/pace/pace.min.js') }}"></script>
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.15.6/xlsx.core.min.js"></script>
+<script type="text/javascript" src="{{ asset('vendor/excelplus-2.5.min.js') }}"></script>
+
+<!-- iCheck --> 
+<script src="{{ asset('vendor/iCheck/icheck.min.js') }}"></script>
+<script type="text/javascript">
+
+    var currentRotation = 0;
+    $(document).ready(function(){
+        $(".btn-config-colonne").click(function(){
+            $(".column-container").slideToggle();
+        });
+    });
+    $(document).mouseup(function(e) {
+      var containerConfigColumns = $(".column-container");
+        if (!containerConfigColumns.is(e.target) && containerConfigColumns.has(e.target).length === 0){ 
+          $('.column-container').hide();
+        }
+    })
+
+    $.fn.isInViewport = function() {
+        var elementTop = $(this).offset().top;
+        var elementBottom = elementTop + $(this).outerHeight();
+
+        var viewportTop = $(window).scrollTop();
+        var viewportBottom = viewportTop + $(window).height();
+
+        return elementBottom > viewportTop && elementTop < viewportBottom;
+    };
+
+    function isElementInViewport (el) {
+
+    // Special bonus for those using jQuery
+        if (typeof jQuery === "function" && el instanceof jQuery) {
+            el = el[0];
+        }
+
+        var rect = el.getBoundingClientRect();
+
+        return (
+            rect.top >= 0 &&
+            rect.left >= 0 &&
+            rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) && /* or $(window).height() */
+            rect.right <= (window.innerWidth || document.documentElement.clientWidth) /* or $(window).width() */
+        );
+    }
+
+    function isElementPartiallyInViewport(el)
+        {
+            // Special bonus for those using jQuery
+            if (typeof jQuery !== 'undefined' && el instanceof jQuery) 
+                el = el[0];
+
+            var rect = el.getBoundingClientRect();
+            // DOMRect { x: 8, y: 8, width: 100, height: 100, top: 8, right: 108, bottom: 108, left: 8 }
+            var windowHeight = (window.innerHeight || document.documentElement.clientHeight);
+            var windowWidth = (window.innerWidth || document.documentElement.clientWidth);
+
+            // http://stackoverflow.com/questions/325933/determine-whether-two-date-ranges-overlap
+            var vertInView = (rect.top <= windowHeight) && ((rect.top + rect.height) >= 0);
+            var horInView = (rect.left <= windowWidth) && ((rect.left + rect.width) >= 0);
+
+            return (vertInView && horInView);
+        }
+</script>
+<!-- Peity
+<script src="js/demo/peity-demo.js"></script>
+-->
+
+{% block js_import %}
+{% endblock %}
+
+<script>
+    $(document).ready(function(){
+        $('.i-checks').iCheck({
+            checkboxClass: 'icheckbox_square-green',
+            radioClass: 'iradio_square-green',
+        });
+    });
+    jQuery(document).ready(function() { 
+        {% for label, message in app.flashes('success') %}
+            toastr.success("{{ message }}");
+        {% endfor %}
+        {% for message in app.flashes('error') %}
+            toastr.error("{{ message }}");
+        {% endfor %}
+        {% for message in app.flashes('infos') %}
+            toastr.infos("{{ message }}");
+        {% endfor %}
+        {% for message in app.flashes('warning') %}
+            toastr.warning("{{ message }}");
+        {% endfor %}
+    });
+    isObjectEmpty = function(obj) {
+        for(var key in obj) {
+            if(obj.hasOwnProperty(key))
+                return false;
+        }
+        return true;
+    };
+    {% block javascript %}
+    {% endblock %}
+</script>
+
+<script type="text/javascript">
+    if("{{app.user.role}}" == "administrateur" && !"{{app.session.get('entreprise_session_id')}}"){
+        loadEntreprise();
+    }
+    $('.openEntrepriseModal').click(function(){
+        loadEntreprise();        
+    })
+
+    function loadEntreprise(){
+        $('#modalEntreprise').modal({
+          backdrop: 'static'
+        });
+        $('.loader-container').css('display','flex');
+        $.ajax({
+            url: "{{path('entreprise_load_xhr')}}",
+            type: "GET",
+            async: true,
+            dataType: "json",
+            data: {},
+            success:function(response) {
+              if(response.status == 200){
+                $('#modalEntreprise .entreprise-container').html(response.datas);
+              }
+              else if(response.status == 500){
+                toastr.error(response.message);
+              }
+              $('.loader-container').css('display','none');
+            },
+            error:function(){
+              toastr.error("Ooops... Quelque chose s'est mal passée");
+              $('.loader-container').css('display','none');
+            }
+        });
+    }
+
+    function loadMenu(){
+        $.ajax({
+            url: "{{path('menu_load_xhr')}}",
+            type: "GET",
+            async: true,
+            dataType: "json",
+            data: {},
+            success:function(response) {
+              if(response.status == 200){
+                $('#side-menu').html(response.datas);
+
+              }
+              else if(response.status == 500){
+                toastr.error(response.message);
+              }
+            },
+            error:function(){
+              toastr.error("Ooops... Quelque chose s'est mal passée");
+            }
+        });
+    }
+    if( "{{app.session.get('entreprise_session_id')}}" )
+        loadMenu();
+
+    $(document).on('click', '.menu-item', function(){
+        if($(this).hasClass('active')){
+            $(this).removeClass('active');
+            $(this).find('.sub-nav').addClass('collapse');
+        }
+        else{
+            $('.menu-item').removeClass('active');
+            $('.menu-item .sub-nav').addClass('collapse');
+            $(this).addClass('active');
+            $(this).find('.sub-nav').removeClass('collapse');
+        }
+        
+    })
+    function switchEntreprise(el){
+        var url = el.getAttribute("data-href");
+        $('.loader-container').css('display','flex');
+        $.ajax({
+            url: url,
+            type: "GET",
+            dataType: "json",
+            async: true,
+            data: {},
+            success: function(response) {
+                if(response.status == 200){
+                    location.reload();
+                }
+                else if(response.status == 500){
+                    toastr.error(response.message);
+                }
+                $('.loader-container').css('display','none');
+            },
+            error: function(xhr, textStatus, errorThrown) {
+              console.log(errorThrown);
+              $('.loader-container').css('display','none');
+            }
+        });
+    }
+
+
+    $(document).ready( function () {
+        $('body').on('click', ' .showDocument', function(){
+            $documentFile = $(this).attr('data-file');
+            $('#modalDocumentShow').modal('show');
+            if($documentFile != ""){
+                $('.no-document').css('display','none');
+                $('.documentFile-container').css('display','block');
+                if($documentFile.substr($documentFile.length - 3).toLowerCase() == "pdf"){
+                    // $('#btnRotation').css('display', 'inline-block');
+                    // $('#btnRotation .rotationChoice').attr('data-pdf', $documentFile);
+
+                    $('.lien-document').attr('href', $documentFile);
+                    $('.documentFile-container').html('<object class="documentPdf" data="" type="application/pdf" width="100%" height="980px"></object>');
+                }
+                else{
+                    $('.documentFile-container').html('<object class="documentPdf" data="" ></object>');
+                }
+                $('.documentPdf').attr('data', $documentFile);
+            }
+            else{
+                $('.documentFile-container').css('display','none');
+                $('.no-document').css('display','block');
+            }
+        })
+        $('body').on('click', ' .rotationChoice', function(){
+            var pdf = $(this).attr('data-pdf');
+            var rotation = $(this).attr('data-rotation');
+            var dossier = $(this).attr('data-dossier');
+
+            // currentRotation = parseInt(currentRotation) + parseInt(rotation);
+            // $('.data-ocr-container').css('transform', "rotate("+currentRotation+"deg)");
+            // console.log(currentRotation);
+
+            $.ajax({
+                url: "{{path('document_rotation')}}",
+                type: "GET",
+                dataType: "json",
+                async: true,
+                data: {
+                    pdf:pdf,
+                    rotation:rotation,
+                    dossier:dossier
+                },
+                success: function(response, status) {
+                  if(response.status == 200){
+                    window.open(response.datas.redirect,'_blank');
+                    window.close();
+                  }
+                  else if(response.status == 400){
+                        toastr.error(response.message);
+                  }
+                },
+                error: function(xhr, textStatus, errorThrown) {
+                  toastr.error("Ooops..., Quelque chose s'est mal passée");
+                }
+            });
+        })
+    } );
+
+    // $(document).on('click', '#rotationCss', function(){
+    //     let angle = $(this).val();
+    //     $('.data-ocr-container').css('transform', "rotate("+angle+"deg)");
+    //     console.log(angle);
+    //     console.log('deg');
+    //     console.log(angle+'deg');
+    // })
+    $(document).on("blur", ".field-number", function () {
+        if($(this).val()){
+            var content = $(this).val();
+            
+            if (content.indexOf(',') > -1 && content.indexOf('.') > -1){
+                content = content.replace(",", '');
+            }
+            var valeur = content.replace(/[\,]+/g, '.');
+            var valString = valeur.toString(); 
+
+            valString = valString.toLowerCase();
+            valString = valString.replace("euro", '');
+            valString = valString.replace("eur", '');
+            valString = valString.replace("€", '');
+            valString = valString.replace(" ", '');
+
+            valeur = parseFloat(valString);
+
+            $(this).val(valeur);
+        }
+    });
+
+    function ajustePrice(content){
+        
+        if(content != ""){
+            if (content.indexOf(',') > -1 && content.indexOf('.') > -1){
+                content = content.replace(",", '');
+            }
+            var valeur = content.replace(/[\,]+/g, '.');
+            var valString = valeur.toString(); 
+
+            valString = valString.toLowerCase();
+            valString = valString.replace("euro", '');
+            valString = valString.replace("eur", '');
+            valString = valString.replace("€", '');
+            valString = valString.replace(" ", '');
+
+            valeur = parseFloat(valString);
+
+            return valeur;
+        }
+        return "";
+    }
+
+</script>
+
+<script type="text/javascript">
+        jQuery.extend( jQuery.fn.dataTableExt.oSort, {
+            "num-html-pre": function ( a ) {
+                var x = String(a).replace( /<[\s\S]*?>/g, "" );
+                return parseFloat( x );
+            },
+         
+            "num-html-asc": function ( a, b ) {
+                return ((a < b) ? -1 : ((a > b) ? 1 : 0));
+            },
+         
+            "num-html-desc": function ( a, b ) {
+                return ((a < b) ? 1 : ((a > b) ? -1 : 0));
+            }
+        } );
+</script>
+{% block javascript_script %}
+    <script type="text/javascript">
+        // our updatable variable objects to use globally
+        let img = {};
+        let position = {};
+        let fieldsOcr = [
+            {field:'document_id', type:'text'},
+            {field:'facturedAt', type:'date'},
+            {field:'dueAt', type:'date'},
+            {field:'prixttc', type:'text'},
+            {field:'prixht', type:'text'},
+            {field:'tva', type:'select'},
+            {field:'devise', type:'select'},
+            {field:'fournisseur', type:'select'},
+            {field:'client', type:'select'},
+            {field:'chantier', type:'select'},
+            {field:'devis', type:'select'},
+            {field:'lot', type:'text'},
+            {field:'rossum_document_id', type:'text'},
+            {field:'status', type:'select'},
+            {field:'code_compta', type:'text'},
+            {field:'utilisateur', type:'select'},
+            {field:'conges_paye', type:'text'},
+            {field:'heure_sup_1', type:'text'},
+            {field:'heure_sup_2', type:'text'},
+            {field:'heure_normale', type:'text'},
+            {field:'trajet', type:'text'},
+            {field:'panier', type:'text'},
+            {field:'cout_global', type:'text'},
+            {field:'salaire_net', type:'text'},
+            {field:'date_paie', type:'text'},
+        ];
+
+        let moisObject = [
+            {mois:'janvier', num:'01'},
+            {mois:'fevrier', num:'02'},
+            {mois:'mars', num:'03'},
+            {mois:'avril', num:'04'},
+            {mois:'mai', num:'05'},
+            {mois:'juin', num:'06'},
+            {mois:'juillet', num:'07'},
+            {mois:'août', num:'08'},
+            {mois:'septembre', num:'09'},
+            {mois:'octobre', num:'10'},
+            {mois:'novembre', num:'11'},
+            {mois:'decembre', num:'12'},
+        ];
+
+        let tabDay = ['lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', 'dimanche'];
+
+        $fieldPreference = [];
+
+        {% if fieldPreference is defined %}
+            $fieldPreference = {{ fieldPreference|json_encode()|raw }};
+        {% endif %}
+
+        // image matrix function to update img object variable
+        function imgMatrix() {
+
+          // our image object inside area
+          let $img = $('.document-container');
+
+          // offset data of image
+          let offset = $img.offset();
+
+          // add/update object key data
+          img.width = $img.outerWidth();
+          img.height = $img.outerHeight();
+          img.offsetX = offset.left - $(document).scrollLeft();
+          img.offsetY = offset.top - $(document).scrollTop();
+
+        }
+
+        // position matrix function to update position object variable
+        function positionMatrix(e, mousedown = false) {
+
+          // if mousedown param is true... for use in 
+          if (mousedown) {
+
+            // set the top/left position object data with percentage position
+            position.top = (100 / img.height) * ( (e.pageY - $(document).scrollTop()) - img.offsetY);
+            position.left = (100 / img.width) * ( (e.pageX - $(document).scrollLeft()) - img.offsetX);
+
+          }
+
+          // set the right/bottom position object data with percentage position
+          position.right = 100 - ((100 / img.width) * ((e.pageX - $(document).scrollLeft()) - img.offsetX));
+          position.bottom = 100 - ((100 / img.height) * ((e.pageY - $(document).scrollTop()) - img.offsetY));
+
+        }
+
+        // mouse move event function in area div
+        $(document).on('mousemove', '.document-container', function(e) {
+
+          // / update img object variable data upon this mousemove event
+          imgMatrix();
+
+          // if this area has draw class
+          if ($(this).hasClass('draw')) {
+            // update position object variable data passing current event data
+            positionMatrix(e);
+
+            // if image x cursor drag position percent is negative to mousedown x position
+            if ((100 - position.bottom) < position.top) {
+
+              // update rectange x negative positions css
+              $('.rect', this).css({
+                top: (100 - position.bottom) + '%',
+                bottom: (100 - position.top) + '%'
+              });
+
+              // else if image x cursor drag position percent is positive to mousedown x position
+            } else {
+
+              // update rectange x positive positions css
+              $('.rect', this).css({
+                bottom: position.bottom + '%',
+                top: position.top + '%',
+              });
+
+            }
+
+            // if image y cursor drag position percent is negative to mousedown y position
+            if ((100 - position.right) < position.left) {
+
+              // update rectange y negative positions css
+              $('.rect', this).css({
+                left: (100 - position.right) + '%',
+                right: (100 - position.left) + '%'
+              });
+
+              // else if image y cursor drag position percent is positive to mousedown y position
+            } else {
+
+              // update rectange y positive positions css
+              $('.rect', this).css({
+                right: position.right + '%',
+                left: position.left + '%'
+              });
+
+            }
+
+          }
+
+        });
+
+        function lineDistance(x, y, x0, y0){
+            return Math.sqrt((x -= x0) * x + (y -= y0) * y);
+        };
+
+        // mouse down event function in area div
+        $(document).on('mousedown', '.doc-img', function(e) {
+            $('.rect').css('display', 'block');
+            var parent = $(this).parent('.document-container').get(0);
+          // remove the drawn class
+          $(parent).removeClass('drawn');
+
+          // update img object variable data upon this mousedown event
+          imgMatrix();
+
+          // update position object variable data passing current event data and mousedown param as true 
+          positionMatrix(e, true);
+
+          // update rectange xy positions css
+          $('.rect', parent).css({
+            left: position.left + '%',
+            top: position.top + '%',
+            right: position.right + '%',
+            bottom: position.bottom + '%'
+          });
+
+          // add draw class to area div to reveal rectangle
+          $(parent).addClass('draw');
+
+        });
+
+        // mouse up event function in area div
+        $(document).on('mouseup', '.document-container', function(e) {
+
+          // update img object variable data upon this mouseup event
+          imgMatrix();
+
+          // if this area had draw class
+          if ($(this).hasClass('draw')) {
+
+            // update position object variable data passing current event
+            positionMatrix(e);
+
+            // math trunc on position values if x and y values are equal, basically no drawn rectangle on mouseup event
+            if ((Math.trunc(position.left) === Math.trunc(100 - position.right)) && (Math.trunc(position.top) === Math.trunc(100 - position.bottom))) {
+              
+              // remove draw and drawn classes
+              $(this).removeClass('draw drawn');
+
+            // else if x and y values are not equal, basically a rectange has been drawn
+            } else {
+
+              // add drawn class and remove draw class
+              $(this).addClass('drawn').removeClass('draw');
+
+            }
+
+          }
+
+
+            $parentContent = $('.document-container').get(0).getBoundingClientRect();
+            $rect = $('.rect').get(0).getBoundingClientRect();
+
+            position.left = convertToPourcentage($parentContent.width, ($rect.left - $parentContent.left));
+            position.top = convertToPourcentage($parentContent.height, ($rect.top - $parentContent.top));
+            position.width = convertToPourcentage($parentContent.width, $rect.width);
+            position.height = convertToPourcentage($parentContent.height, $rect.height);
+
+            /*if( convertToPourcentage($parentContent.width, $rect.width) > convertToPourcentage($parentContent.width, 20)){*/
+            if(true){
+                /*$('#popTextExtract').modal('show');*/
+                groupTextByPosition(position);
+                $('.btn-ajuster').css('display', 'inline-block');
+            }
+
+        });
+
+        // on window resize function
+        $(window).on('resize', function(e) {
+
+          // update img object variable data upon this window resize event
+          imgMatrix();
+
+        });
+
+        $('.ocr-field').click(function(e){
+            $('.ocr-field').removeClass('active');
+            $(this).addClass('active');
+        });
+        
+        function convertToPourcentage(parentContent, toConvert){
+            return (toConvert*100) / parentContent ;
+        }
+
+        function appendText(data, position = {}, dossier = ""){
+            $parentfieldSelect = $('.ocr-field.active');
+            index = fieldsOcr.findIndex(x => x.field === $parentfieldSelect.data('field'));
+            $fieldSelect = $parentfieldSelect.find('.field');
+
+            var cordonnee =  position.left+'-'+position.top+'-'+position.width+'-'+position.height;
+            var type = "";
+            if( index > -1 ){
+                type = fieldsOcr[index]['type'];
+            }
+            if(type == 'text'){
+                $fieldSelect.val(data);
+                $( ".field-number" ).trigger( "blur" );
+            }
+            else if(type == 'date'){
+                $field = fieldsOcr[index]['field'];
+                console.log([index, $field, $fieldPreference]);
+
+                dateFormat = $fieldPreference[$field].type;
+                formattedDate = rebuildDate(data, dateFormat);
+                if(formattedDate != "")
+                    $fieldSelect.val(formattedDate);
+            }
+            else if(type == 'select'){
+                $('.row-suggession').css('display', 'none');
+                $field = fieldsOcr[index]['field'];
+                if($field == "fournisseur"){
+                    $('#achat_fournisseur').val(data.fournisseur);
+                    $('#achat_code_compta').val(data.code_compta);
+                    $('#achat_lot').val(data.lot);
+
+                    $('.row-suggession').css('display', 'block');
+
+                    $listSuggestion = "";
+                    $.each(data.fournisseurfound, function( index, value ) {
+                      $listSuggestion += "<option>"+value.nom+"</option>";
+                    });
+                    $('.field-suggession').html($listSuggestion);
+                }
+                if($field == "client"){
+                    $('#vente_client').val(data.client);
+                    $('#vente_lot').val(data.lot);
+
+                    $('.row-suggession').css('display', 'block');
+
+                    $listSuggestion = "";
+                    $.each(data.fournisseurfound, function( index, value ) {
+                      $listSuggestion += "<option>"+value.nom+"</option>";
+                    });
+                    $('.field-suggession').html($listSuggestion);
+                }
+                if($field == "utilisateur"){
+                    $fieldSelect.val(data.utilisateur);
+                }
+                else if($field == "chantier"){
+                    $fieldSelect.val(data.chantier);
+                    if(dossier == "achat"){
+                        $.ajax({
+                            url: "{{path('devis_client_get_by_chantier_import')}}",
+                            type: "POST",
+                            dataType: "json",
+                            async: true,
+                            data: {
+                                chantier_id: data.chantier
+                            },
+                            success: function(response) {
+                                if(response.status == 200){
+                                    console.log(response.devis);
+                                    var OPTIONS = "<option></option>";
+                                    $.each(response.devis, function( index, value ) {
+                                        OPTIONS += "<option value="+value.id+">"+value.label+"</option>";
+                                    });
+                                    $('#achat_devis').html(OPTIONS);
+                                }
+                                else if(response.status == 500){
+                                    toastr.error(response.message);
+                                }
+                                $('.loader-container').css('display','none');
+                            },
+                            error: function(xhr, textStatus, errorThrown) {
+                              console.log(errorThrown);
+                              $('.loader-container').css('display','none');
+                            }
+                        });
+                    }
+                }
+                else if($field == "devise"){
+                    $fieldSelect.val(data.devise);
+                }
+                else if($field == "tva"){
+                    $fieldSelect.val(data.tva);
+                }
+            }
+
+            $parentfieldSelect.find('input.field_identite').val(cordonnee);
+        }
+
+        function rebuildDate(text, dateFormat){
+
+            text = replaceAll(text, ',', '');
+            if (text.indexOf('/') <= -1){
+                text = replaceAll(text, '.', '/');
+                text = replaceAll(text, '-', '/');
+                text = replaceAll(text, ' ', '/');
+            }
+            else{
+                text = replaceAll(text, '.', '');
+                text = replaceAll(text, '-', '');
+                text = replaceAll(text, ' ', '');
+            }
+            
+            var dateTab = text.split('/');
+
+            var formattedDate = "";
+            
+            if(dateTab.length >= 3){
+
+                if(tabDay.includes(dateTab[0].toLowerCase())){
+                    dateTab.shift(); 
+                    var day = pad2(dateTab[0]);
+
+                    indexMois = moisObject.findIndex(x => x.mois === (dateTab[1]).toLowerCase());
+                    if( indexMois > -1 ){
+                        var month = moisObject[indexMois]['num'];
+                    }
+                }
+                else{
+                    var day = pad2(dateTab[0]); 
+                    indexMois = moisObject.findIndex(x => x.mois === (dateTab[1]).toLowerCase());
+                    if( indexMois > -1 ){
+                        var month = moisObject[indexMois]['num'];
+                    }
+                    else{
+                        var month = pad2(dateTab[1]);
+                    }
+                }
+
+                var year = dateTab[2];
+                if(year.length  == 2)
+                    year = "20"+year;
+                
+                formattedDate =  year+"-"+month+"-"+day;
+            }
+            return formattedDate;
+        }
+
+        function replaceAll(str, find, replace) {
+            var escapedFind=find.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, "\\$1");
+            return str.replace(new RegExp(escapedFind, 'g'), replace);
+        }
+        function pad2(n) {
+            return (n.length  < 2 ? '0' : '') + n;
+        }
+
+        $(document).on('input', 'input.float', function() {
+            this.value = this.value.replace(/[^0-9.,]/g, '').replace(/(\..*?)\..*/g, '$1');
+            this.value = this.value.replace(',', '.');
+        });
+    </script>
+{% endblock %}
+
+  <script type="text/javascript">
+    $(document).ready( function () {
+      $('.removeColumn').remove();
+    })
+  </script>
+</body>
+
+</html>

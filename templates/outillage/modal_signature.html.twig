@@ -1,0 +1,36 @@
+<div class="table-responsive">
+    <table class="table table-export table-bl">
+        <thead>
+        <tr>
+            <th>Doc</th>
+            <th>Date Signature</th>
+            <td></td>
+        </tr>
+        </thead>
+        <tbody>
+                
+            {% set totalHT = 0 %}   
+            {% for sign in signatures %}
+
+                <tr class='text-center'>
+                    <td>
+                        <span class="showDocument" data-file="/uploads/image_outillage/signature/{{sign.getDocument}}" style="cursor: pointer;"><img src="//ssl.gstatic.com/docs/doclist/images/mediatype/icon_3_pdf_x16.png"></span>
+                    </td>
+                    <td>
+                        {{ sign.getDateSignature|date('d/m/Y') }}
+                    </td>
+                    <td>
+                        <a href="{{path('outillage_signature_delete_signature', {'signature_id':sign.id})}}">
+                            <i class="fa fa-trash"></i>
+                        </a>
+                    </td>
+                </tr>
+                {% else %}
+                
+                <tr>
+                    <td colspan="6" class="text-center">Aucune signature enregistrée</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>

@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+  <script src="{{ asset('js/jquery-3.1.1.min.js') }}"></script>
+
+<style type="text/css">
+  	.actions-btn-tooltip.tooltip {
+	    opacity: 1;
+	    top: -11px!important;
+	}
+	.actions-btn-tooltip .arrow:before {
+	    border-top-color: #3b3f5c;
+	}
+	.actions-btn-tooltip .tooltip-inner {
+	    background: #3b3f5c;
+	    color: #fff;
+	    font-weight: 700;
+	    border-radius: 30px;
+	    box-shadow: 0px 5px 15px 1px rgba(113, 106, 202, 0.2);
+	    padding: 4px 16px;
+	}
+	.invoice-container {
+	    width: 100%;
+	}
+	.invoice-inbox {
+	    padding: 0;
+	    background-color: #fff;
+	    border-radius: 6px;
+	    box-shadow: rgb(145 158 171 / 24%) 0px 0px 2px 0px, rgb(145 158 171 / 24%) 0px 16px 32px -4px;
+	}
+	.invoice-inbox .inv-number {
+	    font-size: 18px;
+	    font-weight: 700;
+	    margin-bottom: 0;
+	    color: #888ea8;
+	}
+	.invoice-inbox .invoice-action svg {
+	    cursor: pointer;
+	    font-weight: 600;
+	    color: #888ea8;
+	    margin-right: 6px;
+	    vertical-align: middle;
+	    fill: rgba(0, 23, 55, 0.08);
+	}
+	.invoice-inbox .invoice-action svg:not(:last-child) {
+	    margin-right: 15px;
+	}
+	.invoice-inbox .invoice-action svg:hover {
+	    color: #4361ee;
+	    fill: rgba(27, 85, 226, 0.23921568627450981);
+	}
+
+	/*
+	===================
+
+	     Invoice
+
+	===================
+	*/
+
+	/*    Inv head section   */
+
+	.invoice .content-section .inv--head-section {
+	    padding: 36px 35px;
+	    margin-bottom: 40px;
+	    padding-bottom: 25px;
+	    border-bottom: 1px solid #ebedf2;
+	}
+
+	.inv--customer-detail-section {
+	    padding: 36px 35px;
+	    padding-top: 0;
+	}
+
+	.invoice .content-section .inv--head-section h3.in-heading {
+	    font-size: 18px;
+	    font-weight: 600;
+	    color: #0e1726;
+	    margin: 0;
+	    margin-left: 12px;
+	}
+	.invoice .content-section .inv--head-section .company-logo {
+	    width: 36px;
+	    height: 36px;
+	    object-fit: cover;
+	    margin: auto;
+	    display: block;
+	}
+	.invoice .content-section .inv--head-section div.company-info {
+	    display: flex;
+	    justify-content: flex-end;
+	}
+	.invoice .content-section .inv--head-section div.company-info svg {
+	    width: 42px;
+	    height: 42px;
+	    margin-right: 10px;
+	    color: #4361ee;
+	    fill: rgba(27, 85, 226, 0.23921568627450981);
+	}
+	.invoice .content-section .inv--head-section .inv-brand-name {
+	    font-size: 23px;
+	    font-weight: 600;
+	    margin-bottom: 0;
+	    align-self: center;
+	}
+
+	/*    Inv detail section    */
+
+	.invoice .content-section .inv--detail-section .inv-to {
+	   font-weight: 700;
+	    font-size: 15px;
+	    margin-bottom: 15px;
+	}
+	.invoice .content-section .inv--detail-section .inv-customer-name {
+	    font-weight: 700;
+	    margin-bottom: 2px;
+	    font-size: 13px;
+	    color: #4361ee;
+	}
+	.invoice .content-section .inv--detail-section .inv-detail-title {
+	    font-weight: 700;
+	    margin-bottom: 0;
+	    font-size: 15px;
+	    margin-bottom: 15px;
+	}
+	.invoice .content-section .inv--detail-section .inv-details {
+	    font-weight: 700;
+	    margin-bottom: 15px;
+	}
+	.invoice .content-section .inv--detail-section .inv-street-addr {
+	    font-weight: 600;
+	    margin-bottom: 2px;
+	    font-size: 13px;
+	}
+	.invoice .content-section .inv--detail-section .inv-email-address {
+	    font-weight: 600;
+	    margin-bottom: 2px;
+	    font-size: 13px;
+	}
+
+	/*inv-list-number*/
+	.invoice .content-section .inv--detail-section .inv-list-number {
+	    margin-bottom: 2px;
+	}
+	.invoice .content-section .inv--detail-section .inv-list-number .inv-title {
+	    font-weight: 400;
+	    font-size: 20px;
+	}
+	.invoice .content-section .inv--detail-section .inv-list-number .inv-number {
+	    font-weight: 400;
+	    font-size: 18px;
+	    color: #4361ee;
+	}
+
+	/*inv-created-date*/
+	.invoice .content-section .inv--detail-section .inv-created-date {
+	    margin-bottom: 2px;
+	}
+	.invoice .content-section .inv--detail-section .inv-created-date .inv-title {
+	    font-weight: 700;
+	    font-size: 13px;
+	}
+	.invoice .content-section .inv--detail-section .inv-created-date .inv-date {
+	    font-size: 13px;
+	    font-weight: 600;
+	}
+
+	/*inv-due-date*/
+	.invoice .content-section .inv--detail-section .inv-due-date {
+	    margin-bottom: 2px;
+	}
+	.invoice .content-section .inv--detail-section .inv-due-date .inv-title {
+	    font-weight: 700;
+	    font-size: 13px;
+	}
+	.invoice .content-section .inv--detail-section .inv-due-date .inv-date {
+	    font-size: 13px;
+	    font-weight: 600;
+	}
+
+	/*    Inv product table section    */
+	.invoice .content-section .inv--product-table-section {
+	    padding: 30px 0;
+	}
+	.invoice .content-section .inv--product-table-section table {
+	    margin-bottom: 0;
+	}
+	.invoice .content-section .inv--product-table-section thead tr {
+	    border: none;
+	}
+	.invoice .content-section .inv--product-table-section th {
+	    padding: 9px 22px;
+	    font-size: 11px!important;
+	    border: none;
+	    border-top: 1px solid #e0e6ed;
+	    border-bottom: 1px solid #e0e6ed;
+	    color: #515365!important;
+	}
+	.invoice .content-section .inv--product-table-section th:first-child {
+	    padding-left: 35px;
+	}
+	.invoice .content-section .inv--product-table-section th:last-child {
+	    padding-right: 35px;
+	}
+	.invoice .content-section .inv--product-table-section tr td:first-child {
+	    padding-left: 35px;
+	}
+	.invoice .content-section .inv--product-table-section tr td:last-child {
+	    padding-right: 35px;
+	}
+	.invoice .content-section .inv--product-table-section td {
+	    color: #515365;
+	    font-weight: 600;
+	    border: none;
+	    padding: 10px 25px;
+	    vertical-align: top!important;
+	}
+	.invoice .content-section .inv--product-table-section tbody tr:nth-of-type(even) td {
+	    background-color: #fafafa;
+	}
+
+	/*inv--payment-info*/
+	.invoice .content-section .inv--payment-info {
+	    font-size: 13px;
+	    font-weight: 600;
+	}
+	.invoice .content-section .inv--payment-info .inv-title {
+	    color: #4361ee;
+	    font-weight: 600;
+	    margin-bottom: 15px;
+	    width: 65%;
+	    margin-left: auto;
+	}
+	.invoice .content-section .inv--payment-info p {
+	    margin-bottom: 0;
+	    display: flex;
+	    width: 65%;
+	    margin-left: auto;
+	    justify-content: space-between;
+	}
+	.invoice .content-section .inv--payment-info span {
+	    font-weight: 500;
+	    display: inline-block;
+	    white-space: nowrap;
+	}
+	.invoice .content-section .inv--payment-info .inv-subtitle {
+	    font-weight: 600;
+	    font-size: 13px;
+	    display: inline-block;
+	    white-space: normal;
+	    margin-right: 4px;
+	}
+
+	/*inv--total-amounts*/
+	.invoice .content-section .inv--total-amounts {
+	    padding: 0 35px;
+	    margin-bottom: 25px;
+	    padding-bottom: 25px;
+	    border-bottom: 1px solid #ebedf2;
+	    padding-top: 100px;
+	    padding-right: 70px;
+	    padding-bottom: 100px;
+	    text-align: right;
+	}
+	.invoice .content-section .inv--total-amounts .grand-total-title h4 {
+	    position: relative;
+	    font-weight: 600;
+	    font-size: 16px;
+	    margin-bottom: 0;
+	    padding: 0;
+	    color: #0e1726;
+	    display: inline-block;
+	    letter-spacing: 1px;
+	}
+	.invoice .content-section .inv--total-amounts .grand-total-amount h4 {
+	    position: relative;
+	    font-weight: 600;
+	    font-size: 16px;
+	    margin-bottom: 0;
+	    padding: 0;
+	    color: #0e1726;
+	    display: inline-block;
+	    letter-spacing: 1px;
+	}
+
+	/*inv--note*/
+	.inv--note {
+	    padding: 0 25px;
+	    padding-bottom: 25px;
+	}
+	.inv--note p {
+	    margin-bottom: 0;
+	    font-weight: 600;
+	    color: #888ea8;
+	}
+
+	@media print {
+	  body * {
+	    visibility: hidden;
+	  }
+	  #ct, #ct * {
+	    visibility: visible;
+	  }
+	  .doc-container {
+	    position: absolute;
+	    left: 0;
+	    right: 0;
+	    top: 0;
+	  }
+	}
+
+	@page { size: auto;  margin: 0mm; }
+
+	/*
+	===============================
+	    Invoice Actions Button
+	===============================
+	*/
+
+	.invoice-actions-btn {
+	    padding: 25px;
+	    padding-top: 32px;
+	    padding-bottom: 32px;
+	    background-color: #fff;
+	    box-shadow: rgb(145 158 171 / 24%) 0px 0px 2px 0px, rgb(145 158 171 / 24%) 0px 16px 32px -4px;
+	    border-radius: 6px;
+	}
+	.invoice-actions-btn label {
+	    font-size: 14px;
+	    font-weight: 600;
+	    color: #515365;
+	}
+
+	/* Invoice Actions -> action-btn */
+
+	.invoice-actions-btn .invoice-action-btn a {
+	    -webkit-transform: none;
+	    transform: none;
+	}
+	.invoice-actions-btn .invoice-action-btn a.btn-send {
+	    width: 100%;
+	    margin-bottom: 20px;
+	}
+	.invoice-actions-btn .invoice-action-btn a.btn-print {
+	    width: 100%;
+	    margin-bottom: 20px;
+	}
+	.invoice-actions-btn .invoice-action-btn a.btn-download {
+	    width: 100%;
+	    margin-bottom: 20px;
+	}
+	.invoice-actions-btn .invoice-action-btn a.btn-edit {
+	    width: 100%;
+	}
+	@media (max-width: 1199px) {
+	    .invoice-actions-btn {
+	        margin-top: 25px;
+	    }
+	    .invoice-actions-btn .invoice-action-btn a.btn-send {
+	        margin-bottom: 0;
+	    }
+	    .invoice-actions-btn .invoice-action-btn a.btn-print {
+	        margin-bottom: 0;
+	    }
+	    .invoice-actions-btn .invoice-action-btn a.btn-download {
+	        margin-bottom: 0;
+	    }
+	}
+	@media (max-width: 767px) {
+	    .invoice-actions-btn .invoice-action-btn a.btn-send {
+	        margin-bottom: 20px;
+	    }
+	    .invoice-actions-btn .invoice-action-btn a.btn-print {
+	        margin-bottom: 20px;
+	    }
+	}
+	@media (max-width: 575px) {
+	    .invoice .content-section .inv--payment-info .inv-title {
+	        margin-top: 25px;
+	    }
+	    .invoice .content-section .inv--payment-info .inv-title {
+	        margin-left: 0;
+	        margin-right: auto;
+	        margin-bottom: 6px;
+	        width: auto;
+	    }
+	    .invoice .content-section .inv--payment-info p {
+	        margin-left: 0;
+	        margin-right: auto;
+	        width: auto;
+	        justify-content: flex-start;
+	    }
+	    .invoice .content-section .inv--payment-info .inv-subtitle {
+	        min-width: 140px;
+	    }
+	    .invoice-actions-btn .invoice-action-btn a.btn-download {
+	        margin-bottom: 20px;
+	    }
+	    .invoice .content-section .inv--payment-info span {
+	        white-space: normal;
+	    }
+	    
+	}
+	.rounded-img{
+		border-radius: 50%;
+	    position: relative;
+	    z-index: 1;
+	    width: 40px;
+	    height: 40px;
+	    object-fit: cover;
+	}
+	.signature-container{
+		display: flex;
+	    align-items: center;
+	    justify-content: space-between;
+	    padding: 177px 57px 69px;
+	}
+	.signature-left {
+	    width: 208px;
+	    text-align: center;
+	}
+	.cardre-signature {
+	    height: 130px;
+	    border: 1px solid gray;
+	    margin-top: 23px;
+	}
+	.status{
+		color: #fff;
+		-webkit-print-color-adjust: exact;
+	    width: 180px;
+	    display: inline-block;
+	    padding: 7px 0;
+	    text-align: center;
+	}
+	.timeline-content{
+		overflow: hidden;
+	    text-overflow: ellipsis;
+	    white-space: nowrap;
+	    letter-spacing: -1px;
+	}
+</style>
+<script type="text/javascript">
+	function printDiv(divName) {
+	     var printContents = document.getElementById(divName).innerHTML;
+	     var originalContents = document.body.innerHTML;
+
+	     document.body.innerHTML = printContents;
+
+	     window.print();
+
+	     document.body.innerHTML = originalContents;
+	}
+	function printAll(divName) {
+	     var printContents = document.getElementById(divName).innerHTML;
+	     var originalContents = document.body.innerHTML;
+
+	     document.body.innerHTML = printContents;
+
+	     window.print();
+
+	     document.body.innerHTML = originalContents;
+	}
+</script>
+
+</head>
+<body>
+	<div class="container" style="margin-top: 20px">
+		{% include 'flashes.html.twig' %}
+
+		{% if all_chantier is defined %}
+			<div class="print-all text-center">
+				<span class="btn btn-primary" style="margin-bottom: 18px;" onclick="printAll('printableArea-individual')" style="cursor: pointer;">Imprimer Tout</span>
+			</div>
+			<div id="printableArea-individual">
+				{% set count = 0 %}
+				{% for usersPln in plannings %}
+				{% set count = count + 1 %}
+					<div id="printableAllChantier-{{count}}">
+						<h2 class="text-center">Planning <b>{{usersPln.user}}</b></h2>
+						{% for key, taches in usersPln.taches %}
+							<div id="printableArea-{{loop.index}}">
+							    <div class="invoice">
+							        <div class="invoice-container">
+							            <div class="invoice-inbox">
+							                
+							                <div id="ct" class="">
+							                    
+							                    <div class="invoice-00001">
+							                        <div class="content-section">
+							                            <div class="inv--product-table-section">
+
+							                                <div class="table-responsive" style="margin-top: 45px">
+							                                    <table class="table">
+							                                        <thead class="">
+							                                        	<tr>
+							                                        		<td colspan="6" class="text-center">
+							                                        			<b>Chantier {{key}}</b>
+							                                        		</td>
+							                                        	</tr>
+							                                            <tr>
+							                                                <th class="" scope="col">Tache</th>
+							                                                <th class="" scope="col">Timeline</th>
+							                                                <th scope="col">Emplacement</th>
+							                                                <th scope="col">Personne</th>
+							                                                <th class="" scope="col">Status</th>
+							                                                <th class="" scope="col">Nombre jour</th>
+							                                            </tr>
+							                                        </thead>
+							                                        <tbody>
+							                                        	{% for tache in taches %}
+							                                            <tr>
+							                                            	<td>{{tache.tache}}</td>
+							                                            	<td class="timeline-content" data-date-to-calendar="{{tache.date_calendar}}">
+					                                            	</td>
+							                                                <td>{{tache.emplacement}}</td>
+							                                                <td>
+							                                                	{% for user in tache.users %}
+										                                            <img  width="20px" height="20px" src="data:image/jpeg;base64,{{user.avatar}}" class="rounded-img" ng-if="user.avatar">
+										                                        {% endfor %}
+							                                                </td>
+							                                                <td>
+							                                                	<span class="status" style="background-color: {{ tache.status.color }}; -webkit-print-color-adjust: exact;">{{ tache.status.nom }}</span>
+							                                                </td>
+							                                                <td>{{ tache.diffDay }}</td>
+							                                            </tr>
+							                                            {% endfor %}
+							                                        </tbody>
+							                                    </table>
+							                                </div>
+							                            </div>
+							                        </div>
+							                    </div> 
+							                </div>
+							            </div>
+							        </div>
+							    </div>
+							    <div class="text-center" style="margin-bottom: 30px; margin-top: 16px;">
+							    	<a href="{{ path('planning_index') }}" class="btn" style="margin-right: 10px; background: #1ab394; color: #fff">Planning</a>
+							    	<span class="btn btn-primary" href="" style="cursor: pointer;" onclick="printDiv('printableArea-{{loop.index}}')">Imprimer</span>
+							    </div>
+							</div>
+						{% endfor %}
+						<div class="text-center" style="margin-bottom: 20px">
+							<span class="btn btn-primary" onclick="printDiv('printableAllChantier-{{count}}')">Imprimer planning {{usersPln.user}}</span>
+						</div>
+					</div>
+				{% endfor %}
+			</div>
+		{% elseif individuel is defined %}
+			<div class="print-all text-center">
+				<span class="btn btn-primary" style="margin-bottom: 18px;" onclick="printAll('printableArea-individual')" style="cursor: pointer;">Imprimer Tout</span>
+			</div>
+			<div id="printableArea-individual">
+				{% for planning in plannings %}
+					<div id="printableArea-{{loop.index}}">
+					    <div class="invoice">
+					        <div class="invoice-container">
+					            <div class="invoice-inbox">
+					                
+					                <div id="ct" class="">
+					                    
+					                    <div class="invoice-00001">
+					                        <div class="content-section">
+					                            <div class="inv--product-table-section">
+
+					                                <div class="table-responsive" style="margin-top: 45px">
+					                                    <table class="table">
+					                                        <thead class="">
+					                                        	<tr>
+					                                        		<td colspan="6" class="text-center">
+					                                        			Planning <b>{{planning.user}}</b>  - Chantier {{planning.categorie}}
+					                                        		</td>
+					                                        	</tr>
+					                                            <tr>
+					                                                <th class="" scope="col">Tache</th>
+					                                                <th class="" scope="col">Timeline</th>
+					                                                <th scope="col">Emplacement</th>
+					                                                <th scope="col">Personne</th>
+					                                                <th class="" scope="col">Status</th>
+					                                                <th class="" scope="col">Nombre jour</th>
+					                                            </tr>
+					                                        </thead>
+					                                        <tbody>
+					                                        	{% for tache in planning.taches %}
+					                                            <tr>
+					                                            	<td>{{tache.tache}}</td>
+					                                            	<td class="timeline-content" data-date-to-calendar="{{tache.date_calendar}}">
+					                                            	</td>
+					                                            	<!--<td>{{ tache.fulldateInterval|raw }}</td>-->
+
+					                                                <td>{{tache.emplacement}}</td>
+					                                                <td>
+					                                                	{% for user in tache.users %}
+								                                            <img  width="20px" height="20px" src="data:image/jpeg;base64,{{user.avatar}}" class="rounded-img" ng-if="user.avatar">
+								                                        {% endfor %}
+					                                                </td>
+					                                                <td>
+					                                                	<span class="status" style="background-color: {{ tache.status.color }}; -webkit-print-color-adjust: exact;">{{ tache.status.nom }}</span>
+					                                                </td>
+					                                                <td>{{ tache.diffDay }}</td>
+					                                            </tr>
+					                                            {% endfor %}
+					                                        </tbody>
+					                                    </table>
+					                                </div>
+					                            </div>
+					                        </div>
+					                    </div> 
+					                </div>
+					            </div>
+					        </div>
+					    </div>
+					    <div class="text-center" style="margin-bottom: 30px; margin-top: 16px;">
+					    	<a href="{{ path('planning_index') }}" class="btn" style="margin-right: 10px; background: #1ab394; color: #fff">Planning</a>
+					    	<span class="btn btn-primary" href="" style="cursor: pointer;" onclick="printDiv('printableArea-{{loop.index}}')">Imprimer</span>
+					    </div>
+					</div>
+				{% endfor %}
+			</div>
+		{% else %}
+			<div id="printableArea">
+			    <div class="invoice">
+			        <div class="invoice-container">
+			            <div class="invoice-inbox">
+			                
+			                <div id="ct" class="">
+			                    
+			                    <div class="invoice-00001">
+			                        <div class="content-section">
+			                            <div class="inv--product-table-section">
+
+			                                <div class="table-responsive" style="margin-top: 45px">
+			                                    <table class="table">
+			                                        <thead class="">
+			                                        	<tr>
+			                                        		<td colspan="6" class="text-center">
+			                                        			Planning Chantier {{planning.categorie}}
+			                                        		</td>
+			                                        	</tr>
+			                                            <tr>
+			                                                <th class="" scope="col">Tache</th>
+			                                                <th class="" scope="col">Timeline</th>
+			                                                <th scope="col">Emplacement</th>
+			                                                <th scope="col">Personne</th>
+			                                                <th class="" scope="col">Status</th>
+			                                                <th class="" scope="col">Nombre jour</th>
+			                                            </tr>
+			                                        </thead>
+			                                        <tbody>
+			                                        	{% for tache in planning.taches %}
+			                                            <tr>
+			                                            	<td>{{tache.tache}}</td>
+			                                            	<td class="timeline-content" data-date-to-calendar="{{tache.date_calendar}}">
+					                                            	</td>
+			                                                <td>{{tache.emplacement}}</td>
+			                                                <td>
+			                                                	{% for user in tache.users %}
+						                                            <img  width="20px" height="20px" src="data:image/jpeg;base64,{{user.avatar}}" class="rounded-img" ng-if="user.avatar">
+						                                        {% endfor %}
+			                                                </td>
+			                                                <td>
+			                                                	<span class="status" style="background-color: {{ tache.status.color }}; -webkit-print-color-adjust: exact;">{{ tache.status.nom }}</span>
+			                                                </td>
+			                                                <td>{{ tache.diffDay }}</td>
+			                                            </tr>
+			                                            {% endfor %}
+			                                        </tbody>
+			                                    </table>
+			                                </div>
+			                            </div>
+			                        </div>
+			                    </div> 
+			                </div>
+			            </div>
+			        </div>
+			    </div>
+			    <div class="text-center" style="margin-bottom: 30px; margin-top: 16px;">
+			    	<a href="{{ path('planning_index') }}" class="btn" style="margin-right: 10px; background: #1ab394; color: #fff">Planning</a>
+			    	<span class="btn btn-primary" href="" style="cursor: pointer;" onclick="printDiv('printableArea')">Imprimer</span>
+			    </div>
+			</div>
+		{% endif %}
+	</div>
+
+	<script type="text/javascript">
+		$('.timeline-content').each(function( index ) {
+            $dateStrInput = $(this).attr('data-date-to-calendar');
+
+            $dateRange = buildPlanningDate($dateStrInput);
+            $intervalElt = $(this).find('.interval');
+            $(this).html($dateRange.dateInterval);
+        })
+        function buildPlanningDate(date){
+            /*const optionsDate = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };*/
+            var debut = date.split(' au ')[0];
+            var fin = date.split(' au ')[1];
+            var optionsDate = { year: '2-digit', month: 'short', day: 'numeric' };
+
+            var dateInterval = '';
+            debut = (new Date(debut)).toLocaleDateString('fr-FR', optionsDate);
+            fin = (new Date(fin)).toLocaleDateString('fr-FR', optionsDate);
+
+            if(debut.split(" ")[2] == fin.split(" ")[2] ){
+                if(debut.split(" ")[1] == fin.split(" ")[1] ){
+                    if(debut.split(" ")[0] == fin.split(" ")[0] ){
+                    	dateInterval =  debut.split(" ")[0]+' '+debut.split(" ")[1]+" "+debut.split(" ")[2];
+                    }
+                   	else{
+                   		dateInterval =  debut.split(" ")[0]+' - '+fin.split(" ")[0]+" "+debut.split(" ")[1]+" "+debut.split(" ")[2];
+                   	}
+                }
+                else{
+                    dateInterval = debut.split(" ")[0]+" "+debut.split(" ")[1]+' - '+fin.split(" ")[0]+" "+fin.split(" ")[1]+" "+debut.split(" ")[2];
+                }
+            }
+            else{
+                dateInterval = debut+' - '+fin;
+            }
+            
+            
+            return {
+                dateInterval:dateInterval, 
+                diffDay:datediff(new Date( date.split(' au ')[0]), new Date( date.split(' au ')[1]))
+            };
+        }   
+
+        function datediff(first, second) {
+            return Math.round((second-first)/(1000*60*60*24));
+        }
+	</script>
+
+</body>
+</html>

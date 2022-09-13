@@ -1,0 +1,394 @@
+
+<style type="text/css">
+    .input-group-addon{
+        padding: 6px 12px;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 1;
+    color: #555;
+    text-align: center;
+    background-color: #eee;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    }
+    #pret_rembourssementInteret{
+        width: 28px;
+        height: 17px;
+    }
+    .display-evenement{display: none;}
+</style>
+
+{{ form_start(form, {'attr': {'id': 'formPret', 'autocomplete': 'off'}}) }}
+<input type="hidden" name="pret_id" value="{{pret.id is not null ? pret.id : '' }}">
+
+<div class="col-lg-12">
+    <div class="ibox">
+        <div class="ibox-content">
+            <div class="row">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="col-lg-6 form-group">
+                            {{ form_label(form.banque, 'Banque') }}
+                            {{ form_row(form.banque) }}
+                        </div>
+                        <div class="col-lg-6 form-group">
+                            {{ form_label(form.bien, 'Bien') }}
+                            {{ form_row(form.bien) }}
+                        </div>
+                        
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="col-lg-6 form-group">
+                            {{ form_label(form.echeance, 'Echeance') }}
+                            {{ form_row(form.echeance) }}
+                        </div>
+                        <div class="col-lg-6 form-group">
+                            {{ form_label(form.capital, 'Capital') }}
+                            <div class="input-group">
+                              {{ form_row(form.capital) }}
+                              <span class="input-group-addon">€</span>
+                            </div>
+                        </div>
+                        
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="col-lg-6 form-group">
+                            {{ form_label(form.montant_echeance_1, 'Montant echeance N°1') }}
+                            <div class="input-group">
+                              {{ form_row(form.montant_echeance_1) }}
+                              <span class="input-group-addon">€</span>
+                            </div>
+                        </div>
+                        <div class="col-lg-6 form-group">
+                            {{ form_label(form.montant_echeance, 'Montant echeance') }}
+                            <div class="input-group">
+                              {{ form_row(form.montant_echeance, {'attr': {'disabled': 'disabled'}}) }}
+                              <span class="input-group-addon">€</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-6 form-group">
+                    {{ form_label(form.differe, 'Differé') }}
+                    {{ form_row(form.differe) }}
+                </div>
+                <div class="col-lg-6 form-group">
+                    {{ form_label(form.duree_differe, 'Durée du differé') }}
+                    <div class="input-group">
+                      {{ form_row(form.duree_differe) }}
+                      <span class="input-group-addon">Mois</span>
+                    </div>
+                </div>
+                
+                <div class="col-lg-6 form-group">
+                    {{ form_label(form.taux, 'Taux') }}
+                    <div class="input-group">
+                      {{ form_row(form.taux) }}
+                      <span class="input-group-addon">%</span>
+                    </div>
+                </div>
+                <div class="col-lg-6 form-group">
+                    {{ form_label(form.taux_assurance, 'Taux assurance') }}
+                    <div class="input-group">
+                      {{ form_row(form.taux_assurance) }}
+                      <span class="input-group-addon">%</span>
+                    </div>
+                </div>
+                
+                <div class="col-lg-6 form-group">
+                    {{ form_label(form.duree, 'Durée') }}
+                    <div class="input-group">
+                      {{ form_row(form.duree) }}
+                      <span class="input-group-addon">Mois</span>
+                    </div>
+                </div>
+                <div class="col-lg-6 form-group">
+                    {{ form_label(form.capital_restant, 'Capital restant') }}
+                    <div class="input-group">
+                      {{ form_row(form.capital_restant, {'attr': {'disabled': 'disabled'}}) }}
+                      <span class="input-group-addon">€</span>
+                    </div>
+                </div>
+                <div class="col-lg-6 form-group">
+                    {{ form_label(form.interet1, 'Premier interet') }}
+                    <div class="input-group">
+                      {{ form_row(form.interet1)}}
+                      <span class="input-group-addon">€</span>
+                    </div>
+                </div>
+                <div class="col-lg-6 form-group">
+                    {{ form_label(form.remboursement1, 'Premier remboursement') }}
+                    <div class="input-group">
+                      {{ form_row(form.remboursement1) }}
+                      <span class="input-group-addon">€</span>
+                    </div>
+                </div>
+
+                <div class="col-lg-6 form-group">
+                    {{ form_label(form.date_deblocage, 'Date deblocage') }}
+                    {{ form_row(form.date_deblocage) }}
+                </div>
+                <div class="col-lg-6 form-group">
+                    {{ form_label(form.date_premiere_echeance, 'Date premiere echeance') }}
+                    {{ form_row(form.date_premiere_echeance) }}
+                </div>
+                <div class="col-lg-6 form-group">
+                    {{ form_label(form.montantDeblocage, 'Montant déblocage') }}
+                    <div class="input-group">
+                      {{ form_row(form.montantDeblocage)}}
+                      <span class="input-group-addon">€</span>
+                    </div>
+                </div>
+                <div class="col-lg-6 form-group">
+                    {{ form_label(form.debut_prelevement_interet, 'Date Debut prelevement interet') }}
+                    {{ form_row(form.debut_prelevement_interet) }}
+                </div>
+                <div class="col-lg-6 form-group">
+                    {{ form_label(form.date_fin, 'Date fin') }}
+                    {{ form_row(form.date_fin, {'attr': {'disabled': 'disabled'}}) }}
+                </div>
+
+                <div class="col-lg-12" style="margin-top: 23px;">
+                    <h2 style="font-weight: 500">Cout Global du pret</h2>
+                </div>
+                <div class="col-lg-12"><hr style=" margin-top: 0;"></div>
+                
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="col-lg-4 form-group">
+                            {{ form_label(form.cout_interet, 'Coût des intérêts') }}
+                            <div class="input-group">
+                              {{ form_row(form.cout_interet, {'attr': {'disabled': 'disabled'}}) }}
+                              <span class="input-group-addon">€</span>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 form-group">
+                            {{ form_label(form.cout_assurance, "Coût de l'assurance") }}
+                            <div class="input-group">
+                              {{ form_row(form.cout_assurance, {'attr': {'disabled': 'disabled'}}) }}
+                              <span class="input-group-addon">€</span>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 form-group">
+                            {{ form_label(form.cout_total, 'Coût total du prêt') }}
+                            <div class="input-group">
+                              {{ form_row(form.cout_total, {'attr': {'disabled': 'disabled'}}) }}
+                              <span class="input-group-addon">€</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-6 form-group">
+                    <div>
+                        {% if pret.contrat is not null %}
+                        <span style="">
+                            {{pret.contrat|length > 40 ? pret.contrat|slice(0, 40) ~ '...' : pret.contrat}}
+                        </span>
+                        {% endif %}
+                    </div>
+                    <div>
+                        {{ form_row(form.contrat) }}
+                    </div>
+
+                    <div>
+                        {% if pret.contrat %}
+                        <br>
+                        <div class="col-lg-12" style="display: flex;align-items: center;">
+                            <span class="showDocument" data-file="/uploads/pret/contrat/{{pret.contrat}}" style="cursor: pointer;"><img src="//ssl.gstatic.com/docs/doclist/images/mediatype/icon_3_pdf_x16.png"></span>
+                            <a href="{{path('pret_delete_contrat', {'id':pret.id, 'type_document':'contrat'})}}" onclick="return confirm('Voulez-vous la suppression ?')"  style="margin-left: 15px;font-size: 11px; padding: 2px 7px;" class="btn btn-danger"><i class="fa fa-trash"></i></a>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-4 form-group">
+                    {{ form_label(form.evenement, 'Evenement') }}
+                    {{ form_row(form.evenement) }}
+                </div>
+                <div class="col-lg-4 form-group display-evenement">
+                    <label>Mois differé</label>
+                    <div>
+                        <select name="moisDiffere" id="moisDiffere" class="form-control">
+                            {% for key,m in tabMois %}
+                            <option value="{{key}}" {% if pret.dateDiffere and pret.dateDiffere|date("m") == key %} selected{% endif %} >{{m}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <div class="col-lg-4 form-group display-evenement">
+                    <label>Année differé</label>
+                    <div>
+                        <input type="number" name="anneeDiffere" id="anneeDiffere" class="form-control" value="{{pret.dateDiffere ? pret.dateDiffere|date('Y') : ''}}">
+                    </div>
+                </div>
+                <div class="col-lg-4 form-group display-evenement duree-differe">
+                    {{ form_label(form.dureeDiffere2, "Durée differée") }}
+                    <div class="input-group">
+                      {{ form_row(form.dureeDiffere2) }}
+                      <span class="input-group-addon">Mois</span>
+                    </div>
+                </div>
+                <div class="col-lg-4 form-group display-evenement somme-deblocage">
+                    {{ form_label(form.montantDeblocageDiffere, "Somme du déblocage") }}
+                    <div class="input-group">
+                      {{ form_row(form.montantDeblocageDiffere) }}
+                      <span class="input-group-addon">€</span>
+                    </div>
+                </div>
+                <div class="col-lg-4 form-group display-evenement rbInteret">
+                    <div class="form-group" style="display: flex;align-items: center;margin-top: 17px;">
+                        {{ form_row(form.rembourssementInteret) }}
+                        <span style="margin-left:7px;">
+                            {{ form_label(form.rembourssementInteret, 'Avec rembourssement intéret') }}
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <!--<div class="row">
+                <h2 class="col-lg-12 form-title">Amortissements</h2>
+                <div class="col-lg-12 form-group">
+                    <div class="amortissement-container">
+                        {% for amortissement in pret.amortissements %}
+                            <div class="amortissement-content">
+                                <div class="col-lg-9 form-group">   
+                                    <div class="row">
+                                        <div class="col-lg-11">
+                                            <div class="row" style="margin-top: 20px;">
+                                                <div class="col-lg-6">
+                                                    <label>Date</label>
+                                                    <div>
+                                                        <input type="date" required name="amortissementsEdit[{{amortissement.id}}][date]" class="form-control" value="{{amortissement.getDateCreation|date('Y-m-d')}}"></div>
+                                                </div>
+                                                <div class="col-lg-6">
+                                                    <label>Document </label>
+                                                    <div>
+                                                        {% if amortissement.file %}
+                                                        <span style="">
+                                                            {{amortissement.file|length > 40 ? amortissement.file|slice(0, 40) ~ '...' : amortissement.file}}
+                                                        </span>
+                                                        {% endif %}
+                                                    </div>
+                                                        
+                                                    <div>
+                                                        <input type="file" class="form-control" name="amortissementsEdit[{{amortissement.id}}][file]" accept="image/*,.pdf" value="">
+                                                    </div>
+                                                    {% if amortissement.file %}
+                                                    <br>
+                                                    <div class="col-lg-12" style="display: flex;align-items: center;">
+                                                        <span class="showDocument" data-file="/uploads/pret/amortissement/{{amortissement.file}}" style="cursor: pointer;"><img src="//ssl.gstatic.com/docs/doclist/images/mediatype/icon_3_pdf_x16.png"></span>
+                                                    </div>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <span class="close-amortissement btn col-lg-1" style="color: #b50505;position: absolute;bottom: 0;">X</span>
+                                    </div>      
+                                </div>
+                                
+                            </div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="col-lg-12 text-center" style="margin-top: 34px;text-align: center;">
+                        <span class="btn" onclick="addAmortissement()" style="border: 1px solid #f1efef;font-size: 15px;color: #000;"><i class="fas fa-plus-circle"></i> Ajouter un amortissement</span>
+                    </div>
+
+                </div>
+            </div>
+            <br><br>
+            
+            -->
+            {% if pret.id is null %}
+            <div class="row">
+                <div class="col-lg-3 form-group">
+                    <button class="btn btn-primary">{{ button_label|default('Enregistrer') }}</button>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+{{ form_end(form) }}
+
+<script type="text/javascript">
+    addAmortissement = function(){
+        var ELT = '<div class="amortissement-content">'+
+                    '<div class="col-lg-9 form-group">'+
+                        '<div class="row">'+
+                            '<div class="col-lg-11">'+
+                                '<div class="row" style="margin-top: 20px;">'+
+                                    '<div class="col-lg-6">'+
+                                        '<label>Date</label>'+
+                                        '<div>'+
+                                            '<div><input type="date" required name="amortissements[date][]" class="form-control"></div>'+
+                                        '</div>'+
+                                    '</div>'+
+                                    '<div class="col-lg-6">'+
+                                        '<label>Document</label>'+
+                                        '<div>'+
+                                            '<div><input type="file" accept="image/*,.pdf" required class="form-control" name="amortissements[file][]" value=""></div>'+
+                                        '</div>'+
+                                    '</div>'+
+                                '</div>'+
+                            '</div>'+
+                            '<span class="close-amortissement btn col-lg-1" style="color: #b50505;position: absolute;bottom: 0;">X</span>'+
+                        '</div>'+                   
+                    '</div>'+
+                '</div>';
+        $('.amortissement-container').append(ELT);
+    }
+
+    $(document).on('click', '.close-amortissement', function(){
+        $(this).parent().remove();
+    })
+
+    if($('#pret_differe').val() == 1){
+        $('#pret_duree_differe').attr('disabled', 'disabled');
+    }
+
+    $(document).on('change', '#pret_evenement', function (e) {
+        $valSelect = $(this).val();
+        $('.display-evenement').css('display', 'none');
+        if($valSelect == 1){
+            $('.display-evenement').not('.somme-deblocage').css('display', 'block');
+        }
+        else if($valSelect == 2){
+            $('.display-evenement').not('.duree-differe, .rbInteret').css('display', 'block');
+
+        }
+        else if($valSelect == 3){
+            $('.display-evenement').not('.somme-deblocage').css('display', 'block');
+            $('.somme-deblocage').val("");
+        }
+    })
+
+    $( document ).ready(function() {
+        $valSelect = $("#pret_evenement").val();
+        $('.display-evenement').css('display', 'none');
+        if($valSelect == 1){
+            $('.display-evenement').not('.somme-deblocage').css('display', 'block');
+            $('.somme-deblocage').val("");
+        }
+        else if($valSelect == 2){
+            $('.display-evenement').not('.duree-differe, .rbInteret').css('display', 'block');
+            $('#pret_rembourssementInteret').prop('checked',false);
+            $('.duree-differe').val("");
+        }
+        else if($valSelect == 3){
+            $('.display-evenement').not('.somme-deblocage').css('display', 'block');
+            $('.somme-deblocage').val("");
+        }
+    })
+
+</script>

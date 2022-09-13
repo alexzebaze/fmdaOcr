@@ -1,0 +1,54 @@
+{% extends 'base.html.twig' %}
+
+{% block title %} {{parent()}} Outillage{% endblock %}
+
+{% block body %}
+    <h1>Outillage</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ outillage.id }}</td>
+            </tr>
+            <tr>
+                <th>Nom</th>
+                <td>{{ outillage.nom }}</td>
+            </tr>
+            <tr>
+                <th>Marque</th>
+                <td>{{ outillage.marque }}</td>
+            </tr>
+            <tr>
+                <th>Gestion</th>
+                <td>{{ outillage.gestion }}</td>
+            </tr>
+            <tr>
+                <th>Mise_en_service</th>
+                <td>{{ outillage.miseEnService ? outillage.miseEnService|date('Y-m-d H:i:s') : '' }}</td>
+            </tr>
+            <tr>
+                <th>Derniere_inspection</th>
+                <td>{{ outillage.derniereInspection ? outillage.derniereInspection|date('Y-m-d H:i:s') : '' }}</td>
+            </tr>
+            <tr>
+                <th>Proprietaire</th>
+                <td>{{ outillage.proprietaire }}</td>
+            </tr>
+            <tr>
+                <th>Status</th>
+                <td>{{ outillage.status ? 'Yes' : 'No' }}</td>
+            </tr>
+            <tr>
+                <th>Image</th>
+                <td>{{ outillage.image }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('outillage_index') }}">back to list</a>
+
+    <a href="{{ path('outillage_edit', {'id': outillage.id}) }}">edit</a>
+
+    {{ include('outillage/_delete_form.html.twig') }}
+{% endblock %}

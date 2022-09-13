@@ -1,0 +1,36 @@
+{% extends 'base.html.twig' %}
+
+{% block breadcrumb %}
+
+    <div class="row wrapper border-bottom white-bg page-heading">
+        <div class="col-lg-10">
+            <h1>Modifier un horaire</h1>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                    <a href="{{ path('home') }}">Accueil</a>
+                </li>
+                <li class="breadcrumb-item">
+                    <a href="{{ path('horaire_list') }}">Horaires</a>
+                </li>
+                <li class="breadcrumb-item active">
+                    <strong>Modifier un horaire</strong>
+                </li>
+            </ol>
+        </div>
+    </div>
+{% endblock %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-lg-6">
+            <div class="ibox">
+                <div class="ibox-content">
+                    {{ include('horaire/_form_edit.html.twig') }}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <a href="{{ path('horaire_list') }}">Retourner à la liste des horaires</a>
+{% endblock %}
+

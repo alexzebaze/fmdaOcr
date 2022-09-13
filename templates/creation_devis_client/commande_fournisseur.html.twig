@@ -1,0 +1,20 @@
+<div class="entreprise-list list-user form-group" style="margin-top: 0">
+    {% for fournisseur in fournisseurs %}
+        <div style="display: flex;align-items: center;">
+            <div class="switch-entreprise entreprise-item" style="cursor: pointer; justify-content: flex-start; align-items: center; border-radius: 20px 5px 5px 24px; flex: 1" onclick="loadArticleCommande({{fournisseur.id}}, {{enteteId}})">
+                <span style="margin-right: 16px;">
+                    <img data-file="/uploads/logo_fournisseur/{{fournisseur.logo}}" src="/uploads/logo_fournisseur/{{fournisseur.logo}}" 
+                        class="entreprise-img rounded-img">
+                </span>
+                <div class="detail-devis" style="line-height: 21px;    color: #000;font-size: 15px;">
+                    <div>
+                        <span>{{fournisseur.nom}}</span>
+                    </div>
+                </div>
+            </div>
+            <a href="{{path('export_commande_fournisseur', {'id':fournisseur.id})}}?devisId={{enteteId}}" target="_blank" style="padding: 0px 8px;font-size: 24px;color: green;">
+                <i class="fas fa-file-excel"></i>
+            </a>
+        </div>
+    {% endfor %}
+</div>

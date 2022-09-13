@@ -1,0 +1,123 @@
+{% extends 'base.html.twig' %}
+
+{% block css %}
+    <link rel="stylesheet" href="//cdn.datatables.net/1.10.20/css/jquery.dataTables.min.css">
+    <style type="text/css">        
+        .rounded-img {
+            border-radius: 50%;
+            position: relative;
+            z-index: 1;
+            width: 40px;
+            height: 40px;
+            object-fit: cover;
+            transition: easy 0.4s all;
+        }
+        .pace{display: none;}
+    </style>
+{% endblock %}
+
+
+{% block breadcrumb %}
+
+    <div class="row wrapper border-bottom white-bg page-heading">
+        <div class="col-lg-10">
+            <h1>Document en attente</h1>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                    <a href="{{ path('home') }}">Accueil</a>
+                </li>
+                <li class="breadcrumb-item active">
+                    <strong>Documents</strong>
+                </li>
+            </ol>
+        </div>
+    </div>
+{% endblock %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-lg-12">
+            {% include 'flashes.html.twig' %}
+            <div class="ibox ">
+                <div class="ibox-title">
+                    <h5>Liste des documents</h5>
+                    <div class="ibox-tools">
+                    </div>
+                </div>
+                <div class="ibox-content">
+                    <div class="document-container">
+                        {{ include('email_document_preview/content_list.html.twig') }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block javascript_script %}
+    <script src="//cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/plug-ins/1.10.24/sorting/date-eu.js"></script>
+    <script type="text/javascript">
+
+        var nbDocument = {{ documents|length }};
+        var table = $('table').DataTable({
+            "language": {
+                "url": "//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/French.json"
+            },
+            "columnDefs": [
+            ],
+            "pageLength": 50,
+            "order": []
+        });
+
+        function loadDocument(){
+            $.ajax({
+                url: "{{path('email_document_preview_list_xhr')}}",
+                type: "GET",
+                dataType: "json",
+                async: true,
+                data: {
+                    dossier:"{{dossier}}",
+                    nbDocument:nbDocument
+                },
+                success: function(response, status) {
+                  if(response.status == 200){
+                
+                    $('.document-container').html(response.content);
+                    table.destroy();
+                    table = $('table').DataTable({
+                        "language": {
+                            "url": "//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/French.json"
+                        },
+                        "columnDefs": [
+                        ],
+                        "pageLength": 50,
+                        "order": []
+                    });
+                    
+                  }
+                  else if(response.status == 500){
+                    // toastr.error(response.message);
+                    toastr.error(response.message);
+                  }
+                },
+                error: function(xhr, textStatus, errorThrown) {
+                  toastr.error("Ooops..., Quelque chose s'est mal passée");
+                }
+            });
+        }
+
+        loadDocument();
+        $(document).ready( function () {
+            setInterval(function(){
+                loadDocument();
+            }, 30000)
+        })
+
+    </script>
+{% endblock %}
+
+{% block javascript %}
+
+{% endblock %}

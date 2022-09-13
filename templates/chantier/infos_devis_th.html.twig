@@ -1,0 +1,118 @@
+{% extends 'base.html.twig' %}
+{% block css %}
+    <link rel="stylesheet" href="//cdn.datatables.net/1.10.20/css/jquery.dataTables.min.css">
+    <style type="text/css">
+        th, td{text-align: center;text-align: center;}
+        .total-bl{
+            margin: 8px 0 32px 0;
+            color: #000;
+            font-weight: 600;
+            text-align: center;
+        }
+    </style>
+{% endblock %}
+{% block breadcrumb %}
+    <div class="row wrapper border-bottom white-bg page-heading">
+        <div class="col-lg-10">
+            <h1>Details taux horaire devis</h1>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                    <a href="{{ path('home') }}">Accueil</a>
+                </li>
+                <li class="breadcrumb-item active">
+                    <strong>Details taux horaire devis</strong>
+                </li>
+            </ol>
+        </div>
+    </div>
+
+{% endblock %}
+{% block content %}
+    <div class="row">
+        <div class="col-lg-12">
+            {% include 'flashes.html.twig' %}
+            <div class="ibox">
+                <div class="ibox-title">
+                    <h5>Details taux horaire devis</h5> 
+                    <div class="ibox-tools">
+                    </div>
+                </div>
+                <div class="ibox-content">
+                    <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                        <tr>
+                            <th>User</th>
+                            <th>Tx_moyen</th>
+                            <th>nb heure</th>
+                            <th>Total HT</th>
+                            <th>Devis</th>
+                            <th>paie</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                            {% for horaire in horairesInfos %}
+                            <tr class='text-center'>
+                                <td>
+                                    {{ horaire.utilisateur }}
+                                </td>
+                                <td>{{ horaire.tx_moyen|number_format(2, ',', ' ') }}</td>
+                                <td>{{ horaire.heure|number_format(2, ',', ' ') }}</td>
+                                <td>
+                                    {% set curTtlTh = (horaire.tx_moyen*horaire.heure) %} 
+                                    {{ curTtlTh|number_format(2, ',', ' ') }}
+                                </td>
+                                <td>
+                                    {% if horaire.document_devis %} 
+                                    <span class="showDocument" data-file="/uploads/devis/{{horaire.document_devis}}" style="cursor: pointer;"><img src="//ssl.gstatic.com/docs/doclist/images/mediatype/icon_3_pdf_x16.png"></span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if horaire.document_paie %} 
+                                    <span class="showDocument" data-file="/uploads/paies/{{horaire.document_paie}}" style="cursor: pointer;"><img src="//ssl.gstatic.com/docs/doclist/images/mediatype/icon_3_pdf_x16.png"></span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td colspan="34">Aucune bon_livraison Associé</td>
+                            </tr>
+                            {% endfor %}
+                            <tr class='text-center'>
+                                <td></td>
+                                <th>{{sumTxMoy|number_format(2, ',', ' ')}}</th>
+                                <th>{{sumNbHeure|number_format(2, ',', ' ')}}</th>
+                                <th>{{totalTH|number_format(2, ',', ' ')}}</th>
+                                <td></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+{% endblock %}
+
+{% block javascript_script %}
+    <script src="//cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/plug-ins/1.10.24/sorting/date-eu.js"></script>
+{% endblock %}
+
+{% block javascript %}
+$(document).ready( function () {
+    $('table').DataTable({
+        columnDefs: [
+           { type: 'date-eu', targets: 2 }
+        ],  
+        "language": {
+            "url": "//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/French.json"
+        },
+        "pageLength": 500,
+        "order": []
+    });
+} );
+
+{% endblock %}

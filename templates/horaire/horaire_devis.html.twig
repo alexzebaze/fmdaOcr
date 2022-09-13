@@ -1,0 +1,639 @@
+{% extends 'base.html.twig' %}
+{% block css %}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css" integrity="sha512-mSYUmp1HYZDFaVKK//63EcZq4iFWFjxSL+Z3T/aCt4IO9Cejm03q3NKKYN6pFQzY0SBOr8h+eCIAZHPXcpZaNw==" crossorigin="anonymous" />
+
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.24/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/buttons/1.7.0/css/buttons.dataTables.min.css">
+    
+    <style type="text/css">
+        
+        thead th{text-align: center;text-align: center;}
+        .send-facture, .formReglement{display: none;}
+        .ibox-title{padding: 26px 90px 8px 15px}
+        .ibox-tools{display: flex;align-items: center;justify-content: flex-end;margin-bottom: 7px;}
+        table.dataTable tfoot th, table.dataTable tfoot td{border-top: 1px solid #e7eaec;text-align: center; font-weight: 600;font-size: 15px;    padding-bottom: 3rem;}
+        .total-bl{
+            margin: 8px 0 32px 0;
+            color: #000;
+            font-weight: 600;
+            text-align: center;
+        }
+        .btnAttachDevis{display: none;}
+        .loader-container{display: none;align-items: center;justify-content: center;}
+        #extSubmitFixed{display: none;}
+        .cell-devis{
+            position: relative;
+        }
+        .cell-devis:hover .link-dettach-devis{display: inline-block;}
+        .link-dettach-devis{
+            display: none;
+            color: #d40000;
+            position: absolute;
+            right: -28px;
+        }
+        td.separateur{
+            background: #0cad8cf2;;
+            height: 10px;
+            text-align: center;
+            font-size: 20px;
+            color: #000;
+        }
+        tr.new-day td{
+            border-top: 3px solid #a3a3a5!important;
+        }
+        
+        td.horaire-empty {
+            background: #fcc5c5!important;
+        }
+        .userMarkIgnored .horaire-empty{
+            background: #fff!important;
+        }
+        .time-out{
+            background: #ef0a0a!important;
+            color: #fff;
+        }
+        .userMarkIgnored .dropdownIgnore{
+            display: none;
+        }
+    </style>
+{% endblock %}
+{% block breadcrumb %}
+
+    <div class="row wrapper border-bottom white-bg page-heading">
+        <div class="col-lg-10">
+            <h1>Liste des horaires</h1>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                    <a href="{{ path('home') }}">Accueil</a>
+                </li>
+                <li class="breadcrumb-item active">
+                    <strong>Horaires</strong>
+                </li>
+            </ol>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-lg-12">
+            {% include 'flashes.html.twig' %}
+            <div class="ibox">
+                <div class="ibox-content">
+                    {{ include('horaire/filter2.html.twig') }}
+                </div>
+            </div>
+            <div class="ibox">
+                <div class="ibox-title" style="padding: 19px 13px;">
+                    <h5>Liste horaires</h5> 
+                    <div class="ibox-tools">
+                        <button type="button" class="btn btn-primary btnAttachDevis" style="margin-right: 6px;">
+                          Lier un devis
+                        </button>
+                        <a href="{{ path('horaire_print_tache', {'mois' : mois, 'annee': annee}) }}?user={{user}}&chantier={{chantier}}" class="btn btn-primary"><i class="fas fa-file-excel"></i> Télécharger en XLSX</a>
+                    </div>
+                </div>
+                <div class="ibox-content">
+                    <div id="modalChantier" class="modal fade bs-example-modal-sm modal-center" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel">
+                        <div class="modal-dialog modal-medium" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header" style="border: none;">
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                    <h2 class="modal-title text-center" id="myModalLabel">Attribuer un chantier</h2>
+                                </div>
+                                <div class="modal-body text-center" style="padding: 0px 30px 51px 30px">
+                                    <form method="POST" action="{{path('horaire_edit_chantier')}}">
+                                        <input type="hidden" name="horaire_id">
+                                        <div class="row">
+                                            <div class="col-lg-12 form-group">
+                                                <select class="form-control" name="chantier" required>
+                                                    <option value="" disabled selected>-- selectionner un chantier --</option>
+                                                    {% for ch in chantiers %} 
+                                                    <option value="{{ch.chantierId}}">{{ch.nameentreprise}}</option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-12 form-group text-center">
+                                            <button type="submit" class="btn btn-primary
+                                            ">Envoyer</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <h1 class="text-center" style="font-weight: bold;color: #000;">Heures: {{totaux.heure|number_format(2, ',', '') }} heures</h1>
+                    <h1 class="text-center" style="font-weight: bold;color: #000;">Fictifs: {{totaux.fictif|number_format(2, ',', '') }} heures</h1>
+                    <br>
+                    {% set dette = totaux.heure - totaux.fictif %}
+                    {% if dette > 0 %}
+                        <h1 style="font-weight: 600; color: #000;" class="text-center">Je dois {{dette|number_format(2, ',', '')|abs  }} heures</h1>
+                    {% else %}
+                        <h1 style="font-weight: 600; color: #000" class="text-center">Me dois {{dette|number_format(2, ',', '')|abs }} heures</h1>
+                    {% endif %}
+                    <h1 style="font-weight: 600; color: #000" class="text-center">Tx Moyen {{ (totaux.tx_moyen)|number_format(2, ',', '') }}</h1>
+                    <h1 style="font-weight: 600; color: #000" class="text-center">Cout Total Salaire {{ (totaux.tx_moyen*totaux.heure)|number_format(2, ',', '') }}</h1>
+                    <br><br>
+                    <div class="table-responsive">
+                    {% set total_heure2 = 0 %}
+                    <table class="table" cellspacing="0" width="100%">
+                        <thead>
+                        <tr>
+                            <th>
+                                <input type="checkbox" class="chk-parent" value="">
+                            </th>
+                            <th>Ouvrier</th>
+                            <th>Date debut</th>
+                            <th>Chantier</th>
+                            <th>Tache</th>
+                            <th>Devis</th>
+                            <th>Num_Devis</th>
+                            <th>heure</th>
+                            <th>Fictif</th>
+                            <th>tx_moyen</th>
+                            <th>SMS</th>
+                            <th></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                            {% for key, horaires in horairesSemaines %}
+                                {% set startWeek = "" %}
+                                {% set endWeek = "" %}
+
+                                {% if horaires|length > 0 %}
+
+                                    {% set startWeek = horaires| keys ? horaires| keys | last : "" %}
+
+                                    {% set endWeek = horaires| keys ? horaires| keys | first : "" %}
+
+                                {% endif %}
+                                <tr>
+                                    <td class="separateur" colspan="12" align="center">
+                                        <b>{{key}}</b>: {{ (startWeek != "" and endWeek != "") ? startWeek~" à "~endWeek }}
+                                    </td>
+                                    {% for i in 1..11 %}
+                                        <td class="separateur" style="display: none;"></td>
+                                    {% endfor %}
+                                </tr>
+
+                                {% set total_heure = 0 %}
+                                {% set total_tx_moyen = 0 %}
+                                {% set total_heure_fictif = 0 %}
+                                {% for key_day,horaireDays in horaires %}
+                                    {% for horaireUsers in horaireDays %}
+                                        {% for horaire in horaireUsers %}
+                                            {% if horaire.idsession == '' or ( horaire.idsession != '' and horaire.absence in abscence|keys) %}
+                                                
+                                                {% set user_horaire_cat = horaire.user_id~'-'~key_day %}
+                                                <tr class='text-center {% if horaire.time >= 12 %}time-out{% endif %} {% if user_horaire_cat in user_mark_ignored %}userMarkIgnored{% endif %}' data-user="{{horaire.user_id}}" data-date="{{key_day}}" id="dropdownRowHoraire{{user_horaire_cat|replace({' ': ''})}}"
+                                                >
+                                                    <td class="{% if horaire.idsession == '' and horaire.absence not in abscence|keys %} horaire-empty {% endif %}">
+                                                        {% if horaire.idsession %} 
+                                                            <input type="checkbox" class="check-row" value="{{horaire.idsession}}" data-chantier="{{horaire.chantier_id}}">
+                                                        {% endif %}
+                                                    </td>
+                                                    <td class="{% if horaire.idsession == '' and horaire.absence not in abscence|keys %} horaire-empty {% endif %}">
+                                                        {% if loop.index0 == 0 %}
+                                                            <div style="display: flex;align-items: center;">
+                                                                <span style="background-image: url('data:image/jpeg;base64,{{ horaire.image }}');"
+                                                                     class="rounded-circle" style="display: inline-block;">
+                                                                </span>
+                                                                <span style="margin-left: 8px;">
+                                                                    {{horaire.firstname}}
+                                                                </span>
+                                                            </div>
+                                                        {% endif %}
+                                                    </td>  
+                                                    <td class="{% if horaire.idsession == '' and horaire.absence not in abscence|keys %} horaire-empty {% endif %}">
+                                                        {{key_day}}
+                                                    </td>
+                                                    {% if horaire.idsession != '' and horaire.absence in abscence|keys %}
+                                                        <td colspan="4" class="" style="color: #000; font-weight: bold;">{{abscence[horaire.absence]|upper}}</td>
+                                                        {% for i in 1..3 %}
+                                                            <td class="separateur" style="display: none;"></td>
+                                                        {% endfor %}
+                                                        
+                                                        <td>{{ horaire.time > 0 ? horaire.time|number_format(2, ',', '') : "" }}</td>
+                                                        <td>{{ horaire.fictif > 0 ? horaire.fictif|number_format(2, ',', '') : "" }}</td>
+                                                        <td>{{ horaire.tx_moyen > 0 ? horaire.tx_moyen|number_format(2, ',', '') : "" }}</td>
+                                                        <td></td>
+                                                        <td></td>
+                                                    {% else %}  
+                                                        <td colspan="7" class="horaire-empty"></td>
+                                                        {% for i in 1..6 %}
+                                                            <td class="separateur" style="display: none;"></td>
+                                                        {% endfor %}
+                                                        <td class="horaire-empty">
+                                                            <span style="cursor: pointer;{% if user_horaire_cat in user_sms %}display: none;{% endif %}" id="sendSms{{user_horaire_cat|replace({' ': ''})}}" class="sendSms sms-sending" data-user="{{horaire.user_id}}" data-date="{{key_day}}" >
+                                                                <img  src="{{asset('images/sms-icon.png')}}" height="30px">
+
+                                                            </span>
+                                                            <span style="{% if user_horaire_cat not in user_sms %}display: none;{% endif %}" class="smsSended sms-sended" data-user="{{horaire.user_id}}" data-id="{{user_horaire_cat|replace({' ': ''})}}" data-date="{{key_day}}" >
+                                                                <img src="{{asset('images/sms-icon-send.png')}}" height="30px">
+
+                                                            </span>
+                                                            <img class="loader-sms" src="{{asset('images/loading.gif')}}" style="width: 29px;display: none;">
+                                                        </td>
+                                                        <td class="horaire-empty">
+                                                            <div class="dropdown dropdownIgnore">
+                                                                <span class="dropdown-toggle btn btn-default" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true" style="cursor: pointer;">
+                                                                <i class="fa fa-ellipsis-v"></i>
+                                                                </span>
+                                                                <ul class="dropdown-menu " aria-labelledby="dropdownMenu1" style="transform: translate3d(-120px, 0px, 0px);">
+                                                                    <li><a class="dropdownRowHoraire" data-id="{{user_horaire_cat|replace({' ': ''})}}">Marquer ignoré</a></li>
+                                                                </ul>
+                                                            </div>
+                                                        </td>
+                                                    {% endif %}
+                                                </tr>
+                                                {% if horaire.absence == 5 %}
+                                                    {% set total_heure_fictif = total_heure_fictif + horaire.fictif %}
+                                                    {% set total_heure = total_heure + horaire.time %}
+                                                {% endif %}
+                                            {% else %}
+                                                <tr class='text-center {% if horaire.time >= 12 %}time-out{% endif %}'>
+                                                    <td>
+                                                        <input type="checkbox" class="check-row" value="{{horaire.idsession}}" data-chantier="{{horaire.chantier_id}}">
+                                                    </td>
+                                                    <td>
+                                                        {% if loop.index0 == 0 %}
+                                                            <div style="display: flex;align-items: center;">
+                                                                <span style="background-image: url('data:image/jpeg;base64,{{ horaire.image }}');"
+                                                                     class="rounded-circle" style="display: inline-block;">
+                                                                </span>
+                                                                <span style="margin-left: 8px;">
+                                                                    {{horaire.firstname}}
+                                                                </span>
+                                                            </div>
+                                                        {% endif %}
+                                                    </td>
+                                                    <td>
+                                                        {{horaire.datestart}}</td>
+                                                    <td>
+                                                        <a href="javascript:void()" data-horaire-id="{{horaire.idsession}}" class="openModalChantier" style="cursor: pointer;">{{ horaire.nameentreprise is defined ? horaire.nameentreprise :  ""}}</a>
+                                                    </td>
+                                                    <td>
+                                                        <a href="{{path('chantier_user_horaire_detail', {'horaireId':horaire.idsession})}}">{{horaire.fonction}}</a>
+                                                    </td>
+                                                    <td class="cell-devis">
+                                                        {% if horaire.document_file is not null %}
+                                                            <span style="position: relative;">
+                                                                <span style="display: none;">V</span>
+                                                                <span class="showDocument" data-file="/uploads/devis/{{horaire.document_file}}" style="cursor: pointer;"><img src="//ssl.gstatic.com/docs/doclist/images/mediatype/icon_3_pdf_x16.png"></span>
+                                                                <a class="link-dettach-devis" href="{{path('horaire_dettach_horaire_devis', {'horaireId':horaire.idsession})}}">
+                                                                    <i class="fa fa-trash"></i>
+                                                                </a>
+                                                            </span>
+
+                                                        {% else %}
+                                                            <span style="display: none;">X</span>
+                                                            <span class="openDevis" data-chantier="{{horaire.chantier_id is not null  ? horaire.chantier_id : '' }}" data-id="{{horaire.idsession}}" style="cursor: pointer;">
+                                                                <i class="fas fa-times" style="font-size: 18px;color: #ef0a0a;"></i>
+                                                            </span>
+                                                        {% endif %}
+                                                    </td>
+                                                    <td>
+                                                        {{horaire.document_id}}
+                                                    </td>
+                                                    <td>
+                                                        {{horaire.time}}
+                                                    </td>
+                                                    <td>
+                                                        {{horaire.fictif}}
+                                                    </td>
+                                                    <td>{{horaire.tx_moyen|number_format(2, ',', '')}}</td>
+                                                    <td></td>
+                                                    <td></td>
+                                                </tr>
+                                                {% set total_tx_moyen = total_tx_moyen + horaire.tx_moyen %}
+                                                {% set total_heure = total_heure + horaire.time %}
+                                                {% set total_heure_fictif = total_heure_fictif + horaire.fictif %}
+                                            {% endif %}
+                                        {% else %}
+                                            <tr>
+                                                <td colspan="34">Aucune achat enregistrée</td>
+                                            </tr>
+                                        {% endfor %}
+                                    {% endfor %}
+                                    <tr>
+                                        <td class="separateur" colspan="12" align="center" style="background: #eaeaec;">
+                                        </td>
+                                        {% for i in 1..11 %}
+                                            <td class="separateur" style="display: none;"></td>
+                                        {% endfor %}
+                                    </tr>
+                                {% endfor %}
+
+                                <tr>
+                                    <td class="separateur" colspan="7" align="center" style="background: #eaeaec;"></td>
+                                    {% for i in 1..6 %}
+                                        <td class="separateur" style="display: none;"></td>
+                                    {% endfor %}
+                                    <td style="background: #eaeaec" class="text-center">{{total_heure|number_format(2, ',', '') }}</td>
+                                    <td style="background: #eaeaec" class="text-center">{{total_heure_fictif|number_format(2, ',', '') }}</td>
+                                    <td style="background: #eaeaec" class="text-center">{{total_tx_moyen|number_format(2, ',', '') }}</td>
+                                    <td style="background: #eaeaec"></td>
+                                    <td style="background: #eaeaec"></td>
+                                </tr>
+                                {% set total_heure2 = total_heure2 + total_heure %}
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    </div>
+                    <div style="width: 100%; height: 200px;margin-bottom: 45px;">
+
+                        <canvas id="myChart"></canvas>
+                    </div>
+
+                </div>
+            </div>  
+
+            <div id="modalResend" class="modal fade bs-example-modal-sm modal-center" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel">
+                <div class="modal-dialog modal-sm" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header" style="border: none;">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        </div>
+                        <div class="modal-body text-center" style="padding: 0px 30px 51px 30px">
+                            <input type="hidden" name="user_selected" value="">
+                            <p style="margin-bottom: 18px; font-size: 16px;">SMS deja envoyé voulez vous le renvoyer</p>
+                            <span class="btn btn-primary resendSms" data-dismiss="modal">OUI</span>
+                            <span class="btn btn-warning" data-dismiss="modal" aria-label="Close" style="margin-left: 10px">NON</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="modal fade" id="modalDevis" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+              <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h2 class="modal-title text-center" id="myModalLabel">Attribuer un devis</h2>
+                  </div>
+                  <div class="modal-body" style="padding-top: 0">
+                    <div class="loader-container">
+                        <img src="{{asset('images/loading.gif')}}" style="width: 54px;">
+                    </div>
+                    <div id="listDevisContainer"></div>
+                  </div>
+                </div>
+              </div>
+              <span id="extSubmitFixed" class="btn-small btn btn-primary" style="box-shadow: 0px 0px 10px 6px rgb(119 119 119 / 25%);position: fixed;z-index: 9999;top: 18px;"><i class="fas fa-save"></i></span>
+            </div>
+        </div>
+    </div>
+    
+
+{% endblock %}
+
+{% block javascript_script %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js" integrity="sha512-T/tUfKSV1bihCnd+MxKD0Hm1uBBroVYBOYSk1knyvQ9VyZJpc/ALb4P0r6ubwVPSGB2GvjeoMAJJImBG12TiaQ==" crossorigin="anonymous"></script>
+
+
+    <script type="text/javascript"src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.min.js"></script>
+    <script type="text/javascript"src="https://cdn.datatables.net/buttons/1.7.0/js/dataTables.buttons.min.js"></script>
+    <script type="text/javascript"src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+    <script type="text/javascript"src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
+    <script type="text/javascript"src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+    <script type="text/javascript"src="https://cdn.datatables.net/buttons/1.7.0/js/buttons.html5.min.js"></script>
+    <script type="text/javascript"src="https://cdn.datatables.net/buttons/1.7.0/js/buttons.print.min.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/plug-ins/1.10.24/sorting/date-eu.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.4/dist/Chart.min.js"></script>
+    <script type="text/javascript">
+
+        $('table').on('change', '.check-row', function(){    
+            $eltCheck = $('.check-row:checkbox:checked');
+            if( $eltCheck.length > 0){
+                $('.btnAttachDevis').css('display', 'block');
+            }
+            else{
+                $('.btnAttachDevis').css('display', 'none');
+            }
+
+            var eltCheck = [];
+            $eltCheck.each(function( index ) {
+                if($( this ).val() != ""){
+                    eltCheck.push($( this ).val());
+                }
+            });
+            $('input[name=list-elt-id]').val(eltCheck.join('-'));
+        });
+        $('.chk-parent').on('change', function(){  
+            $('.check-row').prop('checked', this.checked);      
+            if($(this).is(":checked")){
+                $('.btnAttachDevis').css('display', 'block');
+            }
+            else{
+                $('.btnAttachDevis').css('display', 'none');
+            }
+
+            var rowCheck = [];  
+            $eltChecked = $('.check-row:checkbox:checked'); 
+            $eltChecked.each(function( index ) {
+                if($( this ).val() != ""){
+                    rowCheck.push($( this ).val());
+                }
+            });
+            $('input[name=list-elt-id]').val(rowCheck.join('-'));
+        });
+
+
+        $('.openDevis').click(function(e){
+            $('#modalDevis').modal('show');
+            $('.loader-container').css('display','flex');
+            $eltSelect = $(this).data('id');
+            $chantierList = $(this).attr('data-chantier');
+            openDevisXhr($chantierList, $eltSelect);
+        })
+        $('.btnAttachDevis').click(function(){
+            $('#modalDevis').modal('show');
+            $('.loader-container').css('display','flex');
+            $eltCheck = $('.check-row:checkbox:checked');
+            $chantierList = [];   
+            $eltSelect = [];
+            $eltCheck.each(function( index ) {
+                if($( this ).val() != ""){
+                    $chantierList.push($( this ).attr('data-chantier'));
+                    $eltSelect.push($( this ).val());
+                }
+            });
+            $chantierList = $chantierList.join('-');
+            $eltSelect = $eltSelect.join('-');
+            openDevisXhr($chantierList, $eltSelect);
+            
+        })
+
+        function openDevisXhr($chantierList, $eltSelect){
+            $.ajax({
+                url: "{{path('devis_client_get_by_chantier')}}",
+                type: "POST",
+                dataType: "json",
+                async: true,
+                data: {facture_select: $eltSelect,
+                    list_chantier_id: $chantierList,
+                    page: 'horaire',
+                    type:'devis_client'
+                },
+                success: function(response) {
+                    if(response.status == 200){                        
+                        $('#listDevisContainer').html(response.content);
+                    }
+                    else if(response.status == 500){
+                        toastr.error(response.message);
+                    }
+                    $('.loader-container').css('display','none');
+                },
+                error: function(xhr, textStatus, errorThrown) {
+                  console.log(errorThrown);
+                  $('.loader-container').css('display','none');
+                }
+            });
+        }
+
+
+        $('body').on('change', '.list-devis input[name=devis]', function() {
+            $('.list-devis label').removeClass('active');
+            $('.list-devis input[name=devis]:checked').next().addClass('active');
+        });
+        
+        $(document).on('click', '#extSubmit', function(){
+            $('#attachDevisClient').submit();
+        })
+        $(document).on('click', '#extSubmitFixed', function(){
+            $('#attachDevisClient').submit();
+        })
+
+        var lastScrollTop = 0;
+        $('#modalDevis').on("scroll", function(event) {  
+            $postLeftModal = $('#modalDevis .modal-body').offset().left;
+            $('#extSubmitFixed').css('right', ($postLeftModal+25));    
+            var st = $(this).scrollTop();
+            if (st > lastScrollTop){
+                if (!$('#modalDevis .modal-header').isInViewport()) {
+                    $('#extSubmitFixed').css('display','block');
+                    $('#extSubmit').css('display','none');
+                }
+            } else {
+                if ($('#modalDevis .modal-header').isInViewport()) {
+                    $('#extSubmit').css('display','block');
+                    $('#extSubmitFixed').css('display','none');
+                } 
+            }
+            lastScrollTop = st;
+        });
+
+        $('.openModalChantier').click(function(){
+            $('input[name=horaire_id]').val($(this).attr('data-horaire-id'));
+            $("#modalChantier").modal('show');
+        })
+
+        var chantierSelect = document.getElementById('form_chantier');
+            chantierSelect.onchange = (event) => {
+            $('#horaire_filter').submit();
+        };
+        var moisSelect = document.getElementById('form_mois');
+            moisSelect.onchange = (event) => {
+            $('#horaire_filter').submit();
+        };
+        var devisSelect = document.getElementById('form_is_devis_rattach');
+            devisSelect.onchange = (event) => {
+            $('#horaire_filter').submit();
+        };
+
+
+        $(document).on('click', '.dropdownRowHoraire', function () {
+
+            $idRowIngored = $(this).attr('data-id')
+            $user = $('#dropdownRowHoraire'+$idRowIngored).attr('data-user');
+            $dateHoraire = $('#dropdownRowHoraire'+$idRowIngored).attr('data-date');
+            console.log($user);
+            $.ajax({
+                url:"{{path('horaire_user_mark_ignored')}}",
+                type:"POST",
+                async: true,
+                data: {
+                    user_id:$user,
+                    date_horaire:$dateHoraire
+                },
+                success:function(response) {
+                    if(response.status == 200){
+                        $("#dropdownRowHoraire"+$idRowIngored).addClass('userMarkIgnored')
+                    }
+                },
+                error:function(){
+                    toastr.error("Ooops... Quelque chose s'est mal passée");
+                }
+            });
+        });
+    </script>
+{% endblock %}
+
+{% block javascript %}
+$(document).ready( function () {
+
+    $('.resendSms').click(function(){
+        $id = $('input[name=user_selected]').val();
+        console.log('#sendSms'+$id);
+        $('#sendSms'+$id).trigger('click');
+    })    
+    $('.smsSended').click(function(){
+        $('#modalResend').modal('show');
+        $('input[name=user_selected]').val($(this).attr('data-id'));
+    })
+
+
+    $(document).on('click', '.sendSms', function(){
+        $that = $(this);
+        $that.parent().find('.sms-sending').css('display', 'none');
+        $that.parent().find('.loader-sms').css('display', 'inline-block');
+        $user = $(this).attr('data-user');
+        $dateHoraire = $(this).attr('data-date');
+        $.ajax({
+            url:"{{path('smsuser_send')}}",
+            type:"POST",
+            async: true,
+            data: {
+                user_id:$user,
+                date_horaire:$dateHoraire
+            },
+            success:function(response) {
+                if(response.status == 200){
+                    toastr.success('Message envoyé');
+                    $that.parent().find('.sms-sended').css('display', 'block');
+                    $that.parent().find('.loader-sms').css('display', 'none');
+                }
+                else{
+                    if(response.status == 300){
+                        toastr.error(response.message);
+                    }
+                    $that.parent().find('.sms-sending').css('display', 'block');
+                    $that.parent().find('.loader-sms').css('display', 'none');
+                }
+            },
+            error:function(){
+              toastr.error("Ooops... Quelque chose s'est mal passée");
+                $that.parent().find('.sms-sending').css('display', 'block');
+                $that.parent().find('.loader-sms').css('display', 'none');
+            }
+        });
+    })
+
+    $('table').DataTable({
+        columnDefs: [
+           { type: 'date-eu', targets: 1 }
+        ],
+        "ordering": false,
+        "paging":   false,
+        dom: 'Bfrtip',
+        buttons: [
+            'copy', 'csv', 'excel', 'pdf', 'print'
+        ]
+    });
+} );
+
+{% endblock %}

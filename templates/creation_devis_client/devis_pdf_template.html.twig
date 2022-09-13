@@ -1,0 +1,661 @@
+
+<!DOCTYPE html>
+<html >
+	<head>
+		<style type="text/css">
+			div.border-color >{
+				border: 0.1px solit red;
+			}
+			.recap table tr td{border:1px solid;}
+
+		    
+		     
+		    .container {
+		  		display: table;width:100%; text-align: center;
+		  		margin-top: 5px;
+		  	}
+		  	page_header {
+		  		position: relative;
+                display:table;
+				width:100%;
+				text-align: center;	
+            }
+            page_header .page-number{font-size: 12px}
+     
+ 
+		</style>
+		<meta charset='utf-8'>
+		<title>Title</title>
+	</head>
+	<body >
+		<div style="padding-top: 55px;padding-left: 38px;padding-right: 38px;">
+			
+			<!-- <div>
+	            <div style="font-weight: bold;font-size: 13px;">
+	            	<div>RIB - IBAN : FR76-3002-7177-2900-0201-4360-186</div>
+		            <div>BIC : CMCIFRPP</div>
+		            <div>FMDA CONSTRUCTION - SDF  DF DSF</div>
+	            </div>
+	            <small style="font-size: 12px">FMDA CONSTRUCTION - 65 RUE DE L'ABBE LEMIRE - 62000 ARRAS - Tél : 03.59.25.08.48</small>
+	            <small style="font-size: 12px">contact@fmda.fr - www.fmda.fr</small>
+	            <small style="font-size: 12px">Siret : 82920503800013 / Code APE : 4331Z / TVA : FR74829205038 / Capital : 1000 € / Assurance SMA F61937L</small>
+	            <div style="text-align: right;">
+				    <span class="page-number">Page No </span>
+				</div>
+	        </div> -->
+			<div class="body-container">
+				
+				<!-- <div class="top-page"> -->
+				<div class="top-page" >
+					<div style="width: 100%">
+						<div style="display: inline-block;width: 200px;margin-left: 56px;">
+							{% if app.session.get('entreprise_session_id') %}
+	                            <span>
+	                                {% if entreprise.logoFacture %}
+	                                    <img src="https://www.homekeo.fr/logo/{{entreprise.logoFacture}}" style="width: 132px;">
+	                                {% else %} 
+	                                	<img src="https://www.homekeo.fr/{{asset('images/logotransfmda.png')}}" style="width: 132px;">
+	                                {% endif %}
+	                            </span>
+	                            
+	                        {% endif %}
+						</div>
+						<div style="position: absolute;width: 200px;right:80px;top: 57px;">
+							<div style="position: relative;">
+								<div style="font-size: 23px;font-family: helveticab;text-align: right;letter-spacing: 10px;border-bottom: 1px solid black;padding-bottom: -1px; width: max-content;position:absolute; right: 2px;top: 0;">FACTURE</div>
+								<div style="margin-top: 4px;text-align: right;font-family: helveticab;font-size: 13px;position:absolute; right: 0;top: 30px;letter-spacing: 10px;">Le {{entete.createAt ? entete.createAt|date('d/m/Y') : ''}}</div>
+								<div style="margin-top: 4px;text-align: right;font-family: helveticab;font-size: 13px;position:absolute; right: 0;top: 50px;">Numéro : {{entete.documentId}}</div>
+								<div style="margin-top: 4px;text-align: right;font-family: helveticab;font-size: 13px;position:absolute; right: 0;top: 68px;">Date d'échéance : {{entete.echeance ? entete.echeance|date('d/m/Y') : ''}}</div>
+							</div>
+						</div>
+					</div>
+					<div class="clearfix" style="height: 132px;"></div>
+
+					<div class="head-info" style="width: 100%;margin-top: 5px;font-family: helveticabold;display: flex;position: relative;0">
+						<div class="border" style="width: 44%; border: 1px solid gray;position: absolute;top: 0;left: 0;height: 110px;overflow: hidden;" >
+							<div class="adresse-head" style="background: gray;width: 101%;height:18px;color: white;margin-bottom: 7px;font-size: 12px;padding-top: 2px;padding-left: 2px; font-family: helveticaob;">Adresse du chantier</div>
+							<div class="adresse-content">
+								{% if entete.chantier is not null %}
+								<div style="margin-bottom: 2px;font-size: 14.5px;padding-left: 2px;" >{{entete.chantier.nameentreprise}}</div>
+								<div style="margin-bottom: 2px;font-size: 14.5px;padding-left: 2px;" >{{entete.chantier.address}}</div>
+								<div style="margin-bottom: 7px;font-size: 14.5px;padding-left: 2px;" >{{entete.chantier.city}}</div>
+								{% endif %}
+							</div>
+						</div>
+						<div class="border" style="width: 44%; border: 1px solid gray;position: absolute;top: 0;left: 46%;height: 110px;overflow: hidden;">
+							<div class="adresse-head" style="background: gray;width: 101%;height:18px;color: white;margin-bottom: 7px;font-size: 12px;padding-top: 2px;padding-left: 2px; font-family: helveticaob;">Adresse de facturation</div>
+							<div class="adresse-content">
+								{% if entete.client is not null %}
+								<div style="margin-bottom: 2px;font-size: 14.5px;padding-left: 2px;" >{{entete.client.nom}}</div>
+								<div style="margin-bottom: 2px;font-size: 14.5px;padding-left: 2px;" >{{entete.client.adresse}}</div>
+								<div style="margin-bottom: 7px;font-size: 14.5px;padding-left: 2px;" >{{entete.client.ville}}</div>
+								{% endif %}
+							</div>
+						</div>
+					</div>
+
+					<div class="clearfix" style="height: 110px;"></div>
+
+					<div class="border" style="width: 90%; border: 1px solid gray;height: 85px;overflow: hidden;">
+						<div class="adresse-head" style="background: gray;width: 101%;height:20px;color: white;margin-bottom: 5px;font-size: 12.5px;padding-top: 2px;padding-left: 2px; font-family: helveticaob;">Déscriptif des travaux</div>
+						<div style="font-size: 13px;padding-left: 2px;font-weight: bold;">
+						{{entete.descriptionTravaux}}
+						</div>
+					</div>
+
+					<div style="background: gray;width: 90%;height: 1.5px;margin-top: 8px;"></div>
+
+
+					<div class="border" style="width: 90%; border: 1px solid gray;height: 20px;overflow-y: hidden;position: relative;">
+						<div class="adresse-head" style="background: gray;width: 100%;height:20px;color: white;margin-bottom: 5px;font-size: 12px;padding-top: 2px;padding-left: 2px; font-family: helveticaob; display: flex;position: relative;text-align: center;" >
+							<div style="position: absolute;left: 0;top: 3px; width: 30px;">N<sup>o</sup></div>
+							<div style="position: absolute;left: 30px;top: 3px; width: 47px;">Code</div>
+							<div style="position: absolute;left: 77px;top: 3px; width: 294px;">Description</div>
+							<div style="position: absolute;left: 373px;top: 3px; width: 55px;">Qté</div>
+							<div style="position: absolute;left: 428px;top: 3px; width: 34px;">U</div>
+							<div style="position: absolute;left: 462px;top: 3px; width: 80px;">P.U. HT</div>
+							<div style="position: absolute;left: 542px;top: 3px; width: 45px;">% Rem.</div>
+							<div style="position: absolute;left: 587px;top: 3px; width: 87px;">TOTAL HT</div>
+							<div style="position: absolute;left: 674px;top: 3px; width: 39px;">TVA</div>
+						</div>
+						<div class="adresse-head" style="position: absolute;top:0;left: 0;width: 100%;height:100%;" >
+							<div style="background: gray;position: absolute;left: 30px;top: 3px; width: 0.3px;height: 100%;"></div>
+							<div style="background: gray;position: absolute;left: 77px;top: 3px; width: 0.3px;height: 100%;"></div>
+							<div style="background: gray;position: absolute;left: 383px;top: 3px; width: 0.3px;height: 100%;"></div>
+							<div style="background: gray;position: absolute;left: 433px;top: 3px; width: 0.3px;height: 100%;"></div>
+							<div style="background: gray;position: absolute;left: 467px;top: 3px; width: 0.3px;height: 100%;"></div>
+							<div style="background: gray;position: absolute;left: 547px;top: 3px; width: 0.3px;height: 100%;"></div>
+							<div style="background: gray;position: absolute;left: 593px;top: 3px; width: 0.3px;height: 100%;"></div>
+							<div style="background: gray;position: absolute;left: 679px;top: 3px; width: 0.3px;height: 100%;"></div>
+							<div style="background: gray;position: absolute;left: 679px;top: 3px; width: 0.3px;height: 100%;"></div>
+						</div>
+						<div>
+							{% if documents|length <= 6 %} 
+								{% set limit1 = documents|length %}
+								{% for i in 0..(limit1-1) %}
+									{% set doc = documents[i] %}
+									<div style="width: 90%;height: 45px" class="border-color">
+										{% if doc.type == 'docu' %}
+										<div class="adresse-head" style="width: 101%;height:20px;color: black;margin-bottom: 5px;font-size:12px;padding-top:2px;padding-left: 2px;display: flex;position: relative;">
+											<div style="position: absolute;left: 0;top: 3px; width: 30px;text-align: left;padding: 3px;"></div>
+											<div style="position: absolute;left: 30px;top: 3px; width: 47px;text-align: left;padding: 3px;">{{doc.code}}</div>
+											<div style="position: absolute;left: 77px;top: 3px; width: 294px;text-align: left;{% if doc.id in styles|keys and 'article' in styles[doc.id]|keys %}
+				                                    {% if styles[doc.id]["article"]["background"] is not null and styles[doc.id]["article"]["background"] != "" %}
+				                                        background: {{styles[doc.id]["article"]["background"]}};
+				                                    {% endif %}
+				                                    {% if styles[doc.id]["article"]["color"] is not null and styles[doc.id]["article"]["color"] != "" %}
+				                                        color: {{styles[doc.id]["article"]["color"]}};
+				                                    {% endif %}
+				                                    {% if styles[doc.id]["article"]["weight"] is not null and styles[doc.id]["article"]["weight"] != "" %}
+				                                    	font-weight:bold;
+				                                    {% endif %}
+				                                {% endif %}">
+												<span style="display: block;text-transform: capitalize;">
+													{{doc.article is not null ? doc.libelle : ''}}
+												</span>
+												{#<span style="display: block;"><i>Annule et remplace le devis 668 changement de modeconstructif</i></span>#}
+											</div>
+											<div style="position: absolute;left: 373px;top: 3px; width: 52px;text-align: right;font-size: 11px;padding: 3px;">{{doc.qte}}</div>
+											<div style="position: absolute;left: 428px;top: 3px; width: 34px;text-align: center;font-size: 11px;padding: 3px;">{{doc.unite}}</div>
+											<div style="position: absolute;left: 462px;top: 3px; width: 80px;text-align: right;font-size: 11px;padding: 3px;">{{doc.pvht ? (doc.pvht|number_format(2, ',', ' '))~'€' : ''}}</div>
+											<div style="position: absolute;left: 542px;top: 3px; width: 45px;text-align: right;font-size: 11px;padding: 3px;">{{doc.remise ? (doc.remise|number_format(2, ',', ' '))~'€' : ''}}</div>
+											<div style="position: absolute;left: 587px;top: 3px; width: 87px;text-align: right;font-size: 11px;padding: 3px;">{{doc.totalHt ? (doc.totalHt|number_format(2, ',', ' '))~'€' : ''}}</div>
+											<div style="position: absolute;left: 674px;top: 3px; width: 39px;text-align: right;font-size: 10px;padding: 3px;">{{doc.tva is not null and doc.tva.valeur ? doc.tva.valeur|number_format(2, ',', ' ') : ''}}</div>
+										</div>
+										{% elseif doc.type == "line" %}
+										<div class="adresse-head" style="width: 101%;height:20px;color: black;margin-bottom: 5px;font-size:12px;padding-top:2px;padding-left: 2px;display: flex;position: relative;">
+											<div style="position: absolute;left: 0;top: 3px; width: 30px;text-align: left;padding: 3px;"></div>
+											<div style="position: absolute;left: 30px;top: 3px; width: 47px;text-align: left;padding: 3px;"></div>
+											<div style="position: absolute;left: 77px;top: 3px; width: 294px;text-align: left;">
+												<span style="display: block;text-transform: capitalize;">
+												</span>
+												<span style="display: block;"><i>{{doc.commentaire}}</i></span>
+											</div>
+											<div style="position: absolute;left: 373px;top: 3px; width: 55px;text-align: right;font-size: 11px;padding: 3px;"></div>
+											<div style="position: absolute;left: 428px;top: 3px; width: 34px;text-align: center;font-size: 11px;padding: 3px;"></div>
+											<div style="position: absolute;left: 462px;top: 3px; width: 80px;text-align: right;font-size: 11px;padding: 3px;"></div>
+											<div style="position: absolute;left: 542px;top: 3px; width: 45px;text-align: right;font-size: 11px;padding: 3px;"></div>
+											<div style="position: absolute;left: 587px;top: 3px; width: 87px;text-align: right;font-size: 11px;padding: 3px;"></div>
+											<div style="position: absolute;left: 674px;top: 3px; width: 39px;text-align: right;font-size: 10px;padding: 3px;"></div>
+										</div>
+										{% elseif doc.type == "sous_total" %}
+											<div class="adresse-head" style="width: 712px;height:20px;color: black;margin-bottom: 5px;font-size:12px;padding-top:2px;padding-left: 2px;display: flex;position: relative;border-top: 1px gray; border-bottom: 1px gray;background: #fff">
+											<div style="position: absolute;left: 0;top: 3px; width: 364px;text-align: left;padding: 3px;padding-left: 7px;background: #fff;">SOUS TOTAL: Sous total
+											</div>
+											<div style="position: absolute;left: 373px;top: 3px; width: 335px;text-align: center;font-size: 11px;padding: 3px; background: #fff;">{{doc.totalHt ? (doc.totalHt|number_format(2, ',', ' '))~'€' : ''}}</div>
+										</div>
+										{% endif %}
+
+									</div>
+					  			{% endfor %}
+					  			{# complete avec des cellules vides #}
+					  			{% for i in 0..(6-limit1-1) %}
+									<div style="width: 90%;height: 45px" class="border-color">
+										<div class="adresse-head" style="width: 101%;height:20px;color: black;margin-bottom: 5px;font-size: 12px;padding-top: 2px;padding-left: 2px; display: flex;position: relative;" >
+										</div>
+									</div>
+					  			{% endfor %}
+
+						 	{% else %}
+						 		{% if documents|length >= 9 %}
+						 			{% set limit1 = 9 %} 
+								{% else %}
+									{% set limit1 = documents|length %} 
+								{% endif %}
+
+								{% for i in 0..(limit1-1) %}
+									{% set doc = documents[i] %}
+									
+									<div style="width: 90%;height: 45px" class="border-color">
+										{% if doc.type == 'docu' %}
+										<div class="adresse-head" style="width: 101%;height:20px;color: black;margin-bottom: 5px;font-size:12px;padding-top:2px;padding-left: 2px;display: flex;position: relative;">
+											<div style="position: absolute;left: 0;top: 3px; width: 30px;text-align: left;padding: 3px;"></div>
+											<div style="position: absolute;left: 30px;top: 3px; width: 47px;text-align: left;padding: 3px;">{{doc.code}}</div>
+											<div style="position: absolute;left: 77px;top: 3px; width: 294px;text-align: left;{% if doc.id in styles|keys and 'article' in styles[doc.id]|keys %}
+			                                    {% if styles[doc.id]["article"]["background"] is not null and styles[doc.id]["article"]["background"] != "" %}
+			                                        background: {{styles[doc.id]["article"]["background"]}};
+			                                    {% endif %}
+			                                    {% if styles[doc.id]["article"]["color"] is not null and styles[doc.id]["article"]["color"] != "" %}
+			                                        color: {{styles[doc.id]["article"]["color"]}};
+			                                    {% endif %}
+			                                    {% if styles[doc.id]["article"]["weight"] is not null and styles[doc.id]["article"]["weight"] != "" %}
+			                                    	font-weight:bold;
+			                                    {% endif %}
+			                                {% endif %}">
+												<span style="display: block;text-transform: capitalize;">
+													{% if doc.libelle %} 
+														{{doc.libelle}}
+													{% elseif doc.article is not null %}
+														{{doc.article.libelle}}
+													{% endif %}
+												</span>
+												{#<span style="display: block;"><i>Annule et remplace le devis 668 changement de modeconstructif</i></span>#}
+											</div>
+											<div style="position: absolute;left: 373px;top: 3px; width: 52px;text-align: right;font-size: 11px;padding: 3px;">{{doc.qte}}</div>
+											<div style="position: absolute;left: 428px;top: 3px; width: 34px;text-align: center;font-size: 11px;padding: 3px;">{{doc.unite}}</div>
+											<div style="position: absolute;left: 462px;top: 3px; width: 80px;text-align: right;font-size: 11px;padding: 3px;">{{doc.pvht ? (doc.pvht|number_format(2, ',', ' '))~'€' : ''}}</div>
+											<div style="position: absolute;left: 542px;top: 3px; width: 45px;text-align: right;font-size: 11px;padding: 3px;">{{doc.remise ? (doc.remise|number_format(2, ',', ' '))~'€' : ''}}</div>
+											<div style="position: absolute;left: 587px;top: 3px; width: 87px;text-align: right;font-size: 11px;padding: 3px;">{{doc.totalHt ? (doc.totalHt|number_format(2, ',', ' '))~'€' : ''}}</div>
+											<div style="position: absolute;left: 674px;top: 3px; width: 39px;text-align: right;font-size: 10px;padding: 3px;">{{doc.tva is not null and doc.tva.valeur ? doc.tva.valeur|number_format(2, ',', ' ') : ''}}</div>
+										</div>
+										{% elseif doc.type == "line" %}
+										<div class="adresse-head" style="width: 101%;height:20px;color: black;margin-bottom: 5px;font-size:12px;padding-top:2px;padding-left: 2px;display: flex;position: relative;">
+											<div style="position: absolute;left: 0;top: 3px; width: 30px;text-align: left;padding: 3px;"></div>
+											<div style="position: absolute;left: 30px;top: 3px; width: 47px;text-align: left;padding: 3px;">{{doc.code}}</div>
+											<div style="position: absolute;left: 77px;top: 3px; width: 294px;text-align: left;">
+												<span style="display: block;text-transform: capitalize;">
+												</span>
+												<span style="display: block;"><i>{{doc.commentaire}}</i></span>
+											</div>
+											<div style="position: absolute;left: 373px;top: 3px; width: 55px;text-align: right;font-size: 11px;padding: 3px;"></div>
+											<div style="position: absolute;left: 428px;top: 3px; width: 34px;text-align: center;font-size: 11px;padding: 3px;"></div>
+											<div style="position: absolute;left: 462px;top: 3px; width: 80px;text-align: right;font-size: 11px;padding: 3px;"></div>
+											<div style="position: absolute;left: 542px;top: 3px; width: 45px;text-align: right;font-size: 11px;padding: 3px;"></div>
+											<div style="position: absolute;left: 587px;top: 3px; width: 87px;text-align: right;font-size: 11px;padding: 3px;"></div>
+											<div style="position: absolute;left: 674px;top: 3px; width: 39px;text-align: right;font-size: 10px;padding: 3px;"></div>
+										</div>
+										{% elseif doc.type == "sous_total" %}
+											<div class="adresse-head" style="width: 712px;height:20px;color: black;margin-bottom: 5px;font-size:12px;padding-top:2px;padding-left: 2px;display: flex;position: relative;border-top: 1px gray; border-bottom: 1px gray;background: #fff">
+											<div style="position: absolute;left: 0;top: 3px; width: 364px;text-align: left;padding: 3px;padding-left: 7px;background: #fff;">SOUS TOTAL: Sous total
+											</div>
+											<div style="position: absolute;left: 373px;top: 3px; width: 335px;text-align: center;font-size: 11px;padding: 3px; background: #fff;">{{doc.totalHt ? (doc.totalHt|number_format(2, ',', ' '))~'€' : ''}}</div>
+										</div>
+										{% endif %}
+									</div>
+					  			{% endfor %}
+					  			{# complete avec des cellules vides #}
+					  			{% for i in 0..(9-limit1-1) %}
+									<div style="width: 90%;height: 45px" class="border-color">
+										<div class="adresse-head" style="width: 101%;height:20px;color: black;margin-bottom: 5px;font-size: 12px;padding-top: 2px;padding-left: 2px; display: flex;position: relative;" >
+										</div>
+									</div>
+					  			{% endfor %}
+						 	{% endif %}
+						</div>
+					</div>
+						
+
+						{% if (documents|length - 9)%19 == 0  %}
+							{% set nbPage = nbPage + 1 %}
+						{% endif %}
+
+						{% if nbPage == 1 %}
+							<div class="clearfix" style=""></div>
+							<div class="recap" style="position: relative;height: 142px;width: 90%;margin-top: 0px;">
+								<div style="display: inline-block; width: 310px;position: absolute;top: 0; left: 0">
+									<table style="width: 100%; border-collapse: collapse;" cellspacing="0">
+										<tr>
+											<td style="width: 80px;border: none;"></td>
+											<td style="text-align: center;width: 120px; border: none;border-bottom: 1px solid; font-weight: bold;">TOTAL HT</td>
+											<td style="text-align: center;width: 120px; border: none;border-bottom: 1px solid;font-weight: bold;">TOTAL TVA</td>
+										</tr>
+										{% if entete.getTotalTva20 is not null and entete.getTotalTva20 != 0 %}
+										<tr>
+											<td style="width: 80px; border: none; border-right: 1px solid;font-weight: bold;">TVA 20,0%</td>
+											<td style="text-align: center;width: 80px">{{entete.getRecapHtTva20}}€</td>
+											<td style="text-align: center;width: 80px">{{entete.getTotalTva20}}€</td>
+										</tr>
+										{% endif %}
+
+										{% if entete.getTotalTva10 is not null and entete.getTotalTva10 != 0 %}
+										<tr>
+											<td style="width: 80px; border: none; border-right: 1px solid;font-weight: bold;">TVA 10,0%</td>
+											<td style="text-align: center;width: 80px">{{entete.getRecapHtTva10}}€</td>
+											<td style="text-align: center;width: 80px">{{entete.getTotalTva10}}€</td>
+										</tr>
+										{% endif %}
+
+										{% if entete.getTotalTva55 is not null and entete.getTotalTva55 != 0 %}
+										<tr>
+											<td style="width: 80px; border: none; border-right: 1px solid;font-weight: bold;">TVA 5,5%</td>
+											<td style="text-align: center;width: 80px">{{entete.getRecapHtTva5}}€</td>
+											<td style="text-align: center;width: 80px">{{entete.getTotalTva55}}€</td>
+										</tr>
+										{% endif %}
+										<tr>
+											<td style="border: none;height: 15px;"></td>
+										</tr>
+									</table>
+									<div style="font-weight: bold;font-size: 12px">Pour l'entreprise (signature et cachet)</div>
+								</div>
+								<div style="display: inline-block; width: 230px;position: absolute;top: 0; right: 0">
+										<table style="width: 100%" cellspacing="0">
+											<tr>
+												<td style="width: 140px; border-right: none;">TOTAL HT</td>
+												<td style="text-align: right;width: 90px">
+													{{entete.totalHt ? (entete.totalHt|number_format(2, ',', ' '))~'€' : ''}}
+												</td>
+											</tr>
+											{% if entete.remise is not null and entete.remise != 0 %}
+											<tr>
+												<td style="width: 140px; border-right: none; border-top: none;">Remise</td>
+												<td style="text-align: right;width: 90px; border-top: none;">
+													{{entete.remise ? (entete.remise|number_format(2, ',', ' '))~'€' : ''}}
+												</td>
+											</tr>
+											{% endif %}
+
+											{% if entete.getTotalTva20 is not null and entete.getTotalTva20 != 0 %}
+											<tr>
+												<td style="width: 140px;  border-right: none; border-top: none;">TVA 20%</td>
+												<td style="text-align: right;width: 90px; border-top: none;">{{entete.getTotalTva20}}€</td>
+											</tr>
+											{% endif %}
+
+											{% if entete.getTotalTva10 is not null and entete.getTotalTva10 != 0 %}
+											<tr>
+												<td style="width: 140px; border-top: none; border-right: none;">TVA 10,0%</td>
+												<td style="text-align: right;width: 90px;  border-top: none;">{{entete.getTotalTva10}}€</td>
+											</tr>
+											{% endif %}
+
+											{% if entete.getTotalTva55 is not null and entete.getTotalTva55 != 0 %}
+											<tr>
+												<td style="width: 140px;  border-right: none; border-top: none;">TVA 5,5%</td>
+												<td style="text-align: right;width: 90px; border-top: none;">{{entete.getTotalTva55}}€</td>
+											</tr>
+											{% endif %}
+
+											<tr>
+												<td style="font-weight: bold;width: 140px; border-right: none; border-top: none;">TOTAL TTC</td>
+												<td style="font-weight: bold;text-align: right;width: 90px;  border-top: none;">{{entete.getTotalTtc|number_format(2, ',', ' ')~'€'}}</td>
+											</tr>
+										</table>
+										<div style="text-align: center; font-weight: bold;font-size: 12px;">
+											Pour le client "Devis reçu avant execution des travaux, bon pour accord" <br>Date et signature
+										</div>
+									</div>
+							</div>
+						{% endif %}
+
+						{% if nbPage > 1 %}
+							<page_footer>
+								<div style="font-weight: bold;font-size: 13px;">
+					            	<div class="container">RIB - IBAN : FR76-3002-7177-2900-0201-4360-186</div>
+						            <div class="container">BIC : CMCIFRPP</div>
+						            <div class="container">FMDA CONSTRUCTION - 65 RUE DE L'ABBE LEMIRE - 62000 ARRAS - Tél : 03.59.25.08.48</div>
+						            <div class="container">
+						            	contact@fmda.fr - www.fmda.fr
+						            </div>
+					            </div>
+					            <div style="font-size: 10px;text-align: center;margin-bottom: 50px;" class="container">
+					            	Siret : 82920503800013 / Code APE : 4331Z / TVA : FR74829205038 / Capital : 1000 € / Assurance SMA F61937L
+					            </div>
+								         
+							</page_footer>
+						{% else %}
+							<div style="margin-top: 80px;">
+								<div style="font-weight: bold;font-size: 13px;">
+					            	<div class="" style="text-align: center;">RIB - IBAN : FR76-3002-7177-2900-0201-4360-186</div>
+						            <div class="" style="text-align: center;">BIC : CMCIFRPP</div>
+						            <div class="" style="text-align: center;">FMDA CONSTRUCTION - 65 RUE DE L'ABBE LEMIRE - 62000 ARRAS - Tél : 03.59.25.08.48</div>
+						            <div class="" style="text-align: center;">
+						            	contact@fmda.fr - www.fmda.fr
+						            </div>
+					            </div>
+					            <div style="font-size: 10px;text-align: center;text-align: center;" class="">
+					            	Siret : 82920503800013 / Code APE : 4331Z / TVA : FR74829205038 / Capital : 1000 € / Assurance SMA F61937L
+					            </div>      
+							</div >
+						{% endif %}
+				</div>
+
+				<!-- PAGES SUIVANTES -->
+
+				{% if nbPage > 1 %}
+					{% set rowItem = 9 %}
+					{% for j in 2..nbPage %}
+						{% if nbPage == j and (documents|length - rowItem) > 14 %}
+							{% set nbPage =  nbPage + 1 %} 
+						{% endif %}
+
+						<div class="top-page">
+							<page_header  style="margin-top: 30px;">
+								<div class="container">DEVIS No {{entete.documentId}}</div>
+					            <div class="page-number container" style="text-align: right; margin-top: -17px;padding-right: 38px;">Page No {{j}}</div>
+					        </page_header>
+
+							<div class="border" style="left:40px;width: 90%; border: 1px solid gray; top: 77px;overflow-y: hidden; position: relative">
+								<div class="adresse-head" style="background: gray;width: 100%;height:20px; color: white;margin-bottom: 5px;font-size: 12px;padding-top: 2px;padding-left: 2px;font-family: helveticaob; display: flex;position: relative;text-align: center;" >
+									<div style="position: absolute;left: 0;top: 3px; width: 30px;">N<sup>o</sup></div>
+									<div style="position: absolute;left: 30px;top: 3px; width: 47px;">Code</div>
+									<div style="position: absolute;left: 77px;top: 3px; width: 294px;">Description</div>
+									<div style="position: absolute;left: 373px;top: 3px; width: 55px;">Qté</div>
+									<div style="position: absolute;left: 428px;top: 3px; width: 34px;">U</div>
+									<div style="position: absolute;left: 462px;top: 3px; width: 80px;">P.U. HT</div>
+									<div style="position: absolute;left: 542px;top: 3px; width: 45px;">% Rem.</div>
+									<div style="position: absolute;left: 587px;top: 3px; width: 87px;">TOTAL HT</div>
+									<div style="position: absolute;left: 674px;top: 3px; width: 39px;">TVA</div>
+								</div>
+								<div class="adresse-head" style="position: absolute;top:0;left: 0;width: 100%;height:100%;" >
+									<div style="background: gray;position: absolute;left: 30px;top: 3px; width: 0.3px;height: 100%;"></div>
+									<div style="background: gray;position: absolute;left: 77px;top: 3px; width: 0.3px;height: 100%;"></div>
+									<div style="background: gray;position: absolute;left: 383px;top: 3px; width: 0.3px;height: 100%;"></div>
+									<div style="background: gray;position: absolute;left: 428px;top: 3px; width: 0.3px;height: 100%;"></div>
+									<div style="background: gray;position: absolute;left: 462px;top: 3px; width: 0.3px;height: 100%;"></div>
+									<div style="background: gray;position: absolute;left: 542px;top: 3px; width: 0.3px;height: 100%;"></div>
+									<div style="background: gray;position: absolute;left: 587px;top: 3px; width: 0.3px;height: 100%;"></div>
+									<div style="background: gray;position: absolute;left: 674px;top: 3px; width: 0.3px;height: 100%;"></div>
+									<div style="background: gray;position: absolute;left: 674px;top: 3px; width: 0.3px;height: 100%;"></div>
+								</div>
+								<div>
+									{% if j < nbPage %} 
+										{% set limit2 = rowItem + 19 %}
+										{% set start = rowItem %}
+									{% else %}
+										{% set nbProductRest = documents|length - rowItem %}
+										{% set start = rowItem %}
+										{% set limit2 = documents|length %}
+
+									{% endif %}
+
+
+									{% if (j < nbPage) or (nbProductRest is defined and nbProductRest <= 14 and start in documents|keys ) %}
+										{% for i in start..(limit2 - 1) %} 
+											{% set doc = documents[i] %}
+											<div style="width: 90%;height: 45px" class="border-color">
+											{% if doc.type == "docu" %}
+												<div class="adresse-head" style="width: 101%;height:20px;color: black;margin-bottom: 5px;font-size:12px;padding-top:2px;padding-left: 2px;display: flex;position: relative;">
+													<div class="adresse-head" style="width: 101%;height:20px;color: black;margin-bottom: 5px;font-size:12px;padding-top:2px;padding-left: 2px;display: flex;position: relative;">
+														<div style="position: absolute;left: 0;top: 3px; width: 30px;text-align: left;padding: 3px;"></div>
+														<div style="position: absolute;left: 30px;top: 3px; width: 47px;text-align: left;padding: 3px;">{{doc.code}}</div>
+														<div style="position: absolute;left: 77px;top: 3px; width: 294px;text-align: left;{% if doc.id in styles|keys and 'article' in styles[doc.id]|keys %}
+							                                    {% if styles[doc.id]["article"]["background"] is not null and styles[doc.id]["article"]["background"] != "" %}
+							                                        background: {{styles[doc.id]["article"]["background"]}};
+							                                    {% endif %}
+							                                    {% if styles[doc.id]["article"]["color"] is not null and styles[doc.id]["article"]["color"] != "" %}
+							                                        color: {{styles[doc.id]["article"]["color"]}};
+							                                    {% endif %}
+							                                    {% if styles[doc.id]["article"]["weight"] is not null and styles[doc.id]["article"]["weight"] != "" %}
+							                                    	font-weight:bold;
+							                                    {% endif %}
+							                                {% endif %}"">
+															<span style="display: block;text-transform: capitalize;>
+																{{doc.article is not null ? doc.libelle : ''}}
+															</span>
+															{#<span style="display: block;"><i>Annule et remplace le devis 668 changement de modeconstructif</i></span>#}
+														</div>
+														<div style="position: absolute;left: 373px;top: 3px; width: 47px;text-align: right;font-size: 11px;padding: 3px;">{{doc.qte}}</div>
+														<div style="position: absolute;left: 428px;top: 3px; width: 34px;text-align: center;font-size: 11px;padding: 3px;">{{doc.unite}}</div>
+														<div style="position: absolute;left: 462px;top: 3px; width: 73px;text-align: right;font-size: 11px;padding: 3px;">{{doc.pvht ? (doc.pvht|number_format(2, ',', ' '))~'€' : ''}}</div>
+														<div style="position: absolute;left: 542px;top: 3px; width: 39px;text-align: right;font-size: 11px;padding: 3px;">{{doc.remise ? (doc.remise|number_format(2, ',', ' '))~'€' : ''}}</div>
+														<div style="position: absolute;left: 587px;top: 3px; width: 81px;text-align: right;font-size: 11px;padding: 3px;">{{doc.totalHt ? (doc.totalHt|number_format(2, ',', ' '))~'€' : ''}}</div>
+														<div style="position: absolute;left: 674px;top: 3px; width: 33px;text-align: right;font-size: 10px;padding: 3px;">{{doc.tva is not null and doc.tva.valeur ? doc.tva.valeur|number_format(2, ',', ' ') : ''}}</div>
+													</div>
+												</div>
+												{% elseif doc.type == "line" %}
+													<div class="adresse-head" style="width: 101%;height:20px;color: black;margin-bottom: 5px;font-size:12px;padding-top:2px;padding-left: 2px;display: flex;position: relative;">
+														<div style="position: absolute;left: 0;top: 3px; width: 30px;text-align: left;padding: 3px;"></div>
+														<div style="position: absolute;left: 30px;top: 3px; width: 47px;text-align: left;padding: 3px;"></div>
+														<div style="position: absolute;left: 77px;top: 3px; width: 294px;text-align: left;">
+															<span style="display: block;text-transform: capitalize;">
+															</span>
+															<span style="display: block;"><i>{{doc.commentaire}}</i></span>
+														</div>
+														<div style="position: absolute;left: 373px;top: 3px; width: 55px;text-align: right;font-size: 11px;padding: 3px;"></div>
+														<div style="position: absolute;left: 428px;top: 3px; width: 34px;text-align: center;font-size: 11px;padding: 3px;"></div>
+														<div style="position: absolute;left: 462px;top: 3px; width: 80px;text-align: right;font-size: 11px;padding: 3px;"></div>
+														<div style="position: absolute;left: 542px;top: 3px; width: 45px;text-align: right;font-size: 11px;padding: 3px;"></div>
+														<div style="position: absolute;left: 587px;top: 3px; width: 87px;text-align: right;font-size: 11px;padding: 3px;"></div>
+														<div style="position: absolute;left: 674px;top: 3px; width: 39px;text-align: right;font-size: 10px;padding: 3px;"></div>
+													</div>
+												{% elseif doc.type == "sous_total" %}
+													<div class="adresse-head" style="width: 712px;height:20px;color: black;margin-bottom: 5px;font-size:12px;padding-top:2px;padding-left: 2px;display: flex;position: relative;border-top: 1px gray; border-bottom: 1px gray;background: #fff">
+														<div style="position: absolute;left: 0;top: 3px; width: 364px;text-align: left;padding: 3px;padding-left: 7px;background: #fff;">SOUS TOTAL: Sous total
+														</div>
+														<div style="position: absolute;left: 373px;top: 3px; width: 335px;text-align: center;font-size: 11px;padding: 3px; background: #fff;">{{doc.totalHt ? (doc.totalHt|number_format(2, ',', ' '))~'€' : ''}}</div>
+													</div>
+												{% endif %}
+											</div>
+							  				{% set rowItem = rowItem+1 %}
+							  			{% endfor %} 
+									{% endif %}
+
+									{% if (j == nbPage and nbProductRest <= 14) %}
+							  			{# complete avec des cellules vides #}
+							  			{% for i in 0..(14 - nbProductRest-1) %}
+											<div style="width: 90%;height: 45px" class="border-color">
+												<div class="adresse-head" style="width: 101%;height:20px;color: black;margin-bottom: 5px;font-size: 12px;padding-top: 2px;padding-left: 2px; display: flex;position: relative;" >
+												</div>
+											</div>
+							  				
+							  				{% set rowItem = rowItem + 1 %}
+							  			{% endfor %} 
+									{% endif %}
+								</div>
+							</div>
+
+							{% if j == nbPage %}
+								<div class="clearfix" style=""></div>
+								<div class="recap" style="position: relative;height: 142px;width: 90%;margin-left: 5%;margin-top: 0;">
+									<div style="display: inline-block; width: 310px;position: absolute;top: 0; left: 0">
+									<table style="width: 100%; border-collapse: collapse;" cellspacing="0">
+										<tr>
+											<td style="width: 80px;border: none;"></td>
+											<td style="text-align: center;width: 120px; border: none;border-bottom: 1px solid; font-weight: bold;">TOTAL HT</td>
+											<td style="text-align: center;width: 120px; border: none;border-bottom: 1px solid;font-weight: bold;">TOTAL TVA</td>
+										</tr>
+										{% if entete.getTotalTva20 is not null and entete.getTotalTva20 != 0 %}
+										<tr>
+											<td style="width: 80px; border: none; border-right: 1px solid;font-weight: bold;">TVA 20,0%</td>
+											<td style="text-align: center;width: 80px">{{entete.getRecapHtTva20}}€</td>
+											<td style="text-align: center;width: 80px">{{entete.getTotalTva20}}€</td>
+										</tr>
+										{% endif %}
+
+										{% if entete.getTotalTva10 is not null and entete.getTotalTva10 != 0 %}
+										<tr>
+											<td style="width: 80px; border: none; border-right: 1px solid;font-weight: bold;">TVA 10,0%</td>
+											<td style="text-align: center;width: 80px">{{entete.getRecapHtTva10}}€</td>
+											<td style="text-align: center;width: 80px">{{entete.getTotalTva10}}€</td>
+										</tr>
+										{% endif %}
+
+										{% if entete.getTotalTva55 is not null and entete.getTotalTva55 != 0 %}
+										<tr>
+											<td style="width: 80px; border: none; border-right: 1px solid;font-weight: bold;">TVA 5,5%</td>
+											<td style="text-align: center;width: 80px">{{entete.getRecapHtTva5}}€</td>
+											<td style="text-align: center;width: 80px">{{entete.getTotalTva55}}€</td>
+										</tr>
+										{% endif %}
+										<tr>
+											<td style="border: none;height: 15px;"></td>
+										</tr>
+									</table>
+										<div style="font-weight: bold;font-size: 12px">Pour l'entreprise (signature et cachet)</div>
+									</div>
+									<div style="display: inline-block; width: 230px;position: absolute;top: 0; right: 0">
+										<table style="width: 100%" cellspacing="0">
+											<tr>
+												<td style="width: 140px; border-right: none;">TOTAL HT</td>
+												<td style="text-align: right;width: 90px">
+													{{entete.totalHt ? (entete.totalHt|number_format(2, ',', ' '))~'€' : ''}}
+												</td>
+											</tr>
+											{% if entete.remise is not null and entete.remise != 0 %}
+											<tr>
+												<td style="width: 140px; border-right: none; border-top: none;">Remise</td>
+												<td style="text-align: right;width: 90px; border-top: none;">
+													{{entete.remise ? (entete.remise|number_format(2, ',', ' '))~'€' : ''}}
+												</td>
+											</tr>
+											{% endif %}
+
+											{% if entete.getTotalTva20 is not null and entete.getTotalTva20 != 0 %}
+											<tr>
+												<td style="width: 140px;  border-right: none; border-top: none;">TVA 20%</td>
+												<td style="text-align: right;width: 90px; border-top: none;">{{entete.getTotalTva20}}€</td>
+											</tr>
+											{% endif %}
+
+											{% if entete.getTotalTva10 is not null and entete.getTotalTva10 != 0 %}
+											<tr>
+												<td style="width: 140px; border-top: none; border-right: none;">TVA 10,0%</td>
+												<td style="text-align: right;width: 90px;  border-top: none;">{{entete.getTotalTva10}}€</td>
+											</tr>
+											{% endif %}
+
+											{% if entete.getTotalTva55 is not null and entete.getTotalTva55 != 0 %}
+											<tr>
+												<td style="width: 140px;  border-right: none; border-top: none;">TVA 5,5%</td>
+												<td style="text-align: right;width: 90px; border-top: none;">{{entete.getTotalTva55}}€</td>
+											</tr>
+											{% endif %}
+
+											<tr>
+												<td style="font-weight: bold;width: 140px; border-right: none; border-top: none;">TOTAL TTC</td>
+												<td style="font-weight: bold;text-align: right;width: 90px;  border-top: none;">{{entete.getTotalTtc|number_format(2, ',', ' ')~'€'}}</td>
+											</tr>
+										</table>
+										
+										<div style="text-align: center; font-weight: bold;font-size: 12px;">
+											Pour le client "Devis reçu avant execution des travaux, bon pour accord" <br>Date et signature
+										</div>
+									</div>
+								</div>
+							{% endif %}
+
+							{% if j == nbPage %}
+								<div>
+									<div style="font-weight: bold;font-size: 13px;">
+						            	<div class="" style="text-align: center;">RIB - IBAN : FR76-3002-7177-2900-0201-4360-186</div>
+							            <div class="" style="text-align: center;">BIC : CMCIFRPP</div>
+							            <div class="" style="text-align: center;">FMDA CONSTRUCTION - 65 RUE DE L'ABBE LEMIRE - 62000 ARRAS - Tél : 03.59.25.08.48</div>
+							            <div class="" style="text-align: center;">
+							            	contact@fmda.fr - www.fmda.fr
+							            </div>
+						            </div>
+						            <div style="font-size: 10px;text-align: center;margin-bottom: 5px;" class="container">
+						            	Siret : 82920503800013 / Code APE : 4331Z / TVA : FR74829205038 / Capital : 1000 € / Assurance SMA F61937L
+						            </div>
+									         
+								</div >
+							{% else %}
+								<page_footer>
+									<div style="font-weight: bold;font-size: 13px;">
+						            	<div class="container">RIB - IBAN : FR76-3002-7177-2900-0201-4360-186</div>
+							            <div class="container">BIC : CMCIFRPP</div>
+							            <div class="container">FMDA CONSTRUCTION - 65 RUE DE L'ABBE LEMIRE - 62000 ARRAS - Tél : 03.59.25.08.48</div>
+							            <div class="container">
+							            	contact@fmda.fr - www.fmda.fr
+							            </div>
+						            </div>
+						            <div style="font-size: 10px;text-align: center;margin-bottom: 50px;" class="container">
+						            	Siret : 82920503800013 / Code APE : 4331Z / TVA : FR74829205038 / Capital : 1000 € / Assurance SMA F61937L
+						            </div>
+									         
+								</page_footer >
+							{% endif %}
+							
+						</div>
+					{% endfor %} 
+				{% endif %}
+
+			</div>	
+	
+		</div>
+
+	</body>
+
+
+</html>

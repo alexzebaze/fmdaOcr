@@ -1,0 +1,172 @@
+{% extends 'base.html.twig' %}
+{% block css %}
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+{% endblock %}
+
+{% block breadcrumb %}
+
+    <div class="row wrapper border-bottom white-bg page-heading">
+        <div class="col-lg-10">
+            <h1>Edition d'un Status</h1>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                    <a href="{{ path('home') }}">Accueil</a>
+                </li>
+                <li class="breadcrumb-item">
+                    <a href="{{path('status')}}">Status</a>
+                </li>
+                <li class="breadcrumb-item active">
+                    <strong>Edition d'un status</strong>
+                </li>
+            </ol>
+        </div>
+    </div>
+{% endblock %}
+
+{% block content %}
+    <div class="row">
+        <style type="text/css">
+    #vehicule_logo_marque{display: none;}
+    .img-load{display: block;margin: auto;max-width: 201px;}
+    label[for=vehicule_logo_marque]{cursor: pointer;}
+    .select2-container{width: 100%!important;margin-bottom: 35px;}
+    .img-chantier{
+        display: block;
+        margin: auto;
+        max-height: 210px;
+        margin-bottom: 15px;
+    }
+    .select2-container{margin: 0!important}
+    .pan-list{
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 12px 0;
+    }
+    .pan-color{
+          width: 17px;
+        height: 17px;
+      display: block;
+      cursor: pointer;
+      margin-right: 5px;
+      border-radius: 100%;
+      margin-top: 8px;
+    }
+    .palettes-list::before{
+      content: '';
+      position: absolute;
+      top: .8rem;
+      left: 3rem;
+      height: 1rem;
+      width: 1rem;
+      background-color: #f6f8fa;
+      border-top: 1px solid #eceef1;
+      border-left: 1px solid #eceef1;
+      transform: rotate(45deg);
+      z-index: 98;
+      opacity: 1;
+      transition-delay: 0.3s;
+    }
+    .palettes-list{
+        display: none;
+        justify-content: center;
+        max-width: 390px;
+        flex-wrap: wrap;
+        position: absolute;
+        top: 45px;
+        left: 0;
+        right: 0;
+        z-index: 1000;
+        margin: auto;
+        padding: 10px 12px;
+        background: #fff;
+        box-shadow: 0px 0px 4px 0px #9c9898;
+        border-radius: 4px;
+    }
+    .palettes-list::before {
+      content: '';
+      position: absolute;
+      top: -5px;
+      left: 0;
+      height: 2rem;
+      width: 2rem;
+      background-color: #fff;
+      border-top: 0px solid #eceef1;
+      border-left: 0px solid #eceef1;
+      transform: rotate(45deg);
+      z-index: 98;
+      opacity: 1;
+      transition-delay: 0.3s;
+      right: 0;
+      margin: auto;
+      box-shadow: -3px -4px 3px 0px #9c98983b;
+      z-index: 0;
+    }
+
+</style>
+{% set palettes = ["#3FB8AF", "#7FC7AF", "#DAD8A7", "#FF9E9D", "#FF3D7F", "#CFF09E", "#A8DBA8", "#79BD9A", "#3B8686", "#0B486B", "#69D2E7", "#A7DBD8", "#E0E4CC", "#F38630", "#FA6900", "#DC3522", "#D9CB9E", "#374140", "#2A2C2B", "#1E1E20", "#1abc9c", "#2ecc71", "#3498db", "#9b59b6", "#34495e", "#f1c40f", "#e67e22", "#e74c3c", "#ecf0f1", "#95a5a6", "#16a085", "#27ae60", "#2980b9", "#8e44ad", "#2c3e50", "#f39c12", "#d35400", "#c0392b", "#bdc3c7", "#7f8c8d", "#8BA987", "#6C7767", "#4A6266", "#F46B63", "#BE6263", "#DC0809", "#E4CD00", "#050505", "#2AACCF", "#7FCDDF", "#7BE0D0", "#FF6F18", "#A84B05", "#BED891", "#203428", "#64A1A5", "#E3D9BB", "#F7BD80", "#ED767A", "#B54A71", "#565656", "#050505", "#d6d6d6", "#f0f0f0", "#00e7b4", "#EAE7E2", "#CF2B58", "#B22A50", "#332520", "#42342F", "#16C4C7", "#9ADBD9", "#B5CEB9", "#E0E9D0", "#D641C7", "#F2F4F5", "#40505B", "#00BFFF", "#203340", "#0AD1B3", "#FF003E", "#E2AF56", "#00B9D7", "#00A06E", "#D0D7D8", "#FFF533", "#F14F06", "#3D342B", "#41A1BF", "#419A13", "#E57263", "#42BDBD", "#D66D93", "#7D4B82", "#EACB5F", "#FFE88A", "#132729", "#00DFD6", "#FF581F", "#5A5133", "#C2FF01", "#00FF41", "#07AA67", "#1D7C80", "#2D294C", "#DE6141", "#AC3E27", "#771D1C", "#11111D", "#99B2B6"] %}
+<div class="col-lg-8">
+    <div class="ibox">
+        <div class="ibox-content">
+            <form method="POST">
+              <div class="row">
+                  <div class="col-lg-12 form-group">
+                      <label>Module</label>
+                      <select class="js-example-basic-multiple" name="modules[]" multiple="multiple">
+                          {% for mod in modules %}
+                              <option value="{{mod.id}}" {% if mod in modulesAssign %}selected{% endif %}>{{mod.nom}}</option>
+                          {% endfor %}
+                      </select>
+
+                  </div>
+                  <div class="col-lg-12 form-group">
+                      <label>Nom</label>
+                      <input class="form-control" type="text" name="nom" value="{{status.name}}">
+                  </div>
+                  <div class="col-lg-12" style="position: relative;">
+                      <div class="form-group input-color">
+                        <input class="form-control" value="{{status.color}}" type="text" name="couleur" style="background: {{status.color}}; color: #000;cursor: pointer;">
+                      </div>
+                      <div class="palettes-list">
+                        {% for color in palettes %}
+                          <a href="javascript:void()" title="{{color}}" class="pan-color" onclick="changeColor('{{color}}')" data-color="{{color}}" style="background: {{color}}"></a>
+                        {% endfor %}
+                      </div>
+                  </div>
+                  <div class="col-lg-12 form-group text-center">
+                      <button class="btn btn-primary">Enregistrer</button>
+                  </div>
+              </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block javascript_script %}
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+  <script type="text/javascript">
+    $(document).on("focus",'input[name=couleur]',function(){
+      $('.palettes-list').css('display','flex')
+    });
+    function changeColor(color){
+      $('input[name=couleur]').val(color);
+      $('input[name=couleur]').css('background', color);
+      $('.palettes-list').css('display','none')
+    }
+    $(document).mouseup(function(e) {
+      var container = $(".input-color");
+      if (!container.is(e.target) && container.has(e.target).length === 0) 
+        $('.palettes-list').css('display','none')
+    });
+  </script>
+{% endblock %}
+{% block javascript %}
+  $(document).ready(function() {
+      $('.js-example-basic-multiple').select2();
+  });
+{% endblock %}
+
+{% block js_import %}
+{% endblock %}

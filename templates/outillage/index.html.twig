@@ -1,0 +1,325 @@
+{% extends 'base.html.twig' %}
+{% block css %}
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/sweetalert2@10.14.1/dist/sweetalert2.min.css">
+    <link rel="stylesheet" href="//cdn.datatables.net/1.10.20/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <style type="text/css">        
+        thead th, td{text-align: center;}
+        .rounded-img {
+            border-radius: 50%;
+            position: relative;
+            left: -5px;
+            margin-left: -23px;
+            z-index: 1;
+            width: 40px;
+            height: 40px;
+            object-fit: cover;
+            transition: easy 0.4s all;
+        }
+        .ibox-tools{display: flex;align-items: center;}
+        .openModalUser {display: none;}
+        .fixed-btn{
+            position: fixed;
+            top: 2px;
+        }
+        #extSubmitFixed{display: none;}
+        .loader-container{display: none;align-items: center;justify-content: center;}
+    </style>
+{% endblock %}
+{% block breadcrumb %}
+
+    <div class="row wrapper border-bottom white-bg page-heading">
+        <div class="col-lg-10">
+            <h1>Liste des outillages</h1>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                    <a href="{{ path('home') }}">Accueil</a>
+                </li>
+                <li class="breadcrumb-item active">
+                    <strong>Outillage</strong>
+                </li>
+            </ol>
+        </div>
+    </div>
+{% endblock %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-lg-12">
+            {% include 'flashes.html.twig' %}
+            <div class="ibox ">
+                <div class="ibox-title">
+                    <h5>Liste des outillages</h5>
+                    <div class="ibox-tools">
+                        <a href="{{ path('outillage_new') }}">
+                            <i class="fa fa-plus"></i>
+                            Ajouter
+                        </a>
+                        <button type="button" class="btn btn-primary openModalUser" style="margin-left: 6px;" data-toggle="modal" data-target="#modalUser">
+                          attribuer un user
+                        </button>
+                    </div>
+                </div>
+                <div class="ibox-content">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>
+                                        <input type="checkbox" name="" class="chk-parent">
+                                    </th>
+                                    <th>User</th>
+                                    <th>Nom</th>
+                                    <th>Modele</th>
+                                    <th>Num_serie</th>
+                                    <th>Marque</th>
+                                    <th>Gestion</th>
+                                    <th>Mise_en_service</th>
+                                    <th>Derniere_inspection</th>
+                                    <th>Proprietaire</th>
+                                    <th>Status</th>
+                                    <th>Attribuer</th>
+                                    <th>Image</th>
+                                    <th style="width: 55px"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for outillage in pager.currentPageResults %}
+                                <tr>
+                                    <td>
+                                        <input type="checkbox" value="{{outillage.id}}" name="" data-id="{{outillage.id}}" class="check-elt" >
+                                    </td>
+                                    <td>
+                                        {% if outillage.utilisateur is not empty %}
+                                            {% if outillage.utilisateur.uid in utilisateurs|keys and utilisateurs[outillage.utilisateur.uid] %} 
+                                            <img data-file="data:image/jpeg;base64,{{ utilisateurs[outillage.utilisateur.uid]}}" src="data:image/jpeg;base64,{{ utilisateurs[outillage.utilisateur.uid]}}"
+                                                     class="showDocument rounded-img">
+                                            {% endif %}
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ outillage.nom }}</td>
+                                    <td>{{ outillage.modele }}</td>
+                                    <td>{{ outillage.numSerie }}</td>
+                                    <td>{{ outillage.marque }}</td>
+                                    <td>{{ outillage.gestion }}</td>
+                                    <td>{{ outillage.miseEnService ? outillage.miseEnService|date('d/m/Y') : '' }}</td>
+                                    <td>{{ outillage.derniereInspection ? outillage.derniereInspection|date('d/m/Y') : '' }}</td>
+                                    <td style="{% if outillage.proprietaire|upper == 'LOCATION' %}color: orange{% elseif outillage.proprietaire|upper == 'ACHAT' %}color: green{% endif %}">{{ outillage.proprietaire|upper }}</td>
+                                    <td>{{ outillage.status ? 'OK' : 'HS' }}</td>
+                                    <td>
+                                        {% if outillage.libre %}
+                                            {% if outillage.gestion == "A LOUER" %}
+                                            <span style="display: none;">X</span>
+                                            <span class="openModalUser2" data-id="{{outillage.id}}" style="cursor: pointer;">
+                                                <i class="fas fa-times" style="font-size: 18px;color: #ef0a0a;"></i>
+                                            </span>
+                                            {% endif %}
+                                        {% elseif outillage.getUserAuth is not null %}
+                                            {% set userAuth = outillage.getUserAuth %}
+                                            <span style="display: none;">V</span>
+                                            <a href="javascript:void(0)" class="openSwith" data-toggle="tooltip" data-placement="left" data-title="Retour materiel" data-text="Confirmez-vous l'operation ?" data-url="{{ path('retour_materiel',{id:outillage.id}) }}">
+                                                <img data-file="data:image/jpeg;base64,{{ allUtilisateursEntrep[userAuth.uid]}}" src="data:image/jpeg;base64,{{ allUtilisateursEntrep[userAuth.uid]}}" class="rounded-img">
+                                            </a>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if outillage.serializeFirstImage is not null %}
+                                            <img class="showDocument rounded-img" data-file="/uploads/image_outillage/{{outillage.serializeFirstImage}}" src="/uploads/image_outillage/compressed/{{outillage.serializeFirstImage}}">
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <a href="{{ path('outillage_edit', {'id':outillage.id}) }}"><i class="far fa-edit"></i></a>
+                                        <a onclick="return confirm('Confirmez-vous la suppression ?')"
+                                           href="{{ path('outillage_delete', {'id':outillage.id}) }}"><i class="fas fa-trash-alt"></i></a>
+                                    </td>
+                                </tr>
+                                {% else %}
+                                <tr>
+                                    <td colspan="34">Aucun outillage enregistré</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="modal fade" id="modalUser" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                          <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                            <h2 class="modal-title text-center" id="myModalLabel">Attribuer à un utilisateur</h2>
+                          </div>
+                          <div class="modal-body" style="padding-top: 0">
+                                <form method="POST" id="postUserAuth" action="{{path('outillage_attribut_user')}}">
+                                    <div style="margin-top: 20px;">
+                                        <label>Période</label>
+                                        <input type="hidden" name="list-elt-id" value="">
+                                    </div>
+                                    <div class="form-group">
+                                        <input type="date" name="periode" class="form-control date-range-input">
+                                    </div>
+                                    <div class="entreprise-list list-user form-group" style="margin-top: 0">
+                                        {% for user in ouvriers %}
+                                        <div>
+                                            <input id="{{user.uid}}" type="radio" name="user" value="{{user.uid}}" style="display: none;">
+                                            <label for="{{user.uid}}" class="switch-entreprise entreprise-item" style="cursor: pointer; justify-content: flex-start; align-items: flex-start; border-radius: 20px 5px 5px 24px;">
+                                                <span style="margin-right: 16px;">
+                                                    {% if user.uid in utilisateurs|keys and utilisateurs[user.uid] %} 
+                                                        <img data-file="data:image/jpeg;base64,{{ utilisateurs[user.uid]}}" src="data:image/jpeg;base64,{{ utilisateurs[user.uid]}}" 
+                                                        class="entreprise-img rounded-img">
+                                                    {% endif %}
+                                                </span>
+                                                <div class="detail-devis" style="line-height: 21px;    color: #000;font-size: 15px;">
+                                                    <div>
+                                                        <span>{{user.firstname}} {{user.lastname}}</span>
+                                                    </div>
+                                                </div>
+                                            </label>
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                </form>
+                                <span id="extSubmit" class="btn-small btn btn-primary" style="box-shadow: 0px 0px 10px 6px rgb(119 119 119 / 25%);position: absolute;top: 0;right: 9px;"><i class="fas fa-save"></i></span>
+                          </div>
+                        </div>
+                    </div>
+                    <span id="extSubmitFixed" class="btn-small btn btn-primary" style="box-shadow: 0px 0px 10px 6px rgb(119 119 119 / 25%);position: fixed;z-index: 9999;top: 18px;"><i class="fas fa-save"></i></span>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% if pager.haveToPaginate %}
+        {{ pagerfanta(pager, 'my_template') }}
+    {% endif %}
+    
+
+{% endblock %}
+{% block js_import %}
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10.14.1/dist/sweetalert2.all.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://npmcdn.com/flatpickr/dist/l10n/fr.js"></script>
+{% endblock %}
+
+{% block javascript_script %}
+    <script src="//cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js"></script>
+    <script type="text/javascript">
+        $(".date-range-input").flatpickr({
+            mode: "range",
+            locale: "fr",
+            dateFormat: "d-m-Y"
+        });
+
+        $('table').on('change', '.check-elt', function(){    
+            $eltCheck = $('.check-elt:checkbox:checked');
+            if( $eltCheck.length > 0){
+                $('.openModalUser').css('display', 'block');
+            }
+            else{
+                $('.openModalUser').css('display', 'none');
+            }
+
+            var eltSelect = [];  
+            $eltCheck.each(function( index ) {
+                if($( this ).val() != ""){
+                    eltSelect.push($( this ).val());
+                }
+            });
+            $('input[name=list-elt-id]').val(eltSelect.join('-'));
+        });
+        $('.chk-parent').on('change', function(){  
+            $('.check-elt').prop('checked', this.checked);      
+            if($(this).is(":checked")){
+                $('.openModalUser').css('display', 'block');
+            }
+            else{
+                $('.openModalUser').css('display', 'none');
+            }
+
+            $eltCheck = $('.check-elt:checkbox:checked');
+            var eltSelect = [];  
+            $eltCheck.each(function( index ) {
+                if($( this ).val() != ""){
+                    eltSelect.push($( this ).val());
+                }
+            });
+            $('input[name=list-elt-id]').val(eltSelect.join('-'));
+        });
+
+        $(document).ready( function () {
+            $('body').on('click', ' .openModalUser2', function(){
+                $eltSelect = $(this).attr('data-id');
+                $('#modalUser').modal('show');
+                $('input[name=list-elt-id]').val($eltSelect);
+            })
+            $('body').on('click', ' .openModalUpdate', function(){
+                $eltSelect = $(this).attr('data-id');
+                alert('en travail...');
+            })
+        } );
+        $('body').on('change', '.list-user input[name=user]', function() {
+            $('.list-user label').removeClass('active');
+            $('.list-user input[name=user]:checked').next().addClass('active');
+        });
+
+        $("body").on('click', '.openSwith', function(e){
+            e.preventDefault();
+            url = $(this).data('url');
+            Swal.fire({
+                title: $(this).data('title'),
+                text: $(this).data('text'),
+                icon: 'warning',
+                showCancelButton: true,
+                cancelButtonColor: '#d33',
+                cancelButtonText: 'Annuler',
+                confirmButtonColor: '#3085d6',
+                confirmButtonText: 'Confirmer'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = url;
+                }
+            });
+
+        });
+        $('#extSubmitFixed').click(()=>{
+            $('#postUserAuth').submit();
+        })
+        $('#extSubmit').click(()=>{
+            $('#postUserAuth').submit();
+        })
+
+        var lastScrollTop = 0;
+        $('#modalUser').on("scroll", function(event) {  
+            $postLeftModal = $('#modalUser .modal-body').offset().left;
+            $('#extSubmitFixed').css('right', ($postLeftModal+25));    
+            var st = $(this).scrollTop();
+            if (st > lastScrollTop){
+                if (!$('#modalUser .modal-header').isInViewport()) {
+                    $('#extSubmitFixed').css('display','block');
+                    $('#extSubmit').css('display','none');
+                }
+            } else {
+                if ($('#modalUser .modal-header').isInViewport()) {
+                    $('#extSubmit').css('display','block');
+                    $('#extSubmitFixed').css('display','none');
+                } 
+            }
+            lastScrollTop = st;
+        });
+    </script>
+{% endblock %}
+
+{% block javascript %}
+$(document).ready( function () {
+    $('table').DataTable({
+        "language": {
+            "url": "//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/French.json"
+        },
+        lengthChange: false,
+        "columnDefs": [
+            {"targets": [0, 7, 8], "orderable": false},
+        ],
+        "pageLength": 1000,
+        "order": []
+    });
+} );
+{% endblock %}

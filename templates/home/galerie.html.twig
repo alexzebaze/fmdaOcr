@@ -1,0 +1,118 @@
+<div class="galerie-item galerie-item-{{page}} active" data-page="{{page}}">
+	{% for file in galeries %}
+	    <div class="parent" style="position: relative; margin-bottom: 50px">
+	        
+	        {% set file_gallery = file.extension == 'mp4' ? file.getUrl : file.getCompressedUrl %}
+
+	        {% if file.extension != 'mp4' %}
+	            <div class="thumbnail-galerie" data-type="image" data-url="{{ file.url }}"  style="background-image: url('{{ file_gallery }}')"  data-width="{{ tabFileDim[file.id]['width'] }}" data-height="{{ tabFileDim[file.id]['height'] }}" data-fancybox="gallery" data-caption="{{ file.chantier ? file.chantier.nameentreprise : '' }}">
+	                <i class="fas fa-search"></i>
+	            </div>
+	        {% else %}
+	            <div class="thumbnail-galerie"  data-type="video" data-video='<div class="wrapper"><div class="video-wrapper"><video width="960" class="pswp__video"  src="{{file_gallery}}" controls></video></div></div>' style="background-image: url('/assets/images/videoimg.png');">
+	                <i class="fas fa-play"></i>
+	            </div>
+	        {% endif %}
+
+
+
+	        {% if file.user is not null and file.user.image is not empty %}
+	            <div style="background-image: url('data:image/jpeg;base64,{{ file.user.image }}');"
+	                 class="rounded-circle rounded-galerie">
+	            </div>
+	        {% endif %}
+
+	        <div class="thumbnail-detail" style="position: relative;">
+	        	<div class="heure-galerie">{{ file.chantier.nameentreprise }}</div>
+	            <div class="heure-galerie" style="margin-top: 2px;"><i class="fas fa-clock"></i> {{ file.createdAt|date("d/m/Y")}}</div>
+              <div class="heure-galerie" style="margin-top: 2px;">{{ file.createdAt|date("H:i")}}</div>
+	        	<a href="{{path('galerie_delete', {'fileid': file.id})}}?redirect=home" onclick="return confirm('Confirmez-vous la supression ?')" class="btn-trash">
+	        		<i class="fa fa-trash" style="color: grey"></i>
+	        	</a>
+	        </div>
+	    </div>
+	{% endfor %}
+</div>
+
+<script type="text/javascript">
+	$(document).ready(function () {
+
+            'use strict';
+
+            (function($) {
+
+              // Init empty gallery array
+              var container = [];
+
+              // Loop over gallery items and push it to the array
+              $('.galerie-item-{{page}}').find('.parent').each(function() {
+                var $link = $(this).find('.thumbnail-galerie');
+                
+                if ($link.data('type') == 'video') {
+                    var item = {
+                      html: $link.data('video')
+                    };
+                    console.log('enter');
+                } else {
+                    let img = new Image();
+                    img.onload = function() {
+                    };
+                    img.src = $link.data('url');
+
+                    var item = {
+                        src: $link.data('url'),
+                        w: $link.data('width'),
+                        h: $link.data('height'),
+                        title: $link.data('caption')
+                    };
+                }
+                container.push(item);
+              });
+
+              // Define click event on gallery item
+              $('.thumbnail-galerie').click(function(event) {
+
+                // Prevent location change
+                event.preventDefault();
+                {% verbatim %}
+                // Define object and gallery options
+                var $pswp = $('.pswp')[0],
+                  options = {
+                    index: $(this).parent('.parent').index(),
+                    bgOpacity: 0.85,
+                    showHideOpacity: true,
+                    shareButtons: [
+                        {id:'facebook', label:'Partager sur Facebook', url:'https://www.facebook.com/sharer/sharer.php?u={{url}}'},
+                        {id:'twitter', label:'Tweeter', url:'https://twitter.com/intent/tweet?text={{text}}&url={{url}}'},
+                        {id:'pinterest', label:'Epingler', url:'http://www.pinterest.com/pin/create/button/?url={{url}}&media={{image_url}}&description={{text}}'},
+                        {id:'download', label:'Télécharger l\'image', url:'{{raw_image_url}}', download:true}
+                    ]
+                  };
+                {% endverbatim %}
+                // Initialize PhotoSwipe
+                var gallery = new PhotoSwipe($pswp, PhotoSwipeUI_Default, container, options);
+                gallery.init();
+
+                gallery.listen('beforeChange', function() {
+                      var currItem = $(gallery.currItem.container);
+                      $('.thumbnail-galerie').removeClass('active');
+                      var currItemIframe = currItem.find('.thumbnail-galerie').addClass('active');
+                      $('.thumbnail-galerie').each(function() {
+                        if (!$(this).hasClass('active')) {
+                          $(this).attr('data-url', $(this).attr('data-url'));
+                        }
+                      });
+                });
+
+                gallery.listen('close', function() {
+                  $('.thumbnail-galerie').each(function() {
+                    $(this).attr('data-url', $(this).attr('data-url'));
+                  });
+                });
+
+              });
+
+            }(jQuery));
+
+        });
+</script>

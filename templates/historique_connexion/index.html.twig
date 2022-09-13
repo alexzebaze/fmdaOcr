@@ -1,0 +1,117 @@
+{% extends 'base.html.twig' %}
+{% block css %}
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.24/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/buttons/1.7.0/css/buttons.dataTables.min.css">
+    <script type="text/javascript" src="https://cdn.datatables.net/plug-ins/1.10.15/sorting/numeric-comma.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/plug-ins/1.11.2/sorting/num-html.js"></script>
+
+    <style type="text/css">        
+        .rounded-img {
+            border-radius: 50%;
+            position: relative;
+            z-index: 1;
+            width: 40px;
+            height: 40px;
+            object-fit: cover;
+            transition: easy 0.4s all;
+        }
+
+    </style>
+{% endblock %}
+{% block breadcrumb %}
+
+    <div class="row wrapper border-bottom white-bg page-heading">
+        <div class="col-lg-10">
+            <h1>Hitorique de connexion</h1>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                    <a href="{{ path('home') }}">Accueil</a>
+                </li>
+                <li class="breadcrumb-item active">
+                    <strong>historique connexion</strong>
+                </li>
+            </ol>
+        </div>
+    </div>
+{% endblock %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="ibox ">
+                <div class="ibox-title">
+                    <h5>Liste des passages</h5>
+                    <div class="ibox-tools">
+                    </div>
+                </div>
+
+                <div class="ibox-content">
+
+                    <div class="table-responsive">
+                        <table class="table table-passage">
+                            <thead>
+                                <tr>
+                                    <th>Utilisateur</th>
+                                    <th>Ip</th>
+                                    <th>Date connexion</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for historique in historiques %}
+                                <tr>
+                                    <td>
+                                        {% if historique.admin %}
+                                        <div>
+                                            {{ historique.admin.lastname }} {{ historique.admin.firstname }}
+                                        </div>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {{ historique.ip }}
+                                    </td>
+                                    <td>
+                                    	{{historique.dateConnexion|date('Y-m-d H:i:s')}}
+                                    </td>
+                                </tr>
+                                {% else %}
+                                <tr>
+                                    <td colspan="34">Aucun passage enregistré</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+{% block js_import %}
+    <script type="text/javascript"src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.min.js"></script>
+    <script type="text/javascript"src="https://cdn.datatables.net/buttons/1.7.0/js/dataTables.buttons.min.js"></script>
+    <script type="text/javascript"src="https://cdn.datatables.net/buttons/1.7.0/js/buttons.html5.min.js"></script>
+    <script type="text/javascript"src="https://cdn.datatables.net/buttons/1.7.0/js/buttons.print.min.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/plug-ins/1.10.24/sorting/date-eu.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/plug-ins/1.10.15/sorting/numeric-comma.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/plug-ins/1.11.2/sorting/num-html.js"></script>
+
+{% endblock %}
+
+{% block javascript_script %}
+    <script type="text/javascript">
+        $(document).ready( function () {
+            $('table').DataTable({
+                columnDefs: [
+                   { type: 'date-eu', targets: 3 },
+                ],
+                "paging":   false,
+            });
+        } );
+    </script>
+{% endblock %}
+
+{% block javascript %}
+
+{% endblock %}

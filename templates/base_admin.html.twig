@@ -1,0 +1,569 @@
+
+
+{% set emailComptableConfig = render(controller('App\\Controller\\MetaConfigController::getConfigMeta', { 'key': 'cabinet_comptable' })) %}
+{% set baseUrl = render(controller('App\\Controller\\HomeController::getBaseUrl', {})) %}
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/ico" href="{{ asset('favicon.ico') }}"/>
+
+    {% block seo %}
+        <title>{% block title %} {{ app.session.get('entreprise_session_name') }}  {% endblock %}</title>
+        <meta name="description" content=""/>
+    {% endblock %}
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu" crossorigin="anonymous">
+    <link href="{{ asset('vendor/@fortawesome/fontawesome-free/css/fontawesome.css') }}" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/photoswipe/4.1.3/photoswipe.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/11.1.9/sweetalert2.min.css" integrity="sha512-cyIcYOviYhF0bHIhzXWJQ/7xnaBuIIOecYoPZBgJHQKFPo+TOBA+BY1EnTpmM8yKDU4ZdI3UGccNGCEUdfbBqw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/photoswipe/4.1.3/default-skin/default-skin.css"/>
+    <link href="{{ asset('vendor/iCheck/custom.css') }}" rel="stylesheet">
+    <link href="{{ asset('vendor/animate.css/animate.css') }}" rel="stylesheet">
+    <link href="{{ asset('css/style.css') }}" rel="stylesheet">
+    <link rel="stylesheet" href="{{ asset('vendor/toastr/toastr.min.css') }}"/>
+    <script src="{{ asset('js/jquery-3.1.1.min.js') }}"></script>
+    <style type="text/css">
+        .inline-text{
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+        }
+        body::-webkit-scrollbar {
+            width: .75rem;
+        }
+        *::-webkit-scrollbar-track {
+            background-color: #edf2f7;
+        }
+        *::-webkit-scrollbar-thumb {
+            background-color: #718096;
+            border-radius: 9999px;
+        }
+        body {
+            scrollbar-width: thin;
+            /* The color of thumb and track areas */
+            scrollbar-color: #718096 #edf2f7;
+        }
+        .modal-body {
+            padding: 20px 60px 57px 60px;
+        }
+        .pagination-block{
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        .entreprise-list{
+            margin-top: 38px;
+        }
+        .loader-container{display: none;align-items: center;justify-content: center;}
+        .switch-entreprise.entreprise-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border: 1px solid #dcdcdc;
+            padding: 4px 12px;
+            font-size: 11px;
+            border-radius: 5px;
+            margin-top: 7px;
+            color: #888;
+            font-weight: bold;
+        }
+        .switch-entreprise.entreprise-item.active, .switch-entreprise.entreprise-item:hover {
+            border-color: #14c179;
+            background: #14c179;
+            color: #fff;
+        }
+        .entreprise-img{
+            width: 35px;
+            height: 35px;
+            border-radius: 100%;
+            margin-right: 8px;
+            /*background-color: #18a689;*/
+            object-fit: cover;
+            border: 2px solid #18a689;
+        }
+        .navbar-top-links {
+            text-align: right;
+            margin-right: 8px;
+            margin-top: 8px;
+        }
+        .showDocument{cursor: pointer;}
+        .main-logo{
+            object-fit: contain;
+            width: 174px;
+            margin: auto;
+            display: block;
+        }
+        .footer{position: fixed;}
+        .nav.navbar-top-links > li > a.admin-btn:hover, .nav.navbar-top-links > li > a.admin-btn:focus{
+            background-color: #1ab394;
+            border-color: #1ab394;
+        }
+        .documentPdf{max-width: 100%}
+    </style>
+    {% block css %}
+    {% endblock %}
+</head>
+
+<body style="-webkit-print-color-adjust: exact;">
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+  <!-- Background of PhotoSwipe. 
+           It's a separate element as animating opacity is faster than rgba(). -->
+  <div class="pswp__bg"></div>
+  <!-- Slides wrapper with overflow:hidden. -->
+  <div class="pswp__scroll-wrap">
+    <!-- Container that holds slides. 
+              PhotoSwipe keeps only 3 of them in the DOM to save memory.
+              Don't modify these 3 pswp__item elements, data is added later on. -->
+    <div class="pswp__container">
+      <div class="pswp__item"></div>
+      <div class="pswp__item"></div>
+      <div class="pswp__item"></div>
+    </div>
+    <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+    <div class="pswp__ui pswp__ui--hidden">
+      <div class="pswp__top-bar">
+        <!--  Controls are self-explanatory. Order can be changed. -->
+        <div class="pswp__counter"></div>
+        <button class="pswp__button pswp__button--close" title="Fermer (Esc)"></button>
+        <button class="pswp__button pswp__button--share" title="Partager"></button>
+        <button class="pswp__button pswp__button--fs" title="Plein écran"></button>
+        <button class="pswp__button pswp__button--zoom" title="Zoom +/-"></button>
+        <!-- Preloader demo https://codepen.io/dimsemenov/pen/yyBWoR -->
+        <!-- element will get class pswp__preloader--active when preloader is running -->
+        <div class="pswp__preloader">
+          <div class="pswp__preloader__icn">
+            <div class="pswp__preloader__cut">
+              <div class="pswp__preloader__donut"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+        <div class="pswp__share-tooltip"></div>
+      </div>
+      <button class="pswp__button pswp__button--arrow--left" title="Précedent">
+      </button>
+      <button class="pswp__button pswp__button--arrow--right" title="Suivant">
+      </button>
+      <div class="pswp__caption">
+        <div class="pswp__caption__center"></div>
+      </div>
+    </div>
+  </div>
+</div>
+<div id="wrapper">
+
+        <nav class="navbar-default navbar-static-side" role="navigation">
+            <div class="sidebar-collapse">
+                <ul class="nav metismenu">
+                    <li class="nav-header">
+                        <div class="profile-element">
+                            <a href="{{path('home')}}">
+                                {% if app.session.get('entreprise_session_logo') %}
+                                    <img alt="FDMA" class="main-logo img-fluid" src="/logo/{{app.session.get('entreprise_session_logo')}}">
+                                {% else %} 
+                                    <img src="{{ asset('images/logo-admin.png') }}"  alt="FDMA" class="main-logo img-fluid">
+                                {% endif %}
+                            </a>
+                        </div>
+                        <div class="logo-element">
+                            FDMA
+                        </div>
+                    </li>
+
+                    <li class="menu-item menu-admin-configuration">
+                        <a href="#"><i class="fas fa-cog"></i> <span class="nav-label">Configuration Admin</span> <span class="fa arrow"></span></a>
+                        <ul class="sub-nav nav nav-second-level collapse">
+                            <li><a href='{{path("entreprise_index")}}'>Entreprises</a></li>
+                            <li><a href='{{path("admin_list")}}'>Adminstrateurs</a></li>
+                            <li><a href='{{path("menu_index")}}'>Menu</a></li>
+                            <li><a href='{{path("config_total_new")}}'>Config Text total</a></li>
+                            <li><a href='{{path("fields_index")}}'>Colonnes</a></li>
+                            <li><a href='{{path("historique_connexion")}}'>Historique connexion</a></li>
+                            <li><a href='{{path("version_list")}}'>Version</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="gray-bg">
+            <div class="row border-bottom">
+                <nav class="navbar navbar-static-top" role="navigation" style="margin-bottom: 0">
+                    <div class="navbar-header">
+                        <a class="navbar-minimalize minimalize-styl-2 btn btn-primary " href="#"><i class="fa fa-bars"></i> </a>
+                    </div>
+                    <div class="navbar-header">
+                    </div>
+                    
+                    <ul class="nav navbar-top-links navbar-right">
+                        <li class="dropdown">
+                            <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                Choisir societé
+                            <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+                                {% if app.user.role == "administrateur" %}
+                                    <li>
+                                            <a href="javascript:void()" class="openEntrepriseModal">
+                                            <span>Changer de Société</span> &nbsp <i class="fal fa-chevron-right"></i>
+                                            </a>
+                                    </li>
+                                    <li role="separator" class="divider"></li>
+                                {% endif %}
+                                <li>
+                                    <a href="{{ path('security_logout') }}">
+                                        <i class="fa fa-sign-out"></i> Déconnexion
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+
+                </nav>
+            </div>
+            {% block breadcrumb %}
+            <div class="row wrapper border-bottom white-bg page-heading">
+                <div class="col-lg-10">
+                    <h2>Accueil</h2>
+                </div>
+            </div>
+            {% endblock %}
+            <div class="wrapper wrapper-content animated fadeInRight">
+                {% block content %}
+                {% endblock %}
+            </div>
+            <div class="footer">
+                <div class="float-right">
+                </div>
+                <div>
+                    <strong>Copyright</strong> FMDA &copy; 2020
+                </div>
+            </div>
+            <div class="modal-entreprise-container">
+                <div id="modalEntreprise" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header" style="border: none;">
+                                {% if app.session.get('entreprise_session_id') %} 
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true" style="position: absolute;right: 14px;top: 10px;">&times;</span></button>
+                                {% endif %}
+                            </div>
+                            <div class="modal-body row entreprise-container">
+                                <div class="loader-container">
+                                    <img src="{{asset('images/loading.gif')}}" style="width: 54px;">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="modalDocumentShow" class="modal fade bs-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel">
+                <div class="modal-dialog modal-lg" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header" style="border: none;">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        </div>
+                        <div class="modal-body text-center">
+                            <h3 class="text-center no-document" style="display: none;">Aucun document rattaché.</h3>
+                            <div class="documentFile-container" style="display: none;">
+                                <object class="documentPdf" data="" type="application/pdf" width="100%" height="980px" style="display: none;"></object>
+                                <img class="documentimage" src="" alt="fichier facture uploadé" width="100%"  style="display: none;">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+</div>
+
+
+
+<!-- Mainly scripts -->
+<script src="{{ asset('vendor/popper.js/dist/umd/popper.js') }}"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha384-aJ21OjlMXNL5UyIl/XNwTMqvzeRMZH2w8c5cRVpzpU8Y5bApTppSuUkhZXN0VxHd" crossorigin="anonymous"></script>
+<script src="{{ asset('vendor/metisMenu/jquery.metisMenu.js') }}"></script>
+<script src="{{ asset('vendor/slimscroll/jquery.slimscroll.min.js') }}"></script>
+<script src="{{ asset('vendor/peity/jquery.peity.min.js') }}"></script>
+<script src="{{ asset('vendor/toastr/toastr.min.js') }}"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.4.10/dist/sweetalert2.all.min.js"></script>
+
+<!-- Custom and plugin javascript -->
+<script src="{{ asset('js/inspinia.js') }}"></script>
+<script src="{{ asset('vendor/pace/pace.min.js') }}"></script>
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.15.6/xlsx.core.min.js"></script>
+<script type="text/javascript" src="{{ asset('vendor/excelplus-2.5.min.js') }}"></script>
+
+<!-- iCheck --> 
+<script src="{{ asset('vendor/iCheck/icheck.min.js') }}"></script>
+<script type="text/javascript">
+    $.fn.isInViewport = function() {
+        var elementTop = $(this).offset().top;
+        var elementBottom = elementTop + $(this).outerHeight();
+
+        var viewportTop = $(window).scrollTop();
+        var viewportBottom = viewportTop + $(window).height();
+
+        return elementBottom > viewportTop && elementTop < viewportBottom;
+    };
+
+    function isElementInViewport (el) {
+
+    // Special bonus for those using jQuery
+        if (typeof jQuery === "function" && el instanceof jQuery) {
+            el = el[0];
+        }
+
+        var rect = el.getBoundingClientRect();
+
+        return (
+            rect.top >= 0 &&
+            rect.left >= 0 &&
+            rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) && /* or $(window).height() */
+            rect.right <= (window.innerWidth || document.documentElement.clientWidth) /* or $(window).width() */
+        );
+    }
+
+    function isElementPartiallyInViewport(el)
+        {
+            // Special bonus for those using jQuery
+            if (typeof jQuery !== 'undefined' && el instanceof jQuery) 
+                el = el[0];
+
+            var rect = el.getBoundingClientRect();
+            // DOMRect { x: 8, y: 8, width: 100, height: 100, top: 8, right: 108, bottom: 108, left: 8 }
+            var windowHeight = (window.innerHeight || document.documentElement.clientHeight);
+            var windowWidth = (window.innerWidth || document.documentElement.clientWidth);
+
+            // http://stackoverflow.com/questions/325933/determine-whether-two-date-ranges-overlap
+            var vertInView = (rect.top <= windowHeight) && ((rect.top + rect.height) >= 0);
+            var horInView = (rect.left <= windowWidth) && ((rect.left + rect.width) >= 0);
+
+            return (vertInView && horInView);
+        }
+</script>
+<!-- Peity
+<script src="js/demo/peity-demo.js"></script>
+-->
+
+{% block js_import %}
+{% endblock %}
+
+<script>
+    $(document).ready(function(){
+        $('.i-checks').iCheck({
+            checkboxClass: 'icheckbox_square-green',
+            radioClass: 'iradio_square-green',
+        });
+    });
+    jQuery(document).ready(function() { 
+        {% for label, message in app.flashes('success') %}
+            toastr.success("{{ message }}");
+        {% endfor %}
+        {% for message in app.flashes('error') %}
+            toastr.error("{{ message }}");
+        {% endfor %}
+        {% for message in app.flashes('infos') %}
+            toastr.infos("{{ message }}");
+        {% endfor %}
+        {% for message in app.flashes('warning') %}
+            toastr.warning("{{ message }}");
+        {% endfor %}
+    });
+    isObjectEmpty = function(obj) {
+        for(var key in obj) {
+            if(obj.hasOwnProperty(key))
+                return false;
+        }
+        return true;
+    };
+    {% block javascript %}
+    {% endblock %}
+</script>
+
+<script type="text/javascript">
+    if("{{app.user.role}}" == "administrateur" && !"{{app.session.get('entreprise_session_id')}}"){
+        loadEntreprise();
+    }
+    $('.openEntrepriseModal').click(function(){
+        loadEntreprise();        
+    })
+
+    function loadEntreprise(){
+        $('#modalEntreprise').modal({
+          backdrop: 'static'
+        });
+        $('.loader-container').css('display','flex');
+        $.ajax({
+            url: "{{path('entreprise_load_xhr')}}",
+            type: "GET",
+            async: true,
+            dataType: "json",
+            data: {},
+            success:function(response) {
+              if(response.status == 200){
+                $('#modalEntreprise .entreprise-container').html(response.datas);
+              }
+              else if(response.status == 500){
+                toastr.error(response.message);
+              }
+              $('.loader-container').css('display','none');
+            },
+            error:function(){
+              toastr.error("Ooops... Quelque chose s'est mal passée");
+              $('.loader-container').css('display','none');
+            }
+        });
+    }
+
+    function loadMenu(){
+        $.ajax({
+            url: "{{path('menu_load_xhr')}}",
+            type: "GET",
+            async: true,
+            dataType: "json",
+            data: {},
+            success:function(response) {
+              if(response.status == 200){
+                $('#side-menu').html(response.datas);
+
+              }
+              else if(response.status == 500){
+                toastr.error(response.message);
+              }
+            },
+            error:function(){
+              toastr.error("Ooops... Quelque chose s'est mal passée");
+            }
+        });
+    }
+    if( "{{app.session.get('entreprise_session_id')}}" )
+        loadMenu();
+
+    $(document).on('click', '.menu-item', function(){
+        if($(this).hasClass('active')){
+            $(this).removeClass('active');
+            $(this).find('.sub-nav').addClass('collapse');
+        }
+        else{
+            $('.menu-item').removeClass('active');
+            $('.menu-item .sub-nav').addClass('collapse');
+            $(this).addClass('active');
+            $(this).find('.sub-nav').removeClass('collapse');
+        }
+        
+    })
+
+    $('#modalEntreprise').modal("hide");
+    $('.openEntrepriseAdminModal').click(function(){
+        var adminId = $(this).attr('data-admin-id');
+        loadEntrepriseAdmin(adminId);        
+    })
+
+    function loadEntrepriseAdmin(adminId){
+        $('#modalEntrepriseAdmin').modal({
+          backdrop: 'static'
+        });
+        $('.loader-container').css('display','flex');
+        $.ajax({
+            url: "{{path('admin_list_entreprise')}}",
+            type: "GET",
+            async: true,
+            dataType: "json",
+            data: {
+                admin_id: adminId
+            },
+            success:function(response) {
+              if(response.status == 200){
+                $('#modalEntrepriseAdmin .entreprise-container').html(response.datas);
+                $('input[name=admin_id]').val(adminId);
+              }
+              else if(response.status == 500){
+                toastr.error(response.message);
+              }
+              $('.loader-container').css('display','none');
+            },
+            error:function(){
+              toastr.error("Ooops... Quelque chose s'est mal passée");
+              $('.loader-container').css('display','none');
+            }
+        });
+    }
+        
+    function switchEntreprise(el){
+        var url = el.getAttribute("data-href");
+        $('.loader-container').css('display','flex');
+        $.ajax({
+            url: url,
+            type: "GET",
+            dataType: "json",
+            async: true,
+            data: {},
+            success: function(response) {
+                if(response.status == 200){
+                    window.location.replace("https://www.homekeo.fr");
+                }
+                else if(response.status == 500){
+                    toastr.error(response.message);
+                }
+                $('.loader-container').css('display','none');
+            },
+            error: function(xhr, textStatus, errorThrown) {
+              console.log(errorThrown);
+              $('.loader-container').css('display','none');
+            }
+        });
+    }
+
+    $(document).ready( function () {
+        $('body').on('click', ' .showDocument', function(){
+            $documentFile = $(this).attr('data-file');
+            $('#modalDocumentShow').modal('show');
+            if($documentFile != ""){
+                $('.no-document').css('display','none');
+                $('.documentFile-container').css('display','block');
+                if($documentFile.substr($documentFile.length - 3).toLowerCase() == "pdf"){
+                    $('.documentFile-container').html('<object class="documentPdf" data="" type="application/pdf" width="100%" height="980px" style="display: none;"></object>');
+                    $('.documentPdf').css('display', 'block');
+                    $('.documentPdf').attr('data', $documentFile);
+                }
+                else{
+                    $('.documentimage').css('display', 'block');
+                    $('.documentimage').attr('src', $documentFile);
+                }
+            }
+            else{
+                $('.documentFile-container').css('display','none');
+                $('.no-document').css('display','block');
+            }
+        })
+    } );
+</script>
+
+<script type="text/javascript">
+        jQuery.extend( jQuery.fn.dataTableExt.oSort, {
+            "num-html-pre": function ( a ) {
+                var x = String(a).replace( /<[\s\S]*?>/g, "" );
+                return parseFloat( x );
+            },
+         
+            "num-html-asc": function ( a, b ) {
+                return ((a < b) ? -1 : ((a > b) ? 1 : 0));
+            },
+         
+            "num-html-desc": function ( a, b ) {
+                return ((a < b) ? 1 : ((a > b) ? -1 : 0));
+            }
+        } );
+</script>
+{% block javascript_script %}
+{% endblock %}
+</body>
+
+</html>

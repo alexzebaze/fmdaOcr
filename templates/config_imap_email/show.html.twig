@@ -1,0 +1,42 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}ConfigImapEmail{% endblock %}
+
+{% block body %}
+    <h1>ConfigImapEmail</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ config_imap_email.id }}</td>
+            </tr>
+            <tr>
+                <th>Dossier</th>
+                <td>{{ config_imap_email.dossier }}</td>
+            </tr>
+            <tr>
+                <th>Dossier_id</th>
+                <td>{{ config_imap_email.dossierId }}</td>
+            </tr>
+            <tr>
+                <th>Email</th>
+                <td>{{ config_imap_email.email }}</td>
+            </tr>
+            <tr>
+                <th>Password</th>
+                <td>{{ config_imap_email.password }}</td>
+            </tr>
+            <tr>
+                <th>Hote</th>
+                <td>{{ config_imap_email.hote }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('config_imap_email_index') }}">back to list</a>
+
+    <a href="{{ path('config_imap_email_edit', {'id': config_imap_email.id}) }}">edit</a>
+
+    {{ include('config_imap_email/_delete_form.html.twig') }}
+{% endblock %}

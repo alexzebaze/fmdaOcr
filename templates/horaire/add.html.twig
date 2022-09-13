@@ -1,0 +1,68 @@
+{% extends 'base.html.twig' %}
+
+{% block breadcrumb %}
+
+    <div class="row wrapper border-bottom white-bg page-heading">
+        <div class="col-lg-10">
+            <h1>Ajouter un horaire</h1>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                    <a href="{{ path('home') }}">Accueil</a>
+                </li>
+                <li class="breadcrumb-item">
+                    <a href="{{ path('horaire_list') }}">Horaires</a>
+                </li>
+                <li class="breadcrumb-item active">
+                    <strong>Ajouter un horaire</strong>
+                </li>
+            </ol>
+        </div>
+    </div>
+{% endblock %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-lg-6">
+            <div class="ibox">
+                <div class="ibox-content">
+                    {{ include('horaire/_form.html.twig') }}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <a href="{{ path('horaire_list') }}">Retourner à la liste des horaires</a>
+{% endblock %}
+
+
+{% block javascript %}
+    {{ parent() }}
+            $(function () {
+                $('#horaire_datestart').datetimepicker({
+                    stepping: 30,
+                    enabledHours: [7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20],
+                    locale: 'fr'
+                });
+                $('#horaire_dateend').datetimepicker({
+                    stepping: 30,
+                    enabledHours: [7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20],
+                    locale: 'fr',
+                    useCurrent: false
+                });
+
+                $('#horaire_datestart').val('{{ debut }}');
+                $('#horaire_dateend').val('{{ fin }}');
+            });
+{% endblock %}
+
+
+{% block javascript_script %}
+    {{ parent() }}
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment-with-locales.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.47/js/bootstrap-datetimepicker.min.js"></script>
+{% endblock %}
+
+{% block css %}
+    {{ parent() }}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.47/css/bootstrap-datetimepicker.min.css">
+{% endblock %}

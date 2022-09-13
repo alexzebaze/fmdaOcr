@@ -1,0 +1,162 @@
+
+
+namespace App\Controller\Rest;
+
+use App\Entity\Utilisateur;
+use App\Entity\Galerie;
+use App\Form\UtilisateurMobileType;
+use App\Form\UtilisateurType;
+use App\Serializer\FormErrorSerializer;
+use Doctrine\ORM\EntityManagerInterface;
+use FOS\RestBundle\Controller\AbstractFOSRestController;
+use FOS\RestBundle\View\View;
+use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
+use Pagerfanta\Adapter\DoctrineORMAdapter;
+use Pagerfanta\Pagerfanta;
+use Symfony\Component\Form\FormError;
+use Symfony\Component\HttpClient\CurlHttpClient;
+use Symfony\Component\HttpClient\HttpClient;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
+use FOS\RestBundle\Controller\Annotations\Post;
+use Swagger\Annotations as SWG;
+use Symfony\Component\Routing\Generator\UrlGenerator;
+use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
+
+
+/**
+ * @Route("/utilisateur")
+ */
+class ApiUtilisateurController extends AbstractFOSRestController
+{
+    private $formErrorSerializer;
+    private $em;
+
+    public function __construct(
+        EntityManagerInterface $em,
+        FormErrorSerializer $formErrorSerializer
+    )
+    {
+        $this->em = $em;
+        $this->formErrorSerializer = $formErrorSerializer;
+    }
+
+    /*
+     *
+     *     @SWG\Parameter(
+     *         name="Authorization",
+     *         in="header",
+     *         type="string",
+     *     ),
+     */
+    /**
+     * @SWG\Post(
+     *     tags={"utilisateur"},
+     *     description="Inscription d'un utilisateur",
+     *     produces={"application/json"},
+     *     @SWG\Parameter(
+     *         name="body",
+     *         in="body",
+     *         type="string",
+     *         required=true,
+     *         @SWG\Schema(
+     *              @SWG\Property(property="code", type="string"),
+     *              @SWG\Property(property="firstname", type="string"),
+     *              @SWG\Property(property="lastname", type="string"),
+     *              @SWG\Property(property="email", type="string"),
+     *              @SWG\Property(property="phone", type="string"),
+     *              @SWG\Property(property="password", type="string"),
+     *              @SWG\Property(property="password_repeat", type="string")
+     *         )
+     *     ),
+     *     @SWG\Response(
+     *         response=401,
+     *         description="Unauthorized",
+     *     ),
+     *     @SWG\Response(
+     *         response=200,
+     *         description="token for Authentification",
+     *     ),
+     *     @SWG\Response(
+     *         response=400,
+     *         description="Invalid JSON",
+     *     ),
+     *     @SWG\Response(
+     *         response=500,
+     *         description="Erreur",
+     *     ),
+     * )
+     * @FOS\RestBundle\Controller\Annotations\Post("/register")
+     * @param Request $request
+     * @return View
+     */
+    public function register(Request $request, JWTTokenManagerInterface $jwt): View
+    {
+        $data = json_decode($request->getContent(), true);
+        $user = new Utilisateur();
+        $form = $this->createForm(UtilisateurMobileType::class, $user);
+        $form->submit($data);
+        if ($form->isValid()) {
+            $entreprise = $this->em->createQueryBuilder()
+                ->select('e')
+                ->from('App\Entity\Entreprise', 'e')
+                ->andWhere('e.code = :entreprise')
+                ->setParameter('entreprise', $data['code'])
+                ->getQuery()
+                ->getOneOrNullResult();
+
+            if($entreprise) {
+                $user->setEntreprise($entreprise);
+                if ($data["password"] !== $data["password_repeat"]) {
+                    return View::create(array('error' => 'passwords_different'), Response::HTTP_OK);
+                }
+                $this->em->persist($user);
+                $this->em->flush();
+
+                //$jwtManager = $this->container->get('lexik_jwt_authentication.jwt_manager');
+                //$token = $jwt->create($user);
+                return View::create(array('success' => true), Response::HTTP_OK);
+            } else {
+                return View::create(array('error' => 'entreprise_not_found'), Response::HTTP_OK);
+            }
+        } else {
+            return View::create(array('error' => $this->formErrorSerializer->convertFormToArray($form)), Response::HTTP_OK);
+        }
+    }
+
+    /*
+     * @FOS\RestBundle\Controller\Annotations\Options("/login_check_custom")
+     * @param Request $request
+     * @return View
+
+    public function loginCheckCustom(Request $request, JWTTokenManagerInterface $jwt): View
+    {
+        $postdata = file_get_contents("php://input");
+        $json = json_decode($postdata);
+        if(!isset($json->email) || empty($json->email))  {
+            return View::create(array('error' => '_email not found'), Response::HTTP_OK);
+        }
+        if(!isset($json->password) || empty($json->password)) {
+            return View::create(array('error' => '_password not found'), Response::HTTP_OK);
+        }
+
+        $user = $this->em->createQueryBuilder()
+            ->select('u')
+            ->from('App\Entity\Utilisateur', 'u')
+            ->andWhere('u.email = :email')
+            ->andWhere('u.password = :password')
+            ->setParameter('email', $json->email)
+            ->setParameter('password', md5($json->password))
+            ->getQuery()
+            ->getOneOrNullResult();
+
+        if($user) {
+            $token = $jwt->create($user);
+        } else {
+            return View::create(array('error' => 'Invalid credentials'), Response::HTTP_OK);
+        }
+        return View::create(array('token' => $token), Response::HTTP_OK);
+    }*/
+}

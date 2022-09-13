@@ -1,0 +1,131 @@
+{{ form_start(form) }}
+<div class="row">
+
+    <div class="col-lg-12 form-group">
+        {{ form_label(form.fichier, 'Fichier') }}
+        {{ form_row(form.fichier) }}
+    </div>
+    <div class="col-lg-12 form-group">
+        <input type="hidden" name="fileBase64">
+        <div class="loader-heic" style="display: none;justify-content: center;flex-direction: column;
+    align-items: center;">
+            <img src="{{asset('images/loading.gif')}}" style="width: 54px;">
+            <div class="val-progress"></div>
+        </div>
+    </div>
+    <div class="col-lg-12 form-group">
+        {{ form_label(form.chantier, 'Chantier') }}
+        {{ form_row(form.chantier) }}
+    </div>
+    {% if chantier %}
+        <style type="text/css">
+            #galerie_chantier{
+                display: none;
+            }
+            label[for="galerie_chantier"]{
+                display: none;
+            }
+        </style>
+        <script type="text/javascript">
+            document.getElementById("galerie_chantier").disabled = true;
+        </script>
+        <input type="hidden" name="galerie[chantier]" value="{{ chantier }}">
+    {% endif %}
+    <div class="col-lg-12 form-group">
+        <button class="btn btn-primary">{{ button_label|default('Enregistrer') }}</button>
+    </div>
+</div>
+{{ form_end(form) }}
+
+<script type="text/javascript">
+
+    function readFileAsURL(file){
+        return new Promise(function(resolve,reject){
+            let fr = new FileReader();
+
+            fr.onload = function(){
+                resolve(fr.result);
+            };
+
+            fr.onerror = function(){
+                reject(fr);
+            };
+
+            fr.readAsDataURL(file);
+        });
+    }
+
+     document.getElementById("galerie_fichier").addEventListener("change", function(ev){
+        $('.loader-heic').css('display','flex');
+        $('input[name=fileBase64]').val('');
+        let files = ev.currentTarget.files;
+        let readers = [];
+        let TAB_BASEPNG = [];
+
+        // Abort if there were no files selected
+        if(!files.length) return;
+
+
+        myTimer = setInterval(()=>{
+            $valBase = $('input[name=fileBase64]').val();
+            $tabBase = $valBase.split("##");
+            $('.val-progress').text($tabBase.length+"/"+files.length);
+            if($tabBase.length == files.length){
+                clearInterval(myTimer);
+                $('.loader-heic').css('display','none');
+            }
+
+        } , 1000);
+
+
+        $('.val-progress').text("0/"+files.length);
+        // Store promises in array
+        for(let i = 0; i < files.length; i++){
+            readers.push(readFileAsURL(files[i]));
+        }
+
+        
+        Promise.all(readers).then((values) => {
+            for(let i = 0;i < values.length;i++){
+                var base64 = values[i];
+                if(base64.split(';')[0].split('/')[1] == "octet-stream"){
+                    convertbase64ToJpgBase64(base64);
+                }
+                else{
+                    if($('input[name=fileBase64]').val() == ""){
+                        $('input[name=fileBase64]').val(base64);
+                    }
+                    else{
+                        $('input[name=fileBase64]').val($('input[name=fileBase64]').val()+'##'+base64);
+                    }
+
+                }
+               
+            }
+        });
+         
+    }, false);
+
+    function convertbase64ToJpgBase64(base64){
+        
+        fetch(base64)
+            .then((res) => res.blob())
+            .then((blob) => heic2any({
+                blob
+            }))
+            .then((conversionResult) => {
+                let file = new File([conversionResult], "heic"+".png",{type:"image/png", lastModified: "image_convert"});
+
+                var reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = function () {
+                    $('input[name=fileBase64]').val($('input[name=fileBase64]').val()+'##'+reader.result);
+                };
+
+            })
+            .catch((e) => {
+                $('.loader-heic').css('display','none');
+            });
+
+    }
+</script>

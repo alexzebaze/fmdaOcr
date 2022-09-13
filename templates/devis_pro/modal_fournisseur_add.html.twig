@@ -1,0 +1,54 @@
+<div id="modalFormFournisseur" class="modal fade bs-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+        <div class="modal-header" style="border: none;">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        </div>
+        <div class="modal-body row">
+            {{ include('fournisseurs/_form.html.twig') }}
+        </div>
+    </div>
+  </div>
+</div>
+<script type="text/javascript">
+    $('form[name=fournisseurs]').attr('action', "{{url}}");
+    var form = document.forms.namedItem("fournisseurs");
+    form.addEventListener('submit', function(ev) {
+      ev.preventDefault();
+      $btnSubmit = $('form[name=fournisseurs] button');
+      $btnSubmit.text('Enregistrement...');$btnSubmit.css('pointer-events', 'none');
+      $.ajax({
+        url:form.getAttribute('action'),
+        type:"POST",
+        data: new FormData(this),
+        dataType: 'json',
+        contentType: false,
+        cache: false,
+        processData:false,
+        success:function(response) {
+          if(response.status == 200){
+            if($("input[name=add_mode]").val() != "manuel"){
+              exportDoc();
+            }
+            else if($("input[name=add_mode]").val() == "manuel"){
+                $('#achat_fournisseur').prepend("<option value='"+response.fournisseur.id+"'>"+response.fournisseur.nom+"</option>");
+                $('#achat_fournisseur').val(response.fournisseur.id);
+            }
+            toastr.success('Fournisseur crée avec success');
+            $('#modalFormFournisseur').modal('hide');
+          }
+          else if(response.status == 500){
+            toastr.error(response.message);
+          }
+          $btnSubmit.text('Enregistrez');$btnSubmit.css('pointer-events', 'auto');
+        },
+        error:function(){
+          toastr.error("Ooops... Quelque chose s'est mal passée");
+          $btnSubmit.text('Enregistrez');$btnSubmit.css('pointer-events', 'auto');
+        }
+      });
+        
+      ev.preventDefault();
+    }, false);
+    $('input#fournisseurs_nom').val($('input[name=sender_name]').val())
+</script>

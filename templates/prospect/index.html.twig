@@ -1,0 +1,112 @@
+{% extends 'base.html.twig' %}
+
+{% block breadcrumb %}
+
+    <div class="row wrapper border-bottom white-bg page-heading">
+        <div class="col-lg-10">
+            <h1>Liste des prospects</h1>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                    <a href="{{ path('home') }}">Accueil</a>
+                </li>
+                <li class="breadcrumb-item active">
+                    <strong>Prospect</strong>
+                </li>
+            </ol>
+        </div>
+    </div>
+{% endblock %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-lg-12">
+            {% include 'flashes.html.twig' %}
+            <div class="ibox ">
+                <div class="ibox-title">
+                    <h5>Liste des prospects</h5>
+                    <div class="ibox-tools">
+                        <a href="{{ path('prospect_add') }}">
+                            <i class="fa fa-plus"></i>
+                            Ajouter
+                        </a>
+                    </div>
+                </div>
+                <div class="ibox-content">
+                    <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                        <tr>
+                            <th>Nom</th>
+                            <th>Ville</th>
+                            <th>Téléphone</th>
+                            <th>Email</th>
+                            <th>Prix</th>
+                            <th>M2</th>
+                            <th>Action</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                            {% for prospect in pager.currentPageResults %}
+                            <tr>
+                                <td>
+                                    {{ prospect.nom }}
+                                </td>
+                                <td>{{ prospect.ville|default('') }}</td>
+                                <td>{{ prospect.telone|default('') }}</td>
+                                <td>
+                                    {{ prospect.email }}
+                                </td>
+                                <td>
+                                    {{prospect.prix ? prospect.prix : "0"}}€
+                                </td>
+                                <td>{{prospect.m2}}</td>
+                                <td>
+                                    <a href="{{ path('prospect_edit', {'prospectId':prospect.id}) }}"><i class="far fa-edit"></i></a>
+                                    <a onclick="return confirm('Etes-vous sur de vouloir supprimer ce prospect ?')"
+                                       href="{{ path('prospect_delete', {'prospectId':prospect.id}) }}"><i class="fas fa-trash-alt"></i></a>
+                                </td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td colspan="34">Aucun prospect enregistré</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+    {% if pager.haveToPaginate %}
+        {{ pagerfanta(pager, 'my_template') }}
+    {% endif %}
+    
+
+{% endblock %}
+
+{% block javascript_script %}
+    <script src="//cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/plug-ins/1.10.24/sorting/date-eu.js"></script>
+{% endblock %}
+
+{% block javascript %}
+$(document).ready( function () {
+    $('table').DataTable({
+        "language": {
+            "url": "//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/French.json"
+        },
+        "columnDefs": [
+            { type: 'date-eu', targets: 2 }
+        ],
+        "pageLength": 50,
+        "order": []
+    });
+} );
+{% endblock %}
+
+{% block css %}
+    <link rel="stylesheet" href="//cdn.datatables.net/1.10.20/css/jquery.dataTables.min.css">
+{% endblock %}

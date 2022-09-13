@@ -1,0 +1,95 @@
+<style type="text/css">
+    table.dataTable thead th, table.dataTable thead td{font-size: 11px;}
+    table.dataTable tbody th, table.dataTable tbody td{text-align: center;}
+    .openTxModal, .openTxMoyenModal{
+        cursor: pointer;color: blue;
+    }
+</style>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                <input type="checkbox" class="chk-parent" value="">
+            </th>
+            <th>Date_Paie</th>
+            <th>Fiche</th>
+            <th>Utilisateur</th>
+            <th>H_sup_25%</th>
+            <th>H_sup_50%</th>
+            <th>H_normale</th>
+            <th>Trajet</th>
+            <th>Panier</th>
+            <th>Cout_Global</th>
+            <th>Heure Fictif</th>
+            <th>tx_horaire</th>
+            <th>tx_Moyen</th>
+            <th>tx_charge</th>
+            <th>Salaire_Net</th>
+            <th>Congés_Payés</th>
+            <th style="min-width: 58px;"></th>
+        </tr>
+    </thead>
+    <tbody>
+        {% set totalFictif = 0 %}
+    {% for paie in paies %}
+        <tr>
+            <td>
+                <input type="checkbox" class="check-fiche" value="{{paie.id}}">
+            </td>
+            <td>{{ paie.getDatePaie }}</td>
+            <td>
+                {% if paie.getDocumentFile %} 
+                <span class="showDocument" data-file="/uploads/paies/{{paie.getDocumentFile}}" style="cursor: pointer;"><img src="//ssl.gstatic.com/docs/doclist/images/mediatype/icon_3_pdf_x16.png"></span>
+                {% endif %}
+            </td>
+            <td>{{ paie.getUtilisateur.firstname }} {{ paie.getUtilisateur.lastname }}</td>
+            <td>{{ paie.getHeureSup1 }}</td>
+            <td>{{ paie.getHeureSup2 }}</td>
+            <td>{{ paie.getHeureNormale }}</td>
+            <td>{{ paie.trajet }}</td>
+            <td>{{ paie.panier }}</td>
+            <td>{{ paie.coutGlobal }}</td>
+            <td>
+                {#{{ tabHoraire[paie.id] is defined ? tabHoraire[paie.id] : "" }}#}
+                {{ paie.getHeureFictif }}
+            </td>
+            <td>
+                <span class="openTxModal" data-id-paie="{{paie.id}}">
+                    {{ paie.getTxHoraire|number_format(2, ',', ' ') }}
+                </span>
+            </td>
+            <td>
+                <span class="openTxMoyenModal" data-id-paie="{{paie.id}}">
+                    {{paie.getTxMoyen|number_format(2, ',', ' ')}}
+                </span>
+            </td>
+            <td>{{ (100 - ((paie.salaireNet / paie.coutGlobal)*100))|number_format(2, ',', ' ') }}</td>
+            <td>{{ paie.salaireNet }}</td>
+            <td>{{ paie.congesPaye }}</td>
+            <td>
+                <div style="display: flex;align-items: center;">
+                    <a href="{{ path('paie_edit', {'id': paie.id}) }}" class="btn btn-primary"><i class="far fa-edit" style="font-size: 18px"></i></a>&nbsp 
+                    <form method="post" action="{{ path('paie_delete', {'id': paie.id}) }}" onsubmit="return confirm('Voulez-vous vraiment supprimer cette fiche de paie?');" style="display: inline;">
+                        <input type="hidden" name="_method" value="DELETE">
+                        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ paie.id) }}">
+                        <button class="btn btn-danger" ><i class="fas fa-trash-alt" style="font-size: 18px"></i></button>
+                    </form>
+                </div>
+            </td>
+        </tr>
+        {% set totalFictif = totalFictif + paie.getHeureFictif %}
+    {% else %}
+        <tr>
+            <td colspan="9" class="text-center">Aucune enregistrement</td>
+        </tr>
+    {% endfor %}
+    <tfoot>
+        <tr>
+            <td>TOTAUX</td>
+            <td colspan="9"></td>
+            <td>{{totalFictif}}</td>
+            <td colspan="6"></td>
+        </tr>
+    </tfoot>
+    </tbody>
+</table>

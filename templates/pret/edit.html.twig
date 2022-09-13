@@ -1,0 +1,116 @@
+{% extends 'base.html.twig' %}
+{% block css %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css" integrity="sha512-mSYUmp1HYZDFaVKK//63EcZq4iFWFjxSL+Z3T/aCt4IO9Cejm03q3NKKYN6pFQzY0SBOr8h+eCIAZHPXcpZaNw==" crossorigin="anonymous" />
+<script src="https://cdn.ckeditor.com/4.16.0/standard-all/ckeditor.js"></script>
+
+<style type="text/css">
+    .loader-container{display: none;align-items: center;justify-content: center;}
+</style>
+{% endblock %}
+{% block breadcrumb %}
+
+    <div class="row wrapper border-bottom white-bg page-heading">
+        <div class="col-lg-10">
+            <h1>Modifier une prêt</h1>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                    <a href="{{ path('home') }}">Accueil</a>
+                </li>
+                <li class="breadcrumb-item">
+                    <a href="{{ path('pret_index') }}">Pret</a>
+                </li>
+                <li class="breadcrumb-item active">
+                    <strong>Modifier une prêt</strong>
+                </li>
+            </ol>
+        </div>
+    </div>
+{% endblock %}
+
+{% block content %}
+    <div class="row edit-container">
+	    {{ include('pret/_form.html.twig') }}
+
+        <div class="col-lg-12">
+            <div class="ibox">
+                <div class="ibox-content">
+                    <div class="amortissement-container">
+                        <hr>
+                        <h2>Tableaux des amortissements</h2><br>
+                        <div class="loader-container">
+                            <img src="{{asset('images/loading.gif')}}" style="width: 54px;">
+                        </div>
+                        {{ include('pret/amortissement_content.html.twig') }}
+                    </div>
+                </div>
+            </div>
+        </div>
+	</div>
+
+{% endblock %}
+
+{% block js_import %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js" integrity="sha512-T/tUfKSV1bihCnd+MxKD0Hm1uBBroVYBOYSk1knyvQ9VyZJpc/ALb4P0r6ubwVPSGB2GvjeoMAJJImBG12TiaQ==" crossorigin="anonymous"></script>
+    <script>
+        $( '.datepicker' ).datepicker( 'setDate')
+        $('.field-number').keyup(function () {
+            var content = $(this).val();
+            $(this).val(content.replace(/[\,]+/g, '.'));
+        });
+
+        var isTyping;
+        $(document).on("change", "form[name=pret] select, input[type=checkbox]", function(e) {
+            window.clearTimeout( isTyping );
+            isTyping = setTimeout(function(){
+                saveForm()
+            }, 2000);
+        });
+
+        $(document).on('keydown', 'input[type=text]', function(e){
+            window.clearTimeout( isTyping );
+            isTyping = setTimeout(function(){
+                saveForm()
+            }, 2000);
+        });
+
+        function saveForm(){
+            console.log('saving...');
+            $('.loader-container').css('display', 'flex');
+              var form = document.forms.namedItem("pret");
+              $.ajax({
+                url: "{{path('pret_edit_xhr')}}",
+                type:"POST",
+                data: new FormData(form),
+                dataType: 'json',
+                contentType: false,
+                cache: false,
+                processData:false,
+                success:function(response) {
+                  if(response.status == 200){
+                    $(".edit-container").html(response.preview);
+                    $( '.datepicker' ).datepicker( 'setDate')
+                  }
+                  else if(response.status == 500){
+                    toastr.error(response.message);
+                  }
+                  $('.loader-container').css('display', 'none');
+                },
+                error:function(){
+                  toastr.error("Ooops... Quelque chose s'est mal passée");
+                  $('.loader-container').css('display', 'none');
+                }
+              });
+        }
+
+        let file = document.getElementById("pret_contrat");
+        file.onchange = function() {
+            if (this.files && this.files[0]) {
+                window.clearTimeout( isTyping );
+                isTyping = setTimeout(function(){
+                    saveForm()
+                }, 1000);
+            };
+        }
+
+    </script>
+{% endblock %}

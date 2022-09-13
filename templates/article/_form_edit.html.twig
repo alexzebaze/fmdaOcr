@@ -1,0 +1,460 @@
+
+<style type="text/css">
+    #banque_logo{display: none;}
+    .img-load{display: block;margin: auto;max-width: 100%;max-height: 700px;}
+    label[for=banque_logo]{cursor: pointer;}
+    input[type=checkbox]{
+    	width: 17px;
+    }
+    label[for=article_sommeil]{
+	    margin-top: 7px;
+	    margin-left: 6px;
+    }
+    #article_code{border: none;}
+    .add-fabricant, .edit-fabricant{
+        background: #00b28e;
+        color: #fff;
+        width: 32px;
+        height: 32px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        font-size: 11px;
+        box-shadow: 0px 0px 5px 1px #919197;
+        margin-top: -2px;
+        cursor: pointer;
+    }
+    .add-fabricant:hover, .edit-fabricant:hover{color: #fff}
+    #article_type{pointer-events: none;}
+    #article_libelle{text-transform: uppercase;}
+</style>
+
+{{ form_start(form) }}
+    {% if tab == 'information' %}
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="row">
+                    <div class="col-lg-12 form-group">
+                        <div  style="display: flex;align-items: center;">
+                            <span style="font-weight: bold;">
+                                Article:
+                            </span>
+                            {{ form_row(form.code) }}
+                        </div>
+                    </div>
+                    <div class="col-lg-12 form-group">
+                        {{ form_label(form.type, 'Type') }}
+                        {{ form_row(form.type) }}
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-lg-12 form-group">
+                        {{ form_label(form.libelle, 'Libelle') }}
+                        {{ form_row(form.libelle) }}
+                    </div>
+                    <div class="col-lg-12 form-group">
+                        {{ form_label(form.lot, 'Lot') }}
+                        {{ form_row(form.lot) }}
+                    </div>
+                    
+                    <div class="col-lg-12 form-group">
+                        {{ form_label(form.unite_mesure, 'Unite de mesure') }}
+                        {{ form_row(form.unite_mesure) }}
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-lg-12 form-group">
+                        <label style="display: block;">Fournisseurs</label>
+                        <select class="js-example-basic-single" name="fournisseurs[]" multiple="multiple" style="width: 100%">
+                            {% for fourn in fournisseurs %} 
+                            <option value="{{fourn.id}}" {% if fournisseursArticle is defined and fourn in fournisseursArticle %}selected{% endif %}>{{fourn.nom}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-lg-12 form-group">
+                        {{ form_label(form.code_article_fournisseur, 'Code Article Fournisseur') }}
+                        {{ form_row(form.code_article_fournisseur) }}
+                    </div>
+                    <div class="col-lg-12 form-group">
+                        <div class="row">
+                            <div class="col-lg-12">
+                                {{ form_label(form.fabricant, 'Fabricant') }}
+                            </div>
+                            <div class="col-lg-10 fabricant-select">
+                                
+                                {{ form_row(form.fabricant) }}
+                            </div>
+                            <div class="col-lg-2" style="padding: 0">
+                                <span class="add-fabricant" onclick="addFabricant(0)">
+                                    <i class="fa fa-plus"></i>
+                                </span>&nbsp
+                                <a class="edit-fabricant" {% if article.fabricant %} target="_blank" {% endif %} data-href="{{url('fabricant_index')}}" href="{{article.fabricant ? path('fabricant_edit', {'id':article.fabricant.id})~'?article='~article.id : 'javascript:void()'}}">
+                                    <i class="fa fa-edit"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            
+
+                <div class="row">
+                    <div class="col-lg-12 form-group">
+                        {{ form_label(form.prix_achat, 'Prix achat HT') }}
+                        {{ form_row(form.prix_achat) }}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-6 form-group">
+                        {{ form_label(form.marge_brut, 'Marge brute') }}
+                        {{ form_row(form.marge_brut) }}
+                    </div>
+                    <div class="col-lg-6 form-group">
+                        {{ form_label(form.pourcentage_marge, 'Pourcentage marge') }}
+                        {{ form_row(form.pourcentage_marge) }}
+                    </div>
+                    
+                </div>
+                <div class="row">
+                    <div class="col-lg-12 form-group">
+                        {{ form_label(form.prix_vente_ht, 'Prix vente HT') }}
+                        {{ form_row(form.prix_vente_ht) }}
+                    </div>
+                    <div class="col-lg-12 form-group">
+                        {{ form_label(form.taux_tva, 'Taux tva') }}
+                        {{ form_row(form.taux_tva) }}
+                    </div>
+                    <div class="col-lg-12 form-group">
+                        {{ form_label(form.prix_vente_ttc, 'Prix vente TTC') }}
+                        {{ form_row(form.prix_vente_ttc) }}
+                    </div>
+                    
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="form-group">
+                    <div style="display: flex;align-items: center;">
+                        {% if article.id %}
+                            <a target="_blank" href="{{path('article_duplique', {'id':article.id})}}" class="btn btn-primary" style="margin-right: 15px">Dupliquer</a>
+                        {% endif %}
+
+                        {{ form_row(form.sommeil) }}
+                        {{ form_label(form.sommeil, 'Sommeil') }}
+                    </div>
+                </div>
+                {{ form_label(form.image, 'Image') }}
+                {{ form_row(form.image) }}
+
+                <label for="banque_logo" style="display: block;margin-top: 25px;">
+                    <img src="{{ article.image is not null  ? '/uploads/article/'~article.image : '/assets/images/loag-image.png'}}" class="img-load">
+                </label>
+            </div>
+            
+        </div>
+    {% else %}
+        {{ include ('article/normenclature_list.html.twig', {'normenclatures':normenclatures}) }}
+    {% endif %}
+{{ form_end(form) }}
+
+
+<div id="modalFabricant" class="modal fade bs-example-modal-sm modal-center" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel">
+    <div class="modal-dialog modal-medium" role="document">
+        <div class="modal-content">
+            <div class="modal-header" style="border: none;">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h2 class="modal-title text-center" id="myModalLabel">Fabricant</h2>
+            </div>
+            <div class="modal-body text-center" style="padding: 0px 30px 51px 30px">
+                <div class="form-container"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="modalFabricantList" class="modal fade bs-example-modal-sm modal-center" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel">
+    <div class="modal-dialog modal-medium" role="document">
+        <div class="modal-content">
+            <div class="modal-header" style="border: none;">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h2 class="modal-title text-center" id="myModalLabel">Liste fabricant</h2>
+            </div>
+            <div class="modal-body text-center" style="padding: 0px 30px 51px 30px">
+                <div class="form-container"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+
+    let file = document.getElementById("article_image");
+    file.onchange = function() {
+        if (this.files && this.files[0]) {
+            $that = this;
+            var reader = new FileReader();
+            reader.onload = function (e) {
+                $('.img-load').attr('src', e.target.result);
+            };
+            reader.readAsDataURL(this.files[0]);
+        };
+    }
+
+    var fabSelect = document.getElementById('article_fabricant');
+    fabSelect.onchange = (event) => {
+        var fabricant_id = event.target.value;
+        if(fabricant_id != ""){
+            $link = $('.edit-fabricant').attr('data-href')+"edit/"+fabricant_id+"?page=article";
+            $('.edit-fabricant').attr('href', $link);
+            $('.edit-fabricant').attr('target', "_blank");
+        }
+        else{
+            $('.edit-fabricant').attr('href', "javascript:void()");
+            $('.edit-fabricant').removeAttr('target');
+        }
+    };
+
+    $(document).on("blur", ".var_calcul_marge_brute", function () {
+        $that = $(this);
+        if($that.val()){
+            var content = $that.val();
+            
+            if (content.indexOf(',') > -1 && content.indexOf('.') > -1){
+                content = content.replace(",", '');
+            }
+            var valeur = content.replace(/[\,]+/g, '.');
+            var valString = valeur.toString(); 
+
+            valString = valString.toLowerCase();
+            valString = valString.replace(" ", '');
+
+            valeur = parseFloat(valString);
+            $that.val(valeur);
+
+
+            if($('#article_prix_vente_ht').val() != "" && $('#article_prix_achat').val() != ""){
+                $article_prix_vente_ht  = parseFloat($('#article_prix_vente_ht').val());
+                $article_prix_achat  = parseFloat($('#article_prix_achat').val());
+
+                $article_marge_brut =  parseFloat($article_prix_vente_ht - $article_prix_achat);
+                $('#article_marge_brut').val($article_marge_brut.toFixed(2));
+
+                if($article_prix_vente_ht != 0){
+                    $article_pourcentage_marge = (($article_marge_brut/$article_prix_vente_ht)*100).toFixed(2);
+                    $('#article_pourcentage_marge').val($article_pourcentage_marge);
+                }
+                else{
+                    $('#article_pourcentage_marge').val(0);
+                }
+
+                var e = document.getElementById("article_taux_tva");
+                var tva = e.options[e.selectedIndex].text;
+                tva = parseFloat("1."+tva);
+                console.log(tva);
+                $article_prix_vente_ttc = $article_prix_vente_ht*tva;
+                $('#article_prix_vente_ttc').val($article_prix_vente_ttc.toFixed(2));
+            }
+            
+        }
+    }); 
+    $(document).on("blur", "#article_prix_vente_ttc", function () {
+        $that = $(this);
+        if($that.val()){
+            var content = $that.val();
+            
+            if (content.indexOf(',') > -1 && content.indexOf('.') > -1){
+                content = content.replace(",", '');
+            }
+            var valeur = content.replace(/[\,]+/g, '.');
+            var valString = valeur.toString(); 
+
+            valString = valString.toLowerCase();
+            valString = valString.replace(" ", '');
+
+            valeur = parseFloat(valString);
+            $that.val(valeur);
+
+            $article_prix_vente_ttc = $('#article_prix_vente_ttc').val();
+
+            var e = document.getElementById("article_taux_tva");
+            var tva = e.options[e.selectedIndex].text;
+            tva = parseFloat("1."+tva);
+
+            if(tva != 0 && $article_prix_vente_ttc != "")
+                $article_prix_vente_ht = $article_prix_vente_ttc/tva;
+            else
+                $article_prix_vente_ht = 0;
+
+            $('#article_prix_vente_ht').val($article_prix_vente_ht.toFixed(2));
+            
+        }
+    });    
+    $(document).on("blur", "#article_pourcentage_marge", function () {
+        $that = $(this);
+        if($that.val()){
+            var content = $that.val();
+            
+            if (content.indexOf(',') > -1 && content.indexOf('.') > -1){
+                content = content.replace(",", '');
+            }
+            var valeur = content.replace(/[\,]+/g, '.');
+            var valString = valeur.toString(); 
+
+            valString = valString.toLowerCase();
+            valString = valString.replace(" ", '');
+            valString = valString.replace("%", '');
+
+            valeur = parseFloat(valString);
+            $that.val(valeur);
+
+            $article_pourcentage_marge  = parseFloat($('#article_pourcentage_marge').val());
+            $article_prix_achat  = parseFloat($('#article_prix_achat').val());
+
+            if($article_pourcentage_marge != 100){
+                $coefMarge = 1/(1-$article_pourcentage_marge/100);
+                $article_prix_vente_ht = $coefMarge*$article_prix_achat;
+            }
+            else
+                $article_prix_vente_ht = $article_prix_achat*2;
+
+            $article_marge_brut =  parseFloat($article_prix_vente_ht - $article_prix_achat);
+            $('#article_prix_vente_ht').val($article_prix_vente_ht.toFixed(2));
+
+            $('#article_marge_brut').val($article_marge_brut.toFixed(2));
+            
+
+            var e = document.getElementById("article_taux_tva");
+            var tva = e.options[e.selectedIndex].text;
+            tva = parseFloat("1."+tva);
+            $article_prix_vente_ttc = $article_prix_vente_ht*tva;
+            $('#article_prix_vente_ttc').val($article_prix_vente_ttc.toFixed(2));
+
+            return false;               
+        }
+    });
+
+    var selectTaux = document.getElementById('article_taux_tva');
+    selectTaux.onchange = (event) => {
+
+        if($('#article_prix_vente_ht').val() != ""){
+            $article_prix_vente_ht  = parseFloat($('#article_prix_vente_ht').val());
+            var e = document.getElementById("article_taux_tva");
+            var tva = e.options[e.selectedIndex].text;
+            tva = parseFloat("1."+tva);
+            $article_prix_vente_ttc = $article_prix_vente_ht*tva;
+            $('#article_prix_vente_ttc').val($article_prix_vente_ttc.toFixed(2));
+        }
+    };
+
+
+    function addFabricant(fabricant_id){
+        $('.select2-container').css('z-index', 9);
+        $('#modalFabricant').modal('show');
+        loadFabricantForm(fabricant_id);
+    }    
+
+    function getFabricant(){
+        $('.select2-container').css('z-index', 9);
+        $('#modalFabricantList').modal('show');
+        loadFabricantListe();
+    }
+
+    function loadFabricantListe(){
+        $.ajax({
+            url: "{{path('fabricant_load_xhr')}}",
+            type: "GET",
+            dataType: "json",
+            async: true,
+            data: {
+            },
+            success: function(response, status) {
+                if(response.status == 200){
+                    $('#modalFabricantList .form-container').html(response.content);
+                }
+                else if(response.status == 500){
+                    toastr.error(response.message);
+                }
+            },
+            error: function(xhr, textStatus, errorThrown) {
+                toastr.error("Oops, une erreur s'est produite");
+            }
+        });
+    }    
+
+    function loadFabricantForm(fabricant_id){
+        $("#modalFabricant").on('show.bs.modal', function (e) {
+            $("#modalFabricantList").modal("hide");
+        });
+        $.ajax({
+            url: "{{path('fabricant_load_form_xhr')}}",
+            type: "GET",
+            dataType: "json",
+            async: true,
+            data: {
+                fabricant_id:fabricant_id
+            },
+            success: function(response, status) {
+                if(response.status == 200){
+                    $('.form-container').html(response.content);
+                    $('form[name=fabricant]').attr('action', "{{path('fabricant_edit_xhr')}}");
+                    $('form[name=fabricant] button.submit').attr('type','button');
+                }
+                else if(response.status == 500){
+                    toastr.error(response.message);
+                }
+            },
+            error: function(xhr, textStatus, errorThrown) {
+                toastr.error("Oops, une erreur s'est produite");
+            }
+        });
+    }
+
+
+    $(document).on('click', 'form[name=fabricant] button.submit', function(){
+        $('form[name=fabricant]').submit();
+    })
+
+    $(document).on("submit",'form[name=fabricant]', function(ev){
+        var form = document.forms.namedItem("fabricant");
+
+        ev.preventDefault();
+        
+        $('form[name=fabricant] .submit').css('pointer-events', 'none');
+        $.ajax({
+            type: "POST",
+            url: form.getAttribute('action'),
+            data: new FormData(this),
+            dataType: 'json',
+            contentType: false,
+            cache: false,
+            processData:false,
+            success: function(response, status) {
+                $("#modalFabricantList").modal("hide");
+                if(response.status == 200){
+                    $fabricantSelect = '<select id="article_fabricant" name="article[fabricant]" class="form-control js-example-basic-single">';
+                    $.each(response.fabricants, function( index, value ) {
+                        $fabricantSelect += "<option value='"+value.id+"'>"+value.nom+"</option>";
+                    });
+                    $fabricantSelect += "</select>";
+
+                    $('.fabricant-select').html($fabricantSelect);
+                    $('#article_fabricant option[value='+response.fabricant_id+']').attr('selected',true);
+                    $('.js-example-basic-single').select2();
+
+                    $('#modalFabricant').modal('hide');
+
+                }
+                else if(response.status == 500){
+                    toastr.error(response.message);
+                }
+                $('form[name=fabricant] .submit').css('pointer-events', 'none');
+            },
+            error: function(xhr, textStatus, errorThrown) {
+                toastr.error("Oops, une erreur s'est produite");
+                $('form[name=fabricant] .submit').css('pointer-events', 'none');
+            }
+        });
+    })
+
+</script>

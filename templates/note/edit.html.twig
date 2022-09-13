@@ -1,0 +1,150 @@
+{% extends 'base.html.twig' %}
+
+{% block breadcrumb %}
+
+    <div class="row wrapper border-bottom white-bg page-heading">
+        <div class="col-lg-10">
+            <h1>Modifier une note</h1>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                    <a href="{{ path('home') }}">Accueil</a>
+                </li>
+                <li class="breadcrumb-item">
+                    <a href="{{ path('note_list') }}">Notes</a>
+                </li>
+                <li class="breadcrumb-item active">
+                    <strong>Modifier une note</strong>
+                </li>
+            </ol>
+        </div>
+    </div>
+{% endblock %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-lg-6">
+            <div class="ibox">
+                <div class="ibox-content">
+                    {{ include('note/_form_edit.html.twig') }}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <a href="{{ path('note_list') }}">Retourner à la liste des notes</a>
+{% endblock %}
+
+{% block javascript %}
+    {{ parent() }}
+    $(function () {
+        $('#note_text').summernote({
+            toolbar: [
+              ['insert', ['picture']],
+            ]
+        });
+
+        $('.add-images-note').on('click',function(e){
+            e.preventDefault();
+            $('.note-insert').find('.btn').click();
+        });
+
+    });
+{% endblock %}
+
+{% block javascript_script %}
+    {{ parent() }}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment-with-locales.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.47/js/bootstrap-datetimepicker.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote.min.js"></script>
+{% endblock %}
+
+{% block css %}
+    {{ parent() }}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.47/css/bootstrap-datetimepicker.min.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote.min.css" rel="stylesheet">
+    <style type="text/css">
+        textarea.note_editor {
+            overflow: hidden;
+            padding: 0;
+            outline: none;
+            background-color: white;
+            resize: none;
+        }
+
+        svg.icon {
+            height:24px;
+            width:24px;
+        }
+        svg.icon circle {
+            fill:#black; 
+        }
+
+        .dd-menu {
+            font-size: 14px;
+            text-align: left;
+            box-shadow: 0 6px 12px rgba(0,0,0,0.175);
+        }
+        .dd-menu ul {
+            padding: 5px;
+            margin: 2px;
+            list-style: none;
+            position: relative;
+            width: auto;
+            display: flex;
+            justify-content: left;
+        }
+
+        .dd-menu li {
+            color: #666;
+            margin: 0;
+            list-style: none;
+            padding: 0 0.5rem;
+            height: 18px;
+        }
+        .dd-menu a{
+            color: black;
+        }
+        .dd-menu a:hover{
+            color: #337ab7;
+        }
+        .material-icons .active{
+            color: #337ab7;
+        }
+        .p-1{
+            padding: 1rem !important;
+        }
+        /* Rules for sizing the icon. */
+        .material-icons.md-18 { font-size: 18px; }
+        .material-icons.md-24 { font-size: 24px; }
+        .material-icons.md-36 { font-size: 36px; }
+        .material-icons.md-48 { font-size: 48px; }
+
+        /* Rules for using icons as black on a light background. */
+        .material-icons.md-dark { color: rgba(0, 0, 0, 0.54); }
+        .material-icons.md-dark.md-inactive { color: rgba(0, 0, 0, 0.26); }
+
+        /* Rules for using icons as white on a dark background. */
+        .material-icons.md-light { color: rgba(255, 255, 255, 1); }
+        .material-icons.md-light.md-inactive { color: rgba(255, 255, 255, 0.3); }
+        .tooltip-inner {
+            max-width: 300px;
+        }
+        .black-color{
+            color: black;
+        }
+        .mb-5{
+            margin-bottom: 5px !important;
+        }
+        .panel-heading.note-toolbar{
+            display: none;
+        }
+        .note-editor .note-frame .panel .panel-default{
+            border-top-left-radius: unset;
+            border-top: unset;
+            border-top-right-radius: unset;
+            border-left: unset;
+            border-right: unset;
+        }
+    </style>
+{% endblock %}

@@ -1,0 +1,169 @@
+{% extends 'base.html.twig' %}
+
+{% block breadcrumb %}
+
+    <div class="row wrapper border-bottom white-bg page-heading">
+        <div class="col-lg-10">
+            <h1>Consulter un chantier</h1>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                    <a href="{{ path('home') }}">Accueil</a>
+                </li>
+                <li class="breadcrumb-item">
+                    <a href="{{ path('chantier_list') }}">Chantiers</a>
+                </li>
+                <li class="breadcrumb-item">
+                    <a href="{{ path('chantier_show', {'chantierId': chantier.chantierId}) }}">{{ chantier.nameentreprise }}</a>
+                </li>
+                <li class="breadcrumb-item active">
+                    <strong>{{ taches.nom }}</strong>
+                </li>
+            </ol>
+        </div>
+    </div>
+{% endblock %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="ibox">
+                <div class="ibox-content">
+                    {{ include('chantier/filter.html.twig') }}
+                </div>
+            </div>
+            <div class="ibox ">
+                <div class="ibox-title">
+                    <h5>Visualiser le chantier <a href="{{ path('chantier_show', {'chantierId': chantier.chantierId}) }}">{{ chantier.nameentreprise }}</a> du {{ debut }} au {{ fin }}</h5>
+                    <div class="ibox-tools">
+                    </div>
+                </div>
+                <div class="ibox-content">
+
+                    <table class="table">
+                        <thead>
+                        <tr>
+                            <th>Ouvrier</th>
+                            <th colspan="2">{{ taches.nom }}</th>
+                        </tr>
+                        <tr>
+                            <th>Tâche</th>
+                            <th>Date</th>
+                            <th>Heure</th>
+                            <th>Coût</th>
+                            <th>Tx_horaire</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% if taches.data is defined %}
+                            {% set old_tache = "" %}
+                            {% for k, ouvrier in taches.data %}
+                                <tr>
+                                    <td><strong>{{ old_tache != k ? k : '' }}</strong></td>
+                                    <td>Toutes les dates</td>
+                                    <td>
+                                        
+                                    </td>
+                                    <td></td>
+                                    <td>
+                                        
+                                    </td>
+                                </tr>
+                                {% set old_tache = k %}
+                                {% for i, time in ouvrier %}
+                                    {% if i != "time" %}
+                                        <tr>
+                                            <td>{{ old_tache != k ? k : '' }}</td>
+                                            <td>
+                                                {{ time['datestart']|date('d/m/Y') }}
+                                            </td>
+                                            <td>
+                                                {{ time['time']|round(1, 'floor') }}
+                                            </td>
+                                            <td>
+                                                {{ time['tx_horaire']|round(2) }}
+                                            </td>
+                                            <td style="{% if time['cout'] == 0 %}color:#d90808{% endif %}">
+                                                {{ time['cout']|round(2) }}
+                                            </td>
+                                        </tr>
+                                    {% endif %}
+                                {% endfor %}
+                            {% endfor %}
+                        {% else %}
+                            <tr>
+                                <td colspan="34" class="text-center">Aucune tâche enregistré pour ce chantier</td>
+                            </tr>
+                        {% endif %}
+                        <tr>
+                            <td><strong>Total</strong></td>
+                            <td>
+                            </td>
+                            <td>
+                                <strong>{{ total|round(1, 'floor') }}</strong>
+                            </td>
+                            <td>{{ total_cout_global|round(2) }}</td>
+                            <td>{{ (total != 0) ? (total_cout_global/total)|round(2) : 0 }}</td>
+                        </tr>
+                        </tbody>
+                    </table>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block javascript_script %}
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+{% endblock %}
+
+{% block javascript %}
+    $(document).ready(function(){
+        moment.locale('fr');
+        var debut = moment('{{ debut }}', 'DD/MM/YYYY');
+        var fin = moment('{{ fin }}', 'DD/MM/YYYY');
+        $('#form_date').daterangepicker({
+            "minDate": debut,
+            "maxDate": fin,
+            'locale' : {
+                "format": "DD/MM/YYYY",
+                "separator": " - ",
+                "applyLabel": "Appliquer",
+                "cancelLabel": "Annuler",
+                "fromLabel": "De",
+                "toLabel": "à",
+                "customRangeLabel": "Custom",
+                "daysOfWeek": [
+                    "Dim",
+                    "Lun",
+                    "Mar",
+                    "Mer",
+                    "Jeu",
+                    "Ven",
+                    "Sam"
+                ],
+                "monthNames": [
+                    "Janvier",
+                    "Février",
+                    "Mars",
+                    "Avril",
+                    "Mai",
+                    "Juin",
+                    "Juillet",
+                    "Août",
+                    "Septembre",
+                    "Octobre",
+                    "Novembre",
+                    "Décembre"
+                ],
+                "firstDay": 1
+            }
+        });
+    });
+{% endblock %}
+
+{% block css %}
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+{% endblock %}

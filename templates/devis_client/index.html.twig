@@ -1,0 +1,653 @@
+{% extends 'base.html.twig' %}
+{% block css %}
+        <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.24/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/buttons/1.7.0/css/buttons.dataTables.min.css">
+    <style type="text/css">
+        
+        thead th{text-align: center;text-align: center;}
+        .send-facture{display: none;}
+        .ibox-title{padding: 26px 90px 8px 15px}
+        .ibox-tools{display: flex;align-items: center;justify-content: flex-end;margin-bottom: 7px;}
+        table.dataTable tfoot th, table.dataTable tfoot td{border-top: 1px solid #e7eaec;text-align: center; font-weight: 600;font-size: 15px;    padding-bottom: 3rem;}
+        @media (min-width: 768px){
+            .modal-sm {
+                width: 425px;
+            }
+        }
+        .total-bl{
+            margin: 8px 0 32px 0;
+            color: #000;
+            font-weight: 600;
+            text-align: center;
+        }
+        #extSubmitFixed{display: none;}
+        .loader-container{display: none;align-items: center;justify-content: center;}
+        .doc-item-container{
+            position: relative;
+            height: 40px;
+            margin-left: 8px;
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .doc-item-container:hover .trash-icon{
+            display: inline-flex
+        }
+        .doc-item-container .trash-icon{
+            display: none;
+            position: absolute;
+            top: -33px;
+            z-index: 2;
+            left: -9px;
+            right: 0;
+            margin: auto;
+            background: #fff;
+            box-shadow: 0px 11px 9px 3px rgb(0 0 0 / 20%);
+            border-radius: 50%;
+            color: #d20404;
+            width: 35px;
+            height: 35px;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+        .facture-row{display: flex;align-items: flex-start;}
+        #modalDocumentShow{z-index: 999999 !important}
+    </style>
+{% endblock %}
+{% block breadcrumb %}
+    <div class="row wrapper border-bottom white-bg page-heading">
+        <div class="col-lg-10">
+            <h1>Liste des devis</h1>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                    <a href="{{ path('home') }}">Accueil</a>
+                </li>
+                <li class="breadcrumb-item active">
+                    <strong>Devis</strong>
+                </li>
+            </ol>
+        </div>
+    </div>
+
+{% endblock %}
+{% block content %}
+    <div class="row">
+        <div class="col-lg-12">
+            {% include 'flashes.html.twig' %}
+            <div class="ibox">
+                <div class="ibox-content">
+                    {{ include('devis_client/filter.html.twig') }}
+                </div>
+            </div>
+            <div class="ibox ">
+                <div class="ibox-title">
+                    <h5>
+                        <span class="btn-config-colonne">
+                            <i class="fa fa-cog"></i>
+                        </span>
+                    Liste de devis</h5> 
+                    <b>({{ventes|length}} Documents)</b>
+                    <div class="ibox-tools">
+                        <a href="{{ path('email_document_preview_list', {'dossier':'devis_client'}) }}" class="btn btn-primary" style="margin-right: 10px;">
+                            ({{countDocAttentes ? countDocAttentes.nb : 0}}) En attente
+                        </a>
+
+                        <a class="btn btn-primary" href="{{ path('devis_client_add') }}">
+                            Importer
+                        </a>
+                        <a class="btn btn-primary" href="{{ path('devis_client_add_manuel') }}" style="margin-left: 12px;">
+                            <i class="fa fa-plus"></i>
+                            Ajouter
+                        </a>
+                        <button type="submit" class="btn btn-primary send-facture" style="margin-left: 12px;">Envoyer le Devis</button>
+                    </div>
+
+                    <div class="column-container">
+                        <div class="column-content">
+                            <form method="POST" action="{{path('update_toggle_column')}}">
+                                <input type="hidden" name="page" value="DEVIS_CLIENT">
+                                <input type="hidden" name="redirect" value="devis_client_list">
+                                <div class="column-list">
+                                    {% for column in columns %}
+                                    <div class="column-item">
+                                        <label class="column-label">
+                                            <input class="column-check" type="checkbox" {% if columnsVisibileId|length and column.id in columnsVisibileId|keys %}checked{% endif %} name="configs[{{column.id}}]">
+                                            <span class="column-libelle">{{ tabColumns[column.cle] }}</span>
+                                        </label>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                                <br>
+                                <div class="text-center">
+                                    <button type="submit" class="btn btn-primary">Valider</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="ibox-content">
+                    <h1 class="total-bl"> {{full_month|capitalize}} </h1>
+
+                    {% if 'MONTANT_HT' in columnsVisibileId  %}
+                    <h2 class="total-bl"> Montant HT: <span>{{ montant['sum_ht'] ? montant['sum_ht']|number_format(2, ',', '') : "0" }}€</span> </h2>
+                    {% endif %}
+
+                    {% if 'MONTANT_TTC' in columnsVisibileId  %}
+                    <h2 class="total-bl"> Montant TTC: <span>{{ montant['prixttc'] ? montant['prixttc']|number_format(2, ',', '') : "0" }}€</span> </h2>
+                    {% endif %}
+
+                    <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                        <tr>
+                            <th>
+                                <input type="checkbox" class="chk-parent" value="">
+                            </th>
+
+                            {% if 'DOCUMENT_PDF' in columnsVisibileId  %}
+                            <th>Doc</th>
+                            {% endif %}
+
+                            {% if 'DOCUMENT_ID' in columnsVisibileId  %}
+                            <th>DocumentID</th>
+                            {% endif %}
+
+                            {% if 'DATE_CREATION' in columnsVisibileId  %}
+                            <th>Date création</th>
+                            {% endif %}
+
+                            {% if 'CLIENT' in columnsVisibileId  %}
+                            <th>Client</th>
+                            {% endif %}
+
+                            {% if 'CHANTIER' in columnsVisibileId  %}
+                            <th>Chantier</th>
+                            {% endif %}
+
+                            {% if 'MONTANT_TTC' in columnsVisibileId  %}
+                            <th>TTC</th>
+                            {% endif %}
+
+                            {% if 'TVA' in columnsVisibileId  %}
+                            <th>TVA</th>
+                            {% endif %}
+
+                            {% if 'MONTANT_HT' in columnsVisibileId  %}
+                            <th>HT</th>
+                            {% endif %}
+
+                            {% if 'FACTURE' in columnsVisibileId  %}
+                            <th>Factures Assoc</th>
+                            {% endif %}
+
+                            {% if 'ATTESTATION' in columnsVisibileId  %}
+                            <th>Attestation</th>
+                            {% endif %}
+
+                            {% if 'LOT' in columnsVisibileId  %}
+                            <th>Lot</th>
+                            {% endif %}
+
+                            {% if 'STATUS' in columnsVisibileId  %}
+                            <th>Status</th>
+                            {% endif %}
+
+                            <th>Action</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                            {% for devis_client in pager.currentPageResults %}
+                            <tr class='text-center' style="{% if devis_client.id in tabDoublon %}color:red{% endif %}">
+                                <td>
+                                    <input type="checkbox" class="check-bl" name="blCheck" value="{{devis_client.id}}">
+                                </td>
+
+                                {% if 'DOCUMENT_PDF' in columnsVisibileId  %}
+                                <td>
+                                    {% if devis_client.getDocumentFile %} 
+                                    <span class="showDocument" data-file="/uploads/devis/{{devis_client.getDocumentFile}}" style="cursor: pointer;"><img src="//ssl.gstatic.com/docs/doclist/images/mediatype/icon_3_pdf_x16.png"></span>
+                                    {% endif %}
+                                </td>
+                                {% endif %}
+
+                                {% if 'DOCUMENT_ID' in columnsVisibileId  %}
+                                <td>{{devis_client.getDocumentId}}</td>
+                                {% endif %}
+
+                                {% if 'DATE_CREATION' in columnsVisibileId  %}
+                                <td>
+                                    {{ devis_client.facturedAt|date('d/m/Y') }}
+                                </td>
+                                {% endif %}
+
+                                {% if 'CLIENT' in columnsVisibileId  %}
+                                <td>{{ devis_client.client is not null ? devis_client.client.nom : '' }}</td>
+                                {% endif %}
+
+                                {% if 'CHANTIER' in columnsVisibileId  %}
+                                <td>{{ devis_client.chantier is not null ? devis_client.chantier.nameentreprise : '' }}</td>
+                                {% endif %}
+
+                                {% if 'MONTANT_TTC' in columnsVisibileId  %}
+                                <td class="inline-text">{{ devis_client.prixttc|number_format(2, ',', '') }}{{ devis_client.devise.symbol }}</td>
+                                {% endif %}
+
+                                {% if 'TVA' in columnsVisibileId  %}
+                                <td>
+                                    {% set tvaCalc = 0 %}
+                                    {% set ht = devis_client.getPrixht is null ? 0 : devis_client.getPrixht %} 
+                                    {% set dividende = (ht is null or ht == 0) ? 1 : ht %} 
+
+                                    {% set partE = ((devis_client.prixttc - ht) / dividende * 100)|round(0, 'floor') %}
+                                    {% set partD = ((devis_client.prixttc - ht) / dividende * 100) - partE %}
+
+                                    {% if partE == 0 %}
+                                        <span style="color: orange">0</span>
+                                    {% else %}
+                                        {% if partE == 5  and (partD <= 0.8 and partD >= 0.2) %}
+                                           <span style="color: green">
+                                                5.5%
+                                                {% set tvaCalc = 5.5 %}
+                                            </span> 
+                                        {% elseif partE == 20  and (partD <= 0.3) %}
+                                            <span style="color: green">
+                                                20%
+                                                {% set tvaCalc = 20 %}
+                                            </span>
+                                        {% elseif partE == 19  and (partD >= 0.7) %}
+                                            <span style="color: green">
+                                                20%
+                                                {% set tvaCalc = 20 %}
+                                            </span>
+                                        {% elseif partE == 10  and (partD <= 0.3) %}
+                                            <span style="color: green">
+                                                10%
+                                                {% set tvaCalc = 10 %}
+                                            </span>
+                                        {% elseif partE == 9  and (partD >= 0.3) %}
+                                            <span style="color: green">
+                                                10%
+                                                {% set tvaCalc = 10 %}
+                                            </span>
+                                        {% else %}
+                                            <span style="color: red">
+                                                {% set tvaCalc = ((devis_client.prixttc - ht) / dividende * 100)|number_format(2, '.', ' ') %}
+                                                {{((devis_client.prixttc - ht) / dividende * 100)|number_format(2, '.', ' ')}}%
+                                            </span>
+                                        {% endif %}
+                                    {% endif %}
+                                </td>
+                                {% endif %}
+
+                                {% if 'MONTANT_HT' in columnsVisibileId  %}
+                                <td class="inline-text">{{ devis_client.getPrixht|number_format(2, ',', '') }}{{ devis_client.devise.symbol }}</td>
+                                {% endif %}
+
+                                {% if 'FACTURE' in columnsVisibileId  %}
+                                <td>
+                                    
+                                        {% if devis_client.getFactures|length %}
+                                        {% for docFac in devis_client.getFactures %}
+                                            <span class="doc-item-container">
+                                                <span class="showDocument" data-file="/uploads/clients/factures/{{docFac.getDocumentFile}}" style="cursor: pointer;"><img src="//ssl.gstatic.com/docs/doclist/images/mediatype/icon_3_pdf_x16.png"></span>
+
+                                                <a class="trash-icon" onclick="return confirm('Voulez-vous dissocier cette facture ?')" href="{{ path('devis_client_dettach_facture', {'factureId': docFac.id} ) }}">
+                                                    <i class="fa fa-trash"></i>
+                                                </a>
+                                            </span>
+                                        {% endfor %}
+                                        {% else %}
+                                            <span style="display: none;">X</span>
+                                            <span class="openDevis" data-id="{{devis_client.id}}" data-chantier="{{devis_client.chantier is not null ?  devis_client.chantier.chantierId : ''}}" style="cursor: pointer;">
+                                                <i class="fas fa-times" style="font-size: 18px;color: #ef0a0a;"></i>
+                                            </span>
+                                        {% endif %}
+                                    
+                                </td>
+                                {% endif %}
+
+                                {% if 'ATTESTATION' in columnsVisibileId  %}
+                                <td>
+                                    <span style="display: none;">{{tvaCalc}}</span>
+                                    {% if devis_client.attestation is not null %}
+                                        <span class="doc-item-container">
+                                            <span class="showDocument" data-file="/uploads/devis/attestation/{{devis_client.attestation}}" style="cursor: pointer;"><img src="//ssl.gstatic.com/docs/doclist/images/mediatype/icon_3_pdf_x16.png"></span>
+                                        </span>
+                                    {% elseif tvaCalc < 20 %}
+                                        <span style="display: none;">X</span>
+                                        <form method="POST" action="{{path('devis_client_post_attestation')}}" id="formAttestation-{{devis_client.id}}" enctype="multipart/form-data">
+                                            <input type="hidden" name="devis_id" value="{{devis_client.id}}">
+                                            <label style="cursor: pointer;">
+                                                <i class="fas fa-times" style="font-size: 18px;color: #ef0a0a;"></i>
+                                                <input type="file"  data-id="{{devis_client.id}}" name="attestation" id="attestation-{{devis_client.id}}" style="display: none;">
+                                            </label>
+                                        </form>
+                                    {% endif %}
+                                </td>
+                                {% endif %}
+
+                                {% if 'LOT' in columnsVisibileId  %}
+                                <td>{{ devis_client.lot is not null ? devis_client.lot.lot : "" }}</td>
+                                {% endif %}
+
+                                {% if 'STATUS' in columnsVisibileId  %}
+                                <td>
+                                    <select class="form-control status-select" style="{% if devis_client.status is not null and (devis_client.status.color) %} background: {{devis_client.status.color}}; color: #fff; {% else %} {% endif %}; height: 100%;width: 170px">
+                                        <option disabled selected></option>
+                                        {% for stat in status %}
+                                            <option value="{{stat.id~'-'~devis_client.id}}" style="height: 35px; background: {{stat.color}}; color: #fff" {% if devis_client.status is not null and (devis_client.status.id == stat.id) %}selected{% endif %} data-devis-id="{{devis_client.id}}">{{stat.nom}}</option>
+                                        {% endfor %}
+                                    </select>
+                                    {% set devis_status = "" %} 
+                                    {% if devis_client.status is not null %}
+                                        {% set devis_status = devis_client.status.name %} 
+                                        <span class="status-visible" style="display: none;">
+                                            {{devis_status}}
+                                        </span>
+                                    {% else %}
+                                        <span style="display: none;">En attente</span>
+                                    {% endif %}
+                                </td>
+                                {% endif %}
+
+                                
+                                <td>
+                                    <a href="{{ path('devis_client_edit', {'devis_clientId': devis_client.id} ) }}"><i class="far fa-edit"></i></a>
+                                    <a onclick="return confirm('Etes-vous sur de vouloir supprimer cette devis_client ?')"
+                                       href="{{ path('devis_client_delete', {'devis_clientId': devis_client.id} ) }}"><i class="fas fa-trash-alt"></i></a>
+                                </td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td colspan="34">Aucune devis_client enregistrée</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+
+                    </div>
+                    {% if pager.haveToPaginate %}
+                        {{ pagerfanta(pager, 'my_template') }}
+                    {% endif %}
+
+                    {% if 'MONTANT_TTC' in columnsVisibileId  %}
+                    <div style="width: 100%; height: 200;margin-bottom: 45px;">
+                        <canvas id="myChart"></canvas>
+                    </div>
+                    {% endif %}
+                    
+                    <div id="modalDocumentShow" class="modal fade bs-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel">
+                        <div class="modal-dialog modal-lg" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header" style="border: none;">
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                </div>
+                                <div class="modal-body text-center">
+                                    <h3 class="text-center no-document" style="display: none;">Aucun document rattaché.</h3>
+                                    <div class="documentFile-container" style="display: none;">
+                                        <object class="documentPdf" data="" type="application/pdf" width="100%" height="980px" style="display: none;"></object>
+                                        <img class="documentimage" src="" alt="fichier facture uploadé" width="100%"  style="display: none;">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="modalQ" class="modal fade bs-example-modal-sm modal-center" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel">
+                        <div class="modal-dialog modal-sm" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header" style="border: none;">
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                </div>
+                                <div class="modal-body text-center" style="padding: 0px 30px 51px 30px">
+                                    <form method="POST" action="{{path('devis_client_send_bl')}}">
+                                        <input type="hidden" name="list-devis-id">
+                                        <div class="row">
+                                            <div class="col-lg-12 form-group">
+                                                <input type="email" name="email_comptable" placeholder="Email comptable" class="form-control" required>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-lg-12 form-group" style="text-align: left;">
+                                                <label style="color: #a6a4ad;">Contenu</label>
+                                                <textarea name="content" class="form-control" rows="6"></textarea>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-12 form-group text-center">
+                                            <button type="submit" class="btn btn-primary
+                                            ">Envoyer</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="modal fade" id="modalFacture" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                              <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                <h2 class="modal-title text-center" id="myModalLabel">Attribuer à une facture</h2>
+                              </div>
+                              <div class="modal-body" style="padding-top: 0">
+                                <div class="loader-container">
+                                    <img src="{{asset('images/loading.gif')}}" style="width: 54px;">
+                                </div>
+                                <div id="listFactureContainer"></div>
+                              </div>
+                            </div>
+                        </div>
+                        <span id="extSubmitFixed" class="btn-small btn btn-primary" style="box-shadow: 0px 0px 10px 6px rgb(119 119 119 / 25%);position: fixed;z-index: 9999;top: 18px;"><i class="fas fa-save"></i></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+{% endblock %}
+
+{% block javascript_script %}
+    <script src="//cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.4/dist/Chart.min.js"></script>
+
+        <script type="text/javascript"src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.min.js"></script>
+    <script type="text/javascript"src="https://cdn.datatables.net/buttons/1.7.0/js/dataTables.buttons.min.js"></script>
+    <script type="text/javascript"src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+    <script type="text/javascript"src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
+    <script type="text/javascript"src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+    <script type="text/javascript"src="https://cdn.datatables.net/buttons/1.7.0/js/buttons.html5.min.js"></script>
+    <script type="text/javascript"src="https://cdn.datatables.net/buttons/1.7.0/js/buttons.print.min.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/plug-ins/1.10.24/sorting/date-eu.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/plug-ins/1.10.15/sorting/numeric-comma.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/plug-ins/1.11.2/sorting/num-html.js"></script>
+
+    <script type="text/javascript">
+        var valChart = {{ valChart|json_encode()|raw }};
+        var ctx = document.getElementById('myChart').getContext('2d');
+        ctx.height = 200;
+        var myChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels:  ["jan", "Fév", 'Mars', 'Avr', 'Mais', 'Juin', 'Juil', 'Aout', 'sep', 'Oct', 'Nov', 'Déc'],
+                datasets: [{
+                    label: 'Montant TTC',
+                    data: valChart,
+                    backgroundColor: [
+                        'rgb(19 19 226)',
+                    ],
+                    borderColor: [
+                        'rgb(19 19 226)',
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    },
+                    yAxes: [{
+                        display: false //this will remove all the x-axis grid lines
+                    }],
+
+                },
+                legend: { display: false },
+                    title: {
+                    display: true,
+                    fontColor: 'black',
+                    fontSize: '25',
+                    text: '{{full_month|capitalize}}-TTC: {{ montant['prixttc'] ? montant['prixttc']|number_format(2, ',', '') : "0" }}€'
+                }
+            }
+        });
+
+        $('.openDevis').click(function(){
+            $('#modalFacture').modal('show');
+            $('.loader-container').css('display','flex');
+            $eltSelect = $(this).data('id');
+            $chantierList = $(this).attr('data-chantier');
+
+            $.ajax({
+                url: "{{path('devis_client_get_by_chantier')}}",
+                type: "POST",
+                dataType: "json",
+                async: true,
+                data: {
+                    list_chantier_id: $chantierList,
+                    page: 'devis_client',
+                    type: 'facture',
+                    facture_select: $eltSelect
+                },
+                success: function(response) {
+                    if(response.status == 200){                        
+                        $('#listFactureContainer').html(response.content);
+                    }
+                    else if(response.status == 500){
+                        toastr.error(response.message);
+                    }
+                    $('.loader-container').css('display','none');
+                },
+                error: function(xhr, textStatus, errorThrown) {
+                  console.log(errorThrown);
+                  $('.loader-container').css('display','none');
+                }
+            });
+        })
+
+        $( ".status-select" ).change(function() {
+            var statusId =  $(this).val().split('-')[0];
+            var devisId =  $(this).val().split('-')[1];
+            updateStatus(statusId, devisId);
+        });
+
+        function updateStatus(statusId, devisId){
+          $.ajax({
+            url:"{{path('devis_client_update_status')}}",
+            type:"GET",
+            data: {
+                statusId : statusId,
+                devisId : devisId
+            },  
+            success:function(response) {
+                window.location.reload();
+              if(response.status == 200){
+                window.location.reload();
+              }
+              else if(response.status == 500){
+                toastr.error(response.message);
+              }
+            },
+            error:function(){
+              toastr.error("Ooops... Quelque chose s'est mal passée");
+            }
+          });
+        }
+
+        $(document).on('click', '#extSubmit', function(){
+            $('#attachFactureClient').submit();
+        })
+        $(document).on('click', '#extSubmitFixed', function(){
+            $('#attachFactureClient').submit();
+        })
+
+        $('body').on('change', '.list-devis input[name=facture]', function() {
+            $('.list-devis label').removeClass('active');
+           $('.list-devis input[name=facture]:checked').next().addClass('active');
+        });
+
+
+        $(document).on('change', 'input[name=attestation]', function(e){
+            $that = $(this);
+            let file2 = document.getElementById("attestation-"+$that.attr('data-id'));
+            if (file2.files){
+                $("#formAttestation-"+$that.attr('data-id')).submit();
+            }
+            
+        });
+
+
+    </script>
+{% endblock %}
+
+{% block javascript %}
+$(document).ready( function () {
+    $('table').DataTable({
+        columnDefs: [
+           { type: 'date-eu', targets: 3 },
+           { "type": "numeric-comma", targets: 6 },
+           { "type": "numeric-comma", targets: 8 },
+           { "type": "num-html", targets: 7 }
+        ],
+        "language": {
+            "url": "//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/French.json"
+        },
+        "pageLength": 500,
+        "order": []
+    });
+
+
+    $('table').on('change', '.check-bl', function(){    
+        $eltCheck = $('.check-bl:checkbox:checked');
+        if( $eltCheck.length > 0)
+            $('.send-facture').css('display', 'block');
+        else
+            $('.send-facture').css('display', 'none');
+
+        var userCheck = [];   
+        $eltCheck.each(function( index ) {
+            if($( this ).val() != "")
+                userCheck.push($( this ).val());
+        });
+        $('input[name=list-devis-id]').val(userCheck.join('-'));
+    });
+    $('.chk-parent').on('change', function(){  
+        $('.check-bl').prop('checked', this.checked);      
+        if($(this).is(":checked"))
+            $('.send-facture').css('display', 'block');
+        else
+            $('.send-facture').css('display', 'none');
+
+        var userCheck = [];  
+        $eltCheck = $('.check-bl:checkbox:checked'); 
+        $eltCheck.each(function( index ) {
+            if($( this ).val() != "")
+                userCheck.push($( this ).val());
+        });
+        $('input[name=list-devis-id]').val(userCheck.join('-'));
+    });
+    $('body').on('click', '.send-facture', function(){
+        $('#modalQ').modal('show');
+    })
+} );
+    
+        $(document).on('hidden.bs.modal', function (event) {
+          if ($('.modal:visible').length) {
+            $('body').addClass('modal-open');
+          }
+        });
+{% endblock %}

@@ -1,0 +1,19 @@
+api_platform:
+    title: 'API-Platform: FMDA'
+    description: 'Documentation de API FMDA'
+    version: '1.0.0'
+    mapping:
+        paths: ['%kernel.project_dir%/src/Entity']
+    patch_formats:
+        json: ['application/merge-patch+json']
+    formats:
+        jsonld:   ['application/ld+json']
+        json:     ['application/json']
+        html:     ['text/html']
+        jsonhal:  ['application/hal+json']        
+    swagger:
+        versions: [3]
+    enable_nelmio_api_doc: true  
+    
+    eager_loading:
+        max_joins: 2000

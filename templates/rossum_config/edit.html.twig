@@ -1,0 +1,26 @@
+
+{% extends 'base.html.twig' %}
+
+{% block breadcrumb %}
+
+    <div class="row wrapper border-bottom white-bg page-heading">
+        <div class="col-lg-10">
+            <h1>Edition d'une config</h1>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                    <a href="{{ path('rossum_config_index') }}">Accueil</a>
+                </li>
+                <li class="breadcrumb-item active">
+                    <strong>Edition</strong>
+                </li>
+            </ol>
+        </div>
+    </div>
+{% endblock %}
+
+{% block content %}
+    <div class="row">
+        {{ include('rossum_config/_form.html.twig') }}
+    </div>
+
+{% endblock %}

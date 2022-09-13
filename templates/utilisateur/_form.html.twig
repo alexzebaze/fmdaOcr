@@ -1,0 +1,222 @@
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.0.943/pdf.js"></script>
+<script src="{{ asset('js/pdfThumbnails.js') }}"></script>
+<style type="text/css">
+    .list-document, .list-document-2{
+        display: flex;align-items: center;margin-bottom: 38px;flex-wrap: wrap;
+    }
+    .document-item, .document-item-2{
+        margin-right: 25px;
+        position: relative;
+    }
+    .show-pop{
+        position: absolute;
+        right: -5px;
+        top: -5px;
+        background: #1ab394;
+        padding: 5px;
+        border-radius: 6px;
+        color: #fff;
+        font-size: 15px;
+        cursor: pointer;
+    }
+    .remove-doc{
+        position: absolute;
+        top: -5px;
+        left: -5px;
+        background: red;
+        padding: 5px;
+        border-radius: 6px;
+        color: #fff;
+        font-size: 15px;
+        cursor: pointer;
+    }
+    .document-item-2 .img-doc{width: 35px; height: 35px}
+    .img-doc{
+        width: 135px;
+        height: 135px;
+        object-fit: cover;
+    }
+</style>
+{{ form_start(form) }}
+<div class="row">
+    <div class="col-lg-6 form-group">
+        {{ form_label(form.firstname, 'Prénom') }}
+        {{ form_row(form.firstname) }}
+    </div>
+    <div class="col-lg-6 form-group">
+        {{ form_label(form.lastname, 'Nom') }}
+        {{ form_row(form.lastname) }}
+    </div>
+    <div class="col-lg-6 form-group">
+        {{ form_label(form.email, 'E-mail') }}
+        {{ form_row(form.email) }}
+    </div>
+    <div class="col-lg-6 form-group">
+        {{ form_label(form.phone, 'Téléphone') }}
+        {{ form_row(form.phone) }}
+    </div>
+    <div class="col-lg-12 form-group">
+        {{ form_label(form.address, 'Adresse') }}
+        {{ form_row(form.address) }}
+    </div>
+    <div class="col-lg-6 form-group">
+        {{ form_label(form.cp, 'Code Postal') }}
+        {{ form_row(form.cp) }}
+    </div>
+    <div class="col-lg-6 form-group">
+        {{ form_label(form.city, 'Ville') }}
+        {{ form_row(form.city) }}
+    </div>
+    <div class="col-lg-6 form-group">
+        {{ form_label(form.poste, 'Statut') }}
+        {{ form_row(form.poste) }}
+    </div>
+    <div class="col-lg-6 form-group">
+        {{ form_label(form.categoryuser, 'Fonction') }}
+        {{ form_row(form.categoryuser) }}
+    </div>
+    <div class="col-lg-3 form-group">
+        {{ form_label(form.trajet, 'Trajet') }}
+        {{ form_row(form.trajet) }}
+    </div>
+    <div class="col-lg-3 form-group">
+        {{ form_label(form.panier, 'Panier') }}
+        {{ form_row(form.panier) }}
+    </div>
+    <div class="col-lg-3 form-group">
+        {{ form_label(form.sousTraitant, 'Sous-traitant') }}
+        {{ form_row(form.sousTraitant) }}
+    </div>
+    <div class="col-lg-3 form-group">
+        {{ form_label(form.heureHebdo, 'Heure Hebdomadaire') }}
+        {{ form_row(form.heureHebdo) }}
+    </div>
+    <div class="col-lg-3 form-group">
+        {{ form_label(form.birth, 'Date de naissance') }}
+        {{ form_row(form.birth) }}
+    </div>
+    <div class="col-lg-3 form-group">
+        {{ form_label(form.date_entree, "Date d'entrée") }}
+        {{ form_row(form.date_entree) }}
+    </div>
+    <div class="col-lg-3 form-group">
+        {{ form_label(form.date_sortie, 'Date de sortie') }}
+        {{ form_row(form.date_sortie) }}
+    </div>
+    <div class="col-lg-3 form-group">
+        {{ form_label(form.numeroSecu, 'Numéro de sécurité sociale') }}
+        {{ form_row(form.numeroSecu) }}
+    </div>
+    <div class="col-lg-3 form-group">
+        {{ form_label(form.tauxHoraire, 'Taux Horaire') }}
+        {{ form_row(form.tauxHoraire) }}
+    </div>
+    <div class="col-lg-3 form-group">
+        {{ form_label(form.coefficient, 'Coefficient') }}
+        {{ form_row(form.coefficient) }}
+    </div>
+    <div class="col-lg-3 form-group">
+        {{ form_label(form.typeContrat, 'Type de contrat') }}
+        {{ form_row(form.typeContrat) }}
+    </div>
+
+    <div class="col-lg-12">
+        <div>Ajouter un document</div>
+        <div class="list-document">
+            <div class="document-item origin-clone">
+                <div class="img-wrapper">
+                    <label for="usersDocument" style="cursor: pointer;">
+                        <img src="/assets/images/add-document.png" class="img-doc">
+                    </label>
+                    <input type="file" id="usersDocument" style="display: none;">
+                </div>
+                <select class="form-control select-doc-name" name="doc-name" style="display: none;">
+                    {% for typeDoc in typeDocuments %}
+                        <option value="{{typeDoc}}">{{typeDoc}}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            {% if user is defined %}
+
+                {% for document in documents %}
+                    <div class="document-item">
+                        <i data-file="{{ asset('/uploads/entreprise_'~user.entreprise.id~'/user_'~user.uid~'/'~document.type~'/'~document.getDateCreate|date('Y-m-d')~'/'~document.getNomFichier) }}" class="showDocument fa fa-eye show-pop"></i>
+                        <i class="fa fa-times remove-doc" onclick="removeDoc(this)"></i>
+                        <div class="img-wrapper">
+                            <input type="file" class="usersDocument" id="doc-id-{{document.type}}" style="display: none;" name="{{document.type}}">
+                            <label for="doc-id-{{document.type}}" style="cursor: pointer;">
+                                {% set extension = document.getNomFichier|split('.') %}
+                                {% set extension = extension[extension|length -1] %}
+                                {% if extension != "pdf" and extension != "docx" %} 
+                                    <img class="img-doc" src="{{ asset('/uploads/entreprise_'~user.entreprise.id~'/user_'~user.uid~'/'~document.type~'/'~document.getDateCreate|date('Y-m-d')~'/'~document.getNomFichier) }}">
+                                {% else %}
+                                    <img class="img-doc" src="/assets/images/doc.png">
+                                {% endif %}
+                            </label>
+                        </div>
+                        <select class="form-control select-doc-name" name="typeDocument">
+                            {% for typeDoc in typeDocuments %}
+                                <option value="{{typeDoc}}" {% if document.type == typeDoc %} selected {% endif %} >{{typeDoc}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        </div>
+
+
+    </div>
+    <div class="col-lg-12 form-group">
+        {{ form_label(form.image, 'Photo') }}
+        {% if old_image is defined and old_image is not empty %}
+            <div style="background-image: url('data:image/jpeg;base64,{{ old_image }}')"
+                 class="rounded-circle">
+            </div>
+            <br>
+        {% endif %}
+        {{ form_row(form.image) }}
+    </div>
+    <div class="col-lg-3 form-group">
+        <button class="btn btn-primary">{{ button_label|default('Enregistrer') }}</button>
+    </div>
+</div>
+{{ form_end(form) }}
+
+<script type="text/javascript">
+    let file = document.getElementById("usersDocument");
+    file.onchange = function() {
+      if (this.files){
+        $dataFile = this.files[0];
+        var reader = new FileReader();
+        reader.onload = function (e) {
+            buildPreviewUpload(e.target.result, getExtentionBase64(e.target.result));
+            $('#usersDocument').val('');
+        }
+        reader.readAsDataURL($dataFile);
+      }
+    }
+
+    function buildPreviewUpload(image, extension) {
+        $lengthUpload = $( ".document-item:not(.origin-clone)" ).length;
+        $( ".document-item.origin-clone" ).clone().appendTo( ".list-document" );
+        $currentUpload = $( ".document-item" ).last();
+        $currentUpload.removeClass('origin-clone');
+        $currentUpload.prepend('<i class="fa fa-times remove-doc" onclick="removeDoc(this)"></i>');
+        $currentUpload.find('select').css('display','block');
+        $currentUpload.find('select').attr('name','doc-name-0'+$lengthUpload);
+        $currentUpload.find('label').attr('for','doc-id-0'+$lengthUpload);
+        $currentUpload.find('label').css('pointer-events','none');
+        $currentUpload.find('input').attr('id','doc-id-0'+$lengthUpload);
+        $currentUpload.find('input').addClass('usersDocument');
+        $currentUpload.find('input').attr('name', "{{typeDocuments[0]}}");
+        if(extension == "pdf" || extension == "docx")
+            $currentUpload.find('img').attr('src', "/assets/images/doc.png");
+        else
+            $currentUpload.find('img').attr('src',image);
+    }
+
+    function removeDoc(elt){
+        $(elt).parent().remove();
+    }
+
+</script>

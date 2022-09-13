@@ -1,0 +1,125 @@
+
+<style type="text/css">
+    .input-group-addon{
+        padding: 6px 12px;
+        font-size: 14px;
+        font-weight: 400;
+        line-height: 1;
+        color: #555;
+        text-align: center;
+        background-color: #eee;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+    }
+    #chantier_ignoreIa{
+        margin: 0;
+        margin-right: 4px;
+        width: 17px;
+        height: 20px;
+    }
+</style>
+
+<ul class="nav nav-tabs" role="tablist" id="myTabs">
+    <li role="presentation" class="active"><a href="#informations-tab" aria-controls="informations-tab" role="tab" data-toggle="tab">Informations</a></li>
+    <li role="presentation"  class=""><a href="#acquisition-tab" aria-controls="acquisition-tab" role="tab" data-toggle="tab">Acquisition</a></li>
+</ul>
+
+{{ form_start(form, {'attr': {'enctype': 'multipart/form-data', 'autocomplete': 'off'}}) }}
+<div class="tab-content" style="margin-top: 25px;">
+    <div role="tabpanel" class="tab-pane active" id="informations-tab">
+        <div class="row">
+            <div class="col-lg-12 form-group">
+                {{ form_label(form.nameentreprise, 'Nom') }}
+                {{ form_row(form.nameentreprise) }}
+            </div>
+            <div class="col-lg-3 form-group">
+                {{ form_label(form.numero, 'Numero') }}
+                {{ form_row(form.numero) }}
+            </div>
+            <div class="col-lg-9 form-group">
+                {{ form_label(form.address, 'Adresse') }}
+                {{ form_row(form.address) }}
+            </div>
+            <div class="col-lg-4 form-group">
+                {{ form_label(form.distance, 'Distance (m)') }}
+                {{ form_row(form.distance) }}
+            </div>
+            <div class="col-lg-4 form-group">
+                {{ form_label(form.cp, 'Code Postal') }}
+                {{ form_row(form.cp) }}
+            </div>
+            <div class="col-lg-4 form-group">
+                {{ form_label(form.m2, 'M2') }}
+                {{ form_row(form.m2) }}
+            </div>
+            <div class="col-lg-6 form-group">
+                {{ form_label(form.temps_route, 'Temps de route (min)') }}
+                {{ form_row(form.temps_route) }}
+            </div>
+            <div class="col-lg-6 form-group">
+                <label for="chantier_city">Ville</label>
+                {{ form_row(form.city) }}
+            </div>
+            <div class="col-lg-12 form-group">
+                {{ form_label(form.description, 'Description') }}
+                {{ form_row(form.description) }}
+            </div>
+
+            <div class="col-lg-12 form-group">
+                <div style="display: flex;align-items: center;">
+                    {{ form_row(form.ignoreIa) }} 
+                    <label for="chantier_ignoreIa">Ignorer la recherche IA</label>
+                </div>
+            </div>
+
+            <div class="col-lg-12 form-group">
+                <button class="btn btn-primary">{{ button_label|default('Enregistrer') }}</button>
+            </div>
+        </div>
+    </div>
+    <div role="tabpanel" class="tab-pane" id="acquisition-tab">
+        <div class="row">
+            <div class="col-lg-12 form-group">
+                {{ form_label(form.date_signature_compromis, 'Date de Signature du Compromis') }}
+                {{ form_row(form.date_signature_compromis) }}
+            </div>
+            <div class="col-lg-12 form-group">
+                {{ form_label(form.date_signature_acte, 'Date signature acte') }}
+                {{ form_row(form.date_signature_acte) }}
+            </div>
+            <div class="col-lg-12 form-group">
+                {{ form_label(form.prix_acquisition, 'Prix acquisition') }}
+                {{ form_row(form.prix_acquisition) }}
+            </div>
+            <div class="col-lg-12 form-group">
+                {{ form_label(form.frais_agence, 'Frais Agence') }}
+                {{ form_row(form.frais_agence) }}
+            </div>
+            <div class="col-lg-12 form-group">
+                {{ form_label(form.frais_negociation, 'Frais Negociation') }}
+                {{ form_row(form.frais_negociation) }}
+            </div>
+            <div class="col-lg-12 form-group">
+                {{ form_label(form.frais_bancaire, 'Frais Bancaire') }}
+                {{ form_row(form.frais_bancaire) }}
+            </div>
+            <div class="col-lg-12 form-group">
+                {{ form_label(form.frais_huissier, 'Frais Huissier') }}
+                {{ form_row(form.frais_huissier) }}
+            </div>
+            <div class="col-lg-12 form-group">
+                {{ form_label(form.prorata_taxe_fonciere, 'Prorata taxe fonciere') }}
+                {{ form_row(form.prorata_taxe_fonciere) }}
+            </div>
+            <div class="col-lg-12 form-group">
+                {{ form_label(form.prorata_copropriete, 'Prorata copropriete') }}
+                {{ form_row(form.prorata_copropriete) }}
+            </div>
+
+            <div class="col-lg-12 form-group">
+                <button class="btn btn-primary">{{ button_label|default('Enregistrer') }}</button>
+            </div>
+        </div>
+    </div>
+</div>
+{{ form_end(form) }}

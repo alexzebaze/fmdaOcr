@@ -1,0 +1,189 @@
+{% extends 'base.html.twig' %}
+{% block css %}
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.24/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/buttons/1.7.0/css/buttons.dataTables.min.css">
+    <script type="text/javascript" src="https://cdn.datatables.net/plug-ins/1.10.15/sorting/numeric-comma.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/plug-ins/1.11.2/sorting/num-html.js"></script>
+
+    <style type="text/css">        
+        .ibox-title{padding: 26px 90px 8px 15px}
+        .ibox-tools{display: flex;align-items: center;justify-content: flex-end;margin-bottom: 7px;}
+
+        thead th, td{text-align: center;}
+        .rounded-img {
+            border-radius: 50%;
+            position: relative;
+            z-index: 1;
+            width: 40px;
+            height: 40px;
+            object-fit: cover;
+            transition: easy 0.4s all;
+        }
+        .ibox-tools{display: flex;align-items: center;}
+        .table-passage thead th, .table-passage td{text-align: left;}
+
+
+
+
+
+        .rounded-galerie {
+            position: absolute;
+            margin-top: -25px;
+            margin-left: auto;
+            border: 4px solid white;
+            height: 46px;
+            width: 46px;
+            margin-right: auto;
+            left: 0;
+            right: 0;
+            z-index: 1;
+        }
+        
+    </style>
+{% endblock %}
+{% block breadcrumb %}
+
+    <div class="row wrapper border-bottom white-bg page-heading">
+        <div class="col-lg-10">
+            <h1>Horaires Fictives</h1>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                    <a href="{{ path('home') }}">Accueil</a>
+                </li>
+                <li class="breadcrumb-item active">
+                    <strong>recapitulatif</strong>
+                </li>
+            </ol>
+        </div>
+    </div>
+{% endblock %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-lg-12">
+            {% include 'flashes.html.twig' %}
+            <div class="ibox">
+                <div class="ibox-content">
+                    {{ include('horaire/filter_fictif.html.twig') }}
+                </div>
+            </div>
+            <div class="ibox ">
+                <div class="ibox-title">
+                    <h5>Horaires Fictives</h5>
+                    <div class="ibox-tools">
+                    </div>
+                </div>
+                <div class="ibox-content">
+                  <h1 class="text-center" style="font-weight: 600;color: #000;">
+                    Heures: {{totalHeure|number_format(2, ',', '') }} heures</h1>
+                  <h1 class="text-center" style="font-weight: 600;color: #000;">
+                    Fictifs: {{totalFictif|number_format(2, ',', '') }} heures</h1>
+                  <br>
+                  {% set dette = totalHeure - totalFictif %}
+                  {% if dette > 0 %}
+                      <h1 style="font-weight: 600; color: #000;" class="text-center">Je dois {{dette|number_format(2, ',', '')|abs  }} heures</h1>
+                  {% else %}
+                      <h1 style="font-weight: 600; color: #000" class="text-center">Me dois {{dette|number_format(2, ',', '')|abs }} heures</h1>
+                  {% endif %}
+
+                    <div class="table-responsive">
+                        <table class="table table-passage">
+                            <thead>
+                                <tr>
+                                    <th>Utilisateurs</th>
+                                    <th>Date</th>
+                                    <th>Nb Heures</th>
+                                    <th>Heures Fictives</th>
+                                    <th>Dette</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% set total_heure = 0 %}
+                                {% set total_fictif = 0 %}
+                                {% set total_dette = 0 %}
+
+                                {% for horaire in horaires %}
+                                  
+                                  <tr>
+                                    <td>
+                                      <div>
+                                      {% if horaire.userid is not empty %}
+                                          {% if horaire.userid in allUtilisateursEntrep|keys and allUtilisateursEntrep[horaire.userid] %} 
+                                            <img data-file="data:image/jpeg;base64,{{ allUtilisateursEntrep[horaire.userid]}}" src="data:image/jpeg;base64,{{ allUtilisateursEntrep[horaire.userid]}}"
+                                                   class="showDocument rounded-img">
+                                          {% endif %}&nbsp 
+                                          {{horaire.firstname}} {{horaire.lastname}}
+                                      {% endif %}
+                                      </div>
+                                    </td>
+                                    <td>{{horaire.datestart}}</td>
+                                    <td>{{horaire.heure}}</td>
+                                    <td>{{horaire.fictif}}</td>
+                                    <td>
+                                      {% set dette = horaire.heure - horaire.fictif %}
+                                      {% if dette > 0 %}
+                                        Je dois {{dette|abs|number_format(1, ',', '')  }}
+                                      {% else %}
+                                        Me dois {{dette|abs|number_format(1, ',', '') }}
+                                      {% endif %}
+                                    </td>
+
+                                    {% set total_heure = total_heure + horaire.heure %}
+                                    {% set total_fictif = total_fictif + horaire.fictif %}
+                                    {% set total_dette = total_dette + dette %}
+                                  </tr>
+                                {% else %}
+                                <tr>
+                                    <td colspan="34">Aucune horaire enregistrée</td>
+                                </tr>
+                                {% endfor %}
+                                <tfoot>
+                                  <tr>
+                                    {% set total_dette = total_heure - total_fictif %}
+                                    <td>TOTAUX</td>
+                                    <td></td>
+                                    <td>{{total_heure}}</td>
+                                    <td>{{total_fictif}}</td>
+                                    <td>
+                                      {% if total_dette > 0 %}
+                                        Je dois {{total_dette|abs|number_format(1, ',', '')  }}
+                                      {% else %}
+                                        Me dois {{total_dette|abs|number_format(1, ',', '') }}
+                                      {% endif %}
+                                    </td>
+                                  </tr>
+                                </tfoot>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+{% block js_import %}
+    <script type="text/javascript"src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.min.js"></script>
+    <script type="text/javascript"src="https://cdn.datatables.net/buttons/1.7.0/js/dataTables.buttons.min.js"></script>
+    <script type="text/javascript"src="https://cdn.datatables.net/buttons/1.7.0/js/buttons.html5.min.js"></script>
+    <script type="text/javascript"src="https://cdn.datatables.net/buttons/1.7.0/js/buttons.print.min.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/plug-ins/1.10.24/sorting/date-eu.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/plug-ins/1.10.15/sorting/numeric-comma.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/plug-ins/1.11.2/sorting/num-html.js"></script>
+
+{% endblock %}
+
+{% block javascript_script %}
+    <script type="text/javascript">
+        $(document).ready( function () {
+            $('table').DataTable({
+                "paging":   false,
+            });
+        } );
+
+    </script>
+{% endblock %}
+
+{% block javascript %}
+
+{% endblock %}

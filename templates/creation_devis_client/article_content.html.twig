@@ -1,0 +1,84 @@
+
+<div class="table-responsive">
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Image</th>
+                <th style="width: 300px">Libelle</th>
+                <th>Unite_mesure</th>
+                <th>Prix_achat</th>
+                <th>Marge_brut</th>
+                <th>Prix_vente_ht</th>
+                <th>Prix_vente_ttc</th>
+                <th>Code</th>
+                <td></td>
+            </tr>
+        </thead>
+        <tbody>
+        {% for article in articles %}
+            <tr>
+                <td>
+                    {% if article.image %}
+                        <img data-file="/uploads/article/{{article.image}}" src="/uploads/article/{{article.image}}" class="showDocument rounded-img">
+                    {% endif %}
+                </td>
+                <td>
+                    <div style="display: flex;align-items: center;">
+                        <span>{{ article.libelle|upper }}</span>
+                    </div>
+                </td>
+                <td>{{ article.getUniteMesure }}</td>
+                <td>{{ article.getPrixAchat ? article.getPrixAchat|number_format(2, ',', '')~'€': '' }}</td>
+                <td>{{ article.getMargeBrut ? article.getMargeBrut|number_format(2, ',', '')~'€': '' }}</td>
+                <td>{{ article.getPrixVenteHt ? article.getPrixVenteHt|number_format(2, ',', '')~'€': '' }}</td>
+                <td>{{ article.getPrixVenteTtc ? article.getPrixVenteTtc|number_format(2, ',', '')~'€': '' }}</td>
+                <td>{{ article.code }}</td>
+                <td>
+                    <span class="btn btn-primary articlePopup" data-article-id="{{article.id}}" data-article-libelle="{{article.libelle}}">
+                        <i class="fa fa-plus"></i>
+                    </span>
+                    
+                    {% set ttOeuvreDevis = 0 %}
+                    {% set ttAchatDevis = 0 %}
+                    {% set ttQteMo = 0 %}
+
+                    {% if article.type == 1 %}
+                        {% if 'oeuvre' in article.libelle|lower and article.getPrixAchat %}
+                            {% set ttOeuvreDevis = ttOeuvreDevis + (article.getPrixAchat) %}
+                            {% set ttQteMo = ttQteMo + 1 %}
+                        {% endif %}
+                    {% elseif article.type == 2 %}
+                        {% for norm in article.getNormenclatures %}
+                            {% if 'oeuvre' in norm.libelle|lower and norm.articleReference and norm.articleReference.prixAchat and norm.qte %}
+                                {% set ttOeuvreDevis = ttOeuvreDevis + (norm.articleReference.prixAchat*norm.qte) %}
+
+                                {% if norm.qte %}
+                                    {% set ttQteMo = ttQteMo + norm.qte*1 %}
+                                {% endif %}
+                            {% elseif 'oeuvre' not in norm.libelle|lower and norm.articleReference and norm.articleReference.prixAchat and norm.qte %}
+
+                                {% set ttAchatDevis = ttAchatDevis + (norm.articleReference.prixAchat*norm.qte) %}
+
+                            {% endif %}
+                        {% endfor %}
+
+                    {% endif %}
+
+                    <input type="hidden" name="" class="ttOeuvreDevis" value="{{ttOeuvreDevis}}">
+                    <input type="hidden" name="" class="ttAchatDevis" value="{{ttAchatDevis}}">
+                    <input type="hidden" name="" class="ttQteMo" value="{{ttQteMo}}">
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="12">Aucun enregistrement</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+</div>
+
+<script type="text/javascript">
+
+</script>

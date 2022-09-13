@@ -1,0 +1,101 @@
+<style type="text/css">
+    #vente_status, #vente_devis{display: none;}
+</style>
+{{ form_start(form) }}
+<div class="row">
+    <div class="col-lg-12 form-group ocr-field" data-field="document_id">
+        {{ form_label(form.document_id, 'Document ID') }}
+        {{ form_row(form.document_id) }}
+        <input type="hidden" name="field[document_id]" class="field_identite" value="{{ 'document_id' in fieldsIaZone|keys ? fieldsIaZone['document_id'] : ''}}">
+    </div>
+    <div class="col-lg-12 form-group ocr-field" data-field="facturedAt">
+        {{ form_label(form.facturedAt, 'Date création') }}
+        {{ form_row(form.facturedAt) }}
+        <input type="hidden" name="field[facturedAt]" class="field_identite"  value="{{'facturedAt' in fieldsIaZone|keys ? fieldsIaZone['facturedAt'] : ''}}">
+    </div>
+    <div class="col-lg-12 form-group ocr-field" data-field="dueAt">
+        {{ form_label(form.dueAt, 'Echeance') }}
+        {{ form_row(form.dueAt) }}
+        <input type="hidden" name="field[dueAt]" class="field_identite" value="{{'dueAt' in fieldsIaZone|keys ? fieldsIaZone['dueAt'] : ''}}">
+    </div>
+    <div class="col-lg-12 form-group ocr-field" data-field="prixttc">
+        {{ form_label(form.prixttc, 'Prix TTC') }}
+        {{ form_row(form.prixttc) }}
+        <input type="hidden" name="field[prixttc]" class="field_identite" value="{{'prixttc' in fieldsIaZone|keys ? fieldsIaZone['prixttc'] : ''}}">
+    </div> 
+    <div class="col-lg-12 form-group ocr-field" data-field="prixht">
+        {{ form_label(form.prixht, 'Prix HT') }}
+        {{ form_row(form.prixht) }}
+        <input type="hidden" name="field[prixht]" class="field_identite" value="{{'prixht' in fieldsIaZone|keys ? fieldsIaZone['prixht'] : ''}}">
+    </div>
+    <div class="col-lg-12 form-group ocr-field" data-field="tva">
+        {{ form_label(form.tva, 'TVA %') }}
+        {{ form_row(form.tva) }}
+        <input type="hidden" name="field[tva]" class="field_identite" value="{{'tva' in fieldsIaZone|keys ? fieldsIaZone['tva'] : ''}}">
+    </div>
+
+    <div class="col-lg-12 form-group ocr-field" data-field="client">
+        {{ form_label(form.client, 'Client') }}
+        {{ form_row(form.client) }}
+        <input type="hidden" name="field[client]" class="field_identite"  value="{{'client' in fieldsIaZone|keys ? fieldsIaZone['client'] : ''}}">
+    </div>
+
+    {% if clientfound is defined %}
+    <div class="col-lg-12 form-group">
+        <label>Clients suggerés</label>
+        <select class="form-control">
+             {% for cli in clientfound %}
+                <option value="">{{cli.nom}}</option>
+             {% endfor %}
+        </select>
+    </div>
+    {% endif %}
+
+    <!-- tableau de suggestion pour l'extraction local -->
+    <div class="col-lg-12 form-group row-suggession" style="display: none;">
+        <label>Clients suggerés</label>
+        <select class="form-control field-suggession">
+            <option value="">--</option>
+        </select>
+    </div>
+    <input type="hidden" name="add_mode" value="{{add_mode is defined ? add_mode : ''}}">
+
+    <div class="col-lg-12 form-group ocr-field" data-field="chantier">
+        {{ form_label(form.chantier, 'Chantier') }}
+        {{ form_row(form.chantier) }}
+        <input type="hidden" name="field[chantier]" class="field_identite"  value="{{'chantier' in fieldsIaZone|keys ?  fieldsIaZone['chantier'] : ''}}">
+    </div>
+    <div class="col-lg-12 form-group ocr-field" data-field="lot">
+        {{ form_label(form.lot, 'Lot') }}
+        {{ form_row(form.lot) }}
+    </div>
+
+    <div class="col-lg-12 form-group">
+        {{ form_row(form.document_file) }}
+    </div>
+    <div>
+        <input type="hidden" name="document_file2" value="{{devis_client is defined ? devis_client.getDocumentFile : ''}}">
+    </div>
+    
+        
+    {% if ia_launch is defined and modelDocument is defined and modelDocument is not null %}
+        <input type="hidden" name="model_document_id" value="{{ modelDocument.id }}">
+    {% endif %}
+    <input type="hidden" name="nbr_page" value="{{ nbrPage is defined ? nbrPage : ''}}">
+
+    <div class="col-lg-12 form-group text-center" style="padding: 0">
+        <button class="btn btn-danger" name="submit" value="submit" style="margin-top: 5px;"> <i class="fa fa-plus"></i> {{ button_label|default('Enregistrer') }}</button>
+        {% if ia_launch is defined and modelDocument is defined and modelDocument is not null and score > 40 %}
+            <button class="btn btn-warning btn-ajuster" name="submit" value="ajuste_ia" style="margin-top: 5px;display: none;"> <i class="fa fa-adjust"></i> Ajuster</button>
+            <button class="btn btn-primary" name="submit" value="validate_ia" style="margin-top: 5px;"> <i class="fa fa-check"></i> Confirmer</button>
+        {% endif %}
+    </div>
+
+</div>
+{{ form_end(form) }}
+
+<script type="text/javascript">
+    {% if add_mode is defined and add_mode == "manuel" %}
+        $('form[name=vente]').attr('action', "{{path('devis_client_add_manuel')}}");
+    {% endif %}
+</script>

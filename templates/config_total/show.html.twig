@@ -1,0 +1,30 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}ConfigTotal{% endblock %}
+
+{% block body %}
+    <h1>ConfigTotal</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ config_total.id }}</td>
+            </tr>
+            <tr>
+                <th>Ht</th>
+                <td>{{ config_total.ht }}</td>
+            </tr>
+            <tr>
+                <th>Ttc</th>
+                <td>{{ config_total.ttc }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('config_total_index') }}">back to list</a>
+
+    <a href="{{ path('config_total_edit', {'id': config_total.id}) }}">edit</a>
+
+    {{ include('config_total/_delete_form.html.twig') }}
+{% endblock %}

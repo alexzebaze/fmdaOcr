@@ -1,0 +1,109 @@
+{% extends 'base.html.twig' %}
+
+{% block breadcrumb %}
+
+    <div class="row wrapper border-bottom white-bg page-heading">
+        <div class="col-lg-10">
+            <h1>Chantier</h1>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                    <a href="{{ path('immobilier_vente') }}">Ventes</a>
+                </li>
+                <li class="breadcrumb-item active">
+                    <strong>chantier</strong>
+                </li>
+            </ol>
+        </div>
+    </div>
+{% endblock %}
+
+{% block content %}
+    <style type="text/css">
+        .p-0{
+            padding: 0 !important;
+        }
+        .px-2{
+            padding-left: 2px !important;
+            padding-right: 2px !important;
+        }
+        .thumbnail-galerie{
+            background-color: white;
+        }
+        .thumbnail-detail {
+            height: 85px;
+        }
+    </style>
+    <div class="row" style="display: none;">
+        <div class="col-lg-12">
+            <form method="get">
+                <div class="input-group" style="margin-bottom: 1rem;width: 100%">
+                    <input class="form-control" placeholder="Rechercher..." name="q" value="{{ q }}">
+                </div>
+            </form>
+            {% if q %}
+            <div class="alert" style="font-size: 12px">Résultats de recherche pour <b>{{ q }}</b></div>
+            {% endif %}
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-12">
+            {% include 'flashes.html.twig' %}
+            <div class="ibox ">
+                    <div class="row galerie">
+                    {% for chantier in chantiers %}
+                        <div class="col-sm-12 col-md-4 col-lg-2 col-xl-1 click-on" style="position: relative; margin-bottom: 30px;cursor: pointer;" data-url="{{ path('immobilier_vente_logement_by_chantier', {'chantier_id': chantier.chantierId}) }}">
+                            <div class="thumbnail-galerie" data-type="image" data-url="{{ chantier.defaultGalerie ? chantier.defaultGalerie.getCompressedUrl : '/assets/images/logotransfmda.png' }}"  style="background-image: url('{{ chantier.defaultGalerie ? chantier.defaultGalerie.getCompressedUrl : '/assets/images/logotransfmda.png' }}')">
+                                {# <i class="fas fa-search"></i> #}
+                            </div>
+                            <div class="thumbnail-detail">
+                                <div class="row px-2">
+                                    <div class="col-md-6 p-0">
+                                        {{ chantier.nameentreprise }}
+                                    </div>
+                                    <div class="col-md-6 p-0">
+                                        <div class="heure-galerie"><i class="fas fa-clock"></i> {{ chantier.created|date("d/m/Y")}}</div>
+                                    </div>
+                                </div>
+                                {# <h3>{{ chantier.nameentreprise }}</h3> #}
+                                <div style="min-height: 20px">
+                                    {% if chantier.city %}
+                                        <i class="fas fa-map-marker-alt"></i> {{ chantier.city }}
+                                    {% endif %}
+                                </div>
+                                {# <div style="margin-top: 20px; position: relative">
+                                    <a href="{{ path('galerie_image_list', {'id': chantier.chantierId}) }}"><i class="fas fa-eye"></i> Voir</a>
+                                </div> #}
+                            </div>
+                        </div>
+                    {% endfor %}
+
+                    </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block javascript_script %}
+    <script src="https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js"></script>
+{% endblock %}
+
+{% block javascript %}
+$(document).ready(   function () {
+    {# $('.thumbnail-galerie').click(function () {
+        $.fancybox.open({
+            src  : $(this).attr('data-url'),
+            type : $(this).attr('data-type'),
+        });
+    }); #}
+    $(document).on('click','.click-on',function(e){
+        e.preventDefault();
+        var url = $(this).data('url');
+        window.location.href = url;
+    });
+} );
+{% endblock %}
+
+{% block css %}
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" />
+{% endblock %}

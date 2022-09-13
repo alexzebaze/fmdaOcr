@@ -1,0 +1,150 @@
+{% extends 'base.html.twig' %}
+
+{% block title %} {{parent()}} Chantier{% endblock %}
+
+{% block body %}
+    <h1>Chantier</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>ChantierId</th>
+                <td>{{ chantier.chantierId }}</td>
+            </tr>
+            <tr>
+                <th>Email</th>
+                <td>{{ chantier.email }}</td>
+            </tr>
+            <tr>
+                <th>Phone</th>
+                <td>{{ chantier.phone }}</td>
+            </tr>
+            <tr>
+                <th>Numero</th>
+                <td>{{ chantier.numero }}</td>
+            </tr>
+            <tr>
+                <th>Address</th>
+                <td>{{ chantier.address }}</td>
+            </tr>
+            <tr>
+                <th>City</th>
+                <td>{{ chantier.city }}</td>
+            </tr>
+            <tr>
+                <th>Cp</th>
+                <td>{{ chantier.cp }}</td>
+            </tr>
+            <tr>
+                <th>Dep</th>
+                <td>{{ chantier.dep }}</td>
+            </tr>
+            <tr>
+                <th>Region</th>
+                <td>{{ chantier.region }}</td>
+            </tr>
+            <tr>
+                <th>Lat</th>
+                <td>{{ chantier.lat }}</td>
+            </tr>
+            <tr>
+                <th>Lng</th>
+                <td>{{ chantier.lng }}</td>
+            </tr>
+            <tr>
+                <th>Nameentreprise</th>
+                <td>{{ chantier.nameentreprise }}</td>
+            </tr>
+            <tr>
+                <th>Description</th>
+                <td>{{ chantier.description }}</td>
+            </tr>
+            <tr>
+                <th>Website</th>
+                <td>{{ chantier.website }}</td>
+            </tr>
+            <tr>
+                <th>Categoryuser</th>
+                <td>{{ chantier.categoryuser }}</td>
+            </tr>
+            <tr>
+                <th>Lun</th>
+                <td>{{ chantier.lun }}</td>
+            </tr>
+            <tr>
+                <th>Mar</th>
+                <td>{{ chantier.mar }}</td>
+            </tr>
+            <tr>
+                <th>Mer</th>
+                <td>{{ chantier.mer }}</td>
+            </tr>
+            <tr>
+                <th>Jeu</th>
+                <td>{{ chantier.jeu }}</td>
+            </tr>
+            <tr>
+                <th>Ven</th>
+                <td>{{ chantier.ven }}</td>
+            </tr>
+            <tr>
+                <th>Sam</th>
+                <td>{{ chantier.sam }}</td>
+            </tr>
+            <tr>
+                <th>Dim</th>
+                <td>{{ chantier.dim }}</td>
+            </tr>
+            <tr>
+                <th>Created</th>
+                <td>{{ chantier.created ? chantier.created|date('Y-m-d H:i:s') : '' }}</td>
+            </tr>
+            <tr>
+                <th>Updated</th>
+                <td>{{ chantier.updated ? chantier.updated|date('Y-m-d H:i:s') : '' }}</td>
+            </tr>
+            <tr>
+                <th>Status</th>
+                <td>{{ chantier.status }}</td>
+            </tr>
+            <tr>
+                <th>Admin</th>
+                <td>{{ chantier.admin }}</td>
+            </tr>
+            <tr>
+                <th>Fkuser</th>
+                <td>{{ chantier.fkuser }}</td>
+            </tr>
+            <tr>
+                <th>Token</th>
+                <td>{{ chantier.token }}</td>
+            </tr>
+            <tr>
+                <th>Verif</th>
+                <td>{{ chantier.verif }}</td>
+            </tr>
+            <tr>
+                <th>Image</th>
+                <td>{{ chantier.image }}</td>
+            </tr>
+            <tr>
+                <th>Notif</th>
+                <td>{{ chantier.notif }}</td>
+            </tr>
+            <tr>
+                <th>Link</th>
+                <td>{{ chantier.link }}</td>
+            </tr>
+            <tr>
+                <th>Published</th>
+                <td>{{ chantier.published ? 'Yes' : 'No' }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('chantier_index') }}">back to list</a>
+
+    <a href="{{ path('chantier_edit', {'chantierId': chantier.chantierId}) }}">edit</a>
+
+    {{ include('chantier/_delete_form.html.twig') }}
+{% endblock %}

@@ -1,0 +1,213 @@
+{% extends 'base.html.twig' %}
+{% block css %}
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <style type="text/css">
+        .categories-container {
+            border-radius: 8px;
+            background: #f0f0f0;
+            border: none;
+            padding: 16px 16px;
+            padding-top: 9px;
+            box-shadow: 0px 0px 6px 2px #e7e7e7;
+            margin-bottom: 21px;
+        }
+        .categorie-head {
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .categorie-head .title{
+            font-weight: bold;
+            font-size: 18px;
+        }
+    </style>
+{% endblock %}
+{% block breadcrumb %}
+
+    <div class="row wrapper border-bottom white-bg page-heading">
+        <div class="col-lg-10">
+            <h1>Liste des lots</h1>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                    <a href="{{ path('home') }}">Accueil</a>
+                </li>
+                <li class="breadcrumb-item active">
+                    <strong>Lots</strong>
+                </li>
+            </ol>
+        </div>
+    </div>
+{% endblock %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-lg-8">
+            {% include 'flashes.html.twig' %}
+            <div class="ibox ">
+                <div class="ibox-title">
+                    <h5>Liste des lots</h5>
+                    <div class="ibox-tools">
+                        <a href="{{ path('lot_add') }}">
+                            <i class="fa fa-plus"></i>
+                            Ajouter
+                        </a>
+                    </div>
+                </div>
+                <div class="ibox-content">
+
+                    {% for catLot in categories %}
+                        <div class="categories-container">
+                            <div class="categorie-head">
+                                <span class="title">{{catLot.nom}}</span>
+                                <form class="form-attrib-lot" method="POST" action="{{path('lot_add_lot_categorie')}}">
+                                    <label style="display: block;">Ajouter des lots</label>
+                                    <select class="form-control js-example-basic-multiple" name="lotSelect[]" multiple style="height: 42px; width: 323px;" class="selected" required>
+                                        {% for lot in lotsWithoutCateg%}
+                                            <option value="{{lot.id}}">{{ lot.lot}}</option>
+                                        {% endfor %}
+                                    </select>
+                                    <input type="hidden" name="categorieId" value="{{catLot.id}}">
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fa fa-save"></i>
+                                    </button>
+                                </form>
+                            </div>
+                            <div class="categories-content">
+                                <div class="table-responsive">
+                                    <div class="dd nestable2" id="nestable2">
+                                        <ol class="dd-list">
+                                            {% for lot in catLot.lots %} 
+
+                                                {{ _self.recursiveCategory(lot, categories) }}
+
+                                            {% endfor %}
+                                            <li>
+                                                <a href="{{ path('lot_add') }}"><i class="fa fa-plus"></i> Ajouter une lot</a>
+                                            </li>
+                                        </ol>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    {% endfor %}
+
+
+
+                    {#<div class="dd" id="nestable2">
+                        <ol class="dd-list">
+                            {% for lot in lots %}
+
+                                {{ _self.recursiveCategory(lot) }}
+
+                            {% endfor %}
+                            <li>
+                                <a href="{{ path('lot_add') }}"><i class="fa fa-plus"></i> Ajouter une lot</a>
+                            </li>
+                        </ol>
+                    </div>#}
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% macro recursiveCategory(lot, categories) %}
+    <li class="dd-item" data-id="{{ lot.id }}">
+        <div class="dd-handle">
+            &nbsp;
+        </div>
+        <span class="text-tache">
+
+            {{ lot.lot }}
+        </span>
+
+        <span class="float-right tache-action">
+                {#<a href="{{ path('lot_add', {'id':lot.id}) }}"><i
+                            class="fas fa-plus"></i></a>#}
+
+                <span class="btn-group">
+                    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Deplacer <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu">
+                    {% for cat in categories %}
+                        {% if cat.id != lot.getPrevisionelCategorie.id %}
+                        <li><a href="{{path('lot_set_categorie', {'lotId':lot.id})}}?categorie_id={{cat.id}}">{{cat.nom}}</a></li>
+                        {% endif %}
+                    {% endfor %}
+                    </ul>
+                </span>
+                <a href="{{ path('lot_edit', {'id':lot.id}) }}"><i
+                            class="fas fa-edit"></i></a>
+                <a href="{{ path('lot_delete', {'id':lot.id}) }}"
+                       onclick="return confirm('Êtes-vous sur de vouloir supprimer cette tâche ?')"><i
+                                class="fas fa-trash-alt"></i></a>
+                
+            </span>
+            <ol class="dd-list">
+                <li>
+                    <a href="{{ path('lot_add', {id :lot.id}) }}"><i class="fa fa-plus"></i> Ajouter une
+                        sous lot</a>
+                </li>
+            </ol>
+    </li>
+{% endmacro %}
+
+    {% block javascript %}
+    
+    {% endblock %}
+
+    {% block javascript_script %}
+        <!-- Nestable List -->
+        <script src="{{ asset('vendor/nestable/jquery.nestable.js') }}"></script>
+        <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+        <script type="text/javascript">
+            $(document).ready(function () {
+                $('.children').click(function (e) {
+                    e.preventDefault();
+                    $(this).parent().parent().next().find('table').first().slideToggle()
+                })
+
+                var updateOutput = function (e) {
+                    var list = e.length ? e : $(e.target)
+                    if (window.JSON) {
+                        //console.lot(window.JSON.stringify(list.nestable('serialize')));
+                        var request = $.ajax({
+                            url : '{{ path('lot_order') }}',
+                            data: {order: window.JSON.stringify(list.nestable('serialize')) },
+                            method: "POST",
+                        });
+                    }
+                };
+
+                // activate Nestable for list 2
+                $('.nestable2').nestable({
+                    group: 1
+                }).on('change', updateOutput).nestable('collapseAll');
+
+                $('#nestable-menu').on('click', function (e) {
+                    var target = $(e.target),
+                        action = target.data('action');
+                    if (action === 'expand-all') {
+                        $('.dd').nestable('expandAll');
+                    }
+                    if (action === 'collapse-all') {
+                        $('.dd').nestable('collapseAll');
+                    }
+                });
+
+                $('.text-tache').click(function (){
+                    $(this).parent().find('button[style=""]').first().trigger('click');
+                });
+            })
+
+            $(document).ready(function() {
+                $('.js-example-basic-multiple').select2();
+            });
+        </script>
+    {% endblock %}

@@ -1,0 +1,327 @@
+{% extends 'base.html.twig' %}
+{% block css %}
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <style type="text/css">        
+        .compte-container {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: flex-start;
+        }
+        .compte-content {
+            display: flex;
+            align-items: stretch;
+            position: relative;
+            margin-bottom: 12px;
+            padding-bottom: 11px;
+        }
+        .compte-rendue-container{
+            display: flex;
+            border: 1px solid #e7eaec;
+            border-radius: 15px;
+            margin-bottom: 18px; 
+            padding: 10px;
+            margin-right: 13px;
+
+        }
+        .img-chantier > img {
+            width: 160px;
+            object-fit: cover;
+            height: 150px;
+            border-radius: 9px;
+        }
+        .compte-info {
+            position: relative;
+            display: flex;
+            padding-top: 11px;
+            align-items: flex-start;
+        }
+        .num-visite {
+            border: 2px solid #585576;
+            border-radius: 7px;
+            padding: 7px 13px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 7px;
+        }
+        .num-visite .name {
+            color: #585576;
+            font-weight: bold;
+        }
+        .compte-content {
+            color: inherit;
+        }
+        .list-action{
+            text-align: right;
+            margin-top: 13px;
+        }
+        .link-edit{
+            text-align: center;
+            text-decoration: underline;
+            font-size: 12px;
+        }
+        .list-ouvrier{
+            margin: 0;
+            margin-top: 11px;
+            display: flex;
+        }
+
+        .avatar .rounded-img {
+            border-radius: 50%;
+            position: relative;
+            left: -5px;
+            margin-left: -23px;
+            z-index: 1;
+            width: 40px;
+            height: 40px;
+            object-fit: cover;
+            transition: easy 0.4s all;
+        }
+        .avatar:hover .rounded-img{
+            z-index: 4;
+        }
+        .openModalGalerieChantier{
+            cursor: pointer;
+            position: absolute;
+            left: -5px;
+            top: -11px;
+            z-index: 9;
+            color: #337ab7;
+            font-size: 20px;
+        }
+        .list-ouvrier {
+          direction: rtl;  /* This is to get the stack with left on top */
+          text-align: left;  /* Now need to explitly align left */
+          padding-left: 25px;  /* Same value as the negative margin */
+        }
+        .select2-container{width: 100%!important;margin-bottom: 25px;z-index: 9999}
+    </style>
+{% endblock %}
+{% block breadcrumb %}
+
+    <div class="row wrapper border-bottom white-bg page-heading">
+        <div class="col-lg-10">
+            <h1>Liste des compte rendu</h1>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                    <a href="{{ path('home') }}">Accueil</a>
+                </li>
+                <li class="breadcrumb-item">
+                    <a href="{{ path('chantier_compte_rendu_chantier') }}">{{chantier.nameentreprise}}</a>
+                </li>
+                <li class="breadcrumb-item active">
+                    <strong>Compte rendus</strong>
+                </li>
+            </ol>
+        </div>
+    </div>
+{% endblock %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-lg-12">
+            {% include 'flashes.html.twig' %}
+            <div class="ibox ">
+                <div class="ibox-title">
+                    <h5> 
+                        <span class="openModalAddFounisseurChantier" data-chantier-id="{{chantier_id}}" style="cursor: pointer;">
+                        <i class="fas fa-plus-circle"></i> Ajouter un fournisseur </span>
+                    </h5>
+                    <div class="ibox-tools">
+                        <span></span>
+                        <a href="{{ path('chantier_compte_rendu_new', {'chantier_id':chantier_id}) }}">
+                            <i class="fa fa-plus"></i>
+                            Ajouter
+                        </a>
+                    </div>
+                </div>
+
+                <div class="ibox-content">
+
+                    <br>
+                    <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                <tr>
+                                    <th>Nom</th>
+                                    <th>Contact</th>
+                                    <th>Tel</th>
+                                    <th>Email</th>
+                                    <th></th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                    {% for fournisseur in fournisseursChantier %}
+                                    <tr>
+                                        <td>
+                                            {{ fournisseur.nom }}
+                                        </td>
+                                        <td>{{ fournisseur.contact }}</td>
+                                        <td>
+                                            {{ fournisseur.getTelContact }}
+                                        </td>
+                                        <td>{{fournisseur.getEmailContact}}</td>
+                                        <td>
+                                            <a class=" btn btn-danger" onclick="return confirm('Voulez-vous retirer ce fournisseur de ce chantier ?')" href="{{ path('chantier_dettach_fournisseur', {'chantier_id': chantier.chantierId, 'fournisseur_id':fournisseur.id} ) }}">
+                                                <i class="fa fa-trash"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    {% else %}
+                                    <tr>
+                                        <td colspan="34">Aucun fournisseur enregistré</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+
+                        </div>
+                    <br>
+
+                    <div class="compte-container">
+                        {% for compteR in pager.currentPageResults %}
+                        {% set c = compteR.data %}
+                        {% set cr = compteR.is_cloture %}
+                            <div class="compte-rendue-container">
+                                <div class="compte-content" {% if c.archived is not null and c.archived == 1 %}style="background: #e0e0e073;pointer-events: none;"{% endif %}>
+                                    <div class="img-chantier" style="position: relative;">
+
+                                        {% if c.defaultGalerie %}
+                                            <img src="{{ c.defaultGalerie.getCompressedUrl }}">
+                                        {% elseif c.chantier.defaultGalerie %}
+                                            <img src="{{ c.chantier.defaultGalerie.getCompressedUrl }}">
+                                        {% else %}
+                                            <img src="/assets/images/logotransfmda.png">
+                                        {% endif %}
+                                    </div>
+                                    <div style="margin-left: 11px;position: relative;">
+                                        <div class="compte-info">
+                                            <div class="num-visite">{{c.getNumeroVisite}}</div>
+                                            <div>
+                                                <span class="name">{{c.nom}}</span>
+                                                <div class="date"><i class="fas fa-clock"></i>
+                                                    {{c.getDateVisite | date('d/m/Y')}}
+                                                </div>
+                                            </div>
+                                        </div>   
+                                        <ul class="list-ouvrier list-inline">
+                                            {% if c.ouvrier is not empty %}
+                                                {% for ouvrier in c.ouvrier|split('-') %}
+                                                <li class="avatar">
+                                                    {% if utilisateurs[ouvrier] %} 
+                                                    <img src="data:image/jpeg;base64,{{ utilisateurs[ouvrier]}}"
+                                                             class="rounded-img">
+                                                    {% endif %}
+                                                    
+                                                </li>
+                                                {% endfor %}
+                                            {% endif %}
+                                        </ul> 
+                                        <div class="list-action">
+                                            <a href="{{path('chantier_remarque_compte_rendu_print', {'compte_rendu_id':c.id})}}" target="_blank" style="font-size: 17px;"><i class="fa fa-print"></i></a>
+
+                                            <a href="{{path('chantier_remarque_compte_rendu', {'compte_rendu_id':c.id})}}" style="font-size: 17px;"><i class="fa fa-eye"></i></a>
+                                            {% if c.archived is not null and c.archived == 1 %}
+                                                <a class="link-edit"  onclick="return confirm('Retirer de l\'archiver ?')" href="{{path('chantier_compte_rendu_archive', {'id':c.id})}}" style="font-size: 17px;">
+                                                    <i class="fas fa-box-up"></i>
+                                                </a>
+                                            {% else %}
+                                                <a class="link-edit" href="{{path('chantier_compte_rendu_edit', {'compte_rendu_id':c.id})}}" style="right: 38px;font-size: 17px;"><i class="fa fa-edit"></i></a>
+                                                <a class="link-edit"  onclick="return confirm('Ajouter à l\'archiver ?')" href="{{path('chantier_compte_rendu_archive', {'id':c.id})}}" style="font-size: 17px;">
+                                                    <i class="fas fa-archive"></i>
+                                                </a>
+                                            {% endif %}
+                                            
+                                            {% if cr == 0 %}  
+                                                <span style="color: green">({{c.remarques|length}})</span> 
+                                            {% elseif cr == 1 %}
+                                                <span style="color: orange">({{c.remarques|length}})</span> 
+                                            {% elseif cr == -1 %}    
+                                                <span style="color: red">({{c.remarques|length}})</span> 
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div> 
+                            </div>
+                            
+                        {% endfor %}
+                    </div>
+
+
+                </div>
+
+                <div id="modalFounisseurChantier" class="modal fade bs-example-modal-sm modal-center" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel">
+                    <div class="modal-dialog modal-medium" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header" style="border: none;">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                <h2 class="modal-title text-center" id="myModalLabel">Attribuer un fournisseurs</h2>
+                            </div>
+                            <div class="modal-body text-center" style="padding: 0px 30px 51px 30px">
+                                <form method="POST" action="{{path('chantier_attach_fournisseurs', {'chantier_id':chantier_id})}}">
+                                    <input type="hidden" name="bl_id">
+                                    <div class="row">
+                                        <input type="hidden" name="chantier_id">
+                                        <div class="col-lg-12 form-group">
+                                            <select class="js-example-basic-multiple" name="fournisseurs[]" multiple="multiple">
+                                                {% for fourn in fournisseurs %} 
+                                                <option value="{{fourn.id}}" {% if fourn in fournisseursChantier %}selected{% endif %}>{{fourn.nom}}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-12 form-group text-center">
+                                        <button type="submit" class="btn btn-primary
+                                        ">Enregistrer</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="modalGalerieChantier" class="modal fade bs-example-modal-lg modal-center" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel">
+                    <div class="modal-dialog modal-lg" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header" style="border: none;">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                <h2 class="modal-title text-center" id="myModalLabel">Attribuer une image</h2>
+                            </div>
+                            <div class="modal-body text-center" style="padding: 0px 30px 51px 30px">
+                                <div class="galerieContainer">
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    {% if pager.haveToPaginate %}
+        {{ pagerfanta(pager, 'my_template') }}
+    {% endif %}
+    
+
+
+{% endblock %}
+
+{% block javascript_script %}
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+{% endblock %}
+{% block javascript %}
+    $(document).ready(function() {
+        $('.js-example-basic-multiple').select2();
+    });
+{% endblock %}
+
+{% block js_import %}
+    <script type="text/javascript">
+        $('.openModalAddFounisseurChantier').click(function(){
+            $('input[name=chantier_id]').val($(this).attr('data-chantier-id'));
+            $("#modalFounisseurChantier").modal('show');
+        })
+
+    </script>
+{% endblock %}

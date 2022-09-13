@@ -1,0 +1,78 @@
+{% extends 'base.html.twig' %}
+
+{% block breadcrumb %}
+    <div class="row wrapper border-bottom white-bg page-heading">
+        <div class="col-lg-10">
+            <h1>Liste des versions</h1>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                    <a href="{{ path('home') }}">Accueil</a>
+                </li>
+                <li class="breadcrumb-item active">
+                    <strong>Versions</strong>
+                </li>
+            </ol>
+        </div>
+    </div>
+{% endblock %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-lg-8">
+            {% include 'flashes.html.twig' %}
+            <div class="ibox ">
+                <div class="ibox-title">
+                    <h5>Liste des versions</h5>
+                    <div class="ibox-tools">
+                        <a href="{{ path('version_add') }}">
+                            <i class="fa fa-plus"></i>
+                            Ajouter
+                        </a>
+                    </div>
+                </div>
+                <div class="ibox-content">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Nom</th>
+                                    <th>Plateforme</th>
+                                    <th>Description</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for version in pager.currentPageResults %}
+                                <tr>
+                                    <td>{{ version.name }}</td>
+                                    <td>{{ version.platform }}</td>
+                                    <td>{{ version.description|length > 50 ? version.description|slice(0, 50) ~ '...' : version.description }}</td>
+                                    <td>
+                                        <a href="{{ path('version_edit', {'id':version.id}) }}"><i class="fas fa-edit"></i></a>
+                                        <a href="{{ path('version_delete', {'id':version.id}) }}" onclick="return confirm('Êtes-vous sur de vouloir supprimer cette version ?')"><i class="fas fa-trash-alt"></i></a>
+                                    </td>
+                                </tr>
+                                {% else %}
+                                
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block javascript %}
+$(document).ready(function () {
+})
+{% endblock %}
+
+{% block javascript_script %}
+    <script type="text/javascript">
+        $('.menu-admin-configuration').css("display","block");
+        $('#modalEntreprise').modal("hide");
+    </script>
+{% endblock %}

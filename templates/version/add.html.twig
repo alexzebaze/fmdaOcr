@@ -1,0 +1,36 @@
+{% extends 'base.html.twig' %}
+
+{% block breadcrumb %}
+
+    <div class="row wrapper border-bottom white-bg page-heading">
+        <div class="col-lg-10">
+            <h1>Ajouter une version</h1>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                    <a href="{{ path('home') }}">Accueil</a>
+                </li>
+                <li class="breadcrumb-item">
+                    <a href="{{ path('version_list') }}">Versions</a>
+                </li>
+                <li class="breadcrumb-item active">
+                    <strong>Ajouter une version</strong>
+                </li>
+            </ol>
+        </div>
+    </div>
+{% endblock %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="ibox">
+                <div class="ibox-content">
+                    {{ include('version/_form.html.twig') }}
+                </div>
+            </div>
+        </div>
+    </div>
+    <a href="{{ path('version_list') }}">Retourner à la liste des versions</a>
+{% endblock %}
+
+

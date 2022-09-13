@@ -1,0 +1,301 @@
+{% extends 'base.html.twig' %}
+
+{% block css %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker3.min.css" integrity="sha512-rxThY3LYIfYsVCWPCW9dB0k+e3RZB39f23ylUYTEuZMDrN/vRqLdaCBo/FbvVT6uC2r0ObfPzotsfKF9Qc5W5g==" crossorigin="anonymous" />
+<style type="text/css">
+    .btn-import, .btn-import:hover{
+        color: #fff;
+        font-size: 14px;
+        padding: 5px 18px;
+        background-color: #b2b2b2;
+        display: inline-flex;
+        align-items: center;
+    }
+    .item-mapped {
+        position: absolute;
+        z-index: 10;
+        border: 1.5px orange dashed;
+    }
+    .item-mapped:hover {
+        border: 1.5px orange dashed;
+    }
+
+    /* rectangle div in area div */
+    .document-container .rect {
+        opacity: 0;
+        transition: all 0s ease;
+        position: absolute;
+        border: 2.5px #6b7bff dashed;
+        z-index: 1;
+    }
+
+    /* rectangle div css when in draw or drawn mode */
+    .document-container.draw .rect,
+    .document-container.drawn .rect {
+        opacity: 1;
+    }
+    .loader-container{display: none;align-items: center;justify-content: center;}
+
+    .ocr-field.active{
+        padding: 8px 13px;
+        box-shadow: 0px 0px 12px 1px rgb(178 178 178);
+        border-radius: 4px;
+    }
+    #achat_status{display: none;}
+</style>
+{% endblock %}
+
+{% block breadcrumb %}
+
+    <div class="row wrapper border-bottom white-bg page-heading">
+        <div class="col-lg-10">
+            <h1>Ajouter une facture</h1>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                    <a href="{{ path('home') }}">Accueil</a>
+                </li>
+                <li class="breadcrumb-item">
+                    <a href="{{ path('facturation_list') }}">Facture</a>
+                </li>
+                <li class="breadcrumb-item active">
+                    <strong>Ajouter une facture</strong>
+                </li>
+            </ol>
+        </div>
+    </div>
+{% endblock %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-md-4">
+            <div class="ibox">
+                <div class="ibox-content">
+                    {{ include('facturation/_form.html.twig') }}
+                </div>
+            </div>
+        </div>  
+
+        <div class="col-md-8">
+            <div style="display: flex;align-items: center;justify-content: space-between;margin-bottom:11px;">
+                {% if lastOcrFile is not null  %}
+                    {% if ia_launch is defined %}
+                        <select name="selectRotation" id="selectRotation" class="form-control" style="width: auto;">
+                            <option>Modifier la rotation</option>
+                            <option value="{{90}}">Rotation 90°</option>
+                            <option value="{{180}}">Rotation 180°</option>
+                            <option value="{{270}}">Rotation 270°</option>
+                        </select>
+                        <div style="font-weight: bold;">SCORE IA : {{score}}%</div>
+                    {% endif %}
+
+                {% else %}
+                    <span></span>
+                {% endif %}
+                <div>
+                    {% if lastOcrFile is not null and ia_launch is defined  %}
+                        <label class="custom-dropdown" id="btnRotation" style="" >
+                          <div class="dd-button">&nbsp
+                            Orientation <i class="fad fa-redo"></i>&nbsp
+                          </div>
+                          <input type="checkbox" class="dd-input" id="test">
+                          <ul class="dd-menu" style="z-index: 999;">
+                            <li class="rotationChoice" data-rotation="90" data-pdf="/uploads/achats/facturation/{{document_pdf}}" data-dossier="{{dossier}}">rotation 90</li>
+                            <li class="rotationChoice" data-rotation="180" data-pdf="/uploads/achats/facturation/{{document_pdf}}" data-dossier="{{dossier}}">rotation 180</li>
+                            <li class="rotationChoice" data-rotation="270" data-pdf="/uploads/achats/facturation/{{document_pdf}}" data-dossier="{{dossier}}">rotation 270</li>
+                          </ul>
+                        </label>
+                    {% endif %}
+
+                    <a href="{{path('facturation_delete_tmp_ocr')}}" class="btn btn-danger" style="padding: 7px 18px; font-size: 14px">Annuler</a>&nbsp
+                
+                    <span class="btn btn-import" data-toggle="modal" data-target="#exampleModalCenter"> <svg class="mdi-icon style_ActionButtonIcon__FV5wD" width="24" height="24" fill="currentColor" viewBox="0 0 24 24"><path d="M14,13V17H10V13H7L12,8L17,13M19.35,10.03C18.67,6.59 15.64,4 12,4C9.11,4 6.6,5.64 5.35,8.03C2.34,8.36 0,10.9 0,14A6,6 0 0,0 6,20H19A5,5 0 0,0 24,15C24,12.36 21.95,10.22 19.35,10.03Z"></path style="margin-right: 7px;"></svg>&nbsp Import</span>
+                </div>
+            </div>
+            
+            <div class="ibox">
+                <div class="ibox-content">
+                    <div class="row">
+                        <div class="col-lg-12" style="/*width: max-content;*/padding: 0;">
+                            <div>
+                                {% for data in tmpOcr %} 
+                                <div class="item-mapped" style="width: {{data.getSizeWidth}}%; height: {{data.getSizeHeight}}%; left: {{data.getPositionLeft}}%; top: {{data.getPositionTop}}%;"></div>
+                                {% endfor %}
+                            </div>
+                            <div class="document-container">
+                                {% if lastOcrFile is not null  %}
+                                    <img class="doc-img" src="{{base_api_ocr_url}}/uploads/achats/facturation/{{lastOcrFile}}" alt="fichier facture uploadé" width="100%">
+                                {% else %}
+                                    <span class="text-muted">-- AUCUN FICHIER EXPORTE --</span>
+                                {% endif %}
+
+                                <div class="rect">
+                                    <div class="exclusion-x"></div>
+                                    <div class="exclusion-y"></div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                    
+                </div>
+            </div>
+        </div>       
+    </div>
+
+    <div class="modal fade" id="popTextExtract" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content" style="width: 350px; margin: auto;">
+                <div class="modal-header" style="padding: 12px 13px 0px 0px; border: none;">
+                    <button type="button" class="close " data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true"><i class="fa fa-times"></i></span>
+                    </button>
+                </div><!--end modal-header-->
+                <div class="modal-body" style="padding: 20px 30px 30px 30px">
+                    <textarea class="text-extract form-control"></textarea>
+                    <div class="loader-container">
+                        <img src="{{asset('images/loading.gif')}}" style="width: 54px;">
+                    </div>
+                    </form>
+                </div><!--end modal-body-->
+            </div><!--end modal-content-->
+        </div><!--end modal-dialog-->
+    </div>
+
+    <form class="formTmp">
+        <input type="hidden" name="sender_name">
+    </form>
+
+    <div id="modalQ" class="modal fade bs-example-modal-sm modal-center" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel">
+      <div class="modal-dialog modal-sm" role="document">
+        <div class="modal-content">
+            <div class="modal-header" style="border: none;">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title text-center" id="gridSystemModalLabel" style="padding-top: 27px;">Ce fournisseur n'existe pas.<br>voulez-vous le creer?</h4>
+            </div>
+            <div class="modal-body text-center">
+                <button type="button" class="btn btn-default" data-toggle="modal" data-target=".bs-example-modal-sm">NON</button>
+                <a class="btn btn-primary btn-create-fournisseur" href="{{path('facturation_fournisseur_add')}}">OUI</a>
+            </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-fournisseur-container"></div>
+
+
+    <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header" style="display: none;">
+                    <h6 class="modal-title m-0" id="exampleModalCenterTitle">Center Modal</h6>
+                    <button type="button" class="close " data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true"><i class="la la-times"></i></span>
+                    </button>
+                </div><!--end modal-header-->
+                <div class="modal-body">
+                    <form method="POST" action="{{path('facturation_import_document')}}" enctype="multipart/form-data" class="uploadDocument">
+                        <input type="file" name="document" id="input-file-now" class="dropify-fr" required /> 
+                        <div class="text-center" style="margin-top: 20px;">
+                            <button type="submit" class="btn btn-primary btn-sm">VALIDER</button>
+                        </div>
+                    </form>
+                </div><!--end modal-body-->
+            </div><!--end modal-content-->
+        </div><!--end modal-dialog-->
+    </div>
+{% endblock %}
+
+{% block js_import %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/locales/bootstrap-datepicker.fr.min.js" integrity="sha512-fx3aztaUjb4NyoD+Tso5g7R1l29bU3jnnTfNRKBiY9fdQOHzVhKJ10wEAgQ1zM/WXCzB9bnVryHD1M40775Tsw==" crossorigin="anonymous"></script>
+{% endblock %}
+
+{% block javascript %}
+$(document).ready( function () {
+    $('.datepicker').datepicker({
+        format: 'mm/dd/yyyy'
+    });
+} );       
+{% endblock %}
+
+{% block javascript_script %}
+    {{parent()}}
+    {{ include('facturation/_js.html.twig') }}
+    <script type="text/javascript">
+        
+        {% if score is defined and score < 20 %}
+            $('#modalScoreIa').modal('show');
+        {% endif %}
+        
+        function groupTextByPosition(position){
+            $('.loader-container').css('display', 'flex');
+            $fieldSelect = $('.ocr-field.active');
+            index = fieldsOcr.findIndex(x => x.field === $fieldSelect.data('field'));
+            var type = "";
+            var fieldname = "";
+            if( index > -1 ){
+                type = fieldsOcr[index]['type'];
+                fieldname = fieldsOcr[index]['field'];
+            }
+
+            $.ajax({
+                url: "{{path('facturation_group_text_by_position')}}",
+                type:"POST",
+                dataType: "json",
+                async: true,
+                data: {
+                    left: position.left,
+                    top: position.top,
+                    width: position.width,
+                    height: position.height,
+                    type_field: type,
+                    fieldname: fieldname,
+                },
+                success:function(response) {
+                    if(response.status == 200){
+                        appendText(response.data, position, 'achat');
+                    }
+                    else if(response.status == 500){
+                        toastr.error(response.message);
+                        if(response.issue == "fournisseur"){
+                          $('#modalQ').modal('show');
+                          $('input[name=sender_name]').val(response.sender_name);
+                        }
+                    }
+                    $('.loader-container').css('display', 'none');
+                },
+                error:function(){
+                    $('.loader-container').css('display', 'none');
+                    toastr.error("Oops quelque chose s'est mal passée!");
+                }
+            });
+        }
+
+        var rotationSelect = document.getElementById('selectRotation');
+        rotationSelect.onchange = (event) => {
+            if($('#achat_fournisseur').val() == ""){
+                toastr.error("Un fournisseur doit etre selectionné");
+                return;
+            }
+
+            $.ajax({
+                url: "{{path('fournisseur_save_rotation')}}",
+                type: "GET",
+                dataType: "json",
+                async: true,
+                data: {
+                    rotation: event.target.value,
+                    fournisseur: $('#achat_fournisseur').val()
+                },
+                success: function(response, status) {
+                    toastr.success("rotation enregistrée");
+                },
+                error: function(xhr, textStatus, errorThrown) {
+                }
+            });
+        };
+
+        $('.status-wrapper, .devis-wrapper').css('display','none');
+    </script>
+{% endblock %}
+
+
+

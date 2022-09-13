@@ -1,0 +1,22 @@
+
+*** These modified files were found in JOE when it aborted on Thu Mar 10 14:08:21 2022
+*** JOE was aborted because the terminal closed
+
+*** File '(Unnamed)'
+/var/www/fmda/.git/MERGE_MSG
+/var/www/fmda/.git/MERGE_MSG
+/var/www/fmda/.git/MERGE_MSG
+/var/www/fmda/.git/MERGE_MSG
+/var/www/fmda/.git/MERGE_MSG
+/var/www/fmda/.git/MERGE_MSG
+/var/www/fmda/.git/MERGE_MSG
+/var/www/fmda/.git/MERGE_MSG
+/var/www/fmda/.git/MERGE_MSG
+/var/www/fmda/.git/MERGE_MSG
+/var/www/fmda/.git/MERGE_MSG
+
+*** File '* Startup Log *'
+Processing '/etc/joe/editorrc'...
+Processing '/etc/joe/ftyperc'...
+Finished processing /etc/joe/ftyperc
+Finished processing /etc/joe/editorrc

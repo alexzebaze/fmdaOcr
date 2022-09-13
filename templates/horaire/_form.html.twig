@@ -1,0 +1,30 @@
+{{ form_start(form) }}
+<div class="row">
+    <div class="col-lg-12 form-group">
+        <h3>{{ user.firstname ~ " " ~ user.lastname }}</h3>
+    </div>
+    <div class="col-lg-12 form-group">
+        {{ form_label(form.chantierid, 'Chantier') }}
+        {{ form_row(form.chantierid) }}
+    </div>
+    <div class="col-lg-12 form-group">
+        {{ form_label(form.fonction, 'Choisir la tâche effectuée') }}
+        {{ form_row(form.fonction) }}
+    </div>
+    <div class="col-lg-12 form-group">
+        {{ form_label(form.datestart, 'Choisir une date et une heure de début') }}
+        {{ form_row(form.datestart) }}
+    </div>
+    <div class="col-lg-12 form-group">
+        {{ form_label(form.dateend, 'Choisir une date et une heure de fin') }}
+        {{ form_row(form.dateend) }}
+    </div>
+    <div class="col-lg-12 form-group">
+        {{ form_label(form.pause, 'Temps de pause') }}
+        {{ form_row(form.pause) }}
+    </div>
+    <div class="col-lg-12 form-group">
+        <button class="btn btn-primary">{{ button_label|default('Enregistrer') }}</button>
+    </div>
+</div>
+{{ form_end(form) }}

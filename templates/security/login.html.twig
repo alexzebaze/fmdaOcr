@@ -1,0 +1,43 @@
+{% extends 'base_security.html.twig' %}
+
+
+{% block content %}
+    <div>
+
+        <h1 class="logo-name">FMDA</h1>
+
+    </div>
+    <div style="margin-top: 53px;">
+        {% include 'flashes.html.twig' %}
+    </div>
+    <form class="m-t" method="post" {% if app.environment == 'dev' %}novalidate="novalidate"{% endif %}>
+        {% if error %}
+            <div class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
+        {% endif %}
+
+        {% if app.user %}
+            <div class="mb-3">
+                Tu es actuellement connecté en tant que {{ app.user.username }}, <a href="{{ path('security_logout') }}">Logout</a>
+            </div>
+        {% endif %}
+        <div class="form-group">
+            <input type="email" name="username" value="{{ last_username }}" id="inputUsername" class="form-control" placeholder="E-mail" required="">
+        </div>
+        <div class="form-group">
+            <input type="password" name="password"  class="form-control" placeholder="Mot de passe" required="">
+        </div>
+
+        <input type="hidden" name="_csrf_token"
+               value="{{ csrf_token('authenticate') }}"
+        >
+
+        <div class="pass-forget" style="text-align: left;margin-bottom: 17px;margin-top: 27px;">
+            <a href="{{path('resetting_request')}}">Mot de passe oublié?</a>
+        </div>
+        <button type="submit" class="btn btn-primary block full-width m-b">Connexion</button>
+
+
+
+    </form>
+
+{% endblock %}

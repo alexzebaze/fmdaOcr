@@ -1,0 +1,14 @@
+{{ form_start(form) }}
+<div class="row">
+    <div class="col-lg-3 form-group">
+        {{ form_row(form.mois) }}
+    </div>
+    <div class="col-lg-3 form-group">
+        {{ form_row(form.annee) }}
+    </div>
+
+    <div class="col-lg-3 form-group">
+        <button class="btn btn-primary" style="margin-top: 15px;">{{ button_label|default('Appliquer') }}</button>
+    </div>
+</div>
+{{ form_end(form) }}

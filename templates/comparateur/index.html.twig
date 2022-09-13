@@ -1,0 +1,737 @@
+{% extends 'base.html.twig' %}
+{% block title %} {{parent()}} COMPARATEUR BON DE LIVRAISON FACTURES{% endblock %}
+{% block css %}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css" integrity="sha512-mSYUmp1HYZDFaVKK//63EcZq4iFWFjxSL+Z3T/aCt4IO9Cejm03q3NKKYN6pFQzY0SBOr8h+eCIAZHPXcpZaNw==" crossorigin="anonymous" />
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.24/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/buttons/1.7.0/css/buttons.dataTables.min.css">
+
+    <style type="text/css">
+        
+        thead th{text-align: center;text-align: center;}
+        .formValid, .formReglement,.cree-bl{display: none;}
+        .ibox-title{padding: 26px 90px 8px 15px}
+        .ibox-tools{display: flex;align-items: center;justify-content: flex-end;margin-bottom: 7px;}
+        table.dataTable tfoot th, table.dataTable tfoot td{border-top: 1px solid #e7eaec;text-align: center; font-weight: 600;font-size: 15px;    padding-bottom: 3rem;}
+        .table > thead > tr > th, .table > tbody > tr > th, .table > tfoot > tr > th, .table > thead > tr > td, .table > tbody > tr > td, .table > tfoot > tr > td{font-size: 11px}
+        @media (min-width: 768px){
+            .modal-sm {
+                width: 425px;
+            }
+        }
+        .total-bl{
+            margin: 8px 0 32px 0;
+            color: #000;
+            font-weight: 600;
+            text-align: center;
+        }
+        .count_bl, .count_fc{
+            border: 1px solid #e7eaec;
+            text-align: center;
+            font-size: 16px!important;
+            font-weight: 900;
+            height:42px;
+        }
+        .loader-container{
+            display: none;align-items: center;justify-content: center;
+            position: absolute;
+            left: 0;
+            right: 0;
+            margin: auto;
+        }
+    </style>
+    <script type="text/javascript">
+        var blTabId = [];
+        var blTabHt = [];
+        var blObjet = [];
+        var BL_RESULT_TAB = [];
+        var resultFund = 0;
+    </script>
+{% endblock %}
+{% block breadcrumb %}
+    <div class="row wrapper border-bottom white-bg page-heading">
+        <div class="col-lg-10">
+            <h1>Comparateur de Bl-Fc</h1>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                    <a href="{{ path('home') }}">Accueil</a>
+                </li>
+                <li class="breadcrumb-item active">
+                    <strong>Compateur</strong>
+                </li>
+            </ol>
+        </div>
+    </div>
+
+{% endblock %}
+{% block content %}
+    <div class="row">
+        <div class="col-lg-12">
+            {% include 'flashes.html.twig' %}
+            <div class="ibox">
+                <div class="ibox-content">
+                    {{ include('comparateur/filter.html.twig') }}
+                </div>
+            </div>
+            <div class="ibox ">
+                <div class="ibox-title">
+                    <h5>Comparateur de Bl-Fc</h5>
+                    <div class="ibox-tools">
+                        <button type="button" class="btn btn-primary formReglement" style="margin-right: 6px;" data-toggle="modal" data-target="#myModal">
+                          Règlement
+                        </button>
+                        <form method="POST" class="formValid" action="{{path('comparateur_bl_fc_validation')}}">
+                            <input type="hidden" name="list-facture-id">
+                            <input type="hidden" name="list-bl-id">
+                            <div class="text-center">
+                                <button type="submit" class="btn btn-success
+                                ">Valider</button>
+                            </div>
+                        </form>
+                        <a href="" class="btn btn-success cree-bl" style="color: #fff!important;">Crée bl</a>
+                    </div>
+                    <div class="loader-container">
+                        <img src="/assets/images/loading.gif" style="width: 54px;">
+                    </div>
+                </div>
+                <div class="ibox-content">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <tr>
+                                <td class="text-center" style="border: 1px solid #e7eaec"><strong>BL</strong></td>
+                                <td class="text-center"style="border: 1px solid #e7eaec"><strong>FACTURES</strong></td>
+                            </tr>
+                            <tr>
+                                <td class="count_bl" style="width: 50%"></td>
+                                <td class="count_fc" style="width: 50%"></td>
+                            </tr>
+                        </table>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <div class="table-responsive">
+                                <table class="table table-export table-bl">
+                                    <thead>
+                                    <tr>
+                                        <th>Doc</th>
+                                        <th>Date création</th>
+                                        <th>Fournisseur</th>
+                                        <th>DoucumentID</th>
+                                        <th>Chantier</th>
+                                        <th>HT</th>
+                                        <th>TTC</th>
+                                        <th>
+                                            <input type="checkbox" class="chk-bl-parent" value="">
+                                        </th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                        
+                                        {% for bon_livraison in bon_livraisons %}
+                                            {% if bon_livraison.prixht > 0 %}
+                                            <script type="text/javascript">
+                                                blTabId.push(parseInt("{{bon_livraison.id}}"));
+                                                blTabHt.push(parseFloat("{{bon_livraison.prixht}}"));
+                                                blObjet.push([parseInt("{{bon_livraison.id}}"), parseFloat("{{bon_livraison.prixht}}")]);
+                                            </script>
+                                            {% endif %}
+                                        <tr class='text-center'>
+                                            <td>
+                                                <span class="showDocument" data-file="/uploads/factures/{{bon_livraison.getDocumentFile}}" style="cursor: pointer;"><img src="//ssl.gstatic.com/docs/doclist/images/mediatype/icon_3_pdf_x16.png"></span>
+                                            </td>
+                                            <td>
+                                                {{ bon_livraison.facturedAt|date('d/m/Y') }}
+                                            </td>
+                                            <td>{{ bon_livraison.fournisseur is not null ? bon_livraison.fournisseur.nom : '' }}</td>
+                                            <td style="{% if bon_livraison.id in tabDoublon %}color:red{% endif %}">
+                                                {% if bon_livraison.id in tabDoublon %}
+                                                    <span style="display: none;">a</span>
+                                                {% else %}
+                                                    <span style="display: none;">z</span>
+                                                {% endif %}
+                                                <a href="javascript:void()" class="openModalBlDoublonDoc" data-document-id="{{bon_livraison.getDocumentId}}" style="text-decoration: underline;color: inherit;">{{bon_livraison.getDocumentId}}</a>
+                                            </td>
+                                            <td>{{ bon_livraison.chantier is not null ? bon_livraison.chantier.nameentreprise : '' }}</td>
+                                            <td>{{ bon_livraison.getPrixht|number_format(2, ',', '') }}{{ bon_livraison.devise.symbol }}</td>
+                                            <td>{{ bon_livraison.getPrixttc|number_format(2, ',', '') }}{{ bon_livraison.devise.symbol }}</td>
+                                            <td>
+                                                {% if bon_livraison.reglement is null %}
+                                                <input type="checkbox" class="check-bl" name="blCheck" value="{{bon_livraison.id}}" data-prixht="{{bon_livraison.getPrixht|number_format(2, '.','') }}">
+                                                {% else %}
+                                                    <i class="fa fa-check" style="color: green;"></i>
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                        {% else %}
+                                        
+                                        <tr>
+                                            <td colspan="6" class="text-center">Aucun bon_livraison enregistrée</td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="table-responsive">
+                                <table class="table table-export2">
+                                    <thead>
+                                    <tr>
+                                        <th>
+                                            <input type="checkbox" class="chk-fc-parent" value="">
+                                        </th>
+                                        <th>Date création</th>
+                                        <th>Fournisseur</th>
+                                        <th>DocumentID</th>
+                                        <th>Chantier</th>
+                                        <th>HT</th>
+                                        <th>TTC</th>
+                                        <th>H_FRAIS</th>
+                                        <th>HT/HF</th>
+                                        <th>BL</th>
+                                        <th>Doc</th>
+                                        <th></th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for facture in factures %}
+                                        <tr class='text-center' style="{% if facture.getBlValidation %}color:green{% else %} color: red {% endif %}">
+                                            {% set HF = facture.getPrixht - facture.fournisseur.getFFacturation + 0 %} 
+                                            <td>
+                                                <input type="checkbox" class="check-fc" name="fcCheck" value="{{facture.id}}" data-ttc="{{facture.getPrixttc|number_format(2, '.', '') }}" data-HF="{{HF|number_format(2, '.', '') }}" data-valid="{{ facture.getBlValidation ? 1 : 0 }}">
+                                            </td>
+                                            <td>
+                                                {{ facture.facturedAt|date('d/m/Y') }}
+                                            </td>
+                                            <td>{{ facture.fournisseur is not null ? facture.fournisseur.nom : '' }}</td>
+                                            <td>{{facture.getDocumentId}}</td>
+                                            <td>{{ facture.chantier is not null ? facture.chantier.nameentreprise : '' }}</td>
+                                            <td>{{ facture.getPrixht|number_format(2, ',', '') }}{{ facture.devise.symbol }}</td>
+                                            <td>{{ facture.getPrixttc|number_format(2, ',', '') }}{{ facture.devise.symbol }}</td>
+                                            <td>
+                                                {% set HF = facture.getPrixht - facture.fournisseur.getFFacturation + 0 %} 
+                                                {{HF|number_format(2, ',', '')}}{{ facture.devise.symbol }}
+                                            </td>
+                                            <td>
+                                                {{ HF > 0 ? (facture.getPrixht/HF)|number_format(2, ',', '') : 0 }}{{ facture.devise.symbol }}
+                                            </td>
+                                            <td>
+
+                                                {% if facture.getBlValidation %}
+                                                    <span class="openModalBl" style="cursor: pointer;" data-bl-list="{{facture.getBlValidation}}"><img src="//ssl.gstatic.com/docs/doclist/images/mediatype/icon_3_pdf_x16.png"></span>
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                <span class="showDocument" data-file="/uploads/achats/facturation/{{facture.getDocumentFile}}" style="cursor: pointer;"><img src="//ssl.gstatic.com/docs/doclist/images/mediatype/icon_3_pdf_x16.png"></span>
+                                            </td>
+                                            <td>
+                                                <a href="{{ path('facturation_edit', {'facturationId': facture.id} ) }}?page=comparateur"><i class="far fa-edit"></i></a>
+                                            </td>
+                                        </tr>
+                                        {% else %}
+                                        <tr>
+                                            <td colspan="9" class="text-center">Aucune facture enregistrée</td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <div class="modal fade" id="modalBl" tabindex="-1" role="dialog">
+              <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myModalLabel" style="color: #000;">Bons de livraison</h4>
+                  </div>
+                  <div class="modal-body">
+                    
+                    <div class="content-modal-bl"></div>
+
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Fermer</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div id="modalBlFactureDoc" class="modal fade bs-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel">
+                <div class="modal-dialog modal-lg" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header" style="border: none;">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        </div>
+                        <div class="modal-body text-center">
+                            <div class="documentFile-container" style="display: none;">
+                                <object class="documentPdf" data="" type="application/pdf" width="100%" height="980px" style="display: none;"></object>
+                                <img class="documentimage" src="" alt="fichier facture uploadé" width="100%"  style="display: none;">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="modalDocumentFactureShow" class="modal fade bs-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel">
+                <div class="modal-dialog modal-lg" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header" style="border: none;">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        </div>
+                        <div class="modal-body text-center">
+                            <h3 class="text-center no-document" style="display: none;">Aucun document rattaché.</h3>
+                            <div class="documentFacture-container" style="display: none;">
+                                <object class="documentPdf" data="" type="application/pdf" width="100%" height="980px" style="display: none;"></object>
+                                <img class="documentimage" src="" alt="fichier facture uploadé" width="100%"  style="display: none;">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+              <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h2 class="modal-title text-center" id="myModalLabel">Ajout d'un règlement</h2>
+                  </div>
+                  <div class="modal-body">
+                        {{ include('comparateur/reglement_form.html.twig') }}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block js_import %}
+    <script type="text/javascript"src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.min.js"></script>
+    <script type="text/javascript"src="https://cdn.datatables.net/buttons/1.7.0/js/dataTables.buttons.min.js"></script>
+    <script type="text/javascript"src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+    <script type="text/javascript"src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
+    <script type="text/javascript"src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+    <script type="text/javascript"src="https://cdn.datatables.net/buttons/1.7.0/js/buttons.html5.min.js"></script>
+    <script type="text/javascript"src="https://cdn.datatables.net/buttons/1.7.0/js/buttons.print.min.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/plug-ins/1.10.24/sorting/date-eu.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/plug-ins/1.10.15/sorting/numeric-comma.js"></script>
+
+    <script>
+        $( '.datepicker' ).datepicker( 'setDate', new Date() );
+    </script>
+{% endblock %}
+
+{% block javascript_script %}
+<script type="text/javascript">
+    $(document).ready( function () {
+
+        $('.table-export').DataTable({
+            columnDefs: [
+               { "type": 'date-eu', targets: 1 },
+               { "type": "numeric-comma", targets: 5 },
+               { "type": "numeric-comma", targets: 6 },
+            ],
+            "language": {
+                "url": "//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/French.json"
+            },
+            "paging":   false,
+            dom: 'Bfrtip',
+            buttons: [
+                'copy', 'csv', 'excel', 'pdf', 'print'
+            ]
+        });
+        $('.table-export2').DataTable({
+            columnDefs: [
+               { "type": 'date-eu', targets: 1 },
+               { "type": "numeric-comma", targets: 5 },
+               { "type": "numeric-comma", targets: 6 },
+               { "type": "numeric-comma", targets: 7 },
+               { "type": "numeric-comma", targets: 8 },
+            ],
+            "language": {
+                "url": "//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/French.json"
+            },
+            "paging":   false,
+            dom: 'Bfrtip',
+            buttons: [
+                'copy', 'csv', 'excel', 'pdf', 'print'
+            ]
+        });
+
+        $("#reglement_montant_reglement").change(function(){
+            $montantNE = $('#reglement_montant_non_encaisse').val();
+            $('#reglement_restant_encaisse').val(($montantNE-$(this).val()).toFixed(2));
+        });
+
+        /* CHECK FACTURE */
+        $('table').on('change', '.check-fc', function(){
+            if(!$(this).is(':checked')){
+                if($(this).attr('data-valid') != 1)
+                    $( this ).parent().parent().css('color','red');
+            }
+            $eltCheck = $('.check-fc:checkbox:checked');
+            if( $eltCheck.length > 0){
+                if($eltCheck.length == 1){
+                    $('.cree-bl').css('display','block');
+                    $('.cree-bl').attr('href', "{{path('facturation_duplique')}}"+'?facture_id='+$( this ).val());
+                }
+                else
+                    $('.cree-bl').css('display','none');
+
+                if($(this).attr('data-valid') != 1){
+                    $('.formValid').css('display', 'block');
+                    if($(this).is(':checked')){
+                        console.log("match");
+                        matchBlFacture($(this).val(), parseFloat($( this ).attr('data-HF')));
+                    }
+                }
+                if($(this).attr('data-valid') == 1)
+                    $('.formReglement').css('display', 'block');
+            }
+            else{
+                $('.cree-bl').css('display','none');
+                $('.formValid').css('display', 'none');
+                $('.formReglement').css('display', 'none');
+                $('.count_fc').text("");
+            }
+
+            var factureCheck = [];  
+            var tx = 0; 
+            var ttc = 0; 
+            $eltCheck.each(function( index ) {
+                if($( this ).val() != ""){
+                    factureCheck.push($( this ).val());
+                    tx += parseFloat($( this ).attr('data-HF'));
+                    ttc += parseFloat($( this ).attr('data-ttc'));
+                    $('.count_fc').text(tx.toFixed(2));
+                    $('#reglement_montant_non_encaisse').val(ttc.toFixed(2));
+                }
+            });
+            $('input[name=list-facture-id]').val(factureCheck.join('-'));
+            updateColorFact($eltCheck);
+        });
+        $('.chk-fc-parent').on('change', function(){  
+            $('.check-fc').prop('checked', this.checked);      
+            if($(this).is(":checked")){
+                $('.formValid').css('display', 'block');
+                $('.formReglement').css('display', 'block');
+            }
+            else{
+                $('.formValid').css('display', 'none');
+                $('.formReglement').css('display', 'none');
+                $('.count_fc').text("");
+            }
+
+            var factureCheck = [];  
+            $eltCheck = $('.check-fc:checkbox:checked'); 
+            var tx = ttc = 0; 
+            $eltCheck.each(function( index ) {
+                if($( this ).val() != ""){
+                    factureCheck.push($( this ).val());
+                    tx += parseFloat($( this ).attr('data-HF'));
+                    $('.count_fc').text(tx.toFixed(2));
+                    ttc += parseFloat($( this ).attr('data-ttc'));
+                    $('#reglement_montant_non_encaisse').val(ttc.toFixed(2));
+                }
+            });
+            $('input[name=list-facture-id]').val(factureCheck.join('-'));
+            updateColorFact($eltCheck);
+        });
+
+
+        /* CHECK BON LIVRAISON */
+        $('table').on('change', '.check-bl', function(){    
+            $eltCheck = $('.check-bl:checkbox:checked');
+            if( $eltCheck.length > 0){
+                $('.formValid').css('display', 'block');
+            }
+            else{
+                $('.formValid').css('display', 'none');
+                $('.count_bl').text("");
+            }
+
+            var factureCheck = [];  
+            var tx = 0; 
+            $eltCheck.each(function( index ) {
+                if($( this ).val() != ""){
+                    factureCheck.push($( this ).val());
+                    tx += parseFloat($( this ).attr('data-prixht'));
+                    $('.count_bl').text(tx.toFixed(2));
+                }
+            });
+            $('input[name=list-bl-id]').val(factureCheck.join('-'));
+
+            $eltCheck = $('.check-fc:checkbox:checked');
+            updateColorFact($eltCheck);
+            
+        });
+        $('.chk-bl-parent').on('change', function(){  
+            $('.check-bl').prop('checked', this.checked);      
+            if($(this).is(":checked")){
+                $('.formValid').css('display', 'block');
+            }
+            else{
+                $('.formValid').css('display', 'none');
+                $('.count_bl').text("");
+            }
+
+            var factureCheck = [];  
+            $eltCheck = $('.check-bl:checkbox:checked'); 
+            var tx = 0; 
+            $eltCheck.each(function( index ) {
+                if($( this ).val() != ""){
+                    factureCheck.push($( this ).val());
+                    tx += parseFloat($( this ).attr('data-prixht'));
+                    $('.count_bl').text(tx.toFixed(2));
+                }
+            });
+            $('input[name=list-bl-id]').val(factureCheck.join('-'));
+
+            $eltCheck = $('.check-fc:checkbox:checked');
+            updateColorFact($eltCheck);
+        });
+
+        function updateColorFact($eltCheck){
+            $eltCheck.each(function( index ) {
+                if(parseInt($('.count_fc').text()) == parseInt($('.count_bl').text())){
+                    if($( this ).val() != ""){
+                        $( this ).parent().parent().css('color','green');
+                    }
+                }
+                else{
+                    if($(this).attr('data-valid') != 1)
+                        $( this ).parent().parent().css('color','red');
+                }
+            });
+        }
+
+        function getTabBlToMatch(blObjet, x){
+            /*var blTabHt = blTabHt.filter((n) => n<x);*/
+            blObjet.sort(([a, b], [c, d]) => d - b || a - c);
+            console.log(blObjet);
+            var TabBlIdResult = [];
+            var i = 0;
+            blObjetLength = blObjet.length;
+            var sumBlResult = 0;
+            while(x>0 && blObjetLength > 0){
+                if(blObjet[i][1] > x){
+                    i = i+1
+                }
+                else{
+                    TabBlIdResult.push(blObjet[i][0]);
+                    x -= blObjet[i][1];
+                    sumBlResult += blObjet[i][1];
+                    i++;
+                }
+                blObjetLength--;
+            }
+            return [TabBlIdResult, sumBlResult];
+        }
+        function matchBlFacture(factureId, factureHFrais){
+            blObjet.sort(([a, b], [c, d]) => d - b || a - c);
+            BL_RESULT_TAB =  getBlResult(parseFloat(factureHFrais.toFixed(2)));
+            
+        }
+        function getBlResult($factureHFrais){
+            $('.loader-container').css('display','flex');
+            $.ajax({
+                url: "{{path('comparateur_bl_fc_bl_match')}}",
+                type: "GET",
+                dataType: "json",
+                async: true,
+                data: {
+                    factureHFrais: $factureHFrais
+                },
+                success: function(response) {
+                    if(response.status == 200){
+                        BL_RESULT_TAB = response.datas;
+                        console.log(BL_RESULT_TAB);
+                        if(BL_RESULT_TAB.length == 0){
+                            /*alert('Aucun bon de livraison correspondant');*/
+                        }
+                        else{
+                            console.log(BL_RESULT_TAB);
+                            BL_RESULT_TAB = BL_RESULT_TAB[0];
+                            $('input[name=blCheck]').prop("checked", false).trigger("change");
+                            $.each(BL_RESULT_TAB, function( index, value ) {
+                                $('input[name=blCheck][value="'+value+'"]').prop("checked", true).trigger("change");
+                                $rowBl = $('input[name=blCheck][value="'+value+'"]').parent().parent();
+                                $rowBl.clone().prependTo( "table.table-bl tbody" );
+                                $rowBl.remove();
+                            });
+                            {#toastr.success("Somme trouvée");#}
+                            BL_RESULT_TAB = [];
+                        }
+                    }
+                    else if(response.status == 500){
+                        toastr.error(response.message);
+                    }
+                    $('.loader-container').css('display','none');
+                },
+                error: function(xhr, textStatus, errorThrown) {
+                  console.log(errorThrown);
+                  $('.loader-container').css('display','none');
+                }
+            });
+        }
+
+        function subsetSum(numbers, target, partial, tab3) {
+          var s, n, remaining;
+
+          partial = partial || [];
+          tab3 = tab3 || [];
+
+          // sum partial
+          s = tab3.reduce(function (a, b) {
+            return a + b;
+          }, 0);
+
+          s = parseFloat(s.toFixed(2));
+          // check if the partial sum is equals to target
+          if (s === target) {
+            BL_RESULT_TAB.push(partial);
+          }
+
+          if (s >= target) {
+            return;  // if we reach the number why bother to continue
+          }
+
+          for (var i = 0; i < numbers.length; i++) {
+            n = numbers[i];
+            remaining = numbers.slice(i + 1);
+            subsetSum(remaining, target, partial.concat([n[0]]), tab3.concat([n[1]]));
+          }
+        }
+
+    } );
+    $(document).ready( function () {
+
+        $('body').on('click', '.openModalBl', function(){
+            $("#modalBl").modal('show');
+            loadModalBl($(this).attr('data-bl-list'));
+        })
+        $('body').on('click', '.openModalBlFactureDoc', function(){
+            loadModalBlFactureDoc($(this).attr('data-facture-id'));
+        })
+        $('body').on('click', '.openModalBlDoublonDoc', function(){
+            $("#modalBl").modal('show');
+            loadModalBlDoublonByDoc($(this).attr('data-document-id'));
+        })
+
+        function loadModalBl(blList){
+            $.ajax({
+                url: "{{path('bon_livraison_list_by_list_id')}}",
+                type: "GET",
+                dataType: "json",
+                async: true,
+                data: {
+                    bl_list:blList
+                },
+                success: function(response, status) {
+                  if(response.status == 200){
+                    $('.content-modal-bl').html(response.preview);
+                  }
+                  else if(response.status == 500){
+                    toastr.error(response.message);
+                  }
+                },
+                error: function(xhr, textStatus, errorThrown) {
+                  toastr.error("Ooops..., Quelque chose s'est mal passée");
+                }
+            });
+        }
+
+        function loadModalBlFactureDoc(factureId){
+            $.ajax({
+                url: "{{path('facturation_get_document_by_id')}}",
+                type: "GET",
+                dataType: "json",
+                async: true,
+                data: {
+                    facture_id:factureId
+                },
+                success: function(response, status) {
+                  if(response.status == 200){
+                    $("#modalBlFactureDoc").modal('show');
+                    $documentFile = "/uploads/achats/facturation/"+response.facture.document;
+                    if($documentFile != ""){
+                        $('.no-document').css('display','none');
+                        $('.documentFile-container').css('display','block');
+                        if($documentFile.substr($documentFile.length - 3).toLowerCase() == "pdf"){
+                            $('.documentFile-container').html('<object class="documentPdf" data="" type="application/pdf" width="100%" height="980px" style="display: none;"></object>');
+                            $('.documentPdf').css('display', 'block');
+                            $('.documentPdf').attr('data', $documentFile);
+                        }
+                        else{
+                            $('.documentimage').css('display', 'block');
+                            $('.documentimage').attr('src', $documentFile);
+                        }
+                    }
+                    else{
+                        $('.documentFile-container').css('display','none');
+                        $('.no-document').css('display','block');
+                    }
+                  }
+                  else if(response.status == 500){
+                    toastr.error(response.message);
+                  }
+                },
+                error: function(xhr, textStatus, errorThrown) {
+                  toastr.error("Ooops..., Quelque chose s'est mal passée");
+                }
+            });
+        }
+        function loadModalBlDoublonByDoc(documentId){
+            $.ajax({
+                url: "{{path('bon_livraison_list_by_documentID')}}",
+                type: "GET",
+                dataType: "json",
+                async: true,
+                data: {
+                    documentId:documentId
+                },
+                success: function(response, status) {
+                  if(response.status == 200){
+                    $('.content-modal-bl').html(response.preview);
+                  }
+                  else if(response.status == 500){
+                    toastr.error(response.message);
+                  }
+                },
+                error: function(xhr, textStatus, errorThrown) {
+                  toastr.error("Ooops..., Quelque chose s'est mal passée");
+                }
+            });
+        }
+
+        $(document).on('hidden.bs.modal', function (event) {
+          if ($('.modal:visible').length) {
+            $('body').addClass('modal-open');
+          }
+        });
+
+
+
+    } );
+</script>
+<script type="text/javascript">
+    $('form[name=reglement]').attr('action', "{{url}}");
+    var idSelect = document.getElementById('form_mois');
+    idSelect.onchange = (event) => {
+      $('.btnAppliqueFilter').trigger( "click" );
+    };
+
+</script>
+{% endblock %}
+
+{% block javascript %}
+    
+     
+{% endblock %}

@@ -1,0 +1,77 @@
+<div class="modal-document">
+    <div id="modalDocumentExist" class="modal fade bs-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header" style="border: none;">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                </div>
+                <div class="modal-body row">
+                    <div class="col-lg-6">
+                        <h2>Document existant</h2>
+                        <div>
+                            {% if blExiste is defined and blExiste != "" %}
+                                <span style="visibility: hidden;">{{blExiste|slice(-3,3)|lower}}</span>
+                                {% if blExiste|slice(-3,3)|lower == "pdf" %}
+                                    <object class="pdfupload" data="/uploads/factures/{{blExiste}}" type="application/pdf" width="100%" height="980px">lien document : <a href="/uploads/factures/{{blExiste}}">{{ blExiste }}</a></object>
+                                    {% else %}
+                                    <img src="/uploads/factures/{{blExiste}}" alt="fichier facture uploadé" width="100%">
+                                {% endif %}
+                            {% else %}
+                                <span class="text-muted">-- AUCUN FICHIER EXISTANT --</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <h2>Document extrait</h2>
+                        <div>
+                            {% if bon_livraison.getDocumentFile %}
+                                {% if bon_livraison.getDocumentFile|slice(-3,3)|lower == "pdf" %}
+                                    <object class="pdfupload" data="/uploads/factures/{{bon_livraison.getDocumentFile}}" type="application/pdf" width="100%" height="980px">lien document : <a href="/uploads/factures/{{bon_livraison.getDocumentFile}}">{{ bon_livraison.getDocumentFile }}</a></object>
+                                    {% else %}
+                                    <img src="/uploads/factures/{{bon_livraison.getDocumentFile}}" alt="fichier facture uploadé" width="100%">
+                                {% endif %}
+                            {% else %}
+                                <span class="text-muted">-- AUCUN FICHIER EXPORTE --</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="col-lg-12 text-center" style="margin-top: 34px">
+                        <a href="{{path('bon_livraison_delete_rossum_document_id', {'rossum_document_id':bon_livraison.getRossumDocumentId})}}" class="btn btn-primary">Supprimer le doublon</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    var blExiste = "{{blExiste}}";
+    if(blExiste != ""){
+        $('#modalDocumentExist').modal('show');
+        toastr.warning('Une facture similaire existe déjà.');
+    }
+</script>
+
+<div class="row">
+    <div class="col-lg-4">
+        <div class="ibox">
+            <div class="ibox-content">
+                {{ include('achat/_form.html.twig') }}
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-8">
+        <div class="ibox">
+            <div class="ibox-content">
+            {% if bon_livraison.getDocumentFile %}
+                {% if bon_livraison.getDocumentFile|slice(-3,3)|lower == "pdf" %}
+                    <object class="pdfupload" data="/uploads/factures/{{bon_livraison.getDocumentFile}}" type="application/pdf" width="100%" height="980px">lien document : <a href="/uploads/factures/{{bon_livraison.getDocumentFile}}">{{ bon_livraison.getDocumentFile }}</a></object>
+                    {% else %}
+                    <img src="/uploads/factures/{{bon_livraison.getDocumentFile}}" alt="fichier facture uploadé" width="100%">
+                {% endif %}
+            {% else %}
+                <span class="text-muted">-- AUCUN FICHIER EXPORTE --</span>
+            {% endif %}
+            </div>
+        </div>
+    </div>         
+</div>

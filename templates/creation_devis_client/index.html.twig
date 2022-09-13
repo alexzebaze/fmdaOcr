@@ -1,0 +1,218 @@
+{% extends 'base.html.twig' %}
+
+{% block css %}
+    <link rel="stylesheet" href="//cdn.datatables.net/1.10.20/css/jquery.dataTables.min.css">
+    <style type="text/css">        
+        .rounded-img {
+            border-radius: 50%;
+            position: relative;
+            z-index: 1;
+            width: 40px;
+            height: 40px;
+            object-fit: cover;
+            transition: easy 0.4s all;
+        }
+        #dupliqueMultiDevis{display: none;}
+    </style>
+{% endblock %}
+
+
+{% block breadcrumb %}
+
+    <div class="row wrapper border-bottom white-bg page-heading">
+        <div class="col-lg-10">
+            <h1>Liste Devis</h1>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                    <a href="{{ path('home') }}">Accueil</a>
+                </li>
+                <li class="breadcrumb-item active">
+                    <strong>devis</strong>
+                </li>
+            </ol>
+        </div>
+    </div>
+{% endblock %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-lg-12">
+            {% include 'flashes.html.twig' %}
+            <div class="ibox ">
+                <div class="ibox-title">
+                    <h5>Liste des devis</h5>
+                    <div class="ibox-tools">
+                        <a href="{{ path('creation_devis_client_new') }}" class="btn btn-primary">
+                            <i class="fa fa-plus"></i>
+                            Ajouter
+                        </a>&nbsp
+
+                        <form target="_blank" method="POST" id="dupliqueMultiDevis" name="dupliqueMultiDevis" action="{{path('creation_devis_client_duplique')}}" style="display: inline-block;">
+                            <textarea name="list_devis" id="list_devis" style="display: none;"></textarea>
+                            <button type="submit" class="btn btn-info ">Dupliquer</button>
+                        </form>
+                    </div>
+                </div>
+                <div class="ibox-content">
+                    <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                        <tr>
+                            <th>
+                                <input type="checkbox" name="" class="chk-parent" style="width: 25px;height: 18px;">
+                            </th>
+                        	<th>Document_ID</th>
+                            <th>Client</th>
+                            <th>Chantier</th>
+                            <th>Lot</th>
+                            <th>Type</th>
+                            <th width="90px">Echeance</th>
+                            <th>Total_HT</th>
+                            <th>Total_TTC</th>
+                            <th>Status</th>
+                            <th></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                            {% for entete in entetes %}
+                            <tr style="{% if entete.locked %}background: #f3f3f4{% endif %}">
+                                <td>
+                                    <input type="checkbox" class="check-devis" name="blCheck" value="{{entete.id}}">
+                                </td>
+                            	<td>{{entete.documentId}}</td>
+                            	<td>{{entete.client is not null ? entete.client.nom : ''}}</td>
+                            	<td>{{entete.chantier is not null ? entete.chantier.nameentreprise : ''}}</td>
+                            	<td>{{entete.lot is not null ? entete.lot.lot : ''}}</td>
+                            	<td>{{typeArticles[entete.typeDocu]}}</td>
+                            	<td>{{entete.echeance|date('d/m/Y H:i')}}</td>
+                            	<td>{{entete.totalHt}}</td>
+                            	<td>{{entete.totalTtc}}</td>
+                                <td>
+                                    <select class="form-control status-select" style="{% if entete.status is not null and (entete.status.color) %} background: {{entete.status.color}}; color: #fff; {% else %} {% endif %}; height: 100%;width: 170px">
+                                        <option disabled selected>-Status-</option>
+                                        {% for stat in status %}
+                                            <option value="{{stat.id~'-'~entete.id}}" style="height: 35px; background: {{stat.color}}; color: #fff" {% if entete.status is not null and (entete.status.id == stat.id) %}selected{% endif %} data-devis-id="{{entete.id}}">{{stat.nom}}</option>
+                                        {% endfor %}
+                                    </select>
+                                    {% set devis_status = "" %} 
+                                    {% if entete.status is not null %}
+                                        {% set devis_status = entete.status.name %} 
+                                        <span class="status-visible" style="display: none;">
+                                            {{devis_status}}
+                                        </span>
+                                    {% else %}
+                                        <span style="display: none;">En attente</span>
+                                    {% endif %}
+                                </td>
+                            	<td>
+	                                <div style="display: flex;">
+	                                    <a href="{{ path('creation_devis_client_edit', {'id': entete.id}) }}" class="btn btn-primary"><i class="fa fa-edit"></i></a>
+	                                    &nbsp
+	                                    <form method="post" action="{{ path('creation_devis_delete', {'id': entete.id}) }}" onsubmit="return confirm('Confirmez-vous la suppression?');" style="display: inline-block;">
+	                                        <input type="hidden" name="_method" value="DELETE">
+	                                        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ entete.id) }}">
+	                                        <button class="btn btn-danger"><i class="fa fa-trash"></i></button>
+	                                    </form>
+	                                </div>
+	                            </td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td colspan="34">Aucune entrée</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block javascript_script %}
+    <script src="//cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/plug-ins/1.10.24/sorting/date-eu.js"></script>
+
+    <script type="text/javascript">
+    	$(document).ready( function () {
+		    $('table').DataTable({
+		        "language": {
+		            "url": "//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/French.json"
+		        },
+		        "columnDefs": [
+		        ],
+		        "pageLength": 50,
+		        "order": []
+		    });
+		} );
+
+        $(document).ready( function () {
+            $('table').on('change', '.check-devis', function(){    
+                $eltCheck = $('.check-devis:checkbox:checked');
+                if( $eltCheck.length > 0){
+                    $('#dupliqueMultiDevis').css('display', 'inline-block');
+                }
+                else{
+                    $('#dupliqueMultiDevis').css('display', 'none');
+                }
+
+                var devisSelect = [];   
+                $eltCheck.each(function( index ) {
+                    if($( this ).val() != "")
+                        devisSelect.push($( this ).val());
+                });
+                $('textarea[name=list_devis]').val(devisSelect.join('-'));
+            });
+            $('.chk-parent').on('change', function(){  
+                $('.check-devis').prop('checked', this.checked);      
+                if($(this).is(":checked")){
+                    $('#dupliqueMultiDevis').css('display', 'inline-block');
+                }
+                else{
+                    $('#dupliqueMultiDevis').css('display', 'none');
+                }
+
+                var devisSelect = [];  
+                $eltCheck = $('.check-devis:checkbox:checked'); 
+                $eltCheck.each(function( index ) {
+                    if($( this ).val() != "")
+                        devisSelect.push($( this ).val());
+                });
+                $('textarea[name=list_devis]').val(devisSelect.join('-'));
+            });
+
+            $( ".status-select" ).change(function() {
+                var statusId =  $(this).val().split('-')[0];
+                var devisId =  $(this).val().split('-')[1];
+                updateStatus(statusId, devisId);
+            });
+        } );
+
+        function updateStatus(statusId, devisId){
+           $.ajax({
+                url:"{{path('creation_devis_client_update_status')}}",
+                type:"GET",
+                data: {
+                    statusId : statusId,
+                    devisId : devisId
+                },  
+                success:function(response) {
+                    window.location.reload();
+                  if(response.status == 200){
+                    window.location.reload();
+                  }
+                  else if(response.status == 500){
+                    toastr.error(response.message);
+                  }
+                },
+                error:function(){
+                  toastr.error("Ooops... Quelque chose s'est mal passée");
+                }
+            });
+        }
+    </script>
+{% endblock %}

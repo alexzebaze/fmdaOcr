@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+  <meta charset="UTF-8">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu" crossorigin="anonymous">  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+<style type="text/css"  media="print">
+
+    @media print {
+        body * {
+            visibility: hidden;
+        }
+        #ct, #ct * {
+            visibility: visible;
+        }
+        .doc-container {
+            position: absolute;
+            left: 0;
+            right: 0;
+            top: 0;
+        }
+        .pagebreak { page-break-before: always; } /* page-break-after works, as well */
+    }
+
+    @page { size: auto;  margin: 0mm; padding-bottom: 4cm}
+
+    body  
+    { 
+        /* this affects the margin on the content before sending to printer */ 
+        margin: 0px;  
+    } 
+
+</style>
+
+<style type="text/css">
+    .invoice .content-section .inv--head-section {
+        padding: 36px 35px;
+        margin-bottom: 40px;
+        padding-bottom: 25px;
+        border-bottom: 1px solid #ebedf2;
+    }
+
+    .inv--customer-detail-section {
+        padding: 36px 35px;
+        padding-top: 0;
+    }
+
+
+
+    .form-group{text-align: left;}
+    .field-mail{display: none;}
+    .doc-container div[class^="col-lg-"] {
+        padding: 0;
+    }
+    .close-row, .comment-row{
+        font-weight: bold;
+        font-size: 16px;
+        padding: 0 4px;
+    }
+    .doc-container .form-group{margin:0;}
+    .doc-container .select2-container{width: 100%!important}
+    .doc-container .select2-container .select2-selection--single, .tvaField, .field-type_article{min-height: 34px; height: 100%}
+    .doc-container .select2-container--default .select2-selection--single{
+        border-radius: 0;
+        border: 1px solid #e5e6e7;
+    }
+    .disabled{pointer-events: none;background: #eee}
+    .offert-container{
+        border: 1px solid #e5e6e7;
+        height: 34px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .rounded-img {
+        border-radius: 50%;
+        width: 32px;
+        height: 32px;
+        object-fit: cover;
+        margin:0px 7px;
+    }
+    .article-container {
+        display: flex;
+        align-items: center;
+        border: 1px solid #e5e6e7;
+        padding-left: 2px;
+    }
+    .commentaire-container.hide{
+        display: none;
+    }
+    .recap_tva_item{display: none;}
+
+    .adresse-container{
+        min-height: 62px;
+        border: 1px solid #e5e6e7;
+        padding: 5px;
+    }
+    .line-color {
+        height: 14px;
+    }
+    .weight{font-weight: bold;}
+
+
+    .row-flex{
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+    }
+    .row-flex > * {
+        flex: 1;
+        margin-right: 15px;
+    }    
+    .row-flex > *:last-child{
+        margin-right: 0;
+    }
+    .child-mr-0 >*{
+        margin: 0px;
+    }
+    .form-control, .single-line {
+        background-color: #FFFFFF;
+        background-image: none;
+        border: 1px solid #e5e6e7;
+        border-radius: 1px;
+        color: inherit;
+        display: block;
+        padding: 6px 12px;
+        transition: border-color 0.15s ease-in-out 0s, box-shadow 0.15s ease-in-out 0s;
+        width: 100%;
+    }
+
+    .recap_tva_item{display: none;}
+</style>
+
+</head>
+<body style="-webkit-print-color-adjust: exact;">
+    <div class="" style="margin: 0 10px;">
+
+        <div id="printableArea">
+            <div class="invoice">
+                <div class="invoice-container">
+                    <div class="invoice-inbox">
+                        
+                        <div id="ct" class="">
+                            
+                            <div class="invoice-00001">
+                                <div class="content-section">
+
+                                    <div class="inv--head-section inv--detail-section">
+                                    
+                                        <div style="display: flex;align-items: center;justify-content: space-between;">
+                                        
+                                            <div class="mr-auto">
+                                                <div class="d-flex flex-column align-items-start">
+                                                    
+                                                    {% if app.session.get('entreprise_session_id') %}
+                                                        <span>
+                                                            {% if app.session.get('entreprise_session_logo') %}
+                                                                <img class="company-logo align-self-start" src="/logo/{{app.session.get('entreprise_session_logo')}}" style="object-fit: cover;max-width: 404px; max-height: 133px">
+                                                            {% endif %}
+                                                        </span>                                                     
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+
+                                            {#<!-- <div class="text-sm-right">
+                                                <p class="inv-list-number" style="">
+                                                    <span class="inv-title">Chantier : <span style="text-transform: uppercase;">{{chantier.getNameentreprise}}</span>
+                                                    </span>
+                                                    <br>
+                                                    <span class="inv-title">Date : <span style="text-transform: uppercase;">{{ "now"|date("m/d/Y") }}</span>
+                                                    </span>
+                                                </p>
+                                            </div> -->#}
+                                        </div>
+
+                                        {#<!-- <div class="" style="display: flex;align-items: center;justify-content: space-between;">
+
+                                            <div style="margin-top: 7px!important;">
+                                                {% if app.session.get('entreprise_session_id') %}
+                                                    <h3 class="in-heading align-self-start" style="margin-top: 15px;margin-bottom: 0;">{{ app.session.get('entreprise_session_name') }}</h3>
+                                                    
+                                                {% endif %}
+                                                <p class="inv-email-address" >{{entreprise.adresse|upper}}</p>
+                                                <p class="inv-email-address">{{entreprise.postalcode|upper}} {{entreprise.ville|upper}}</p>
+                                                <p class="inv-email-address">{{entreprise.email}}</p>
+                                                <p class="inv-email-address">
+                                                    {{entreprise.phone}}
+                                                </p>
+                                            </div>
+                                            <div>
+                                                {% if chantier.defaultGalerie and chantier.defaultGalerie.getCompressedUrl %}
+                                                    <img class="company-logo align-self-start" src="{{chantier.defaultGalerie.getCompressedUrl}}" style="object-fit: cover;max-width: 250px;max-height: 232px;    display: inline;">
+                                                {% endif %}
+                                            </div>
+                                        </div> -->#}
+                                        
+                                    </div>
+
+                                    <div class="inv--product-table-section" style="margin-top: 20px;">
+
+                                        <div class="row-flex">
+                                            <div class="form-group">
+                                                {{ form_label(form.client, 'Client') }}
+                                                {{ form_row(form.client) }}
+
+                                                <div class="adresse-container adresse-client-container">
+                                                    <div class="client-adresse">
+                                                        {% if entete.client is not null and entete.client.adresse %}
+                                                            {{entete.client.adresse}}
+                                                        {% endif %}
+                                                    </div>
+                                                    <div class="client-ville">
+                                                        {% if entete.client is not null and entete.client.ville %}
+                                                            {{entete.client.ville}}
+                                                        {% endif %}
+                                                    </div>
+                                                    <div class="client-chantier">
+                                                        {% if entete.client is not null and entete.client.chantiers|length > 0 %}
+                                                            {% for ch in entete.client.chantiers %} 
+                                                                {{ch.nameentreprise}}
+                                                            {% endfor %}
+                                                        {% endif %}
+                                                    </div>
+                                                </div>
+                                                
+                                            </div>
+                                            <div class="form-group">
+                                                {{ form_label(form.chantier, 'Chantier') }}
+                                                {{ form_row(form.chantier) }}
+
+                                                <div class="adresse-container adresse-chantier-container">
+                                                    <div class="client-adresse">
+                                                        {% if entete.chantier is not null and entete.chantier.address %}
+                                                            {{entete.chantier.address}}
+                                                        {% endif %}
+                                                    </div>
+                                                    <div class="client-ville">
+                                                        {% if entete.chantier is not null and entete.chantier.city %}
+                                                            {{entete.chantier.ville}}
+                                                        {% endif %}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label>Lot</label>
+                                                {{ form_row(form.lot) }}
+                                            </div>
+                                        </div>
+
+                                        <div class="row-flex">
+                                            <div class=" form-group">
+                                                <label>Echeance</label>
+                                                {{ form_row(form.echeance) }}
+                                            </div>
+                                            <div class=" form-group">
+                                                <label>Date</label>
+                                                {{ form_row(form.create_at) }}
+                                            </div>
+                                        </div>
+                                        <div class="row-flex">
+                                            <div class="form-group">
+                                                <label>Document ID</label>
+                                                {{ form_row(form.document_id) }}
+                                            </div>
+                                            <div class="form-group">
+                                                <label>TOTAL HT</label>
+                                                {{ form_row(form.total_ht) }}
+                                            </div>
+                                            <div class="form-group">
+                                                <label>TOTAL TTC</label>
+                                                {{ form_row(form.total_ttc) }}
+                                            </div>
+                                        </div>
+                                        <div class="row-flex">
+                                            <div class="form-group">
+                                                <label>INFO</label>
+                                                {{ form_row(form.info) }}
+                                            </div>
+                                        </div>
+
+                                        <div class="row-flex">
+                                            <div class="form-group">
+                                                <label>Code</label>
+                                            </div>
+                                            <div class="form-group">
+                                                <label>Article</label>
+                                            </div>
+                                            <div class=" form-group">
+                                                <label>Type</label>
+                                            </div>
+                                            <div class=" form-group">
+                                                <label>Qte</label>
+                                            </div>
+                                            <div class=" form-group">
+                                                <label>Unite</label>
+                                            </div>
+                                            <div class=" form-group">
+                                                <label>PVHT</label>
+                                            </div>
+                                            <div class=" form-group">
+                                                <label>TotalHT</label>
+                                            </div>
+                                            <div class=" form-group">
+                                                <label>Tva</label>
+                                            </div>
+                                            <div class=" form-group">
+                                                <label>Remise</label>
+                                            </div>
+                                        </div>
+
+                                        {% set sumTva = 0 %}
+                                        {% set tva5 = 0 %}
+                                        {% set tva10 = 0 %}
+                                        {% set tva20 = 0 %}
+                                        {% if documents is defined %}
+                                            {% for document in documents %}
+                                            {% if document.tva %}
+                                                {% set sumTva = sumTva + document.tva.valeur %}
+
+                                                {% if document.tva.valeur == 5.5 %}
+                                                    {% set tva5 = tva5 + 1 %}
+                                                {% elseif document.tva.valeur == 10 %}
+                                                    {% set tva10 = tva10 + 1 %}
+                                                {% elseif document.tva.valeur == 20 %}
+                                                    {% set tva20 = tva20 + 1 %}
+                                                {% endif %}
+                                            {% endif %}
+
+                                            <div class="row-flex child-mr-0 document-row" data-row-id="{{document.id}}" id="rowId{{document.id}}">
+
+                                                {% if document.type == 'docu' %}
+                                                    <div class=" form-group">
+                                                        <input type="text" name="documentsEdit[{{document.id}}][code]" data-field="code" class="form-control field field-code" value="{{document.code}}">
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <select required class="form-control field articlefield" name="documentsEdit[{{document.id}}][article]" data-field="article" data-row-id="{{document.id}}" 
+
+                                                        style="height: 34px;
+                                                        {% if document.id in styles|keys and 'article' in styles[document.id]|keys %}
+                                                            {% if styles[document.id]["article"]["background"] is not null and styles[document.id]["article"]["background"] != "" %}
+                                                                background: {{styles[document.id]["article"]["background"]}};
+                                                            {% endif %}
+                                                            {% if styles[document.id]["article"]["color"] is not null and styles[document.id]["article"]["color"] != "" %}
+                                                                color: {{styles[document.id]["article"]["color"]}};
+                                                            {% endif %}
+                                                            {% if styles[document.id]["article"]["weight"] is not null and styles[document.id]["article"]["weight"] != "" %}
+                                                                font-weight: bold;
+                                                            {% endif %}
+                                                        {% endif %}">
+                                                            {% for art in articles %}
+                                                                <option value="{{art.id}}" {% if document.article and art.id == document.article.id %}selected{% endif %}>{{art.libelle}}</option>
+                                                            {% endfor %}
+                                                        </select>
+                                                    </div>
+                                                    <div class=" form-group">
+                                                        <select name="documentsEdit[{{document.id}}][type_article]" data-field="type_article" class="form-control field disabled field-type_article" value="{{document.typeArticle}}">
+                                                            {% for key,type in typeArt %} 
+                                                                <option value="{{key}}" {% if key == document.typeArticle %}selected{% endif %}>{{type}}</option>
+                                                            {% endfor %}
+                                                        </select>
+
+                                                    </div>
+                                                    <div class=" form-group">
+                                                        <input type="text" data-row-id="{{document.id}}" name="documentsEdit[{{document.id}}][qte]" data-field="qte" class="form-control field-qte change_ht_doc field" value="{{document.qte}}"
+
+                                                        style="
+                                                        {% if document.id in styles|keys and 'qte' in styles[document.id]|keys %}
+                                                            {% if styles[document.id]["qte"]["background"] is not null and styles[document.id]["qte"]["background"] != "" %}
+                                                                background: {{styles[document.id]["qte"]["background"]}};
+                                                            {% endif %}
+                                                            {% if styles[document.id]["qte"]["color"] is not null and styles[document.id]["qte"]["color"] != "" %}
+                                                                color: {{styles[document.id]["qte"]["color"]}};
+                                                            {% endif %}
+                                                            {% if styles[document.id]["qte"]["weight"] is not null and styles[document.id]["qte"]["weight"] != "" %}
+                                                                font-weight: bold;
+                                                            {% endif %}
+                                                        {% endif %}">
+                                                    </div>
+                                                    <div class=" form-group unite-container">
+                                                        <input type="text" data-row-id="{{document.id}}" name="documentsEdit[{{document.id}}][unite]" data-field="unite" class="form-control field-unite field" data-field="unite" value="{{document.unite}}"
+                                                        style="
+                                                        {% if document.id in styles|keys and 'unite' in styles[document.id]|keys %}
+                                                            {% if styles[document.id]["unite"]["background"] is not null and styles[document.id]["unite"]["background"] != "" %}
+                                                                background: {{styles[document.id]["unite"]["background"]}};
+                                                            {% endif %}
+                                                            {% if styles[document.id]["unite"]["color"] is not null and styles[document.id]["unite"]["color"] != "" %}
+                                                                color: {{styles[document.id]["unite"]["color"]}};
+                                                            {% endif %}
+                                                            {% if styles[document.id]["unite"]["weight"] is not null and styles[document.id]["unite"]["weight"] != "" %}
+                                                                font-weight: bold;
+                                                            {% endif %}
+                                                        {% endif %}">
+
+                                                    </div>
+                                                    <div class=" form-group">
+                                                        <input type="text" name="documentsEdit[{{document.id}}][pvht]" data-field="pvht" class="form-control field field-pvht change_ht_doc" value="{{document.pvht}}" data-row-id="{{document.id}}"
+                                                        style="
+                                                        {% if document.id in styles|keys and 'pvht' in styles[document.id]|keys %}
+                                                            {% if styles[document.id]["pvht"]["background"] is not null and styles[document.id]["pvht"]["background"] != "" %}
+                                                                background: {{styles[document.id]["pvht"]["background"]}};
+                                                            {% endif %}
+                                                            {% if styles[document.id]["pvht"]["color"] is not null and styles[document.id]["pvht"]["color"] != "" %}
+                                                                color: {{styles[document.id]["pvht"]["color"]}};
+                                                            {% endif %}
+                                                            {% if styles[document.id]["pvht"]["weight"] is not null and styles[document.id]["pvht"]["weight"] != "" %}
+                                                                font-weight: bold;
+                                                            {% endif %}
+                                                        {% endif %}">
+                                                    </div>
+                                                    <div class=" form-group">
+                                                        <input type="text" name="documentsEdit[{{document.id}}][total_ht]" class="form-control field total_ht" value="{{document.totalHt}}" data-row-id="{{document.id}}"
+                                                        style="
+                                                        {% if document.id in styles|keys and 'total_ht' in styles[document.id]|keys %}
+                                                            {% if styles[document.id]["total_ht"]["background"] is not null and styles[document.id]["total_ht"]["background"] != "" %}
+                                                                background: {{styles[document.id]["total_ht"]["background"]}};
+                                                            {% endif %}
+                                                            {% if styles[document.id]["total_ht"]["color"] is not null and styles[document.id]["total_ht"]["color"] != "" %}
+                                                                color: {{styles[document.id]["total_ht"]["color"]}};
+                                                            {% endif %}
+                                                            {% if styles[document.id]["total_ht"]["weight"] is not null and styles[document.id]["total_ht"]["weight"] != "" %}
+                                                                font-weight: bold;
+                                                            {% endif %}
+                                                        {% endif %}">
+                                                    </div>
+                                                    <div class=" form-group">
+                                                        <select class="form-control tvaField field change_ht_doc" data-field="tva" data-row-id="{{document.id}}" name="documentsEdit[{{document.id}}][tva]"
+
+                                                        style="
+                                                        {% if document.id in styles|keys and 'tva' in styles[document.id]|keys %}
+                                                            {% if styles[document.id]["tva"]["background"] is not null and styles[document.id]["tva"]["background"] != "" %}
+                                                                background: {{styles[document.id]["tva"]["background"]}};
+                                                            {% endif %}
+                                                            {% if styles[document.id]["tva"]["color"] is not null and styles[document.id]["tva"]["color"] != "" %}
+                                                                color: {{styles[document.id]["tva"]["color"]}};
+                                                            {% endif %}
+                                                            {% if styles[document.id]["tva"]["weight"] is not null and styles[document.id]["tva"]["weight"] != "" %}
+                                                                font-weight: bold;
+                                                            {% endif %}
+                                                        {% endif %}">
+
+                                                            {% for tva in tvas %}
+                                                                <option value="{{tva.id}}" {% if document.tva and tva.id == document.tva.id %}selected{% endif %}>{{tva.valeur}}</option>
+                                                            {% endfor %}
+                                                        </select>
+                                                    </div>
+                                                    <div class=" form-group">
+                                                        <input type="text" name="documentsEdit[{{document.id}}][remise]" data-field="remise" data-row-id="{{document.id}}" class="form-control field field-remise change_ht_doc" value="{{document.remise}}"
+                                                        style="
+                                                        {% if document.id in styles|keys and 'remise' in styles[document.id]|keys %}
+                                                            {% if styles[document.id]["remise"]["background"] is not null and styles[document.id]["remise"]["background"] != "" %}
+                                                                background: {{styles[document.id]["remise"]["background"]}};
+                                                            {% endif %}
+                                                            {% if styles[document.id]["remise"]["color"] is not null and styles[document.id]["remise"]["color"] != "" %}
+                                                                color: {{styles[document.id]["remise"]["color"]}};
+                                                            {% endif %}
+                                                            {% if styles[document.id]["remise"]["weight"] is not null and styles[document.id]["remise"]["weight"] != "" %}
+                                                                font-weight: bold;
+                                                            {% endif %}
+                                                        {% endif %}">
+                                                    </div>
+
+                                                {% elseif document.type == 'line' %}
+                                                    <!-- commentaire texte -->
+                                                    <div class=" field form-group commentaire-container" id="commentaire{{document.id}}">
+                                                        <textarea rows="1" name="commentairesEdit[{{document.id}}][commentaire]" class="form-control field" placeholder="commentaire" data-row-id="{{document.id}}"
+                                                    style="
+                                                        {% if document.id in styles|keys and 'commentaire' in styles[document.id]|keys %}
+                                                            {% if styles[document.id]["commentaire"]["background"] is not null and styles[document.id]["commentaire"]["background"] != "" %}
+                                                                background: {{styles[document.id]["commentaire"]["background"]}};
+                                                            {% endif %}
+                                                            {% if styles[document.id]["commentaire"]["color"] is not null and styles[document.id]["commentaire"]["color"] != "" %}
+                                                                color: {{styles[document.id]["commentaire"]["color"]}};
+                                                            {% endif %}
+                                                            {% if styles[document.id]["commentaire"]["weight"] is not null and styles[document.id]["commentaire"]["weight"] != "" %}
+                                                                font-weight: bold;
+                                                            {% endif %}
+                                                        {% endif %}">{{document.commentaire}}</textarea>
+                                                    </div>
+                                                {% endif %}
+                                            </div>
+                                            {% endfor %}
+                                        {% endif %}
+
+                                        <div class=""></div>
+                                        <div class="row-flex" style="margin-top: 15px">
+                                            <div class=""></div>
+                                            <div class=" form-group text-right">
+                                                <div style="text-align: right;">Total HT</div>
+                                            </div>
+                                            <div class=" form-group">
+                                                <input type="text" id="recap_total_ht" name="recap_total_ht" class="form-control disabled" value="{{entete.id is not null ? entete.totalHt : ''}}">
+                                            </div>
+                                        </div>
+                                        <div class="row-flex" style="margin-top:5px">
+                                            <div class=""></div>
+                                            <div class=" form-group text-right">
+                                                <div style="display: flex; justify-content: flex-end;">
+                                                    <div style="    display: flex;align-items: center;width: 101px;">
+                                                        <span> Rem </span>&nbsp
+                                                        <input type="text" name="recap_remise" class="form-control" id="recap_remise" value="" style="padding: 1px;">
+                                                        <span> % </span>&nbsp
+                                                    </div>
+                                                </div>
+                                            </div>&nbsp
+                                            <div class=" form-group">
+                                                <input type="text" name="recap_remise_val" class="form-control disabled" id="recap_remise_val" value="">
+                                            </div>
+                                        </div>
+                                        <div class="row-flex" style="margin-top:5px">
+                                            <div class=""></div>
+                                            <div class=" form-group text-right">
+                                                <div style="text-align: right;">Total Net HT</div>&nbsp
+                                            </div>&nbsp
+                                            <div class=" form-group">
+                                                <input type="text" name="recap_remise_total_ht" class="form-control disabled" id="recap_remise_total_ht" value="">
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="row-flex" style="margin-top:5px">
+                                            <div class=""></div>
+                                            <div class=" form-group text-right">
+                                                <div style="/*display: flex; align-items: center; */text-align: right;">
+                                                    <span>TVA_5 </span>&nbsp
+                                                </div>
+                                                <input type="text" name="recap_tva5" id="recap_tva5" class="form-control disabled recap_tva_item" data-val="5" value="" style="margin-right: 5px;">
+                                            </div>&nbsp
+                                            <div class=" form-group">
+                                                <input type="text" name="recap_tva_val5" class="form-control recap_tva_item_val disabled" id="recap_tva_val5" value="">
+                                            </div>
+                                        </div>
+
+                                        <div class="row-flex" style="margin-top:5px">
+                                            <div class=""></div>
+                                            <div class=" form-group text-right">
+                                                <div style="/*display: flex; align-items: center;*/ text-align: right;">
+                                                    <span>TVA_10</span>&nbsp
+                                                </div>
+                                                <input type="text" name="recap_tva10" id="recap_tva10" class="form-control disabled recap_tva_item" data-val="10" value="" style="margin-right: 5px;">
+                                            </div>&nbsp
+                                            <div class=" form-group">
+                                                <input type="text" name="recap_tva_val10" class="form-control recap_tva_item_val disabled" id="recap_tva_val10" value="">
+                                            </div>
+                                        </div>
+
+                                        <div class="row-flex" style="margin-top:5px">
+                                            <div class=""></div>
+                                            <div class=" form-group text-right">
+                                                <div style="/*display: flex; align-items: center;*/text-align: right;">
+                                                    <span>TVA_20 </span>&nbsp
+                                                </div>
+                                                <input type="text" data-val="20" name="recap_tva20" id="recap_tva20" class="form-control disabled recap_tva_item" value="" style="margin-right: 5px;">
+                                            </div>&nbsp
+                                            <div class=" form-group">
+                                                <input type="text" name="recap_tva_val20" class="form-control recap_tva_item_val disabled" id="recap_tva_val20" value="">
+                                            </div>
+                                        </div>
+                                        <div class="row-flex" style="margin-top:5px">
+                                            <div class=""></div>
+                                            <div class=" form-group text-right">
+                                                <div style="text-align: right;">Total TTC</div>
+                                            </div>&nbsp
+                                            <div class=" form-group">
+                                                <input type="text" name="recap_ttc" id="recap_ttc" class="form-control disabled" value="">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div> 
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="text-center" style="margin-bottom: 30px; margin-top: 16px;">
+            <a class="btn btn-primary" href="">Imprimer</a>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://npmcdn.com/flatpickr/dist/l10n/fr.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.4/dist/Chart.min.js"></script>
+    <script type="text/javascript">
+        function printDiv(divName) {
+             var printContents = document.getElementById(divName).innerHTML;
+             var originalContents = document.body.innerHTML;
+
+             document.body.innerHTML = printContents;
+
+             window.print();
+
+             document.body.innerHTML = originalContents;
+        }
+        printDiv('printableArea');
+    </script>
+
+</body>
+</html>

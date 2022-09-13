@@ -1,0 +1,53 @@
+<table class="table">
+    <thead>
+    <tr>
+        <th>Image</th>
+        <th>Nom</th>
+        <th>Attestation</th>
+        <th>Contrat</th>
+        <th>Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for chantier in chantiers %}
+        <tr>
+            <td>
+                <a href="{{ path('chantier_status', {'chantierId' : chantier.chantier_id }) }}">
+                    {% if chantier.status == 1 %}
+                        {% if chantier.default_galerie_id is not null  and chantier.default_galerie_id in default_galerie|keys  %}
+                            {% set gal =  default_galerie[chantier.default_galerie_id] %}
+                            <div style="background-image: url('/galerie/{{chantier.entreprise_id}}/{{gal.created_at|date('Y-m-d')}}/compressed/{{gal.nom}}')" class="rounded-circle">
+                            </div>
+                        {% elseif app.session.get('entreprise_session_logo') %} 
+                            <div style="background-image: url('/assets/images/logotransfmda.png')" class="rounded-circle">
+                            </div>
+                        {% endif %}
+                    {% else %}
+                         <div style="background-image: url('/assets/images/logotransfmda.png')" class="rounded-circle"></div>
+                    {% endif %}
+                </a>
+            </td>
+            <td>{{ chantier.nameentreprise }}</td>
+            
+            <td style="white-space: nowrap;">
+                {% if chantier.chantier_id in attestations|keys %}
+                    <span class="showDocument" data-file="/uploads/chantier/assurance/attestation/{{attestations[chantier.chantier_id]}}" style="cursor: pointer;"><img src="//ssl.gstatic.com/docs/doclist/images/mediatype/icon_3_pdf_x16.png"></span>
+                {% endif %}
+            </td>
+            <td>
+                {% if chantier.chantier_id in contrats|keys %}
+                    <span class="showDocument" data-file="/uploads/chantier/assurance/contrat/{{contrats[chantier.chantier_id]}}" style="cursor: pointer;"><img src="//ssl.gstatic.com/docs/doclist/images/mediatype/icon_3_pdf_x16.png"></span>
+                {% endif %}
+            </td>
+            <td width="100">
+                <a href="{{ path('chantier_edit_assurance', {'chantierId':chantier.chantier_id}) }}"><i
+                            class="fas fa-edit"></i></a>
+            </td>
+        </tr>
+    {% else %}
+        <tr>
+            <td colspan="34">Aucun chantier enregistré</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>

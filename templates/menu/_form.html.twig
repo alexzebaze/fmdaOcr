@@ -1,0 +1,31 @@
+{{ form_start(form) }}
+<div class="row">
+    <div class="col-lg-12 form-group">
+        <label>Libelle</label>
+        {{ form_row(form.libelle) }}
+    </div>
+    <div class="col-lg-12 form-group">
+        <label>Lien</label>
+        {{ form_row(form.link) }}
+    </div>
+    <div class="col-lg-12 form-group">
+        <label>Icone</label>
+        {{ form_row(form.icone) }}
+    </div>
+    <div class="col-lg-12 form-group">
+        <label>Menu</label>
+        {{ form_row(form.parent) }}
+    </div>
+    <div class="col-lg-12 form-group">
+        <label>Entreprise</label>
+        <select class="js-example-basic-multiple" name="entreprise[]" multiple="multiple">
+            {% for entreprise in entreprises %}
+                <option value="{{entreprise.id}}" {% if menusEntrepise is defined and entreprise in menusEntrepise %}selected{% endif %}>{{entreprise.name}}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="col-lg-12 form-group">
+    	<button class="btn btn-primary">{{ button_label|default('Enregistrer') }}</button>
+    </div>
+</div>
+{{ form_end(form) }}

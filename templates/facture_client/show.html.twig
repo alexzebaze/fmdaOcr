@@ -1,0 +1,94 @@
+{% extends 'base.html.twig' %}
+
+{% block title %} {{parent()}} DevisPro{% endblock %}
+
+{% block body %}
+    <h1>DevisPro</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ devis_pro.id }}</td>
+            </tr>
+            <tr>
+                <th>Libelle</th>
+                <td>{{ devis_pro.libelle }}</td>
+            </tr>
+            <tr>
+                <th>Prixht</th>
+                <td>{{ devis_pro.prixht }}</td>
+            </tr>
+            <tr>
+                <th>Prixttc</th>
+                <td>{{ devis_pro.prixttc }}</td>
+            </tr>
+            <tr>
+                <th>ImageName</th>
+                <td>{{ devis_pro.imageName }}</td>
+            </tr>
+            <tr>
+                <th>UpdatedAt</th>
+                <td>{{ devis_pro.updatedAt ? devis_pro.updatedAt|date('Y-m-d H:i:s') : '' }}</td>
+            </tr>
+            <tr>
+                <th>FacturedAt</th>
+                <td>{{ devis_pro.facturedAt ? devis_pro.facturedAt|date('Y-m-d H:i:s') : '' }}</td>
+            </tr>
+            <tr>
+                <th>DueAt</th>
+                <td>{{ devis_pro.dueAt ? devis_pro.dueAt|date('Y-m-d H:i:s') : '' }}</td>
+            </tr>
+            <tr>
+                <th>Document_id</th>
+                <td>{{ devis_pro.documentId }}</td>
+            </tr>
+            <tr>
+                <th>Rossum_document_id</th>
+                <td>{{ devis_pro.rossumDocumentId }}</td>
+            </tr>
+            <tr>
+                <th>Document_file</th>
+                <td>{{ devis_pro.documentFile }}</td>
+            </tr>
+            <tr>
+                <th>Type</th>
+                <td>{{ devis_pro.type }}</td>
+            </tr>
+            <tr>
+                <th>Fournisseur_name</th>
+                <td>{{ devis_pro.fournisseurName }}</td>
+            </tr>
+            <tr>
+                <th>Mtva</th>
+                <td>{{ devis_pro.mtva }}</td>
+            </tr>
+            <tr>
+                <th>Acompte</th>
+                <td>{{ devis_pro.acompte }}</td>
+            </tr>
+            <tr>
+                <th>Solde</th>
+                <td>{{ devis_pro.solde }}</td>
+            </tr>
+            <tr>
+                <th>Export_compta</th>
+                <td>{{ devis_pro.exportCompta }}</td>
+            </tr>
+            <tr>
+                <th>Date_export_compta</th>
+                <td>{{ devis_pro.dateExportCompta ? devis_pro.dateExportCompta|date('Y-m-d H:i:s') : '' }}</td>
+            </tr>
+            <tr>
+                <th>Bl_validation</th>
+                <td>{{ devis_pro.blValidation }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('devis_pro_index') }}">back to list</a>
+
+    <a href="{{ path('devis_pro_edit', {'id': devis_pro.id}) }}">edit</a>
+
+    {{ include('devis_pro/_delete_form.html.twig') }}
+{% endblock %}

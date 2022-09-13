@@ -1,0 +1,71 @@
+
+<form method="POST" id="attachFactureClient" action="{{url}}?page={{page}}">
+    <div class="form-group">
+        <input type="hidden" name="list-elt-id" value="{{facture_select}}">
+    </div>
+
+    <div class="entreprise-list list-devis form-group" style="margin-top: 0">
+        {% for fact in factures_client %}
+            
+            <div>
+                <input id="{{fact.id}}" type="radio" name="facture" value="{{fact.id}}" style="display: none;">
+                <label for="{{fact.id}}" class="switch-entreprise entreprise-item" style="cursor: pointer; justify-content: flex-start; align-items: flex-start;">
+                    <span style="margin-right: 16px;">
+                        <img class="entreprise-img" src="{{ fact.chantier.defaultGalerie ? fact.chantier.defaultGalerie.getCompressedUrl : '/assets/images/logotransfmda.png' }}">
+                    </span>
+                    <div class="detail-devis" style="line-height: 21px;    color: #000;font-size: 15px;">
+                        <div style="color: #676a6c">{{fact.chantier.nameentreprise}}</div>
+                        <div>
+                            <span class="label-devis">DocumentID: </span>
+                            <span>{{ fact.getDocumentId }}</span> 
+                            <span class="showDocument" data-file="/uploads/clients/factures/{{fact.getDocumentFile}}" style="cursor: pointer; margin-left: 5px;"><img src="//ssl.gstatic.com/docs/doclist/images/mediatype/icon_3_pdf_x16.png" style="width: 20px;"></span>
+                        </div>
+                        <div>
+                            <span class="label-devis">Date: </span>
+                            <span>{{ fact.facturedAt|date('d/m/Y') }}</span> 
+                        </div>
+                        {% if fact.lot is not null %}
+                        <div>
+                            <span class="label-devis">Lot: </span>
+                            <span>{{ fact.lot is not null ? fact.lot.lot : '' }}</span> 
+                        </div>
+                        {% endif %}
+                        <div>
+                            <span class="label-devis">Total HT: </span>
+                            <span>{{ fact.prixht }}</span> 
+                        </div>
+                        <div>
+                            <span class="label-devis">Total TTC: </span>
+                            <span>{{ fact.prixttc }}</span> 
+                        </div>
+                    </div>
+                </label>
+            </div>
+        {% endfor %}
+    </div>
+    <div class="text-center">
+        <button type="submit" class="btn btn-primary">Enregistrer</button>
+    </div>
+</form>
+<span id="extSubmit" class="btn-small btn btn-primary" style="box-shadow: 0px 0px 10px 6px rgb(119 119 119 / 25%);position: absolute;top: 0;right: 9px;"><i class="fas fa-save"></i></span>
+<script type="text/javascript">
+    
+    var lastScrollTop = 0;
+    $('#modalFacture').on("scroll", function(event) {  
+        $postLeftModal = $('#modalFacture .modal-body').offset().left;
+        $('#extSubmitFixed').css('right', ($postLeftModal+25));    
+        var st = $(this).scrollTop();
+        if (st > lastScrollTop){
+            if (!$('#modalFacture .modal-header').isInViewport()) {
+                $('#extSubmitFixed').css('display','block');
+                $('#extSubmit').css('display','none');
+            }
+        } else {
+            if ($('#modalFacture .modal-header').isInViewport()) {
+                $('#extSubmit').css('display','block');
+                $('#extSubmitFixed').css('display','none');
+            } 
+        }
+        lastScrollTop = st;
+    });
+</script>

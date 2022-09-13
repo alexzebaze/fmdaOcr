@@ -1,0 +1,31 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha512-6MXa8B6uaO18Hid6blRMetEIoPqHf7Ux1tnyIQdpt9qI5OACx7C+O3IVTr98vwGnlcg0LOLa02i9Y1HpVhlfiw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+	<style type="text/css">
+		.form-container{
+
+		}
+	</style>
+</head>
+<body>
+	<div class="container">
+		<div style="margin-top: 53px;">
+			{% include 'flashes.html.twig' %}
+		</div>
+
+		<div class="form-container col-sm-6 col-sm-offset-3">
+			<form method="POST" name="">
+				<label>Entrez votre email</label>
+				<input type="email" name="email" class="form-control">	
+
+				<div class="text-center" style="margin-top: 23px;">
+					<input type="submit" class="btn btn-primary" value="Envoyer le mail">
+				</div>
+			</form>
+		</div>
+	</div>
+</body>
+</html>

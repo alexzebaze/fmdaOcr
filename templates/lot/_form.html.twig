@@ -1,0 +1,11 @@
+{{ form_start(form) }}
+<div class="row">
+    <div class="col-lg-12 form-group">
+        {{ form_label(form.lot, 'Lot') }}
+        {{ form_row(form.lot) }}
+    </div>
+    <div class="col-lg-12 form-group">
+        <button class="btn btn-primary">{{ button_label|default('Enregistrer') }}</button>
+    </div>
+</div>
+{{ form_end(form) }}

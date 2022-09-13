@@ -1,0 +1,90 @@
+{% extends 'base.html.twig' %}
+
+{% block css %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker3.min.css" integrity="sha512-rxThY3LYIfYsVCWPCW9dB0k+e3RZB39f23ylUYTEuZMDrN/vRqLdaCBo/FbvVT6uC2r0ObfPzotsfKF9Qc5W5g==" crossorigin="anonymous" />
+<style type="text/css">
+    #apiExport{margin: auto;max-width: 500px;margin-top: 16px;}
+    .preview-container{display: none;}
+    .modal-center{margin-top: 0!important;top: 50%;transform: translateY(-50%);}
+    .loader-container{display: none;align-items: center;justify-content: center;}
+</style>
+{% endblock %}
+
+
+{% block breadcrumb %}
+
+    <div class="row wrapper border-bottom white-bg page-heading">
+        <div class="col-lg-10">
+            <h1>Ajoutez une fiche de paie</h1>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                    <a href="{{ path('home') }}">Accueil</a>
+                </li>
+                <li class="breadcrumb-item">
+                    <a href="{{ path('paie_list') }}">Fiche de paie</a>
+                </li>
+                <li class="breadcrumb-item active">
+                    <strong>Ajoutez une fiche de paie</strong>
+                </li>
+            </ol>
+        </div>
+    </div>
+{% endblock %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="ibox">
+                <div class="ibox-content">
+                    <div class="export-api">
+                        <form id="apiExport" name="apiExport" method="POST" action="{{path('paie_checking_data_export')}}">
+                            <div class="form-group">
+                                <label for="rossum_document_id" class="required">ROSSUM Documents <small>(confirmed)</small></label>
+                                <select class="form-control" name="document_id" id="rossum_document_id">
+                                    <option value="" disabled selected>--Choisir le document--</option>
+                                    {% for doc in rossum_documents %}
+                                        <option value="{{doc.document_id}}">#{{doc.document_id}} - {{doc.date_month}} - {{doc.fournisseur}} : {{doc.cout_global}}€</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>      
+    </div>
+    <form class="formTmp">
+        <input type="hidden" name="sender_name">
+    </form>
+    <div class="export loader-container">
+        <img src="{{asset('images/loading.gif')}}" style="width: 54px;">
+    </div>
+    <div class="row preview-container ibox-content animated fadeIn">
+        <div class="col-lg-12">
+            <div class="ibox">
+                <div class="ibox-content">
+                    <h2 style="font-weight: 600">Prévisualisation</h2>
+                    <div class="preview-container-content"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block js_import %}
+<!--<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js" integrity="sha512-T/tUfKSV1bihCnd+MxKD0Hm1uBBroVYBOYSk1knyvQ9VyZJpc/ALb4P0r6ubwVPSGB2GvjeoMAJJImBG12TiaQ==" crossorigin="anonymous"></script>-->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/locales/bootstrap-datepicker.fr.min.js" integrity="sha512-fx3aztaUjb4NyoD+Tso5g7R1l29bU3jnnTfNRKBiY9fdQOHzVhKJ10wEAgQ1zM/WXCzB9bnVryHD1M40775Tsw==" crossorigin="anonymous"></script>
+{% endblock %}
+
+{% block javascript %}
+$(document).ready( function () {
+    $('.datepicker').datepicker({
+        format: 'mm/dd/yyyy'
+    });
+} );       
+{% endblock %}
+
+{% block javascript_script %}
+    {{ include('paie/_js.html.twig') }}
+{% endblock %}

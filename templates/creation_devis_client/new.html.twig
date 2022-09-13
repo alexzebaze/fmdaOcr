@@ -1,0 +1,87 @@
+{% extends 'base.html.twig' %}
+{% block css %}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css" integrity="sha512-mSYUmp1HYZDFaVKK//63EcZq4iFWFjxSL+Z3T/aCt4IO9Cejm03q3NKKYN6pFQzY0SBOr8h+eCIAZHPXcpZaNw==" crossorigin="anonymous" />
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <style type="text/css">
+    </style>
+{% endblock %}
+{% block breadcrumb %}
+
+    <div class="row wrapper border-bottom white-bg page-heading">
+        <div class="col-lg-10">
+            <h1>Ajouter un Devis client</h1>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                    <a href="{{ path('home') }}">Accueil</a>
+                </li>
+                <li class="breadcrumb-item">
+                    <a href="{{path('creation_devis_client')}}">Devis Client</a>
+                </li>
+                <li class="breadcrumb-item active">
+                    <strong>Ajouter un devis client</strong>
+                </li>
+            </ol>
+        </div>
+    </div>
+{% endblock %}
+
+{% block content %}
+
+    <div class="row">
+        <div class="col-lg-12">
+
+            <div class="row">
+                <div class="col-lg-12 text-right" style="margin-bottom:14px;">
+                    <span class="btn btn-primary btn-enregistrer">Enregistrer</span>
+                </div>
+            </div>
+
+            {{ include('creation_devis_client/_form.html.twig') }}
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block javascript_script %}
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.11.3/jquery-ui.min.js" integrity="sha256-xI/qyl9vpwWFOXz7+x/9WkG5j/SVnSw21viy8fWwbeE=" crossorigin="anonymous"></script>
+    <script>
+        $( function() {
+            $( "#sortable" ).sortable({
+                stop: function( event, ui ) {
+                    /*var docuSort = getDocuOrder();*/
+                    reorderRang();
+                    recalculSousTotal();
+                    {#/*$.ajax({
+                        url:"{{path('docu_sortable')}}",
+                        type:"GET",
+                        data: {
+                            docu_sort : docuSort,
+                        },  
+                        success:function(response) {
+                        },
+                        error:function(){
+                          toastr.error("Ooops... Quelque chose s'est mal passée");
+                        }
+                    });*/#}
+                }
+            });
+        } );
+        function getDocuOrder(){
+            var docuSort = [];
+             $('.group-docu-item').each(function( index ) {
+                var docuId = $(this).data('row-id');
+                docuSort.push(docuId);                
+            })
+
+            return docuSort.join(',');
+        }
+    </script>
+{% endblock %}
+
+{% block js_import %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js" integrity="sha512-T/tUfKSV1bihCnd+MxKD0Hm1uBBroVYBOYSk1knyvQ9VyZJpc/ALb4P0r6ubwVPSGB2GvjeoMAJJImBG12TiaQ==" crossorigin="anonymous"></script>
+    <script type="text/javascript">
+        $( '.datepicker' ).datepicker();
+    </script>
+{% endblock %}

@@ -1,0 +1,156 @@
+{% extends 'base.html.twig' %}
+{% block css %}
+    <link rel="stylesheet" href="//cdn.datatables.net/1.10.20/css/jquery.dataTables.min.css">
+    <style type="text/css">
+        
+        thead th{text-align: center;text-align: center;}
+        .send-facture{display: none;}
+        .ibox-title{padding: 26px 90px 8px 15px}
+        .ibox-tools{display: flex;align-items: center;justify-content: flex-end;margin-bottom: 7px;}
+        table.dataTable tfoot th, table.dataTable tfoot td{border-top: 1px solid #e7eaec;text-align: center; font-weight: 600;font-size: 15px;    padding-bottom: 3rem;}
+        .img-logo-marque{width: 25px;height: 25px; object-fit: cover;}
+    </style>
+{% endblock %}
+{% block breadcrumb %}
+
+    <div class="row wrapper border-bottom white-bg page-heading">
+        <div class="col-lg-10">
+            <h1>Véhicule</h1>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                    <a href="{{ path('home') }}">Accueil</a>
+                </li>
+                <li class="breadcrumb-item active">
+                    <strong>véhicule</strong>
+                </li>
+            </ol>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-lg-12">
+            {% include 'flashes.html.twig' %}
+            <div class="ibox ">
+                <div class="ibox-title">
+                    <h5>Liste véhicules</h5>
+                    <div class="ibox-tools">
+                        <a href="{{path('vehicule_new')}}">
+                            <i class="fa fa-plus"></i>
+                            Ajouter
+                        </a>
+                    </div>
+                </div>
+                <div class="ibox-content">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Logo_marque</th>
+                                    <th>Immatriculation</th>
+                                    <th>Marque</th>
+                                    <th>Modele</th>
+                                    <th>Type_carburant</th>
+                                    <th>Conso_moyenne</th>
+                                    <th>Cout_moyen</th>
+                                    <th>Carte_totale</th>
+                                    <th>Carte_grise</th>
+                                    <th>Date_service</th>
+                                    <th>Date_ctr_tech</th>
+                                    <th>Debut_credit_bail</th>
+                                    <th>Fin_credit_bail</th>
+                                    <th>Financement</th>
+                                    <th>Kilometrage</th>
+                                    <th>Status</th>
+                                    <th style="min-width: 50px"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            {% for vehicule in vehicules %}
+                                <tr>
+                                    <td>
+                                        {% if vehicule.getLogoMarque %}
+                                        <img src="/uploads/vehicule/logo/{{vehicule.getLogoMarque}}" class="img-logo-marque">
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ vehicule.immatriculation }}</td>
+                                    <td>{{ vehicule.marque }}</td>
+                                    <td>{{ vehicule.modele }}</td>
+                                    <td>{{ vehicule.typeCarburant }}</td>
+                                    <td>{{ vehicule.consoMoyenne }}</td>
+                                    <td>{{ vehicule.coutMoyen }}</td>
+                                    <td>
+                                        {% if vehicule.carteTotale %}  
+                                        <a target="_blank" href="/uploads/vehicule/document/{{vehicule.carteTotale}}" style="cursor: pointer;"><img src="//ssl.gstatic.com/docs/doclist/images/mediatype/icon_3_pdf_x16.png"></a>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                    {% if vehicule.carteGrise%}  
+                                        <a target="_blank" href="/uploads/vehicule/document/{{vehicule.carteGrise}}" style="cursor: pointer;"><img src="//ssl.gstatic.com/docs/doclist/images/mediatype/icon_3_pdf_x16.png"></a>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ vehicule.dateService ? vehicule.dateService|date('d/m/Y') : '' }}</td>
+                                    <td>{{ vehicule.dateCtrTech ? vehicule.dateCtrTech|date('d/m/Y') : '' }}</td>
+
+                                    
+                                    <td>
+                                        {% if vehicule.financement == 2 %}
+                                            {{ vehicule.getDebutCreditBail ? vehicule.getDebutCreditBail|date('d/m/Y') : '' }}
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if vehicule.financement == 2 %}
+                                            {{ vehicule.getFinCreditBail ? vehicule.getFinCreditBail|date('d/m/Y') : '' }}
+                                        {% endif %}
+                                    </td>
+
+                                    <td>{{ vehicule.financement ? financements[vehicule.financement] : ""}}</td>
+                                    <td style="white-space: nowrap;">
+                                        {% if vehicule.id in kilometrages|keys %}
+                                            {{kilometrages[vehicule.id] }} 
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {{vehicule.status in status|keys ? status[vehicule.status] : "" }}
+                                    </td>
+                                    <td>
+                                        <a onclick="return confirm('Confirmez-vous la suppression ?')"
+                                       href="{{ path('vehicule_delete', {'id': vehicule.id}) }}"><i class="fas fa-trash-alt"></i></a>&nbsp
+                                        <a href="{{ path('vehicule_edit', {'id': vehicule.id}) }}"><i class="fa fa-edit"></i></a>
+                                    </td>
+                                </tr>
+                            {% else %}
+                                <tr>
+                                    <td colspan="13" class="text-center">Aucun vehicule enregistré</td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+
+{% endblock %}
+
+{% block javascript_script %}
+    <script src="//cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js"></script>
+{% endblock %}
+
+{% block javascript %}
+$(document).ready( function () {
+    $('table').DataTable({
+        "language": {
+            "url": "//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/French.json"
+        },
+        "pageLength": 50,
+        "order": []
+    });
+} );
+
+{% endblock %}
+

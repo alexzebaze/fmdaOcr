@@ -1,0 +1,51 @@
+<div class="table-container">
+    <div class="loader-container">
+        <img src="{{asset('images/loading.gif')}}" style="width: 54px;">
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-passage">
+            <thead>
+                <tr>
+                    <th>Utilisateur</th>
+                    <th>Fournisseurs</th>
+                    <th>Chantier</th>
+                    <th>Date Detection</th>
+                    <th>Heure Detection</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for passage in passages %}
+                <tr>
+                    <td>
+                        {% if passage.utilisateur %}
+                        <div style="display: flex; align-items: center;">
+                            <img class="rounded-img" src="data:image/jpeg;base64,{{ passage.utilisateur.image }}">
+                            <span style="margin-left: 6px;">
+                                {{ passage.utilisateur.lastname }} {{ passage.utilisateur.firstname }}
+                            </span>
+                        </div>
+                        {% endif %}
+                    </td>
+                    <td>{{ passage.fournisseur ? passage.fournisseur.nom : "" }}</td>
+                    <td>
+                        <a href="javascript:void()" data-passage-id="{{passage.id}}" class="openModalChantier" style="cursor: pointer;">
+                            {{ passage.chantier ? passage.chantier.nameentreprise : "" }}
+                        </a>
+                    </td>
+                    <td>{{ passage.getDateDetection|date('d/m/Y') }}</td>
+                    <td>{{ passage.getDateDetection|date('H:i') }}</td>
+                    <td>
+                        <a href="{{path('passage_valide_by_bl', {'bl':bon_livraison.id, 'passage_id':passage.id})}}" class="btn btn-primary">Valider</a>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="34">Aucun passage enregistré</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>

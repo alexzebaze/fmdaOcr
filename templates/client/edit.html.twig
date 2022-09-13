@@ -1,0 +1,127 @@
+{% extends 'base.html.twig' %}
+{% block css %}
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css" integrity="sha512-mSYUmp1HYZDFaVKK//63EcZq4iFWFjxSL+Z3T/aCt4IO9Cejm03q3NKKYN6pFQzY0SBOr8h+eCIAZHPXcpZaNw==" crossorigin="anonymous" />
+
+    <style type="text/css">
+        @media (min-width: 768px){
+            .modal-sm {
+                width: 525px;
+            }
+        }
+        select.form-control:not([size]):not([multiple]) {
+            height: calc(1.5em + .75rem + 9px);
+        }
+        .form-group{text-align: left;}
+        .field-mail{display: none;}
+    </style>
+{% endblock %}
+{% block breadcrumb %}
+
+    <div class="row wrapper border-bottom white-bg page-heading">
+        <div class="col-lg-10">
+            <h1>Modifier un client</h1>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                    <a href="{{ path('home') }}">Accueil</a>
+                </li>
+                <li class="breadcrumb-item">
+                    <a href="{{ path('client_list') }}">Clients</a>
+                </li>
+                <li class="breadcrumb-item active">
+                    <strong>Modifier un client</strong>
+                </li>
+            </ol>
+        </div>
+    </div>
+{% endblock %}
+
+{% block content %}
+    <div class="ibox-title" style="margin-bottom: 20px; padding-bottom: 28px;">
+        <h5>Liste de location</h5>
+        <div class="ibox-tools">
+            <button type="submit" class="btn btn-primary btnSendSms" style="margin-left: 12px;">Envoyer un Message</button>
+        </div>
+    </div>
+
+    <div class="row">
+        {{ include('client/_form.html.twig') }}
+    </div>
+
+    <div id="modalSmsSend" class="modal fade bs-example-modal-sm modal-center" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel">
+        <div class="modal-dialog modal-sm" role="document">
+            <div class="modal-content">
+                <div class="modal-header" style="border: none;">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">Envoyer un message</h4>
+                </div>
+                <div class="modal-body text-center" style="padding: 0px 30px 51px 30px">
+                    <form method="POST" action="{{path('location_send_sms')}}" name="formSendSms" enctype="multipart/form-data">
+
+                        <input type="hidden" name="only_client" value="{{client.id is defined ? client.id : ''}}">                 
+                        <div class="form-group">
+                            <select class="form-control" name="type_envoie">
+                                <option value="locataire_email">Envoyer mail</option>
+                                <option value="locataire_sms" selected>Envoyer SMS</option>
+                            </select>  
+                        </div>      
+                        <div class="form-group field-mail">
+                            <label>Sujet</label>
+                            <input type="text" name="sujet" class="form-control" length="200">
+                        </div>    
+                        <div class="row">
+                            <div class="col-lg-12 form-group" style="text-align: left;">
+                                <label style="color: #a6a4ad;">Contenu</label>
+                                <textarea name="content" class="form-control" rows="6"></textarea>
+                            </div>
+                        </div>
+
+                        <div class="row" style="margin-bottom: 20px;">
+                            <div class="col-lg-12 form-group field-mail" style="text-align: left;">
+                                <label style="color: #a6a4ad;">Piece jointe</label>
+                                <input type="file" name="piece_jointe[]" multiple class="form-control">
+                            </div>
+                        </div>
+
+                        <div class="col-lg-12 form-group text-center" style="display: flex; justify-content: center;">
+                            <button type="submit" name="submit" class="btn btn-info" style="margin-left: 8px;">ENVOYER</button>
+                        </div>
+                        <div class="row export loader-container">
+                            <img src="{{asset('images/loading.gif')}}" style="width: 54px;">
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <a href="{{ path('client_list') }}">Retourner à la liste des client</a>
+{% endblock %}
+
+{% block javascript_script %}
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js" integrity="sha512-T/tUfKSV1bihCnd+MxKD0Hm1uBBroVYBOYSk1knyvQ9VyZJpc/ALb4P0r6ubwVPSGB2GvjeoMAJJImBG12TiaQ==" crossorigin="anonymous"></script>
+    
+    <script type="text/javascript">
+        $('body').on('click', '.btnSendSms', function(){
+            $('#modalSmsSend').modal('show');
+        })
+        $( "select[name=type_envoie]" ).change(function() {
+            var statusId =  $(this).val();
+            if(statusId == 'locataire_sms'){
+                $('.field-mail').css('display', 'none');
+            }
+            else{
+                $('.field-mail').css('display', 'block');
+            }
+            
+        });
+    </script>
+
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $('.js-example-basic-multiple').select2();
+            $( '.datepicker' ).datepicker( 'setDate');
+        });  
+    </script>
+{% endblock %}

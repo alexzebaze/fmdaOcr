@@ -1,0 +1,1522 @@
+<script type="text/javascript">
+
+    appPlanning.factory('PlanningService', ['$http', '$resource', '$q', function ($http, $resource, $q) {
+        var config = {
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        };
+        return{
+            loadPlannings: function (offset) {
+
+                return $http.get(REQUEST_URL_POST.findUrl("planning_load_xhr", [{name:"offset", value:offset}]))
+                .then(
+                    function (response) {
+                        return response.data;
+                    },
+                    function (errResponse) {
+                        console.error('Error while listing');
+                        return $q.reject(errResponse);
+                    });
+            },
+            loadPlanningsPrint: function () {
+                $users_print = "";
+                if( $('input[name="users_print"]').length > 0)
+                    $users_print = $('input[name="users_print"]').val();
+
+                return $http.get(REQUEST_URL_POST.findUrl("planning_load_xhr_print", [{name:"users_print", value:$users_print}]))
+                .then(
+                    function (response) {
+                        return response.data;
+                    },
+                    function (errResponse) {
+                        console.error('Error while listing');
+                        return $q.reject(errResponse);
+                    });
+            },
+            getUsers: function () {
+                return $http.get(REQUEST_URL_POST.findUrl("get_users"))
+                .then(
+                    function (response) {
+                        return response.data;
+                    },
+                    function (errResponse) {
+                        console.error('Error while listing');
+                        return $q.reject(errResponse);
+                    });
+            },
+            removeUser: function (planning_id, user_id) {
+                return $http.get(REQUEST_URL_POST.findUrl("planning_remove_user", [{name:"planning_id", value:planning_id}, {name:"user_id", value:user_id}]))
+                .then(
+                    function (response) {
+                        return response.data;
+                    },
+                    function (errResponse) {
+                        console.error('Error while listing');
+                        return $q.reject(errResponse);
+                    });
+            },
+            updateTacheName: function (planning_id, name) {
+                return $http.get(REQUEST_URL_POST.findUrl("planning_update_tache_name", [{name:"planning_id", value:planning_id}, {name:"name", value:name}]))
+                .then(
+                    function (response) {
+                        return response.data;
+                    },
+                    function (errResponse) {
+                        console.error('Error while listing');
+                        return $q.reject(errResponse);
+                    });
+            },
+            updateEmplement: function (planning_id, name) {
+                return $http.get(REQUEST_URL_POST.findUrl("planning_update_emplacement", [{name:"planning_id", value:planning_id}, {name:"name", value:name}]))
+                .then(
+                    function (response) {
+                        return response.data;
+                    },
+                    function (errResponse) {
+                        console.error('Error request');
+                        return $q.reject(errResponse);
+                    });
+            },
+            addUser: function (planning_id, user_id) {
+                return $http.get(REQUEST_URL_POST.findUrl("planning_add_user", [{name:"planning_id", value:planning_id}, {name:"user_id", value:user_id}]))
+                .then(
+                    function (response) {
+                        return response.data;
+                    },
+                    function (errResponse) {
+                        console.error('Error while listing');
+                        return $q.reject(errResponse);
+                    });
+            },
+            clearDate: function (planning_id) {
+                return $http.get(REQUEST_URL_POST.findUrl("planning_clear_date", [{name:"planning_id", value:planning_id}]))
+                .then(
+                    function (response) {
+                        return response.data;
+                    },
+                    function (errResponse) {
+                        console.error('Error while listing');
+                        return $q.reject(errResponse);
+                    });
+            },
+            collapseAction: function (categorie_id, collapse) {
+                return $http.get(REQUEST_URL_POST.findUrl("planning_update_collapse", [{name:"categorie_id", value:categorie_id}, {name:"collapse", value:collapse}]))
+                .then(
+                    function (response) {
+                        return response.data;
+                    },
+                    function (errResponse) {
+                        console.error('Error while listing');
+                        return $q.reject(errResponse);
+                    });
+            },
+            updatePlanningDate: function (planning_id, val) {
+                return $http.get(REQUEST_URL_POST.findUrl("planning_update_date", [{name:"tache_id", value:planning_id}, {name:"date", value:val}]))
+                .then(
+                    function (response) {
+                        return response.data;
+                    },
+                    function (errResponse) {
+                        console.error('Error while listing');
+                        return $q.reject(errResponse);
+                    });
+            },
+            deleteTache: function (planning_id) {
+                return $http.get(REQUEST_URL_POST.findUrl("planning_delete_tache", [{name:"tache_id", value:planning_id}]))
+                .then(
+                    function (response) {
+                        return response.data;
+                    },
+                    function (errResponse) {
+                        console.error('Error while listing');
+                        return $q.reject(errResponse);
+                    });
+            },
+            changePlanningConfigColor: function (planning_id, color) {
+                return $http.get(REQUEST_URL_POST.findUrl("planning_config_color", [{name:"planning_id", value:planning_id}, {name:"color", value:color}]))
+                .then(
+                    function (response) {
+                        return response.data;
+                    },
+                    function (errResponse) {
+                        console.error('Error while listing');
+                        return $q.reject(errResponse);
+                    });
+            },
+            deletePlanning: function (planning_id) {
+                return $http.get(REQUEST_URL_POST.findUrl("planning_delete", [{name:"planning_id", value:planning_id}]))
+                .then(
+                    function (response) {
+                        return response.data;
+                    },
+                    function (errResponse) {
+                        console.error('Error while listing');
+                        return $q.reject(errResponse);
+                    });
+            },
+            archivePlanning: function (planning_id) {
+                return $http.get(REQUEST_URL_POST.findUrl("planning_archive", [{name:"planning_id", value:planning_id}]))
+                .then(
+                    function (response) {
+                        return response.data;
+                    },
+                    function (errResponse) {
+                        console.error('Error while listing');
+                        return $q.reject(errResponse);
+                    });
+            },
+            updateStatus: function (planning_id, val) {
+                return $http.get(REQUEST_URL_POST.findUrl("planning_update_status", [{name:"tache_id", value:planning_id}, {name:"status_id", value:val}]))
+                .then(
+                    function (response) {
+                        return response.data;
+                    },
+                    function (errResponse) {
+                        console.error('Error while listing');
+                        return $q.reject(errResponse);
+                    });
+            },
+            changeDevis: function (tache_id, devis_id) {
+                return $http.get(REQUEST_URL_POST.findUrl("planning_change_devis", [{name:"tache_id", value:tache_id}, {name:"devis_id", value:devis_id}]))
+                .then(
+                    function (response) {
+                        return response.data;
+                    },
+                    function (errResponse) {
+                        console.error('Error');
+                        return $q.reject(errResponse);
+                    });
+            },
+            createTache: function (categorieId, categorie, success, failed) {
+                var formData = new FormData();
+                formData.append("categorie", categorie);
+                var request = new XMLHttpRequest();
+                request.open("POST", REQUEST_URL_POST.findUrl("planning_create_tache_xhr", [{name:'categorie_id', value:categorieId}]));
+                request.onload = function (oEvent) {
+                    if (request.status == 200) {
+                        success(request.responseText);
+                    } else {
+                        failed();
+                    }
+                };
+                request.send(formData);
+                return request;
+            },
+            createNewPlanning: function (planning_name, chantier_id, success, failed) {
+                var formData = new FormData();
+                formData.append("planning_name", planning_name);
+                var request = new XMLHttpRequest();
+                request.open("POST", REQUEST_URL_POST.findUrl("planning_create_new_xhr", [{name:'chantier_id', value:chantier_id}]));
+                request.onload = function (oEvent) {
+                    if (request.status == 200) {
+                        success(request.responseText);
+                    } else {
+                        failed();
+                    }
+                };
+                request.send(formData);
+                return request;
+            },
+            updateCategory: function (chantier_id, categorieId, success, failed) {
+                var formData = new FormData();
+                formData.append("chantier_id", chantier_id);
+                var request = new XMLHttpRequest();
+                request.open("POST", REQUEST_URL_POST.findUrl("planning_update_new_xhr", [{name:'categorie_id', value:categorieId}]));
+                request.onload = function (oEvent) {
+                    if (request.status == 200) {
+                        success(request.responseText);
+                    } else {
+                        failed();
+                    }
+                };
+                request.send(formData);
+                return request;
+            },
+            updateOrder: function (categorie_id, order, success, failed) {
+                var formData = new FormData();
+                formData.append("order", order);
+                var request = new XMLHttpRequest();
+                request.open("POST", REQUEST_URL_POST.findUrl("planning_update_position_tache", [{name:"categorie_id", value:categorie_id}]));
+                request.onload = function (oEvent) {
+                    if (request.status == 200) {
+                        success(request.responseText);
+                    } else {
+                        failed();
+                    }
+                };
+                request.send(formData);
+                return request;
+            },
+            getTimelines: function (direction, dateReference, sautDate, echeance) {
+                direction = ( direction == undefined) ? '':direction;
+                return $http.get(REQUEST_URL_POST.findUrl("get_timeline", [
+                    {name:"direction", value:direction}, 
+                    {name:"dateReference", value:dateReference}, 
+                    {name:"sautDate", value:sautDate}, 
+                    {name:"echeance", value:echeance},
+                    {name:"user_print", value:$('input[name="user_print"]').val()},
+                    {name:"categorie_print", value:$('input[name="categorie_print"]').val()}
+                ]))
+                .then(
+                    function (response) {
+                        return response.data;
+                    },
+                    function (errResponse) {
+                        console.error('Error while listing');
+                        return $q.reject(errResponse);
+                    });
+            },
+        };
+    }]);
+
+    appPlanning.controller('PlanningController', ['$scope','PlanningService', '$routeParams','$location','$compile', function ($scope, PlanningService, $routeParams, $location, $compile) {
+        $scope.urlImg = PATH_ASSET;
+        $scope.plannings = [];
+        /*$scope.tache_date = {};*/
+        $scope.utilisateurs = [];
+        $scope.chantiers = [];
+        $scope.statusPlanning = [];
+        $scope.loadingPlanning = false;
+        $scope.users = [];
+        $scope.timelines = [];
+        $scope.informations = {title: "PLANNING"};
+        $scope.timelines_year = [];
+        
+        $scope.propertyName = '';
+        $scope.reverse = false;
+        var sautDate = 10;
+
+        $scope.sortBy = function(propertyName) {
+            $scope.reverse = ($scope.propertyName === propertyName) ? !$scope.reverse : false;
+            $scope.propertyName = propertyName;
+        };
+
+        var planningAdd = {
+            taches: [],
+            categorie: "Nouveau planning",
+            categorie_id: 0,
+            categorie_color: "rgb(196, 196, 196)",
+        };
+
+        $scope.planningConfigColor = ["rgb(3, 127, 76)", "rgb(0, 200, 117)","rgb(156, 211, 38)","rgb(255, 203, 0)","rgb(120, 75, 209)","rgb(162, 93, 220)","rgb(0, 134, 192)","rgb(87, 155, 252)","rgb(102, 204, 255)","rgb(187, 51, 84)","rgb(226, 68, 92)","rgb(255, 21, 138)","rgb(255, 90, 196)","rgb(255, 100, 46)","rgb(253, 171, 61)","rgb(127, 83, 71)","rgb(196, 196, 196)","rgb(128, 128, 128)"];
+
+        function restartCalendar(planning_id){
+            return 1;
+        }
+
+        function buildPlanningDate(date, categorieId, planning_id){
+            /*const optionsDate = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };*/
+            var debut = date.split(' au ')[0];
+            var fin = date.split(' au ')[1];
+            var optionsDate = { month: 'short', day: 'numeric' };
+
+            var dateInterval = '';
+            debut = (new Date(debut)).toLocaleDateString('fr-FR', optionsDate);
+            fin = (new Date(fin)).toLocaleDateString('fr-FR', optionsDate);
+            if(debut.split(" ")[1] == fin.split(" ")[1] ){
+                dateInterval =  debut.split(" ")[1]+ " "+debut.split(" ")[0]+'-'+fin.split(" ")[0];
+            }
+            else{
+                dateInterval = debut.split(" ")[1]+ " "+debut.split(" ")[0]+'-'+fin.split(" ")[1]+' '+fin.split(" ")[0];
+            }
+
+            index = $scope.plannings.findIndex(x => x.categorie_id === categorieId);
+            if(index > -1){
+                index2 = $scope.plannings[index].taches.findIndex(x => x.id === planning_id);
+                if(index2 > -1){
+                    $scope.plannings[index].taches[index2].dateInterval = dateInterval;
+                    $scope.plannings[index].taches[index2].dateCalendar = date;
+                }
+            }
+        }
+
+        $scope.loadPlanning = function(offset){
+            var promiseLoadPlannings = PlanningService.loadPlannings(offset);
+            promiseLoadPlannings.then(
+                function (response) {
+                    if(response.status == 200){
+                        $scope.plannings.push(response.planning);
+                        $scope.loadPlanning(response.offset);
+                    }
+                    else if(response.status == 300){
+                        $('.loader-container').css('display','none');
+                    }
+                    else if(response.status == 500){
+                    }
+                    if(!$scope.chantiers.length){
+                        $scope.chantiers = response.chantiers;
+                        $scope.statusPlanning = response.status_planning;
+                    }
+
+                    restartCalendar();
+
+                    $.each( $scope.plannings, function( key, value ) {
+                        var dropEltId = document.getElementById("simpleList-"+value.categorie_id);
+                        new Sortable(dropEltId, {
+                            swap: true, // Enable swap plugin
+                            swapClass: 'highlight', // The class applied to the hovered swap item
+                            filter: ".static-drop",
+                            animation: 150,
+                            onEnd: function (/**Event*/evt) {
+                                var categorieId = $(evt.item).data('categorie');
+                                $tabPostion = [];
+                                $('#simpleList-'+value.categorie_id+' .dd-item').each(function( index ) {
+                                    $eltDrop = $('#simpleList-'+value.categorie_id+' [data-tache-id = '+$(this).data('tache-id')+']');
+                                    $currentPostition = $( ".dd-item" ).index( $eltDrop );
+                                    $tabPostion.push([$(this).data('tache-id')+'_'+$currentPostition])
+                                });
+                                $scope.updateOrder(categorieId, $tabPostion);
+                            }
+                        });     
+                    });
+                },
+            );
+        }
+
+        $scope.loadPlanningsPrint = function(){
+            var promiseLoadPlannings = PlanningService.loadPlanningsPrint();
+            promiseLoadPlannings.then(
+                function (response) {
+                    if(response.status == 200){
+                        $scope.plannings = response.plannings;
+                        console.log($scope.plannings);
+                        $scope.informations = response.informations;
+                        console.log($scope.informations);
+                    }
+                    $('.loader-container').css('display','none');
+                },
+            );
+        }
+
+        if( $('input[name="print"]').length > 0)
+            $scope.loadPlanningsPrint();
+        else
+            $scope.loadPlanning(0);
+
+        $scope.isBarFusion = function(user, semaine, debut, fin){
+            index = $scope.timelines.findIndex(x => x.user === user);
+            if(index > -1){
+                index2 = $scope.timelines[index].timelines.findIndex(x => x.id === planning_id);
+                if(index2 > -1){
+                }
+            }
+        }
+
+        $scope.updateOrder = function (categorieId, order){
+            var promiseUpdateOrder = PlanningService.updateOrder(
+                categorieId,
+                order,
+                function (data) {
+                    var data = JSON.parse(data);
+                    $scope.$apply(function() {
+                        {#/*$scope.updatePlanningDOM(data.planning, categorieId);*/#}
+                    })
+                },
+                function (data) {
+                    toastr.error("Oops, une erreur s'est produite");
+                }
+            );
+        }  
+        $scope.createTache = function (categorieId, categorie){
+            var promiseCreateTache = PlanningService.createTache(
+                categorieId,
+                categorie,
+                function (data) {
+                    var data = JSON.parse(data);
+                    $scope.$apply(function() {
+                        $scope.updatePlanningDOM(data.planning, categorieId);
+                    })
+                    restartCalendar();
+                },
+                function (data) {
+                    toastr.error("Oops, une erreur s'est produite");
+                }
+            );
+        }
+
+        $scope.createNewPlanning = function (planning_name, chantier_id){
+            $scope.loadingPlanning = true;
+            var promiseCreateNewPlanning = PlanningService.createNewPlanning(
+                planning_name,
+                chantier_id,
+                function (data) {
+                    var data = JSON.parse(data);
+                    $scope.$apply(function() {
+                        $scope.plannings[0] = data.planning;
+                        $scope.loadingPlanning = false;
+                        
+                        restartCalendar();
+
+                    $('.planning-chantier-item').first().find('.dragable-container .planning-nom').text(planning_name)
+                    $('.planning-chantier-item').first().find('.dragable-container').css('display', 'none')
+                    $('.planning-chantier-item').first().find('.planning-table-container').css('display', 'block')
+                    $('.planning-chantier-item').first().css('pointer-events','auto');
+                    $('.planning-chantier-item').first().find('.td-categorie input[type=text]').focus();
+                })
+                },
+                function (data) {
+                    toastr.error("Oops, une erreur s'est produite");
+                }
+            );
+        }
+        $scope.updateCategory = function (chantier_id, categorie_id, nomChantier){
+            var promiseUpdateCategory = PlanningService.updateCategory(
+                chantier_id,
+                categorie_id,
+                function (data) {
+                    var data = JSON.parse(data);
+                    $('#dragable-container-'+categorie_id+ ' .planning-nom').text(nomChantier);
+                },
+                function (data) {
+                    toastr.error("Oops, une erreur s'est produite");
+                }
+            );
+        }
+
+        $scope.createPlanning = function(){
+            if($scope.chantiers.length){
+                if($scope.chantiers.length)
+                planningAdd.categorie = $scope.chantiers[0].nom;
+                $scope.plannings.unshift(planningAdd);
+                $('.planning-chantier-item').first().css('pointer-events','none');
+                $scope.createNewPlanning(planningAdd.categorie, $scope.chantiers[0].id);
+            }
+            else{
+                toastr.error("aucun chantier enregistré");
+            }
+            
+        }
+
+        $scope.submitCategory = function(e, category_id) {
+            e.preventDefault();
+            var val = $('input#planning_input'+category_id).val();
+            $('input#planning_input'+category_id).val("");
+            if(val != ''){
+                $scope.createTache(category_id, val);
+            }
+        };
+
+        $scope.changeCategory = function(categorie_id){
+            var chantier_id = $( "#categorie_id_"+categorie_id ).val();
+            var nomChantier = $( "#categorie_id_"+categorie_id ).children("option:selected").data('chantier-nom');
+            console.log(nomChantier);
+            if(chantier_id != ""){
+                setTimeout(function(){
+                    $scope.updateCategory(chantier_id, categorie_id, nomChantier);
+                }, 2000);
+            }
+        }
+
+        $scope.removeUser = function(categorieId, planning_id, user_id){
+            index = $scope.plannings.findIndex(x => x.categorie_id === categorieId);
+            if(index > -1){
+                index2 = $scope.plannings[index].taches.findIndex(x => x.id === planning_id);
+                if(index2 > -1){
+                    index3 = $scope.plannings[index].taches[index2].users.findIndex(x => x.id === user_id);
+                    if(index3 > -1){
+                        var userRemoved = $scope.plannings[index].taches[index2].users.splice(index3, 1)[0];
+                        userRemoved.full_name = userRemoved.lastname+' '+userRemoved.firstname;
+                        $scope.plannings[index].taches[index2].utilisateurs_dispo.push(userRemoved);
+
+                        index4 = $scope.plannings[index].user_planified.findIndex(x => x.id === user_id);
+                        if(index4 > -1)
+                            $scope.plannings[index].user_planified.splice(index4, 1);
+                    }
+                }
+            }
+
+            var promiseRemoveUser = PlanningService.removeUser(planning_id, user_id);
+            promiseRemoveUser.then(
+                function (response) {
+                    if(response.status == 200){
+                        /*$scope.updatePlanningDOM(response.planning, categorieId);*/
+                    }
+                    else{
+                        toastr.error("Oops, une erreur s'est produite");
+                    }
+                },
+            );
+        }
+        $scope.addUser = function(categorieId, planning_id, user_id, avatar, firstname, lastname, email){
+            $('.filter-user').val('');
+            var user = {id: user_id, email: email, firstname: firstname, lastname: lastname,
+                avatar: avatar
+            };
+
+            index = $scope.plannings.findIndex(x => x.categorie_id === categorieId);
+            if(index > -1){
+                index2 = $scope.plannings[index].taches.findIndex(x => x.id === planning_id);
+                if(index2 > -1){
+                    $scope.plannings[index].taches[index2].users.push(user);
+                    index3 = $scope.plannings[index].taches[index2].utilisateurs_dispo.findIndex(x => x.id === user_id);
+                    if(index3 > -1){
+                        $scope.plannings[index].taches[index2].utilisateurs_dispo.splice(index3, 1);
+
+                        index4 = $scope.plannings[index].user_planified.findIndex(x => x.id === user_id);
+                        if(index4 <= -1)
+                            $scope.plannings[index].user_planified.push(user);
+                    }
+                }
+            }
+
+            var promiseAddUser = PlanningService.addUser(planning_id, user_id);
+            promiseAddUser.then(
+                function (response) {
+                    if(response.status == 200){
+                        /*$scope.updatePlanningDOM(response.planning, categorieId);*/
+                    }
+                    else{
+                        toastr.error("Oops, une erreur s'est produite");
+                    }
+                },
+            );
+        }
+
+        $scope.updatePlanningDOM = function(planning, categorieId){
+            index = $scope.plannings.findIndex(x => x.categorie_id === categorieId);
+            if(index > -1){
+                {#/*$scope.plannings[index].taches.push(data.tache);*/#}
+                $scope.plannings[index] = planning;
+                restartCalendar();
+            }
+        }
+        $scope.clearDate = function(categorieId, planning_id){
+            index = $scope.plannings.findIndex(x => x.categorie_id === categorieId);
+            if(index > -1){
+                index2 = $scope.plannings[index].taches.findIndex(x => x.id === planning_id);
+                if(index2 > -1){
+                    $scope.plannings[index].taches[index2].dateInterval = "";
+                    $scope.plannings[index].taches[index2].dateCalendar = "";
+                    $elt = $('#tache_date'+planning_id);
+                    $elt.flatpickr().clear();
+                }
+            }
+
+            var promiseClearDate = PlanningService.clearDate(planning_id);
+            promiseClearDate.then(
+                function (response) {
+                    if(response.status == 200){
+                    }
+                    else{
+                        toastr.error("Oops, une erreur s'est produite");
+                    }
+                },
+            );
+        }
+
+        function collapseAction(categorie_id, collapse){
+            var promiseCollapseAction = PlanningService.collapseAction(categorie_id, collapse);
+            promiseCollapseAction.then(
+                function (response) {
+                    if(response.status == 200){
+                    }
+                    else{
+                        toastr.error("Oops, une erreur s'est produite");
+                    }
+                },
+            );
+        }
+
+        function changeDate(categorie_id, tache_id, val){
+            var promiseUpdatePlanningDate = PlanningService.updatePlanningDate(tache_id, val);
+            promiseUpdatePlanningDate.then(
+                function (response) {
+                    if(response.status == 200){
+                        $scope.updatePlanningDOM(response.planning, categorie_id);
+                    }
+                    else{
+                    }
+                },
+            );
+        }
+
+        $scope.updateStatus = function(categorie_id, tache_id, val){
+            var promiseUpdateStatus = PlanningService.updateStatus(tache_id, val);
+            promiseUpdateStatus.then(
+                function (response) {
+                    if(response.status == 200){
+                        $scope.updatePlanningDOM(response.planning, categorie_id);
+                    }
+                    else{
+                    }
+                },
+            );
+        }
+
+        $scope.changeStatus = function(e, categorie_id, tache_id){
+            $elt = $(e.currentTarget);
+            const menu = document.querySelector('.menu-status-'+tache_id);
+            const option = document.querySelector('.menu-status-'+tache_id+' span')
+            
+            if (e.target.classList.contains('menu-status-'+tache_id) || e.target.classList.contains('select-status') || e.target.classList.contains('menu__icon')) {
+                $('.menu-status:not(.menu-status-'+tache_id).removeClass('menu__active');
+                menu.classList.toggle('menu__active');
+            }
+
+            if (e.target.classList.contains('menu__dropdown-option')) {
+                $('.menu-status').removeClass('menu__active');
+                option.innerHTML = e.target.textContent;
+                menu.classList.remove('menu__active');
+                var statusId = event.target.getAttribute("data-status-id");
+                if(statusId){
+                    $('.menu-status-'+tache_id).css('background', event.target.getAttribute("data-status-color"));
+                    $scope.updateStatus(categorie_id, tache_id, statusId);
+                }
+            }
+        }
+
+        $scope.getUsers = function (){
+            var promiseGetUsers = PlanningService.getUsers();
+            promiseGetUsers.then(
+                function (response) {
+                    if(response.status == 200){
+                        $scope.users = response.users;
+                    }
+                }
+            )
+        }
+        $scope.getUsers();
+
+        function datediff(first, second) {
+            return Math.round((second-first)/(1000*60*60*24));
+        }
+
+        $scope.editTache = function(idTache){
+            $('#editing-'+idTache).removeClass('no-editing');
+            $('#editing-'+idTache).attr("disabled", false);
+        }
+
+        $(document).on('dblclick', '.tache-name', function (e) {
+            var tacheId = $(this).find('input.inputTache').data('id-tache');
+            $scope.editTache(tacheId);
+        });
+
+        $(document).on('dblclick', '.td-editable', function (e) {
+            $elt = $(this).find('input.inputEmplacement');
+            var tacheId = $elt.data('id-tache');
+            $elt.removeClass('no-editing');
+            $elt.attr("disabled", false);
+        });
+
+        $scope.deleteTache = function(categorie_id, tache_id){
+            var promiseDeleteTache = PlanningService.deleteTache(tache_id);
+            promiseDeleteTache.then(
+                function (response) {
+                    if(response.status == 200){
+                        $scope.updatePlanningDOM(response.planning, categorie_id);
+                    }
+                    else{
+                    }
+                },
+            );
+        }
+        $scope.changePlanningConfigColor = function(planning_id, color){
+            var promiseChangePlanningConfigColor = PlanningService.changePlanningConfigColor(planning_id, color);
+            promiseChangePlanningConfigColor.then(
+                function (response) {
+                    if(response.status == 200){
+                        $scope.updatePlanningDOM(response.planning, planning_id);
+                    }
+                    else{
+                    }
+                },
+            );
+        }
+        $scope.deletePlanning = function(planning_id){
+            $('.config-planning-container').css('display', 'none');
+            var promiseDeletePlanning = PlanningService.deletePlanning(planning_id);
+            promiseDeletePlanning.then(
+                function (response) {
+                    if(response.status == 200){
+                        var index = $scope.plannings.findIndex(x => x.categorie_id === planning_id);
+                        if(index > -1){
+                            $scope.plannings.splice(index, 1);        
+                        }
+
+                    }
+                    else{
+                    }
+                },
+            );
+        }
+        $scope.archivePlanning = function(planning_id){
+            $('.config-planning-container').css('display', 'none');
+            var promiseArchivePlanning = PlanningService.archivePlanning(planning_id);
+            promiseArchivePlanning.then(
+                function (response) {
+                    if(response.status == 200){
+                        var index = $scope.plannings.findIndex(x => x.categorie_id === planning_id);
+                        if(index > -1){
+                            $scope.plannings.splice(index, 1);        
+                        }
+                    }
+                    else{
+                    }
+                },
+            );
+        }
+
+        $scope.changeDevis = function(categorie_id, tache_id, devis_id){
+            var promiseChangeDevis = PlanningService.changeDevis(tache_id, devis_id);
+            promiseChangeDevis.then(
+                function (response) {
+                    if(response.status == 200){
+                        $scope.updatePlanningDOM(response.planning, categorie_id);
+                    }
+                    else{
+                    }
+                },
+            );
+        }
+
+        $(document).on("blur",'.row-new-tache',function(event){
+            $elt = $(event.currentTarget);
+            $elt.submit();
+        });
+        $(document).on("blur",'input.inputTache',function(e){
+            $that = $(e.currentTarget);
+            var categorieId = $that.data('categorie');
+            var planning_id = $that.data('id-tache');
+            var promiseUpdateTacheName = PlanningService.updateTacheName(planning_id, $that.val());
+            promiseUpdateTacheName.then(
+                function (response) {
+                    if(response.status == 200){
+                        $scope.updatePlanningDOM(response.planning, categorieId);
+                    }
+                    else{
+                    }
+                },
+            );
+        });
+
+        $(document).on("blur",'input.inputEmplacement',function(e){
+            $that = $(e.currentTarget);
+            var categorieId = $that.data('categorie');
+            var planning_id = $that.data('id-tache');
+            var promiseUpdateEmplacement = PlanningService.updateEmplement(planning_id, $that.val());
+            promiseUpdateEmplacement.then(
+                function (response) {
+                    if(response.status == 200){
+                        $scope.updatePlanningDOM(response.planning, categorieId);
+                    }
+                    else{
+                    }
+                },
+            );
+        });
+
+        $scope.collapsePlanning = function(status, planning_id, e){
+            if(status == 'close'){
+                if(planning_id == 0){
+                    $('.dragable-container').css('display','block');
+                    $('.div-table .planning-table-container').css('display', 'none');
+                }
+                else{
+                    $('#dragable-container-'+planning_id).css('display', 'block');
+                    $('.div-table #table-container-'+planning_id).css('display', 'none');
+                }
+            }
+            if(status == 'open'){
+                $(e.currentTarget).css('display','none');
+                $('.div-table #table-container-'+planning_id).css('display', 'block');
+            }
+            collapseAction(planning_id, status);
+        }
+
+        $scope.openUserList = function(print, categorieId){
+            $('.config-planning-container').css('display', 'none');
+            if(print == "planning_categorie"){
+                window.open("{{path('planning_print')}}?categorieId="+categorieId, '_blank').focus();
+            }
+            else if(print == "timeline_categorie"){
+                window.open("{{path('planning_print_timeline')}}?categorie_print="+categorieId, '_blank').focus();
+            }
+            else if(print == "planning_categorie_individuel"){
+                $('#modalUserPlanning-'+categorieId).modal('show');
+                $('.modalPlannifiedForm-'+categorieId).attr('action', "{{path('planning_print_individual')}}");
+            }
+            else if(print == "timeline_categorie_individuel"){
+                $('#modalUserPlanning-'+categorieId).modal('show');
+                $('.modalPlannifiedForm-'+categorieId).attr('action', "{{path('planning_print_timeline')}}");
+            }
+        }
+
+        $scope.editConfigColor = function(planning_id){
+            $('.config-planning-container').css('display', 'none');
+            $('.config-color-container[data-planning-id='+planning_id+']').css('display', 'block');
+            $('input#categorie_id_'+planning_id).addClass('focus');
+        }
+        $scope.dropdownUsers = function(tache_id){
+            $('.user-dropdown').css('display', 'none');
+            $('.user-dropdown-'+tache_id).css('display', 'block');
+            $('.user-dropdown-'+tache_id+' input').focus();
+        }
+
+        $scope.dropdownStatus = function(tache_id){
+            $('.status-dropdown').css('display', 'none');
+            $('.status-dropdown-'+tache_id).css('display', 'block');
+        }
+
+        $scope.dropdownConfigPlanning = function(e){
+            $('.config-planning-container').css('display', 'none');
+            $(e.currentTarget).next().css('display', 'block');
+        }
+
+        $scope.submitUserPrint = function(planning_id){
+            if(planning_id == undefined)
+                $('#modalPrintAllUserForm').submit();
+            else
+                $('.modalPlannifiedForm-'+planning_id).submit();
+        }
+
+        $scope.selectDate = function(tacheId, e){
+            $elt = $('#tache_date'+tacheId);
+            $elt.flatpickr({
+                mode: "range",
+                locale: "fr",
+                defaultDate: $('#tache-input-date-container'+tacheId).attr('data-date-to-calendar')
+            }).open();
+        }
+
+        var dateStrInput = "";
+        $(document).on("change",'input.date-range-input',function(e){
+            $that = $(e.currentTarget);
+            $categorie_id = $that.data('planning-id');
+            $tache_id = $that.parent().attr('id');
+            $tache_id = parseInt($tache_id.replace("tache-input-date-container", ""));
+            $elt  = $('#tache_date'+$tache_id);
+
+            if($that.val() != $elt.data('date-to-calendar')){
+                if(dateStrInput == "" || $that.val().includes("au"))
+                    dateStrInput = $that.val();
+                else
+                    dateStrInput = dateStrInput+" au "+$that.val();
+
+                if(dateStrInput.includes("au")){
+                    console.log(dateStrInput);
+                    buildPlanningDate(dateStrInput, $categorie_id, $tache_id)
+                    changeDate($categorie_id, $tache_id, dateStrInput);
+                    dateStrInput = "";
+                    $that.val("");
+                }
+            }
+        });
+
+
+
+
+
+
+
+        $scope.ECHEANCE = "JOURNALIERE";
+
+        $scope.changeEcheance = function(){
+            $scope.getTimelines();
+        }
+        $scope.switchModeDisplay = function(e, modeDisplay){
+            $('.tab-planning-control-item').removeClass('active');
+            $that = $(e.currentTarget);
+            $that.addClass('active');   
+            $('.tab-planning-content-item').removeClass('active');
+            $('#'+$that.attr('data-tabs')).addClass('active');
+            if(modeDisplay == 'timeline'){
+                $scope.getTimelines();
+            }
+        }
+        $scope.getTimelines = function (direction, dateReference, sautDate){
+            var promiseGetTimelines = PlanningService.getTimelines(direction, dateReference, sautDate, $scope.ECHEANCE);
+            promiseGetTimelines.then(
+                function (response) {
+                    if(response.status == 200){
+                        if(direction == undefined){
+                            $scope.timelines = response.timelines;
+                            $scope.timelines_year = response.year;
+                            setTimeout(function(){
+                                var x = document.getElementsByClassName("timeline-container")[0];
+                                /*x.scrollLeft = x.scrollLeft + 400;*/
+                            }, 4000);
+                        }
+                        else{
+                            if(direction == 'right'){
+                                $scope.timelines_year = $scope.timelines_year.concat(response.year);
+                                $.each( $scope.timelines, function( key, value ) {
+                                    var timeline_to_add = response.timelines[key].timelines;
+                                    $scope.timelines[key].timelines = $scope.timelines[key].timelines.concat(timeline_to_add);
+                                    
+                                }); 
+                            }
+                            if(direction == 'left'){
+                                $scope.timelines_year = response.year.concat($scope.timelines_year);
+                                $.each( $scope.timelines, function( key, value ) {
+                                    var timeline_to_add = response.timelines[key].timelines;
+                                    $scope.timelines[key].timelines = timeline_to_add.concat($scope.timelines[key].timelines);
+                                    
+                                }); 
+                                var x = document.getElementsByClassName("timeline-container")[0];
+                                /*x.scrollLeft = x.scrollLeft + 16000;*/
+                            }
+                        }
+
+                    }
+
+                    myTimer = setInterval(()=>{
+                        if($('.timeline-bar').length){
+
+                            var clientOriginalLeftTimelineBar = 0;
+                            var clientOriginalRightTimelineBar = 0;
+                            var dateResizing = "";
+                            var widthTmlnCell = $('.tmln-td-body').first().outerWidth();
+                            $(".timeline-bar").resizable({
+                                handles: 'w,e',
+                                create: function( event, ui ) {
+                                },
+                                resize: function( event, ui ) {
+                                    $that = $(this).get(0).getBoundingClientRect();
+                                    $elt = $(this);
+                                    if($scope.ECHEANCE=="TRIMESTRIELLE"){
+                                        var dateState = "";
+                                        var dateEnd = "";
+                                        var postLeft = $that.left;
+                                        while($('.month-bar[left='+parseInt(postLeft)+']').length == 0){
+                                            postLeft = postLeft-1;
+                                        }
+                                        dateState = $('.month-bar[left='+parseInt(postLeft)+']').data('month');
+                                       
+                                        var pos2 = parseInt(postLeft+ui.size.width);
+                                        while($('.month-bar[left='+parseInt(pos2)+']').length == 0){
+                                            pos2 = pos2-1;
+                                        }
+                                        dateEnd = $('.month-bar[left='+parseInt(pos2)+']').data('month');
+                                        
+                                        /*const optionsDate = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };*/
+                                        var optionsDate = { month: 'short', day: 'numeric' };
+                                        $tooltip = $(this).find('.tooltip-timeline-bar');
+
+                                        $tooltip.css('display', 'flex');
+                                        $tooltip.find('.new-date-start').text((new Date(dateState)).toLocaleDateString('fr-FR', optionsDate));
+                                        $tooltip.find('.new-date-end').text((new Date(dateEnd)).toLocaleDateString('fr-FR', optionsDate));
+
+                                        $tooltip.find('.nbr-day-timeline').text(datediff(new Date(dateState), new Date(dateEnd))+"d");
+                                        if(ui.position.left != ui.originalPosition.left ){
+                                            $tooltip.find('.nbr-day-timeline').css('left', '-45px');
+                                            $tooltip.find('.nbr-day-timeline').css('right', 'auto');
+                                            dateResizing = dateState;
+                                        }
+                                        else{
+                                            $tooltip.find('.nbr-day-timeline').css('right', '-45px');
+                                            $tooltip.find('.nbr-day-timeline').css('left', 'auto');
+                                            dateResizing = dateEnd;
+                                        }
+                                    }
+                                    else if($scope.ECHEANCE=="JOURNALIERE"){
+                                        dateState = $elt.attr('data-debut');
+                                        dateEnd = $elt.attr('data-fin');
+                                        /*resize par le bord gauche */
+                                        if(ui.position.left != ui.originalPosition.left){
+                                            var widthDeplace = Math.abs($that.left - clientOriginalLeftTimelineBar) ;
+
+                                            var nbrCellDepasse = Math.trunc(widthDeplace/widthTmlnCell);
+                                            /* resize vers la gauche */
+                                            if(ui.position.left < ui.originalPosition.left){
+                                                if( ((widthDeplace/widthTmlnCell) - nbrCellDepasse) >= 0.5 ){
+                                                    nbrCellDepasse += 1;
+                                                }
+                                                dateState = removeDayToDate(dateState,nbrCellDepasse);
+                                            }/* resize vers la droite */
+                                            else{
+                                                if( ((widthDeplace/widthTmlnCell) - nbrCellDepasse) >= 0.5){
+                                                    nbrCellDepasse += 1;
+                                                }
+                                                dateState = addDayToDateString(dateState, nbrCellDepasse);
+                                            }
+                                            
+                                            dateResizing = dateState;
+                                            var optionsDate = { month: 'short', day: 'numeric' };
+                                            $tooltip = $(this).find('.tooltip-timeline-bar');
+
+                                            $tooltip.css('display', 'flex');
+                                            $tooltip.find('.new-date-start').text((new Date(dateState)).toLocaleDateString('fr-FR', optionsDate));
+                                            $tooltip.find('.new-date-end').text((new Date(dateEnd)).toLocaleDateString('fr-FR', optionsDate));
+
+                                            $tooltip.find('.nbr-day-timeline').text(datediff(new Date(dateState), new Date(dateEnd))+1+"d");
+
+                                            $tooltip.find('.nbr-day-timeline').css('left', '-45px');
+                                            $tooltip.find('.nbr-day-timeline').css('right', 'auto');
+
+                                        }   
+                                        else{
+                                            var widthDeplace = Math.abs(ui.originalSize.width - ui.size.width);
+                                            var nbrCellDepasse = Math.trunc(widthDeplace/widthTmlnCell);
+                                            /* resize vers la droite */
+                                            if(ui.originalSize.width < ui.size.width){
+                                                if( (widthDeplace/widthTmlnCell) - (nbrCellDepasse) >= 0.5){
+                                                    nbrCellDepasse += 1;
+                                                }
+                                                dateEnd = addDayToDateString(dateEnd, nbrCellDepasse);
+                                                console.log('to right->'+(widthDeplace/widthTmlnCell));
+                                            }/* resize vers la gauche */
+                                            else{
+                                                if( ((widthDeplace/widthTmlnCell) -nbrCellDepasse) >= 0.5){
+                                                    nbrCellDepasse += 1;
+                                                }
+                                                dateEnd = removeDayToDate(dateEnd, nbrCellDepasse);
+                                                console.log('to left->'+(widthDeplace/widthTmlnCell));
+                                            }
+                                            
+                                            dateResizing = dateEnd;
+                                            var optionsDate = { month: 'short', day: 'numeric' };
+                                            $tooltip = $(this).find('.tooltip-timeline-bar');
+
+                                            $tooltip.css('display', 'flex');
+                                            $tooltip.find('.new-date-start').text((new Date(dateState)).toLocaleDateString('fr-FR', optionsDate));
+                                            $tooltip.find('.new-date-end').text((new Date(dateEnd)).toLocaleDateString('fr-FR', optionsDate));
+
+                                            $tooltip.find('.nbr-day-timeline').text(datediff(new Date(dateState), new Date(dateEnd))+1+"d");
+
+                                            $tooltip.find('.nbr-day-timeline').css('left', 'auto');
+                                            $tooltip.find('.nbr-day-timeline').css('right', '-45px');
+                                        }                                        
+                                    }
+                                },
+                                start: function( event, ui ) {
+                                    $scope.isEndLoopMonth();
+                                    $that = $(this).get(0).getBoundingClientRect();
+                                    clientOriginalLeftTimelineBar = $that.left;
+                                    clientOriginalRightTimelineBar = $that.right;
+                                },
+                                stop: function( event, ui ) {
+                                    $elt = $(this);
+                                    if(ui.position.left != ui.originalPosition.left)
+                                        $(this).attr('data-debut', dateResizing);
+                                    else
+                                        $(this).attr('data-fin', dateResizing);
+                                    $(this).find('.tooltip-timeline-bar').css('display', 'none');
+
+                                    updateDateTimeline($elt.attr('data-categorie'), $elt.attr('data-tache'), $elt.attr('data-user'), $elt.attr('data-debut'), $elt.attr('data-fin'));
+                                },
+                            }).draggable({
+                               axis: "x",
+                                cursor: "grabbing",
+                                start: function(event, ui) {
+                                    $scope.isEndLoopMonth();
+                                    $that = $(this).get(0).getBoundingClientRect();
+                                    clientOriginalLeftTimelineBar = $that.left;
+                                },
+                                stop: function(event, ui) {
+                                    $that = $(this).get(0).getBoundingClientRect();
+                                    $elt = $(this);
+                                    if($scope.ECHEANCE=="JOURNALIERE"){
+                                        dateState = $elt.attr('data-debut');
+                                        dateEnd = $elt.attr('data-fin');
+
+                                        /*resize par le bord gauche */
+                                        
+                                        var widthDeplace = Math.abs($that.left - clientOriginalLeftTimelineBar) ;
+                                        var nbrCellDepasse = Math.trunc(widthDeplace/widthTmlnCell);
+                                        if( ((widthDeplace/widthTmlnCell) - nbrCellDepasse) >= 0.5 ){
+                                            nbrCellDepasse += 1;
+                                        }
+                                        if(ui.position.left < ui.originalPosition.left){
+                                            dateState = removeDayToDate(dateState,nbrCellDepasse);
+                                            dateEnd = removeDayToDate(dateEnd,nbrCellDepasse);
+                                        }
+                                        else{
+                                            dateState = addDayToDateString(dateState, nbrCellDepasse);
+                                            dateEnd = addDayToDateString(dateEnd, nbrCellDepasse);
+                                        }
+
+                                        $(this).attr('data-debut', dateState);
+                                        $(this).attr('data-fin', dateEnd);
+                                    }
+                                    else if($scope.ECHEANCE=="TRIMESTRIELLE"){
+                                        var dateState = "";
+                                        var dateEnd = "";
+                                        var postLeft = $that.left;
+                                        while($('.month-bar[left='+parseInt(postLeft)+']').length == 0){
+                                            postLeft = postLeft-1;
+                                        }
+                                        dateState = $('.month-bar[left='+parseInt(postLeft)+']').data('month');
+                                       
+                                        var pos2 = parseInt(postLeft+$elt.outerWidth());
+                                        while($('.month-bar[left='+parseInt(pos2)+']').length == 0){
+                                            pos2 = pos2-1;
+                                        }
+                                        dateEnd = $('.month-bar[left='+parseInt(pos2)+']').data('month');
+
+                                        $(this).attr('data-debut', dateState);
+                                        $(this).attr('data-fin', dateEnd);
+                                    }
+                                    updateDateTimeline($elt.attr('data-categorie'), $elt.attr('data-tache'), $elt.attr('data-user'), $elt.attr('data-debut'), $elt.attr('data-fin'));
+                                }
+                            })
+
+                            clearInterval(myTimer);
+                            if($scope.ECHEANCE=="JOURNALIERE"){
+                                var currentDate = new Date();
+                                curmonth = currentDate.getMonth() + 1,
+                                curday = currentDate.getDate(),
+                                curyear = currentDate.getFullYear();
+                                if (curmonth < 10) 
+                                    curmonth = '0' + curmonth;
+                                if (curday < 10) 
+                                    curday = '0' + curday;
+
+                                console.log([curyear, curmonth, curday].join('-'));
+                                var timelineCont = document.getElementsByClassName("timeline-container")[0];
+                                $that = $('.cell-date-'+([curyear, curmonth, curday].join('-'))).get(0).getBoundingClientRect();
+                                var l = $that.left
+
+                                if($('input[name="categorie_print"]').val())
+                                    timelineCont.scrollLeft = timelineCont.scrollLeft + l-213;
+                                else
+                                    timelineCont.scrollLeft = timelineCont.scrollLeft + l-522;
+                            }
+                        }
+                    } , 1000);
+                    setTimeout(()=>{
+                        clearInterval(myTimer);
+                    },10000)
+                }
+            )
+        }
+        if($('input[name="user_print"]').length > 0){
+            $scope.getTimelines();
+        }
+
+        function printDiv(divName) {
+             window.print();
+
+        }
+
+        function updateDateTimeline(categorieId, tacheId, userId, dateDebut, dateFin){
+            var promiseUpdatePlanningDate = PlanningService.updatePlanningDate(tacheId, (dateDebut+'au'+dateFin));
+            promiseUpdatePlanningDate.then(
+                function (response) {
+                    if(response.status == 200){
+                        $scope.updatePlanningDOM(response.planning, categorieId);
+                    }
+                    else{
+                    }
+                },
+            );
+
+        }
+    
+        var lastScrollLeft = 0; var firstYear = 0; var lastYear = 0;
+        var isScrolling;
+        $(".timeline-container").scroll(function() {
+            /*if (lastScrollLeft != $(".timeline-container").scrollLeft()) {
+                $scope.isEndLoopMonth();
+                alert('dsf');
+            }*/
+
+            window.clearTimeout( isScrolling );
+            isScrolling = setTimeout(function() {                
+                var documentScrollLeft = $(".timeline-container").scrollLeft();
+                if($scope.timelines_year.length){
+                    firstYear = $scope.timelines_year[0].year;
+                    lastYear = $scope.timelines_year[$scope.timelines_year.length-1].year;
+                }
+                if (lastScrollLeft != documentScrollLeft) {
+                    if ( documentScrollLeft > lastScrollLeft ) {
+                        console.log(lastYear-sautDate);
+                        index = $scope.timelines_year.findIndex(x => x.year === (lastYear-sautDate));
+
+                        var eltFocusPostion = 0;
+                        if( index > -1 ){
+                            var eltFocus = document.getElementsByClassName('th_year_'+(lastYear-sautDate))[0];
+                            eltFocus = eltFocus.getBoundingClientRect();
+                            eltFocusPostion = eltFocus.left;
+                        }
+
+                        if( (index > -1 && !isElementPartiallyInViewport($('.th_year_'+(lastYear-sautDate)))) && eltFocusPostion > 0 && !isElementPartiallyInViewport($('.th_year_'+lastYear))){
+                        }
+                        else{
+                            {#/*$scope.getTimelines('right', lastYear, sautDate);*/#}
+                        }
+                    }
+                    else if ( documentScrollLeft < lastScrollLeft ) {
+                        console.log(firstYear+sautDate);
+                        index = $scope.timelines_year.findIndex(x => x.year === (firstYear+sautDate));
+
+                        var eltFocusPostion = 0;
+                        if( index > -1 ){
+                            var eltFocus = document.getElementsByClassName('th_year_'+(firstYear+sautDate))[0];
+                            eltFocus = eltFocus.getBoundingClientRect();
+                            eltFocusPostion = eltFocus.left;
+                        }
+                        if( (index > -1 && !isElementPartiallyInViewport($('.th_year_'+(firstYear+sautDate)))) && eltFocusPostion < 0 && !isElementPartiallyInViewport($('.th_year_'+firstYear))){
+                        }
+                        else{
+                            {#/*$scope.getTimelines('left', firstYear, sautDate);*/#}
+                        }
+                    }
+                    lastScrollLeft = documentScrollLeft;
+                }
+
+            }, 3000);
+        });
+
+
+        /*function buildYearAndPlusTimeline(firstYear, lastYear, direction){
+            var SUB_TIMELINE = [];
+            if(direction == "right"){
+                for (var i = (lastYear + 1); i <= (lastYear+sautDate); i++) {
+                    $scope.timelines_year.push({year: i, q: ["Q1", "Q2", "Q3", "Q4"]});
+                    var currentTimeline = {
+                        year: i, 
+                        q: ["", "", "", ""]
+                    }
+                    SUB_TIMELINE.push(currentTimeline);
+                }
+            }
+            else if(direction == "left"){
+                for (var i = (firstYear - 1); i >= (firstYear-sautDate); i--) {
+                    $scope.timelines_year.unshift({year: i, q: ["Q1", "Q2", "Q3", "Q4"]});
+                    var currentTimeline = {
+                        year: i, 
+                        q: ["", "", "", ""]
+                    }
+                    SUB_TIMELINE.push(currentTimeline);
+                }
+            }
+            
+            return SUB_TIMELINE;
+        }*/
+
+        /*
+        getPostionAllMonthBar = function(){
+            $('.month-bar').each(function( index ) {
+                $that = $(this).get(0).getBoundingClientRect();
+                $(this).attr('left', $that.left);
+                $(this).attr('right', $that.right);
+                return new Promise(resolve => {
+                    setTimeout(() => {
+                      resolve('resolved');
+                    }, 2000);
+                });
+            })
+        }
+        */
+
+
+        getPostionAllMonthBar = function(){
+            $('.month-bar').each(function( index ) {
+                $that = $(this).get(0).getBoundingClientRect();
+                /* position par rapport à la page */
+                $(this).attr('left', parseInt($that.left));
+                $(this).attr('right', parseInt($that.right));
+            })
+            $('.timeline-table').css('pointer-events', 'auto');
+        }
+
+        getMaxTopValue = function(tabVal){
+            let max = 0;
+            for (var i = 0; i < tabVal.length; i++) {
+                if(tabVal[i] > max)
+                    max = tabVal[i];
+            }
+        }
+
+        $scope.isEndLoopMonth = function(maxSize, index) {
+            if( ((maxSize-1) == index) || (maxSize == undefined) ){
+                $('.timeline-table').css('pointer-events', 'none');
+                getPostionAllMonthBar();
+            }
+        } 
+
+        var TAB_BAR_POSITIONNED = [];
+        $scope.isEndLoopTimeline = function(maxSize, index) {
+            if( ((maxSize-1) == index) || (maxSize == undefined) ){
+                $('.timeline-bar').css('top', '40px');
+                for (var i = 0; i < $scope.timelines.length; i++) {
+                    let timelineBars = [];
+                    $elt = $($('.timeline_user_row')[i]);
+                    $( '.timeline-bar-'+$elt.attr('data-user') ).map((index, element)=>{
+                        timelineBars.push(element);
+                    });
+                    getTimeLinePosition(timelineBars);
+                }
+            }
+        } 
+
+        function getTimeLinePosition(timelineBars, position = 0){
+            let maxTop = 0;
+            $pas = $('.timeline-bar').height()+8;
+            for (let i = 0; i < timelineBars.length; i++) {
+                newPost = getPosition(i, timelineBars, $pas);
+                if(newPost > maxTop)
+                    maxTop = newPost;
+            }
+            var currenUserId = $( timelineBars[0] ).attr('data-user');
+            $currentUserRow = $('tr.timeline_user_'+currenUserId);
+            let newHeight_row = $currentUserRow.height()+maxTop;
+
+            $('tr.timeline_user_'+currenUserId+' td').css('height',100+maxTop+'px');
+            $('tr.timeline_user_'+currenUserId+' th').css('height',100+maxTop+'px');
+        }
+
+        let lastPos = 0;
+        function getPosition(index, timelineBars, pas){
+            let deplacement = 0;
+            let position = 0;
+
+            if( index == 0 ){
+                lastPos=0;
+                return 0;
+            }
+
+            for(let i = index - 1; i >= 0; i--){
+                if( isRide(timelineBars[ index ], timelineBars[ i ] ) ){
+                    position ++;
+                }
+            }
+            if (position !=0) {
+
+                let obj = { id: $( timelineBars[index] ).attr('id'), position: position, user_id:  $( timelineBars[index] ).attr('data-user')};
+
+                let offset = $(`#${obj.id}`).offset();
+
+                if(lastPos == 0){
+                    /*lastPos = offset.top;*/
+                    lastPos = Math.abs($(`#${obj.id}`).parent().offset().top - $(`#${obj.id}`).offset().top);
+                }
+                /*
+                    index = TAB_BAR_POSITIONNED.findIndex(x => x.id === obj.id);
+                    if(index > -1){
+                        deplacement = TAB_BAR_POSITIONNED[index].deplacement;
+                    }
+                    else{
+                    deplacement = lastPos + pas;
+                        TAB_BAR_POSITIONNED.push({id: obj.id, deplacement:deplacement});
+                }
+                */
+                deplacement = lastPos + pas;
+                
+                $(`#${obj.id}`).offset({
+                    left: offset.left
+                });
+                $(`#${obj.id}`).css('top', deplacement+'px');
+                lastPos = deplacement;
+                obj.top = deplacement;
+            }
+            else{
+                lastPos=0;
+            }
+            return lastPos;
+        }
+
+        function getStartDate(element){
+            return Date.parse( $( element ).data('debut') );
+        }
+
+        function getEndDate(element){
+            return Date.parse( $( element ).data('fin') );  
+        }
+
+        // verifie si les éléments se chevauchent
+        function isRide(witnessElement, element){
+            if( ( (getStartDate(element) <= getStartDate(witnessElement)) && ( getStartDate(witnessElement) <= getEndDate(element)) ) || ( getStartDate(witnessElement) == getStartDate(element) )  )
+                return true;
+            return false;
+        }
+
+
+
+
+
+
+
+
+
+
+
+        $scope.breakUserTimeline = function(){
+            $.each( $scope.timelines, function( key, tmln ) {
+                $.each( tmln, function( key2, tmln2 ) {
+                    
+                });
+            });
+
+            for (var i = 0; i < $(".timeline-bar").length; i++) {
+                $that = $(".timeline-bar")[i];
+                $timestampDebut = new Date($that.attr('data-debut')).valueOf();
+                for (var j = 0; j < $(".timeline-bar").length; j++) {
+                    $thatIn = $(".timeline-bar")[j];
+                    $debutIn = new Date($thatIn.attr('data-debut')).valueOf();
+                    $finIn = new Date($thatIn.attr('data-fin')).valueOf();
+                    $parent = $thatIn.parent();
+                    if( ($parent.offsetParent().top - $that.offsetParent().top) == ($parent.offsetParent().top - $thatIn.offsetParent().top) ){
+                        if( ($debutIn <= $timestampDebut) && ($timestampDebut <= $finIn) ){
+                            $currentTop = $that.offsetParent().top;
+                            $that.css('top', ($currentTop+($that.height())+4)+"");
+                        }
+                    }
+                }
+            }
+
+            $(".timeline-bar").each(function( index ) {
+                $debut = $(this).attr('data-debut');
+                $fin = $(this).attr('data-fin');
+            });
+            countItemTimeline++;
+        }
+
+        $scope.getPostionTimeline = function(debut, fin, identify_cell){
+            $elt = $('.'+identify_cell);
+            if($elt.length >0){ 
+                $tdCell = $elt.parent().get(0).getBoundingClientRect();
+                $posStart = $('.month-bar[data-month='+debut+']').attr('left'); 
+                if($scope.ECHEANCE == "TRIMESTRIELLE"){
+                    $posEnd = $('.month-bar[data-month='+fin+']').attr('left'); 
+                    $tmlnPostStart = $posStart-$tdCell.left; /* position par rappot à la cellule */
+                }
+                if($scope.ECHEANCE == "JOURNALIERE"){
+                    var trueEnd = addDayToDateString(fin);
+                    $posEnd = $('.month-bar[data-month='+trueEnd+']').attr('left'); 
+                    $tmlnPostStart = 0; /* position par rappot à la cellule */
+                }
+                $tmlnWidth = ($posEnd - $posStart);
+
+                return "left: "+$tmlnPostStart+"px; width:"+$tmlnWidth+"px" ;
+            }
+            return '';
+        }
+
+        Date.prototype.addDays = function(days) {
+            var date = new Date(this.valueOf());
+            date.setDate(date.getDate() + days);
+            return date;
+        }
+
+        function addDayToDateString(date, nbrDay = 1){
+            var trueEnd = new Date(date).addDays(nbrDay);
+            month = trueEnd.getMonth() + 1,
+            day = trueEnd.getDate(),
+            year = trueEnd.getFullYear();
+            if (month < 10) 
+                month = '0' + month;
+            if (day < 10) 
+                day = '0' + day;
+
+            return [year, month, day].join('-');
+        }
+
+        function removeDayToDate(date, nbrDay){
+            var myCurrentDate = new Date(date);
+            var myPastDate=new Date(myCurrentDate);
+            myPastDate.setDate(myPastDate.getDate() - nbrDay);
+
+            month = myPastDate.getMonth() + 1,
+            day = myPastDate.getDate(),
+            year = myPastDate.getFullYear();
+            if (month < 10) 
+                month = '0' + month;
+            if (day < 10) 
+                day = '0' + day;
+
+            return [year, month, day].join('-');
+        }
+    }])
+</script>

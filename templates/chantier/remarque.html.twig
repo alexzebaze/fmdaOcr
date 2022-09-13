@@ -1,0 +1,267 @@
+{% extends 'base.html.twig' %}
+{% block css %}
+    <style type="text/css">    
+        .fa-add-remarque{
+            background: #18a689;
+            color: #fff;
+            padding: 7px;
+            border-radius: 50%;
+            font-size: 9px;
+        }    
+
+        .compte-container {
+            /*display: flex;
+            flex-wrap: wrap;
+            align-items: flex-start;*/
+        }
+        .compte-content {
+            margin-bottom: 12px;
+            margin-right: 17px;
+            border-bottom: 2px solid #b6bcbf;
+            padding-bottom: 11px;
+        }
+        .remarque-content {
+            margin-top: 10px;
+            font-size: 16px;
+            word-break: break-all;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 4;
+            -webkit-box-orient: vertical;
+            text-align: justify;
+        }
+        .img-chantier > img {
+            width: 160px;
+            object-fit: cover;
+            height: 150px;
+            border-radius: 9px;
+        }
+        .compte-info {
+            display: flex;
+            padding-top: 11px;
+        }
+        .num-visite {
+            border: 2px solid #585576;
+            border-radius: 7px;
+            padding: 7px 13px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 7px;
+            font-size: 14px;
+            font-weight: 900;
+        }
+        .compte-info .name {
+            color: #585576;
+            font-weight: bold;
+            font-size: 16px;
+        }
+        .compte-content {
+            color: inherit;
+        }
+        .fournisseur-item{
+            font-weight: bold;
+            background: #7f8283;
+            color: #fff;
+            border-radius: 7px;
+            padding: 3px 10px;
+            font-size: 13px;
+            text-transform: lowercase;
+            margin-right: 8px;
+        }
+        select.fournisseur {
+            border: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            text-indent: 1px;
+            text-overflow: '';
+        }
+
+        .presence-symbole{
+            border-radius: 50%;
+            width: 35px;
+            height: 35px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+
+        input.presence:checked + label.presence{
+            background: #e6e6e6e3;
+        }
+    </style>
+{% endblock %}
+{% block breadcrumb %}
+
+    <div class="row wrapper border-bottom white-bg page-heading">
+        <div class="col-lg-10">
+            <h1>Liste des remarques</h1>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                    <a href="{{ path('home') }}">Accueil</a>
+                </li>
+                <li class="breadcrumb-item">
+                    <a href="{{ path('chantier_compte_rendu_chantier') }}">{{compteRendu.chantier.nameentreprise}}</a>
+                </li>
+                <li class="breadcrumb-item">
+                    <a href="{{ path('chantier_compte_rendu', {'chantier_id':compteRendu.chantier.getChantierId}) }}">Compte rendu</a>
+                </li>
+                <li class="breadcrumb-item active">
+                    <strong>Remarque</strong>
+                </li>
+            </ol>
+        </div>
+    </div>
+{% endblock %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-lg-12">
+            {% include 'flashes.html.twig' %}
+            <div class="ibox ">
+                <div class="ibox">
+                    <div class="ibox-content" style="border-radius: 12px;padding-top: 18px;">
+                        <a href="{{path('chantier_remarque_add', {'compte_rendu_id':compteRendu.id})}}" style="font-size: 17px;display: flex;align-items: center;display: inline-block;">
+                            <i class="fa-add-remarque fa fa-plus"></i>
+                            <span>Nouvelle remaque</span>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="ibox">
+                    <div class="ibox-content" style="padding-top: 18px;display: flex;justify-content: space-between;align-items: center;">
+                        <h2>Compte rendu: {{compteRendu.nom}}</h2>
+                        <a href="{{path('chantier_remarque_compte_rendu_print', {'compte_rendu_id':compteRendu.id})}}" target="_blank" class="btn btn-primary">Imprimer</a>
+                    </div>
+                </div>
+                <div class="ibox-content">
+                    <br>
+                    <h2>Presences fournisseurs</h2><br>
+                    <div  class="row">
+                        <div class="fournisseur-container">
+
+                        {% for fournCr in fournisseursCompteR %}
+                            <div class="releve-content">
+                                <div class="col-lg-12 form-group" style="margin-bottom: 5px">   
+                                    <div class="row">
+                                        <div class="col-lg-6 form-group">
+                                            <select class="form-control fournisseur" required name="fournisseursEdit[{{fournCr.id}}][fournisseur]" style="pointer-events: none;">
+                                                <option value="{{fournCr.fournisseur.id}}">{{fournCr.fournisseur.nom}}</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-lg-6 form-group">
+                                            <span onclick="openModalStatus({{fournCr.compteRendu.id}}, {{fournCr.fournisseur.id}})" style="cursor: pointer;">
+                                                <span class="presence-symbole" style="border: 2px solid {{fournCr.status.color}}; color: {{fournCr.status.color}}; margin-right:9px">{{ fournCr.status.name|slice(0, 1)|upper }}</span><span style="color: {{fournCr.status.color}}">{{fournCr.status.name}}</span>
+                                            </span>
+                                        </div>
+                                    </div>      
+                                </div>
+                                
+                            </div>
+                        {% endfor %}
+
+                        {% for fournCh in fournisseursChantier %}
+                            {% if fournCh.id not in fournisseursCompteRenduIdArr %}
+                            <div class="releve-content">
+                                <div class="col-lg-12 form-group" style="margin-bottom: 5px">   
+                                    <div class="row">
+                                        <div class="col-lg-6">
+                                            <select class="form-control fournisseur" name="fournisseurs[fournisseur][]" style="pointer-events: none; background: #fff">
+                                                <option value="{{fournCh.id}}">{{fournCh.nom}}</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-lg-6">
+                                            <span class="openModalStatus" onclick="openModalStatus({{compteRendu.id}}, {{fournCh.id}})" style="cursor: pointer;">
+                                            <i class="fas fa-times" style="font-size: 18px;color: #ef0a0a;"></i>
+                                        </span>
+                                        </div>
+                                    </div>      
+                                </div>
+                            </div>
+                            {% endif %}
+                        {% endfor %}
+
+                        </div>
+                        <br>
+
+                    </div>
+                    <br><br>
+                    <div class="compte-container">
+                        {% for remarque in pager.currentPageResults %}
+                        <div class="compte-content" href="javascript:void()">
+                            <div class="list-fournisseurs">
+                                {% for fournisseur in remarque.fournisseurs %}
+                                <span class="fournisseur-item">
+                                    {{fournisseur.nom|upper}}
+                                </span>
+                                {% endfor %}
+                            </div>
+                            <div class="compte-info">
+                                <div class="num-visite">{{remarque.getCompteRendu.getNumeroVisite}}.{{remarque.num}}</div>
+                                <div>
+                                    <span class="name" style="color:  {{remarque.status.color}}">{{remarque.status.name}}</span>
+                                    <span class="date">&nbsp<i class="fas fa-clock"></i>
+                                        Crée le {{remarque.getDatePost | date('d/m/Y')}}
+                                    </span>
+                                </div>
+                                <a href="{{path('chantier_remarque_edit', {'remarque_id':remarque.id})}}" style="margin-left: 24px;font-size: 16px;"><i class="fa fa-edit"></i></a>
+                                <a onclick="return confirm('Confirmez-vous la suppression ?')" href="{{path('chantier_compte_rendu_delete_remarque', {'id':remarque.id})}}" style="margin-left: 8px;font-size: 16px;"><i class="fa fa-trash"></i></a>
+                            </div>
+                            <div class="remarque-content">{{remarque.message|raw}}</div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="modal fade" id="modalStatus" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                          <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                            <h2 class="modal-title text-center" id="myModalLabel">Modifier le status</h2>
+                          </div>
+                          <div class="modal-body" style="padding-top: 27px; display: flex;align-items: center;justify-content: center;">
+                                <form action="{{path('chantier_compterendu_fournisseur_status_edit', {'chantier_id':compteRendu.chantier.getChantierId})}}" method="POST">
+                                    <input type="hidden" name="fournisseur_id">
+                                    <input type="hidden" name="compte_rendu_id">
+                                    {% for presence in presences %}
+                                        <div class="form-group">
+                                            <input class="presence" style="display: none;" type="radio" name="presence" value="{{presence.id}}" id="presence-{{presence.id}}">
+                                            <label class="presence" for="presence-{{presence.id}}" style="cursor: pointer;width: 270px;border-radius: 7px;text-align: center;">
+                                                <span class="presence-symbole" style="border: 2px solid {{presence.color}}; color: {{presence.color}}">{{ presence.nom|slice(0, 1)|upper }}</span> <span style="color: {{presence.color}}">{{presence.nom}}</span>
+                                            </label>
+                                        </div>
+                                    {% endfor %}
+
+                                    <br>
+                                    <div class="form-group" style="text-align: center;">
+                                        <button type="submit" class="btn btn-primary">Valider</button>
+                                    </div>
+                                </form>
+                          </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% if pager.haveToPaginate %}
+        {{ pagerfanta(pager, 'my_template') }}
+    {% endif %}
+    
+
+{% endblock %}
+
+{% block javascript_script %}
+    
+    <script type="text/javascript">
+        function openModalStatus(compteRenduId, fournisseurId){
+            $('#modalStatus').modal('show');
+            $('input[name=fournisseur_id]').val(fournisseurId);
+            $('input[name=compte_rendu_id]').val(compteRenduId);
+        }
+    </script>
+
+{% endblock %}

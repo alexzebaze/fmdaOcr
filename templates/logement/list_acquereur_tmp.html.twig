@@ -1,0 +1,12 @@
+
+{% for client in clients %}
+    <tr>
+        <td>{{ client.nom}}</td>
+        <td>{{ client.getDateNaissance ? client.getDateNaissance|date('d/m/Y') : '' }}</td>
+        <td>{{client.adresse}}</td>
+        <td>{{ client.code}}</td>
+        <td>{{ client.ville }}</td>
+        <td>{{ client.email }}</td>
+        <td>{{ client.telone }}</td>
+    </tr>
+{% endfor %}

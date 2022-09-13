@@ -1,0 +1,239 @@
+{% set base_api_ocr_url = "https://www.homekeo.fr" %}
+<div class="table-responsive">
+    {% if dossier != 'paie' %}
+        <table class="table">
+            <thead>
+            <tr>
+            	<th>ID</th>
+                <th>Document</th>
+                <th>Score</th>
+                <th>Date_import</th>
+                <th>Expéditeur</th>
+                <th>Date</th>
+                <th></th>
+                {% if dossier|lower == 'facture_client' or dossier|lower == 'devis_client' %}
+                    <th>Client</th>
+                {% else %}
+                    <th>Fournisseur</th>
+                {% endif %}
+                {% if dossier|lower == "bon_livraison" %}
+                <th>Passage</th>
+                {% endif %}
+                <th>DocumentID</th>
+                <th>PrixHT</th>
+                <th>TVA</th>
+                <th>PrixTTC</th>
+                <th>Chantier</th>
+                <th></th>
+            </tr>
+            </thead>
+            <tbody class="document-body">
+                {% for document in documents %}
+                <tr {% if not document.execute %} style="background: #e7eaec" {% endif %}>
+                	<td>#{{document.id}}</td>
+                	<td>
+                		<span class="showDocument" data-file="{{base_api_ocr_url}}{{path}}{{document.getDocument}}" style="cursor: pointer;"><img src="//ssl.gstatic.com/docs/doclist/images/mediatype/icon_3_pdf_x16.png"></span>
+                	</td>
+                    <td>{{document.score}}</td>
+                    <td>{{document.getCreateAt|date('d/m/Y H:i')}}</td>
+                    <td>{{document.sender}}</td>
+                    <td>{{ document.facturedAt is not null ? document.facturedAt|date('d/m/Y') : '' }}</td>
+                    
+                    {% if dossier|lower == 'facture_client' or dossier|lower == 'devis_client' %}
+                        <td>
+                            {% if document.client is not null and document.client.logo %}
+                                <span style="margin-right: 4px">
+                                    <img class="rounded-circle" src="/uploads/logo_client/{{document.client.logo}}">
+                                </span>
+                            {% endif %}
+                        </td>
+                        <td style="min-width: 150px;">
+                            <div style="display: flex;align-items: center;">
+                                {% if document.client is not null %} 
+                                    {{ document.client.nom }}
+                                {% endif %}
+                            </div>
+                        </td>
+                    {% else %}
+                        <td>
+                            {% if document.fournisseur is not null and document.fournisseur.logo %}
+                                <span style="margin-right: 4px">
+                                    <img class="rounded-circle" src="/uploads/logo_fournisseur/{{document.fournisseur.logo}}">
+                                </span>
+                            {% endif %}
+                        </td>
+                        <td style="min-width: 150px;">
+                            <div style="display: flex;align-items: center;">
+                                {% if document.fournisseur is not null %} 
+                                    {{ document.fournisseur.nom }}
+                                {% endif %}
+                            </div>
+                        </td>
+                    {% endif %}
+
+                    {% if dossier|lower == "bon_livraison" %}
+                        <td>
+                            {% if document.getPassageId %}
+                                {% set passage = tabPassage[document.getPassageId] %}
+                                <div style="display: flex;align-items: center;justify-content: center;">
+                                    <span style="font-size: 18px;color: green;position: relative;">
+                                        <span style="visibility: hidden;position: absolute;">V</span>
+                                    </span>
+                                     &nbsp
+
+                                    <span style="font-size: 11px;">
+                                        {% if passage.utilisateur and passage.utilisateur.image %} 
+                                            <img data-file="data:image/jpeg;base64,{{ passage.utilisateur.image}}" src="data:image/jpeg;base64,{{passage.utilisateur.image}}"
+                                             class="showDocument rounded-img">
+                                        {% endif %}
+                                    </span>
+                                </div>
+                            {% else %}
+                                <!-- <span  style="font-size: 18px;color: #ef0a0a;position: relative;cursor: pointer;" class="openModalPassage" data-bl-id="{{document.id}}">
+                                    <i class="fas fa-times"></i><span style="visibility: hidden;position: absolute;">X</span>
+                                </span> -->
+
+                            {% endif %}
+                        </td>
+                    {% endif %}
+
+                    <td>{{document.getDocumentId|upper}}</td>
+                    <td>{{ document.getPrixht|number_format(2, ',', '') }}</td>
+                    <td>
+                        {% if document.getPrixht is not null and document.prixttc is not null %}
+
+                            {% set ht = document.getPrixht is null ? 0 : document.getPrixht %} 
+                            {% set dividende = (ht is null or ht == 0) ? 1 : ht %} 
+
+                            {% set partE = ((document.prixttc - ht) / dividende * 100)|round(0, 'floor') %}
+                            {% set partD = ((document.prixttc - ht) / dividende * 100) - partE %}
+
+                            {% if partE == 0 %}
+                                <span style="color: orange">0</span>
+                            {% else %}
+                                {% if partE == 5  and (partD <= 0.8 and partD >= 0.2) %}
+                                   <span style="color: green">5.5%</span> 
+                                {% elseif partE == 20  and (partD <= 0.3) %}
+                                    <span style="color: green">20%</span>
+                                {% elseif partE == 19  and (partD >= 0.7) %}
+                                    <span style="color: green">20%</span>
+                                {% elseif partE == 10  and (partD <= 0.3) %}
+                                    <span style="color: green">10%</span>
+                                {% elseif partE == 9  and (partD >= 0.3) %}
+                                    <span style="color: green">10%</span>
+                                {% else %}
+                                    <span style="color: red">{{((document.prixttc - ht) / dividende * 100)|number_format(2, ',', ' ')}}%</span>
+                                {% endif %}
+                            {% endif %}
+                        {% else %}
+                            0
+                        {% endif %}
+                    </td>
+                    <td>{{ document.prixttc|number_format(2, ',', '') }}</td>
+                    <td>{{ document.chantier is not null ? document.chantier.nameentreprise : '' }}</td>
+
+                	<td>
+                		<div style="display: flex;align-items: center;">
+                            <a href="{{path('email_document_preview_detail', {'id':document.id})}}" class="btn btn-primary">
+                                {% if document.lu %}
+                        		     <i class="fa fa-eye"></i>
+                                {% else %}
+                                    <i class="fa fa-eye-slash"></i>
+                                {% endif %}
+                            </a>
+                            &nbsp
+                            <a href="{{ path('email_document_preview_delete2', {'id': document.id}) }}" class="btn btn-danger" onclick="return confirm('Confirmez-vous la suppression de ce document?')"><i class="fa fa-trash"></i></a>
+    					</div>
+                	</td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="34">Aucune entrée</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <table class="table">
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Document</th>
+                <th>Score</th>
+                <th>Date_envoie</th>
+                <th>sender</th>
+                <th>Date paie</th>
+                <th></th>
+                <th>Utilisateur</th>
+                <th>H_sup_25%</th>
+                <th>H_sup_50%</th>
+                <th>H_normale</th>
+                <th>Cout_Global</th>
+                <th>Salaire_Net</th>
+                <th>Congés_Payés</th>
+                <th></th>
+            </tr>
+            </thead>
+            <tbody>
+                {% for document in documents %}
+                <tr {% if not document.execute %} style="background: #e7eaec" {% endif %}>
+                    <td>#{{document.id}}</td>
+                    <td>
+                        <span class="showDocument" data-file="{{path}}{{document.getDocument}}" style="cursor: pointer;"><img src="//ssl.gstatic.com/docs/doclist/images/mediatype/icon_3_pdf_x16.png"></span> 
+                    </td>
+                    <td>{{document.score}}</td>
+                    <td>{{document.getCreateAt|date('d/m/Y')}}</td>
+                    <td>{{document.sender}}</td>
+                    <td>{{ document.getDatePaie }}</td>
+                    <td>
+                        {% if document.utilisateur is not null and document.utilisateur.image is empty %}
+                            <img height="50" width="50" src="{{ image_vide }}"
+                                 class="rounded-circle" title="{{ document.utilisateur.firstname }} {{ document.utilisateur.lastname }}"
+                                 alt="{{ document.utilisateur.firstname }} {{ document.utilisateur.lastname }}">
+                        {% elseif document.utilisateur is not null %}
+                            <div style="background-image: url('data:image/jpeg;base64,{{ document.utilisateur.image }}')"
+                                 class="rounded-circle">
+                            </div>
+                        {% endif %}
+                    </td>
+                    <td>{{document.utilisateur is not null ? document.utilisateur.firstname~" "~document.utilisateur.lastname : ''}}</td>
+                    <td>{{ document.getHeureSup1 }}</td>
+                    <td>{{ document.getHeureSup2 }}</td>
+                    <td>{{ document.getHeureNormale }}</td>
+                    <td>{{ document.coutGlobal|number_format(2, ',', '') }}</td>
+                    <td>{{ document.salaireNet|number_format(2, ',', '') }}</td>
+                    <td>{{ document.congesPaye }}</td>
+                    <td>
+                        <div style="display: flex;align-items: center;">
+                            <a href="{{path('email_document_preview_detail', {'id':document.id})}}" class="btn btn-primary">
+                                {% if document.lu %}
+                                     <i class="fa fa-eye"></i>
+                                {% else %}
+                                    <i class="fa fa-eye-slash"></i>
+                                {% endif %}
+                            </a>
+                            &nbsp
+
+                            <form method="post" action="{{ path('email_document_preview_delete', {'id': document.id}) }}" onsubmit="return confirm('Are you sure you want to delete this item?');" style="display: inline-block;">
+                                <input type="hidden" name="_method" value="DELETE">
+                                <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ document.id) }}">
+                                <button class="btn btn-danger"><i class="fa fa-trash"></i></button>
+                            </form>&nbsp
+                            <!-- {% if document.score >= 90 %}
+                                <a href="javascript:void()" class="btn btn-info" onclick="return confirm('Confirmez-vous la sauvegarde ?">
+                                    <i class="fa fa-check"></i>
+                                </a>
+                            {% endif %} -->
+                        </div>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="34">Aucune entrée</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+
+</div>

@@ -1,0 +1,84 @@
+
+<script type="text/javascript">
+    $('#bon_livraison_prixht, #bon_livraison_tva').on('change', function() {
+        //bon_livraison_tva
+        var tva = $('#bon_livraison_tva :selected').text();
+        var ht = $('#bon_livraison_prixht').val();
+        var ttc = Number(ht) + ((Number(ht) * Number(tva)) / 100);
+        
+        $('#bon_livraison_prixttc').val(ttc.toFixed(2));
+    });
+
+
+    var idSelect = document.getElementById('rossum_document_id');
+    idSelect.onchange = (event) => {
+      var document_id = event.target.value;
+      exportDoc(parseInt(document_id));
+    };
+
+    function exportDoc(document_id){
+      $('.export.loader-container').css('display','flex');
+      var form = document.forms.namedItem("apiExport");
+      $.ajax({
+        url:form.getAttribute('action'),
+        type:"POST",
+        data: new FormData(form),
+        dataType: 'json',
+        contentType: false,
+        cache: false,
+        processData:false,
+        success:function(response) {
+          if(response.status == 200){
+            $(".preview-container").css('display', 'block');
+            $(".preview-container-content").html(response.preview);
+            toastr.success('Extraction réussite ('+response.count_fournisseur+') fournisseurs trouvés');
+          }
+          else if(response.status == 500){
+            if(response.issue == "fournisseur"){
+              $('#modalQ').modal('show');
+              $('input[name=sender_name]').val(response.sender_name);
+            }
+            toastr.error(response.message);
+          }
+          $('.export.loader-container').css('display','none');
+        },
+        error:function(){
+          toastr.error("Ooops... Quelque chose s'est mal passée");
+          $('.export.loader-container').css('display','none');
+        }
+      });
+    }
+    $('body').on('click', '.btn-create-fournisseur', function(e){
+      var $url = $(this).attr("href");
+      loadForm($url, $(this));
+      e.preventDefault();
+    })
+
+    function loadForm($url, $elt){
+      $elt.text('OUI...');$elt.css('pointer-events', 'none');
+      $.ajax({
+        url: $url,
+        type: "GET",
+        dataType: "json",
+        async: true,
+        data: {},
+        success: function(response, status) {
+          if(response.status == 200){
+            $('#modalQ').modal('hide');
+            $(".modal-fournisseur-container").html(response.form);
+            setTimeout(function(){
+              $('#modalFormFournisseur').modal('show');
+            },1000)
+          }
+          else if(response.status == 500){
+            toastr.error(response.message);
+          }
+          $elt.text('OUI');$elt.css('pointer-events', 'auto');
+        },
+        error: function(xhr, textStatus, errorThrown) {
+          toastr.error("Ooops..., Quelque chose s'est mal passée");
+          $elt.text('OUI');$elt.css('pointer-events', 'auto');
+        }
+      });
+    }
+</script>

@@ -1,0 +1,111 @@
+
+
+namespace App\Controller\Rest;
+
+use App\Controller\Traits\CommunTrait;
+use App\Entity\Galerie;
+use App\Entity\Chantier;
+use App\Form\GalerieMobileType;
+use App\Form\GalerieType;
+use App\Kernel;
+use App\Serializer\FormErrorSerializer;
+use App\Utils\UploadedBase64File;
+use Doctrine\ORM\EntityManagerInterface;
+use FOS\RestBundle\Controller\AbstractFOSRestController ;
+use FOS\RestBundle\View\View;
+use Mimey\MimeTypes;
+use Pagerfanta\Adapter\DoctrineORMAdapter;
+use Pagerfanta\Pagerfanta;
+use Symfony\Component\HttpFoundation\File\Exception\FileException;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\KernelInterface;
+use Symfony\Component\Routing\Annotation\Route;
+use FOS\RestBundle\Controller\Annotations\Post;
+use Swagger\Annotations as SWG;
+
+/**
+ * @Route("/chantier")
+ */
+class ApiChantierController extends AbstractFOSRestController  {
+    use CommunTrait;
+
+    private $formErrorSerializer;
+    private $em;
+
+    public function __construct(
+        EntityManagerInterface $em,
+        FormErrorSerializer $formErrorSerializer
+    )
+    {
+        $this->em = $em;
+        $this->formErrorSerializer = $formErrorSerializer;
+    }
+
+    /**
+     * @FOS\RestBundle\Controller\Annotations\Get("/list")
+     * @param Request $request
+     * @return View
+     * @SWG\Get(
+     *     description="Lister tous les chantiers",
+     *     produces={"application/json"},
+     *     tags={"chantier"},
+     *     @SWG\Parameter(
+     *         name="Authorization",
+     *         in="header",
+     *         type="string",
+     *     ),
+     *     @SWG\Parameter(
+     *         name="page",
+     *         in="query",
+     *         type="string",
+     *     ),
+     *     @SWG\Response(
+     *         response=401,
+     *         description="Unauthorized",
+     *     ),
+     *     @SWG\Response(
+     *         response=200,
+     *         description="token for Authentification",
+     *     ),
+     *     @SWG\Response(
+     *         response=400,
+     *         description="Invalid JSON",
+     *     ),
+     *     @SWG\Response(
+     *         response=500,
+     *         description="Erreur",
+     *     ),
+     * )
+     */
+    public function list(Request $request): View
+    {
+        $user = $this->getUser();
+        $chantier = $this->em->createQueryBuilder()
+            ->select('l')
+            ->from('App\Entity\Chantier', 'l')
+            ->andWhere('l.entreprise = :entreprise')
+            ->setParameter('entreprise', $user->getEntreprise())
+            ->orderBy('l.chantierId', 'desc');
+        $page = $request->query->get('page', 1);
+
+        $adapter = new DoctrineORMAdapter($chantier);
+        $pager = new PagerFanta($adapter);
+        $pager->setMaxPerPage(75);
+        if ($pager->getNbPages() >= $page) {
+            $pager->setCurrentPage($page);
+        } else {
+            $pager->setCurrentPage($pager->getNbPages());
+        }
+        /** @var Chantier $chantier */
+        $chantiers = [];
+        foreach ($pager->getCurrentPageResults() as $key => $chantier) {
+            $chantiers[$chantier->getChantierId()]['nom'] = $chantier->getNameentreprise();
+            $chantiers[$chantier->getChantierId()]['adresse'] = $chantier->getFullAddress();
+            $chantiers[$chantier->getChantierId()]['status'] = $chantier->getStatus();
+            $chantiers[$chantier->getChantierId()]['verif'] = $chantier->getVerif();
+        }
+
+        return View::create($chantiers, Response::HTTP_OK);
+    }
+}

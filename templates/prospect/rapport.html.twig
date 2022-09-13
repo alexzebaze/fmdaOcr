@@ -1,0 +1,8 @@
+{% for rapport in rapports|sort((a, b) => b.id <=> a.id)%}
+    <div class="rapport-item">
+        <div class="rapport-text">
+            {{rapport.message}}
+        </div>
+        <div class="text-right" style="margin-top: 14px;">{{rapport.getDateCreate|date('Y-m-d H:i')}}</div>
+    </div>
+{% endfor %}

@@ -1,0 +1,76 @@
+
+{{ form_start(form) }}
+<div class="row">
+    <div class="col-lg-12 form-group">
+        {{ form_label(form.document_id, 'Document ID') }}
+        {{ form_row(form.document_id) }}
+    </div>
+    <div class="col-lg-12 form-group">
+        {{ form_label(form.facturedAt, 'Date création') }}
+        {{ form_row(form.facturedAt) }}
+    </div>
+    <div class="col-lg-12 form-group">
+        {{ form_label(form.dueAt, 'Echeance') }}
+        {{ form_row(form.dueAt) }}
+    </div>
+    <div class="col-lg-12 form-group">
+        {{ form_label(form.prixttc, 'Prix TTC') }}
+        {{ form_row(form.prixttc) }}
+    </div> 
+
+    {% if tvaVal is defined %}
+    <div class="col-lg-12 form-group">
+        <label>TAUX TVA</label>
+        <div style="color: {{color}}; font-weight: bold;">{{tvaVal}}</div>
+    </div>
+    {% endif %}
+
+    <div class="col-lg-12 form-group">
+        {{ form_label(form.prixht, 'Prix HT') }}
+        {{ form_row(form.prixht) }}
+    </div>
+    <div class="col-lg-12 form-group" style="display: none;">
+        {{ form_label(form.tva, 'TVA %') }}
+        {{ form_row(form.tva) }}
+    </div>
+    <div class="col-lg-12 form-group">
+        {{ form_label(form.devise, 'Devise') }}
+        {{ form_row(form.devise) }}
+    </div> 
+    <div class="col-lg-12 form-group">
+        {{ form_label(form.entreprise, 'Entreprise') }}
+        {{ form_row(form.entreprise) }}
+    </div>
+    <div class="col-lg-12 form-group">
+        {{ form_label(form.fournisseur, 'Fournisseur') }}
+        {{ form_row(form.fournisseur) }}
+    </div>
+    {% if fournisseurfound is defined %}
+    <div class="col-lg-12 form-group">
+        <label>Fournisseur suggerés</label>
+        <select class="form-control">
+             {% for fourn in fournisseurfound %}
+                <option value="">{{fourn.nom}}</option>
+             {% endfor %}
+        </select>
+    </div>
+    {% endif %}
+    <div class="col-lg-12 form-group">
+        {{ form_label(form.chantier, 'Chantier') }}
+        {{ form_row(form.chantier) }}
+    </div>
+    {% if display_lot is defined and display_lot %}
+    <div class="col-lg-12 form-group">
+        {{ form_label(form.lot, 'Lot') }}
+        {{ form_row(form.lot) }}
+    </div>
+    {% endif %}
+
+    <div class="col-lg-12 form-group">
+        {{ form_row(form.document_file) }}
+    </div>
+    <div class="col-lg-12 form-group text-center">
+        <button class="btn btn-primary">{{ button_label|default('Enregistrer') }}</button>
+    </div>
+</div>
+{{ form_end(form) }}

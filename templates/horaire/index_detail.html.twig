@@ -1,0 +1,142 @@
+{% extends 'base.html.twig' %}
+{% block css %}
+    <link rel="stylesheet" href="//cdn.datatables.net/1.10.20/css/jquery.dataTables.min.css">
+
+    </style>
+{% endblock %}
+{% block breadcrumb %}
+    <div class="row wrapper border-bottom white-bg page-heading">
+        <div class="col-lg-10">
+            <h1>Horaires</h1>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                    <a href="{{ path('home') }}">Accueil</a>
+                </li>
+                <li class="breadcrumb-item active">
+                    <strong>Horaires</strong>
+                </li>
+            </ol>
+        </div>
+    </div>
+
+{% endblock %}
+{% block content %}
+    <div class="row">
+        <div class="col-lg-12">
+            {% include 'flashes.html.twig' %}
+            <div class="ibox">
+                <div class="ibox-content">
+                    <div class="form-wrapper">
+                        {{ include('horaire/filter_user_horaire.html.twig') }}
+                    </div>
+                </div>
+            </div>
+            <div class="ibox ">
+                <div class="ibox-title" style="padding: 19px 13px;">
+                    <h5>Liste horaires</h5> 
+                    <b>({{horaires|length}} Horaires)</b>
+                    <div class="ibox-tools">
+                        <a href="{{ path('horaire_print_tache', {'mois' : mois, 'annee': annee}) }}?user={{user}}&chantier={{chantier}}" class="btn btn-primary"><i class="fas fa-file-excel"></i> Télécharger en XLSX</a>
+                    </div>
+                </div>
+                <div class="ibox-content">
+                    <div id="modalChantier" class="modal fade bs-example-modal-sm modal-center" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel">
+                        <div class="modal-dialog modal-medium" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header" style="border: none;">
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                    <h2 class="modal-title text-center" id="myModalLabel">Attribuer un chantier</h2>
+                                </div>
+                                <div class="modal-body text-center" style="padding: 0px 30px 51px 30px">
+                                    <form method="POST" action="{{path('horaire_edit_chantier')}}">
+                                        <input type="hidden" name="horaire_id">
+                                        <div class="row">
+                                            <div class="col-lg-12 form-group">
+                                                <select class="form-control" name="chantier" required>
+                                                    <option value="" disabled selected>-- selectionner un chantier --</option>
+                                                    {% for ch in chantiers %} 
+                                                    <option value="{{ch.chantierId}}">{{ch.nameentreprise}}</option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-12 form-group text-center">
+                                            <button type="submit" class="btn btn-primary
+                                            ">Envoyer</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>utilisateur</th>
+                                    <th>Chantier</th>
+                                    <th>Date</th>
+                                    <th>Tache</th>
+                                    <th>Heure</th>
+                                    <th>Devis</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for h in horaires %}
+                                    <tr>
+                                        <td>{{h.lastname}} {{h.firstname}} </td>
+                                        <td>
+                                            <span data-horaire-id="{{h.idsession}}" class="openModalChantier" style="cursor: pointer;">{{ h.nameentreprise is defined ? h.nameentreprise :  ""}}</span>
+                                        </td>
+                                        <td>{{h.datestart}}</td>
+                                        <td>{{h.fonction}}</td>
+                                        <td>
+                                            <a href="{{path('chantier_user_horaire_detail', {'horaireId':h.idsession})}}">{{h.time}}</a>
+                                        </td>
+                                        <td>
+                                            {% if h.document_file is not null %}
+                                                <span style="display: none;">V</span>
+                                                <a href="javascript:void()" class="showDocument" data-file="/uploads/devis/{{h.document_file}}" style="cursor: pointer;">#{{h.document_id}}</a>
+                                            {% else %}
+                                                <span style="display: none;">F</span>
+                                                <i class="fas fa-times" style="font-size: 18px;color: #ef0a0a;"></i>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+{% endblock %}
+
+{% block javascript_script %}
+    <script src="//cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/plug-ins/1.10.24/sorting/date-eu.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.4/dist/Chart.min.js"></script>
+
+    <script type="text/javascript">
+        $('.openModalChantier').click(function(){
+            $('input[name=horaire_id]').val($(this).attr('data-horaire-id'));
+            $("#modalChantier").modal('show');
+        })
+    </script>
+{% endblock %}
+
+{% block javascript %}
+$(document).ready( function () {
+    $('table').DataTable( {
+        "language": {
+            "url": "//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/French.json"
+        },
+        "pageLength": 500,
+        "order": []
+    });
+} );
+
+{% endblock %}

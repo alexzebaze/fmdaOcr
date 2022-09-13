@@ -1,0 +1,62 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Pret{% endblock %}
+
+{% block body %}
+    <h1>Pret</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ pret.id }}</td>
+            </tr>
+            <tr>
+                <th>Echeance</th>
+                <td>{{ pret.echeance }}</td>
+            </tr>
+            <tr>
+                <th>Date_deblocage</th>
+                <td>{{ pret.dateDeblocage ? pret.dateDeblocage|date('Y-m-d H:i:s') : '' }}</td>
+            </tr>
+            <tr>
+                <th>Capital</th>
+                <td>{{ pret.capital }}</td>
+            </tr>
+            <tr>
+                <th>Montant_echeance</th>
+                <td>{{ pret.montantEcheance }}</td>
+            </tr>
+            <tr>
+                <th>Differe</th>
+                <td>{{ pret.differe }}</td>
+            </tr>
+            <tr>
+                <th>Duree</th>
+                <td>{{ pret.duree }}</td>
+            </tr>
+            <tr>
+                <th>Taux</th>
+                <td>{{ pret.taux }}</td>
+            </tr>
+            <tr>
+                <th>Capital_restant</th>
+                <td>{{ pret.capitalRestant }}</td>
+            </tr>
+            <tr>
+                <th>Date_fin</th>
+                <td>{{ pret.dateFin ? pret.dateFin|date('Y-m-d H:i:s') : '' }}</td>
+            </tr>
+            <tr>
+                <th>Contrat</th>
+                <td>{{ pret.contrat }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('pret_index') }}">back to list</a>
+
+    <a href="{{ path('pret_edit', {'id': pret.id}) }}">edit</a>
+
+    {{ include('pret/_delete_form.html.twig') }}
+{% endblock %}

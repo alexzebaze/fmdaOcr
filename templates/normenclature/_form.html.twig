@@ -1,0 +1,94 @@
+
+<style type="text/css">
+    #banque_logo{display: none;}
+    .img-load{display: block;margin: auto;max-width: 100%;max-height: 700px;}
+    #normenclature_code, #normenclature_code_article{border: none;}
+    label[for=banque_logo]{cursor: pointer;}
+    input[type=checkbox]{
+        width: 17px;
+    }
+    label[for=article_sommeil]{
+        margin-top: 7px;
+        margin-left: 6px;
+    }
+    #article_code{border: none;}
+    .add-fabricant, .edit-fabricant{
+        background: #00b28e;
+        color: #fff;
+        width: 32px;
+        height: 32px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        font-size: 11px;
+        box-shadow: 0px 0px 5px 1px #919197;
+        margin-top: -2px;
+        cursor: pointer;
+    }
+    .add-fabricant:hover, .edit-fabricant:hover{color: #fff}
+</style>
+
+{{ form_start(form) }}
+<div class="row">
+    <div class="col-lg-12">
+        <div class="row">
+            <div class="col-lg-12 form-group">
+                <div  style="display: flex;align-items: center;">
+                    <span style="font-weight: bold;">
+                        Code Article:
+                    </span>
+                    {{ form_row(form.code_article) }}
+                </div>
+            </div>
+            <div class="col-lg-12 form-group">
+                {{ form_label(form.libelle, 'Libelle') }}
+                {{ form_row(form.libelle) }}
+            </div>
+            
+            <div class="col-lg-12 form-group">
+                {{ form_label(form.unite, 'Unite') }}
+                {{ form_row(form.unite) }}
+            </div>
+            <div class="col-lg-12 form-group">
+                {{ form_label(form.code_article, 'Prix revient article') }}
+                {{ form_row(form.code_article) }}
+            </div>
+            <div class="col-lg-12 form-group">
+                {{ form_label(form.marge_brute, 'Marge') }}
+                {{ form_row(form.marge_brute) }}
+            </div>
+            
+            <div class="col-lg-12 form-group">
+                {{ form_label(form.prix_vente_ht, 'Prix vente HT') }}
+                {{ form_row(form.prix_vente_ht) }}
+            </div>
+            <div class="col-lg-12 form-group">
+                {{ form_label(form.prix_vente_ttc, 'Prix vente TTC') }}
+                {{ form_row(form.prix_vente_ttc) }}
+            </div>
+            <div class="col-lg-12 form-group">
+                {{ form_label(form.prix_revient, 'Prix Revient') }}
+                {{ form_row(form.prix_revient) }}
+            </div>
+            <div class="col-lg-12 form-group">
+                {{ form_label(form.qte, 'Quantite') }}
+                {{ form_row(form.qte) }}
+            </div>
+            <div class="col-lg-12 form-group">
+                {{ form_label(form.rang, 'Rang') }}
+                {{ form_row(form.rang) }}
+            </div>
+            
+        </div>
+    </div>
+    <div class="col-lg-12 form-group text-center" style="margin-top: 15px;">
+        <button class="btn btn-primary">{{ button_label|default('Enregistrer') }}</button>
+    </div>
+</div>
+{{ form_end(form) }}
+
+
+<script type="text/javascript">
+
+</script>

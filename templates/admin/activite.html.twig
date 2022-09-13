@@ -1,0 +1,124 @@
+{% extends 'base_admin.html.twig' %}
+
+{% block css %}
+<link rel="stylesheet" href="//cdn.datatables.net/1.10.20/css/jquery.dataTables.min.css">
+
+    <link rel="stylesheet" href="{{ asset('css/style-checked.css') }}" />
+    <style type="text/css">
+        .ibox-tools{display: flex;align-items: center;justify-content: flex-end;margin-bottom: 7px;}
+        .formEntrepriseAdmin .switch-entreprise.entreprise-item{
+            cursor: pointer;
+        }
+        .formEntrepriseAdmin input[type=checkbox]:checked + .switch-entreprise.entreprise-item {
+            border-color: #14c179;
+            background: #14c179;
+            color: #fff;
+        } 
+        .method{
+            color: #fff;
+            border-radius: 4px;
+            padding: 4px 10px;
+        }
+        .gray{background: gray}
+        .blue{background: #4a88d5}
+        .red{background: #bd4141}
+    </style>
+{% endblock %}
+
+{% block breadcrumb %}
+
+    <div class="row wrapper border-bottom white-bg page-heading">
+        <div class="col-lg-10">
+            <h1>Liste activités</h1>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                    <a href="{{ path('home') }}">Accueil</a>
+                </li>
+                <li class="breadcrumb-item">
+                    <a href="{{ path('admin_list') }}">Administrateurs</a>
+                </li>
+                <li class="breadcrumb-item active">
+                    <strong>Activite {{admin.firstname}} {{admin.lastname}}</strong>
+                </li>
+            </ol>
+        </div>
+    </div>
+{% endblock %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-lg-12">
+            {% include 'flashes.html.twig' %}
+            <div class="ibox ">
+                <div class="ibox-title" style="padding-bottom: 20px;">
+                    <h5>Activités</h5>
+                </div>
+                <div class="ibox-content">
+                    <div class="ibox-content">
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                <tr>
+                                    <th>Admin</th>
+                                    <th>Ip</th>
+                                    <th>lien</th>
+                                    <th>Method</th>
+                                    <th>Date</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for activite in activites %}
+                                    <tr>
+                                        <td>{{ activite.admin.lastname }} {{ activite.admin.firstname }}</td>
+                                        <td>{{ activite.ip }}</td>
+                                        <td>{{ activite.lien }}</td>
+                                        <td>
+                                            {% if activite.method %} 
+                                            <span class="method {% if activite.method|upper == 'DELETE' %}red{% elseif activite.method == 'POST' %}gray{% else %}blue{% endif %}">{{activite.method}}</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>{{activite.getCreateAt|date('d/m/Y H:i:s')}}</td>
+                                    </tr>
+                                {% else %}
+                                    <tr>
+                                        <td colspan="34">Aucun activitées enregistrée</td>
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block javascript_script %}
+    <script src="//cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/plug-ins/1.10.24/sorting/date-eu.js"></script>
+    <script type="text/javascript">
+        $(document).ready( function () {
+    $('table').DataTable({
+        columnDefs: [
+           { type: 'date-eu', targets: 4 }
+        ],
+        "language": {
+            "url": "//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/French.json"
+        },
+        "columnDefs": [
+        ],
+        "pageLength": 1000,
+        "order": []
+    });
+} );
+    </script>
+{% endblock %}
+
+{% block javascript %}
+
+{% endblock %}
