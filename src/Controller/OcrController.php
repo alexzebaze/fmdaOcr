@@ -180,8 +180,6 @@ class OcrController extends Controller
         elseif($dossier == "paie"){
             $entity = new Paie();
         }
-
-        dd($documentFile);
         
         $datasResult = $this->global_s->lancerIa($documentFile, $entity, $dossier, $dirDocumentFile);
 
