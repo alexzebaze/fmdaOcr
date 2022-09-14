@@ -181,6 +181,8 @@ class OcrController extends Controller
             $entity = new Paie();
         }
 
+        dd($documentFile);
+        
         $datasResult = $this->global_s->lancerIa($documentFile, $entity, $dossier, $dirDocumentFile);
 
         $datasResult[$dossier] = $datasResult[$dossier];

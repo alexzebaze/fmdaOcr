@@ -1206,7 +1206,7 @@ class FactureClientController extends Controller
                 'form_params' => [
                         'dossier' => "facture_client",
                         'document_file' => $saveFile,
-                        'dir_document_file' => "/public/uploads/clients/factures/".$saveFile,
+                        'dir_document_file' => $dirLandingImg,
                         'entreprise' => $this->session->get('entreprise_session_id')
                     ]
                 ]);
