@@ -167,7 +167,7 @@ class OcrController extends Controller
 
         $documentFile = $request->request->get('document_file');
         $dossier = $request->request->get('dossier');
-        $dirDocumentFile = $request->request->get('dir_document_file'); // document avec chemin associé
+        $dirDocumentFile = $this->get('kernel')->getProjectDir() . $request->request->get('dir_document_file'); // document avec chemin associé
 
         if($dossier == "bon_livraison" || $dossier == "facturation" || $dossier == "devis_pro"){
             $entity = new Achat();
@@ -180,7 +180,7 @@ class OcrController extends Controller
         elseif($dossier == "paie"){
             $entity = new Paie();
         }
-        
+
         $datasResult = $this->global_s->lancerIa($documentFile, $entity, $dossier, $dirDocumentFile);
 
         $datasResult[$dossier] = $datasResult[$dossier];
