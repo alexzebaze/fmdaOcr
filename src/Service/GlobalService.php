@@ -2886,6 +2886,7 @@ class GlobalService{
 
     public function loadEmailDocument($dossier, $dir, $entreprise){
 
+        dd('ddd');
         if($dossier != "devis_client")
             return 1;
 
