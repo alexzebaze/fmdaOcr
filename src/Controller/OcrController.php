@@ -92,7 +92,6 @@ class OcrController extends Controller
      */
     public function loadEmailDocument(Request $request)
     {
-        dd("dd");
         $dossier = $request->query->get('dossier');
         $entreprise = $this->getDoctrine()->getRepository(Entreprise::class)->find($request->query->get('entreprise'));
 
