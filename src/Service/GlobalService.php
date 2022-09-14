@@ -2911,7 +2911,6 @@ class GlobalService{
             throw new \Exception("La connexion avec vos information IMAP a echoué. Veuillez verifier ces informations", 1);
         }
 
-dd('ss');
         try {   
             $emails = imap_search($inbox, 'UNSEEN');
             dd($emails);
