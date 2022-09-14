@@ -2885,7 +2885,10 @@ class GlobalService{
     }
 
     public function loadEmailDocument($dossier, $dir, $entreprise){
-        return 1;
+
+        if($dossier != "devis_client")
+            return 1;
+
         $this->IS_ASYNC = true;
         $config = $this->em->getRepository(ConfigImapEmail::class)->findOneBy(['dossier'=> $dossier, 'entreprise'=>$entreprise]);
 
@@ -2983,6 +2986,7 @@ class GlobalService{
                                 }
                             }
                         }
+                        dd($attachments);
                     }
                 }
             } 
@@ -2995,7 +2999,7 @@ class GlobalService{
             throw new \Exception("Erreur extraction données IMAP");
         }
         
-        $this->cronOcrIa($entreprise);
+        //$this->cronOcrIa($entreprise);
         
 
         return 1;
