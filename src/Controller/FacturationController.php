@@ -707,7 +707,7 @@ class FacturationController extends Controller{
         } 
 
         //delete last ocr tmp data
-        $this->getDoctrine()->getRepository(TmpOcr::class)->removesAll("facturation", $session->get('tmp_acr_facture', null));
+        //$this->getDoctrine()->getRepository(TmpOcr::class)->removesAll("facturation", $session->get('tmp_acr_facture', null));
         
         $isForm = false;
         $session->set('tmp_acr_facture', $imagenameSaved);
@@ -721,12 +721,12 @@ class FacturationController extends Controller{
             $this->global_s->saveOcrScan("uploads/achats/facturation/", $imagenameSaved, "facturation", $isForm);
         }
         else{
-            if(!$this->global_s->isDocumentConvert($imagenameSaved)){
+            /*if(!$this->global_s->isDocumentConvert($imagenameSaved)){
                 $this->global_s->convertPdfToImage2("uploads/achats/facturation/", $newFilename, $imagenameSaved);
             }
             if(!$this->global_s->isOcrSave($imagenameSaved, "facturation")){
                 $this->global_s->saveOcrScan("uploads/achats/facturation/", $imagenameSaved, "facturation", $isForm);
-            }
+            }*/
         }
 
 
@@ -820,7 +820,7 @@ class FacturationController extends Controller{
                 'form_params' => [
                         'dossier' => "facturation",
                         'document_file' => $imagenameSaved,
-                        'dir_document_file' => $dirLandingImg,
+                        'dir_document_file' => "/public/uploads/achats/facturation/".$imagenameSaved,
                         'entreprise' => $this->session->get('entreprise_session_id')
                     ]
                 ]);

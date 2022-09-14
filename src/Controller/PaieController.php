@@ -611,7 +611,7 @@ class PaieController extends AbstractController
 
 
         //delete last ocr tmp data
-        $this->getDoctrine()->getRepository(TmpOcr::class)->removesAll("paie", $session->get('tmp_ocr_paie', null));
+        //$this->getDoctrine()->getRepository(TmpOcr::class)->removesAll("paie", $session->get('tmp_ocr_paie', null));
 
         $isForm = false;
         $session->set('tmp_ocr_paie', $saveFile);
@@ -621,13 +621,13 @@ class PaieController extends AbstractController
             $this->global_s->saveOcrScan("uploads/paies/", $saveFile, "paie", $isForm);
         }
         else{
-            if(!$this->global_s->isDocumentConvert($saveFile)){
+            /*if(!$this->global_s->isDocumentConvert($saveFile)){
                 $this->global_s->convertPdfToImage2("uploads/paies/", $newFilename, $saveFile);
             }
 
             if(!$this->global_s->isOcrSave($saveFile, "paie")){
                 $this->global_s->saveOcrScan("uploads/paies/", $saveFile, "paie", $isForm);
-            }
+            }*/
         }
 
         $paie = new Paie();
@@ -642,7 +642,7 @@ class PaieController extends AbstractController
             'form_params' => [
                     'dossier' => "paie",
                     'document_file' => $saveFile,
-                    'dir_document_file' => $dirLandingImg,
+                    'dir_document_file' => "/public/uploads/paies/".$saveFile,
                     'entreprise' => $this->session->get('entreprise_session_id')
                 ]
             ]);

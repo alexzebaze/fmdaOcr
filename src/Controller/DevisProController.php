@@ -619,7 +619,7 @@ class DevisProController extends Controller
         }
 
         //delete last ocr tmp data
-        $this->getDoctrine()->getRepository(TmpOcr::class)->removesAll("devis_pro", $session->get('tmp_acr_devis_pro', null));
+        //$this->getDoctrine()->getRepository(TmpOcr::class)->removesAll("devis_pro", $session->get('tmp_acr_devis_pro', null));
 
 
         $isForm = false;
@@ -630,12 +630,12 @@ class DevisProController extends Controller
             $this->global_s->saveOcrScan("uploads/devis/", $saveFile, "devis_pro", $isForm);
         }
         else{
-            if(!$this->global_s->isDocumentConvert($saveFile)){
+            /*if(!$this->global_s->isDocumentConvert($saveFile)){
                 $this->global_s->convertPdfToImage2("uploads/devis/", $newFilename, $saveFile);
             }
             if(!$this->global_s->isOcrSave($saveFile, "devis_pro")){
                 $this->global_s->saveOcrScan("uploads/devis/", $saveFile, "devis_pro", $isForm);
-            }
+            }*/
         }
         
 
@@ -727,7 +727,7 @@ class DevisProController extends Controller
                 'form_params' => [
                         'dossier' => "devis_pro",
                         'document_file' => $imagenameSaved,
-                        'dir_document_file' => $dirLandingImg,
+                        'dir_document_file' => "/public/uploads/devis/".$saveFile,
                         'entreprise' => $this->session->get('entreprise_session_id')
                     ]
                 ]);

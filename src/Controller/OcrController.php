@@ -170,9 +170,7 @@ class OcrController extends Controller
 
         $documentFile = $request->request->get('document_file');
         $dossier = $request->request->get('dossier');
-        
-         // document avec chemin associé
-        $dirDocumentFile = $this->get('kernel')->getProjectDir() . "/public/uploads/factures/".$request->request->get('save_file');
+        $dirDocumentFile = $this->get('kernel')->getProjectDir() . $request->request->get('dir_document_file'); // document avec chemin associé
 
         if($dossier == "bon_livraison" || $dossier == "facturation" || $dossier == "devis_pro"){
             $entity = new Achat();
