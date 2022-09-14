@@ -2997,6 +2997,7 @@ class GlobalService{
             /* close the connection */
 
             imap_close($inbox);
+            dd('fin');
         
         } catch (Exception $e) {
             throw new \Exception("Erreur extraction données IMAP");
