@@ -2913,7 +2913,7 @@ class GlobalService{
 
         try {   
             $emails = imap_search($inbox, 'UNSEEN');
-
+            dd($emails);
             /* if emails are returned, cycle through each... */
             if($emails) {
                         dd('ddd');
