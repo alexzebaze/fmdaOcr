@@ -33,7 +33,7 @@ class ImportFactureCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
 
-        //$this->global_s->cronOcrImportDocument();
+        $this->global_s->cronOcrImportDocument();
         $output->writeln('import reussit effectué');
         //$this->global_s->cronOcrIa();
         $output->writeln('IA effectué');
