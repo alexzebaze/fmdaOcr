@@ -2885,7 +2885,7 @@ class GlobalService{
     }
 
     public function loadEmailDocument($dossier, $dir, $entreprise){
-
+        return 1;
         $this->IS_ASYNC = true;
         $config = $this->em->getRepository(ConfigImapEmail::class)->findOneBy(['dossier'=> $dossier, 'entreprise'=>$entreprise]);
 
