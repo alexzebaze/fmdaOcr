@@ -2886,7 +2886,7 @@ class GlobalService{
 
     public function loadEmailDocument($dossier, $dir, $entreprise){
 
-        if($dossier != "facture_client")
+        if($dossier != "paie")
             return 1;
 
         $this->IS_ASYNC = true;
@@ -2916,8 +2916,7 @@ class GlobalService{
             var_dump($emails);
             /* if emails are returned, cycle through each... */
             if($emails) {
-                        dd($emails);
-
+                var_dump("inter");
                 /* begin output var */
                 $output = '';
                 /* put the newest emails on top */
@@ -2972,6 +2971,7 @@ class GlobalService{
                         }
                     } catch (FileException $e) {}
 
+                    dd($attachments);
                     if(count($attachments)!=0){
                         foreach($attachments as $at){
                             if($at['is_attachment']==1){
