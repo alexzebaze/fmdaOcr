@@ -727,7 +727,7 @@ class DevisProController extends Controller
                 'form_params' => [
                         'dossier' => "devis_pro",
                         'document_file' => $imagenameSaved,
-                        'dir_document_file' => "/public/uploads/devis/".$saveFile,
+                        'dir_document_file' => $dirLandingImg,
                         'entreprise' => $this->session->get('entreprise_session_id')
                     ]
                 ]);
