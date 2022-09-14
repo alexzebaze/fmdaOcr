@@ -726,7 +726,7 @@ class DevisProController extends Controller
             $response = $client->request('POST', 'ocrapi/launchia', [
                 'form_params' => [
                         'dossier' => "devis_pro",
-                        'document_file' => $imagenameSaved,
+                        'document_file' => $saveFile,
                         'dir_document_file' => "/public/uploads/devis/".$saveFile,
                         'entreprise' => $this->session->get('entreprise_session_id')
                     ]
@@ -762,7 +762,7 @@ class DevisProController extends Controller
             $datasResult['tmpOcr'] = $tmpOcr;
         }
 
-        //$datasResult = $this->global_s->lancerIa($imagenameSaved, $devis, "devis_pro", $dirLandingImg);
+        //$datasResult = $this->global_s->lancerIa($saveFile, $devis, "devis_pro", $dirLandingImg);
 
         if(is_null($datasResult)){
             $this->addFlash('warning', "Aucun text detecté pour le document");
