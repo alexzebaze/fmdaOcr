@@ -99,7 +99,8 @@ class OcrController extends Controller
 
         switch ($dossier) {
             case 'facturation':
-                $path =  "/uploads/factures/";
+                $path = "/uploads/achats/facturation/";
+                dd('path');
                 break;
             case 'bon_livraison':
                 $path =  "/uploads/factures/";
