@@ -2886,7 +2886,7 @@ class GlobalService{
 
     public function loadEmailDocument($dossier, $dir, $entreprise){
 
-        if($dossier != "bon_livraison")
+        if($dossier != "devis_client")
             return 1;
 
         $this->IS_ASYNC = true;
