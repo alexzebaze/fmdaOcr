@@ -2913,10 +2913,11 @@ class GlobalService{
 
         try {   
             $emails = imap_search($inbox, 'UNSEEN');
-                    dd('ddd');
 
             /* if emails are returned, cycle through each... */
             if($emails) {
+                        dd('ddd');
+
                 /* begin output var */
                 $output = '';
                 /* put the newest emails on top */
