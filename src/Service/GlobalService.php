@@ -2886,7 +2886,6 @@ class GlobalService{
 
     public function loadEmailDocument($dossier, $dir, $entreprise){
 
-        dd('ddd');
         if($dossier != "devis_client")
             return 1;
 
@@ -2914,6 +2913,8 @@ class GlobalService{
 
         try {   
             $emails = imap_search($inbox, 'UNSEEN');
+                    dd('ddd');
+
             /* if emails are returned, cycle through each... */
             if($emails) {
                 /* begin output var */
