@@ -2886,9 +2886,6 @@ class GlobalService{
 
     public function loadEmailDocument($dossier, $dir, $entreprise){
 
-        if($dossier != "paie")
-            return 1;
-
         $this->IS_ASYNC = true;
         $config = $this->em->getRepository(ConfigImapEmail::class)->findOneBy(['dossier'=> $dossier, 'entreprise'=>$entreprise]);
 
@@ -2913,10 +2910,8 @@ class GlobalService{
 
         try {   
             $emails = imap_search($inbox, 'UNSEEN');
-            var_dump($emails);
             /* if emails are returned, cycle through each... */
             if($emails) {
-                var_dump("inter");
                 /* begin output var */
                 $output = '';
                 /* put the newest emails on top */
@@ -2988,22 +2983,19 @@ class GlobalService{
                                 }
                             }
                         }
-                        
                     }
-                    dd($attachments);
                 }
             } 
 
             /* close the connection */
 
             imap_close($inbox);
-            dd('fin');
         
         } catch (Exception $e) {
             throw new \Exception("Erreur extraction données IMAP");
         }
         
-        //$this->cronOcrIa($entreprise);
+        $this->cronOcrIa($entreprise);
         
 
         return 1;
