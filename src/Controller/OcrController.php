@@ -100,7 +100,6 @@ class OcrController extends Controller
         switch ($dossier) {
             case 'facturation':
                 $path = "/uploads/achats/facturation/";
-                dd('path');
                 break;
             case 'bon_livraison':
                 $path =  "/uploads/factures/";
@@ -124,13 +123,10 @@ class OcrController extends Controller
         }
 
         $dir = $this->get('kernel')->getProjectDir() .'/public'. $path;
-        try{
             if(is_null($this->global_s->loadEmailDocument($dossier, $dir, $entreprise))){
                 return new Response(json_encode(array("status"=>500, "message"=>"Veuillez verifier la configuration IMAP pour ".$dossier)));
             }
-        } catch (\Exception $e) {
-            return new Response(json_encode(array("status"=>500, "message"=>$e->getMessage())));
-        }
+        
 
         $documents = $this->getDoctrine()->getRepository(EmailDocumentPreview::class)->findBy(['dossier'=>$dossier, "entreprise"=>$entreprise], ['id'=>'DESC']);
 
