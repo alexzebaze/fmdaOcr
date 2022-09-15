@@ -123,9 +123,9 @@ class OcrController extends Controller
         }
 
         $dir = $this->get('kernel')->getProjectDir() .'/public'. $path;
-            if(is_null($this->global_s->loadEmailDocument($dossier, $dir, $entreprise))){
-                return new Response(json_encode(array("status"=>500, "message"=>"Veuillez verifier la configuration IMAP pour ".$dossier)));
-            }
+        if(is_null($this->global_s->loadEmailDocument($dossier, $dir, $entreprise))){
+            return new Response(json_encode(array("status"=>500, "message"=>"Veuillez verifier la configuration IMAP pour ".$dossier)));
+        }
         
 
         $documents = $this->getDoctrine()->getRepository(EmailDocumentPreview::class)->findBy(['dossier'=>$dossier, "entreprise"=>$entreprise], ['id'=>'DESC']);

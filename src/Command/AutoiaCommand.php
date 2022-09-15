@@ -33,7 +33,7 @@ class AutoiaCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
 
-        //$this->global_s->cronOcrIa();
+        $this->global_s->cronOcrIa();
         $output->writeln('Operation effectué');
 
         return 0;

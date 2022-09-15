@@ -798,7 +798,12 @@ class GlobalService{
         return $newText;
     }
 
-    public function lancerIa($lastOcrFile, $entity, $dossier, $dirLandingImg){
+    public function lancerIa($lastOcrFile, $entity, $dossier, $dirLandingImg, $entreprise = null){
+
+        if(is_null($entreprise)){
+            if($this->session->get('entreprise_session_id'))
+                $entreprise = $this->entrepriseRepository->find($this->session->get('entreprise_session_id'));
+        }
 
         $resultIa = $this->getResultIaLaunch($lastOcrFile, $dossier, $dirLandingImg);
 
@@ -813,7 +818,7 @@ class GlobalService{
         $document = null;
         $fournisseurfound = []; $clientfound = []; $chantierfound = []; $tvaVal = 0; $color = "orange";
 
-        $entityResult = $this->hydrateEntityWithDocumentPositionText($entity, $lastOcrFile, $dossier, $documentId);
+        $entityResult = $this->hydrateEntityWithDocumentPositionText($entity, $lastOcrFile, $dossier, $documentId, $entreprise);
 
         $oldDate = 0;
         if(!is_null($documentId)){
@@ -828,7 +833,7 @@ class GlobalService{
             $oldDate = $entityResult['oldDate'];
         }
 
-        $tmpOcr = $this->em->getRepository(TmpOcr::class)->findBy(['dossier'=>$dossier, "filename"=>$lastOcrFile, 'entreprise'=>$this->session->get('entreprise_session_id'), 'blocktype'=>"WORD"]);
+        $tmpOcr = $this->em->getRepository(TmpOcr::class)->findBy(['dossier'=>$dossier, "filename"=>$lastOcrFile, 'entreprise'=> $entreprise->getId(), 'blocktype'=>"WORD"]);
 
         $nbrPage = 0;
 
@@ -870,17 +875,17 @@ class GlobalService{
 
     public function cronOcrIa($entreprise = null){
 
-        if(is_null($entreprise))
-            $currentEntreprise = $this->session->get('entreprise_session_id');
-        else
-            $currentEntreprise = $entreprise->getId();
-
-        $documents = $this->em->getRepository(EmailDocumentPreview::class)->findBy(['execute'=>false, 'extension'=>'pdf', 'entreprise'=>$currentEntreprise], ['id'=>"ASC"], 20);
+        if(!is_null($entreprise)){
+            $documents = $this->em->getRepository(EmailDocumentPreview::class)->findBy(['execute'=>false, 'extension'=>'pdf', 'entreprise'=>$entreprise->getId()], ['id'=>"ASC"], 10);
+        }
+        else{
+            $documents = $this->em->getRepository(EmailDocumentPreview::class)->findBy(['execute'=>false, 'extension'=>'pdf'], ['id'=>"ASC"], 10);
+        }
 
         $documentToRotate = [];
         foreach ($documents as $value) {
 
-                $datasResult = $this->launchIaDocumentAttente($value, $entreprise);
+                $datasResult = $this->launchIaDocumentAttente($value, $value->getEntreprise());
                 
 
                 if(is_null($datasResult)){
@@ -909,7 +914,7 @@ class GlobalService{
 
         foreach ($documentToRotate as $value) {
             try {
-                $datasResult = $this->launchIaDocumentAttente($value, $entreprise);
+                $datasResult = $this->launchIaDocumentAttente($value, $value->getEntreprise());
                 if(is_null($datasResult)){
                     continue;
                 }
@@ -972,9 +977,12 @@ class GlobalService{
     }
 
     public function launchIaDocumentAttente($entity, $entreprise = null){
+        
         $value = $entity;
-        if(is_null($entreprise))
+        if(is_null($entreprise)){
+            $entreprise = $value->getEntreprise();
             $this->session->set('entreprise_session_id', $value->getEntreprise()->getId());
+        }
 
         $newFilename = $value->getDocument();
         $name_array = explode('.',$newFilename);
@@ -1023,7 +1031,7 @@ class GlobalService{
 
         $entity->setIsConvert(true); 
 
-        $isRotation = $this->saveOcrScan($path, $imagenameSaved, $value->getDossier())['isRotation'];
+        $isRotation = $this->saveOcrScan($path, $imagenameSaved, $value->getDossier(), $entreprise)['isRotation'];
         
         $entity->setExecute(true); 
 
@@ -1032,7 +1040,7 @@ class GlobalService{
         $dirLandingImg = $this->params->get('kernel.project_dir') . "/public/".$path.$imagenameSaved;
 
         try {
-            $datasResult = $this->lancerIa($imagenameSaved, $value, $value->getDossier(), $dirLandingImg);
+            $datasResult = $this->lancerIa($imagenameSaved, $value, $value->getDossier(), $dirLandingImg, $entreprise);
         } catch (\Exception $e) {
             throw new \Exception("Probleme rencontré lors du lancement de l'IA", 1);   
         }
@@ -1681,7 +1689,7 @@ class GlobalService{
         return $line;
     }
 
-    public function saveOcrScan($dirLandingImg, $filename, $dossier, $isForm = false){
+    public function saveOcrScan($dirLandingImg, $filename, $dossier, $isForm = false, $entreprise = null){
 
         $dir = $this->params->get('kernel.project_dir') . "/public/uploads/".$filename."/";
         $dirLandingImg = $this->params->get('kernel.project_dir') . "/public/".$dirLandingImg;
@@ -1768,7 +1776,10 @@ class GlobalService{
                     $isRotation = $this->detectTextOrientation($Blocks);
                 }
 
-                $entreprise = $this->entrepriseRepository->find($this->session->get('entreprise_session_id'));
+                if(is_null($entreprise)){
+                    if($this->session->get('entreprise_session_id'))
+                        $entreprise = $this->entrepriseRepository->find($this->session->get('entreprise_session_id'));
+                }
 
                 foreach ($datas as $data){
 
@@ -2167,7 +2178,13 @@ class GlobalService{
         ];
     }
 
-    public function hydrateEntityWithDocumentPositionText($entity, $filename, $dossier, $documentId){
+    public function hydrateEntityWithDocumentPositionText($entity, $filename, $dossier, $documentId, $entreprise = null){
+
+        if(is_null($entreprise)){
+            if($this->session->get('entreprise_session_id'))
+                $entreprise = $this->entrepriseRepository->find($this->session->get('entreprise_session_id'));
+        }
+
         $datas = [];
         $fieldsExtract =  $this->em->getRepository(IAZone::class)->findBy(['document'=> $documentId]);
         //dd($documentId);
@@ -2199,11 +2216,11 @@ class GlobalService{
             $clientfound["1"] = [$expediteurExiste];
         }
         else{
-            $firstEltDocument = $this->em->getRepository(OcrField::class)->getFirstEltDocument($dossier, $this->session->get('entreprise_session_id'), $filename);
+            $firstEltDocument = $this->em->getRepository(OcrField::class)->getFirstEltDocument($dossier, $entreprise->getId(), $filename);
 
-            $fournisseurs = $this->em->getRepository(Fournisseurs::class)->getByEntrepriseOdreByBl($this->session->get('entreprise_session_id'));
-            $clients = $this->em->getRepository(Client::class)->findBy(['entreprise'=>$this->session->get('entreprise_session_id')]);
-            $users = $this->em->getRepository(Utilisateur::class)->findBy(['entreprise'=>$this->session->get('entreprise_session_id')]);
+            $fournisseurs = $this->em->getRepository(Fournisseurs::class)->getByEntrepriseOdreByBl($entreprise->getId());
+            $clients = $this->em->getRepository(Client::class)->findBy(['entreprise'=>$entreprise->getId()]);
+            $users = $this->em->getRepository(Utilisateur::class)->findBy(['entreprise'=>$entreprise->getId()]);
 
             foreach ($fournisseurs as $value) {
                 if(strtolower($value['nom']) == 'a definir' || strtolower($value['nom']) == 'fmda construction')
@@ -2211,15 +2228,15 @@ class GlobalService{
 
                 $priority = "1";
                 if(strpos(strtolower($value['nom']), "france") !== false){// exception pour le fournisseur france air
-                    $entityfound = $this->em->getRepository(OcrField::class)->getByNameAndName2Alpn($dossier, $this->session->get('entreprise_session_id'), $filename, $value['nom'], $firstEltDocument['id'], $value['nom2'], 30);
+                    $entityfound = $this->em->getRepository(OcrField::class)->getByNameAndName2Alpn($dossier, $entreprise->getId(), $filename, $value['nom'], $firstEltDocument['id'], $value['nom2'], 30);
                 }
                 elseif(strpos(strtolower($value['nom']), "total") !== false){// exception pour le fournisseur france air
-                    $entityfound = $this->em->getRepository(OcrField::class)->getByNameAndName2Alpn($dossier, $this->session->get('entreprise_session_id'), $filename, $value['nom'], $firstEltDocument['id'], $value['nom2'], 30);
+                    $entityfound = $this->em->getRepository(OcrField::class)->getByNameAndName2Alpn($dossier, $entreprise->getId(), $filename, $value['nom'], $firstEltDocument['id'], $value['nom2'], 30);
                 }
                 else{
-                    $entityfound = $this->em->getRepository(OcrField::class)->getByNameAlpn($dossier, $this->session->get('entreprise_session_id'), $filename, $value['nom'], $firstEltDocument['id'], "", 30);
+                    $entityfound = $this->em->getRepository(OcrField::class)->getByNameAlpn($dossier, $entreprise->getId(), $filename, $value['nom'], $firstEltDocument['id'], "", 30);
                     if(count($entityfound) == 0){
-                        $entityfound = $this->em->getRepository(OcrField::class)->getByNameAlpn($dossier, $this->session->get('entreprise_session_id'), $filename, $value['nom'], $firstEltDocument['id'], $value['nom2'], 30);    
+                        $entityfound = $this->em->getRepository(OcrField::class)->getByNameAlpn($dossier, $entreprise->getId(), $filename, $value['nom'], $firstEltDocument['id'], $value['nom2'], 30);    
                         $priority = "2";                
                     }
                 }
@@ -2241,7 +2258,7 @@ class GlobalService{
                     $clientName = "L'ORANGERIE";
                 
                 $priority = "1";
-                $entityfound = $this->em->getRepository(OcrField::class)->getByNameAlpnClient($dossier, $this->session->get('entreprise_session_id'), $filename, $clientName, $firstEltDocument['id'], "", 30);
+                $entityfound = $this->em->getRepository(OcrField::class)->getByNameAlpnClient($dossier, $entreprise->getId(), $filename, $clientName, $firstEltDocument['id'], "", 30);
                 
                 if(count($entityfound) > 0){
                     if(array_search($value->getId(), array_column($clientfound, 'id')) === false) {
@@ -2259,7 +2276,7 @@ class GlobalService{
                     $userName2 = $value->getLastname().' '.$value->getFirstname();
 
                     $priority = "1";
-                    $entityfound = $this->em->getRepository(OcrField::class)->getByNameAlpnUser($dossier, $this->session->get('entreprise_session_id'), $filename, strtolower($userName), strtolower($userName2), $firstEltDocument['id'], 100);
+                    $entityfound = $this->em->getRepository(OcrField::class)->getByNameAlpnUser($dossier, $entreprise->getId(), $filename, strtolower($userName), strtolower($userName2), $firstEltDocument['id'], 100);
                     
                     if(count($entityfound) > 0){
                         if(array_search($value->getUid(), array_column($userfound, 'id')) === false) {
@@ -2318,7 +2335,7 @@ class GlobalService{
 
         }
 
-        $totalTtcAndTotalHT = $this->em->getRepository(TmpOcr::class)->getsummaryFields($dossier, $filename, $this->session->get('entreprise_session_id'));
+        $totalTtcAndTotalHT = $this->em->getRepository(TmpOcr::class)->getsummaryFields($dossier, $filename, $entreprise->getId());
 
         if($totalTtcAndTotalHT){
             if(method_exists($entity, 'setPrixht')){
@@ -2336,15 +2353,15 @@ class GlobalService{
         }
 
 
-        $chantiers = $this->chantierRepository->getByActif($this->session->get('entreprise_session_id'));
-        $firstEltDocument = $this->em->getRepository(OcrField::class)->getFirstEltDocument($dossier, $this->session->get('entreprise_session_id'), $filename);
+        $chantiers = $this->chantierRepository->getByActif($entreprise->getId());
+        $firstEltDocument = $this->em->getRepository(OcrField::class)->getFirstEltDocument($dossier, $entreprise->getId(), $filename);
 
         $entityCompletfound = false;
         foreach ($chantiers as $value) {
             if(strtoupper($value['nameentreprise']) == 'TEST ADMIN' || strtoupper($value['nameentreprise']) == 'FORMATION')
                 continue;
 
-            $entityfound = $this->em->getRepository(OcrField::class)->getByNameAlpn($dossier, $this->session->get('entreprise_session_id'), $filename, $value['nameentreprise'], $firstEltDocument['id'], "", 150);
+            $entityfound = $this->em->getRepository(OcrField::class)->getByNameAlpn($dossier, $entreprise->getId(), $filename, $value['nameentreprise'], $firstEltDocument['id'], "", 150);
 
             if(count($entityfound) > 0)
                 $entityCompletfound = true;
@@ -2358,7 +2375,7 @@ class GlobalService{
                 if(count($chantierNameArr) >= 2){
                     $val = $chantierNameArr[0];
                     if(strlen($val) >= 3){
-                        $entityfound = $this->em->getRepository(OcrField::class)->getByNameAlpn($dossier, $this->session->get('entreprise_session_id'), $filename, $val, $firstEltDocument['id'], "", 150);
+                        $entityfound = $this->em->getRepository(OcrField::class)->getByNameAlpn($dossier, $entreprise->getId(), $filename, $val, $firstEltDocument['id'], "", 150);
                     }
                 }
             }
@@ -2429,7 +2446,7 @@ class GlobalService{
 
 
         $pdf = str_replace(".jpg", '.pdf', $filename);
-        $documentsEmail = $this->em->getRepository(EmailDocumentPreview::class)->findOneBy(['entreprise'=>$this->session->get('entreprise_session_id'), 'document'=>$pdf, 'dossier'=>$dossier]);
+        $documentsEmail = $this->em->getRepository(EmailDocumentPreview::class)->findOneBy(['entreprise'=>$entreprise->getId(), 'document'=>$pdf, 'dossier'=>$dossier]);
 
         if(!is_null($documentsEmail) && !is_null($documentsEmail->getFacturedAt())){
             if(method_exists($entity, 'setFacturedAt')){
@@ -2437,7 +2454,7 @@ class GlobalService{
             }
         }
         else{
-            $firstTmpOcrText = $this->em->getRepository(OcrField::class)->findFirstTmpOcrText($dossier, $this->session->get('entreprise_session_id'), $filename, $firstEltDocument['id'], 300);
+            $firstTmpOcrText = $this->em->getRepository(OcrField::class)->findFirstTmpOcrText($dossier, $entreprise->getId(), $filename, $firstEltDocument['id'], 300);
             foreach ($firstTmpOcrText as $value) {
                 $dateSearch = str_replace('du ', "", strtolower($value['name']));
                 $dateSearch = str_replace('du', "", strtolower($dateSearch));
@@ -2461,7 +2478,7 @@ class GlobalService{
             $pasChantierId = !is_null($entity->getChantier()) ? $entity->getChantier()->getChantierId() : null;
             $pasFournisseurId = !is_null($entity->getFournisseur()) ? $entity->getFournisseur()->getId() : null;
             
-            $passageExist =  $this->em->getRepository(Passage::class)->isPassage($pasChantierId, $pasFournisseurId, $entity->getFacturedAt()->format('Y-m-d'), $this->session->get('entreprise_session_id'));
+            $passageExist =  $this->em->getRepository(Passage::class)->isPassage($pasChantierId, $pasFournisseurId, $entity->getFacturedAt()->format('Y-m-d'), $entreprise->getId());
             
             if($passageExist){
                 $fournPassage = $this->em->getRepository(EmailDocumentPreview::class)->findByPassageId($passageExist['id']);
@@ -2995,7 +3012,7 @@ class GlobalService{
             throw new \Exception("Erreur extraction données IMAP");
         }
         
-        $this->cronOcrIa($entreprise);
+        //$this->cronOcrIa($entreprise);
         
 
         return 1;
