@@ -903,13 +903,11 @@ class GlobalService{
                             $documentToRotate[] = $value;
                         } catch (Exception $e) {}
 
-                        //dd([$datasResult['isRotation'], $value->getId()]);
                     }
                     else
                         $this->updateEmailDocument($datasResult, $value);
                 }            
 
-                //dd($value);
         }
 
         foreach ($documentToRotate as $value) {
@@ -1742,7 +1740,7 @@ class GlobalService{
                         'Bytes' => $image,
                     ],
                 ]);
-                //dd($resultSummaryFields);
+
                 $Blocks = $result['Blocks'];
 
                 if(array_key_exists("ExpenseDocuments", $resultSummaryFields)){
@@ -2140,7 +2138,6 @@ class GlobalService{
 
         $tmpOcr = array_unique(array_merge($tmpOcrLast, $tmpOcrFirst), SORT_REGULAR);
 
-        dd([$tmpOcrFirst, $tmpOcrLast, $tmpOcr]);
         if(count($tmpOcr) == 0){
             return null;
         }
@@ -2188,7 +2185,7 @@ class GlobalService{
 
         $datas = [];
         $fieldsExtract =  $this->em->getRepository(IAZone::class)->findBy(['document'=> $documentId]);
-        //dd($documentId);
+
         $tabFieldFound = [];
         foreach ($fieldsExtract as $value) {
             $tabFieldFound[] = $value->getField()->getIdentifiant();
@@ -2735,7 +2732,6 @@ class GlobalService{
         $info = curl_getinfo($ch);
         curl_close($ch);
 
-        //dd([$sendSMS, $info]);
         if ($info['http_code'] != 201) {
             return null;
         }
