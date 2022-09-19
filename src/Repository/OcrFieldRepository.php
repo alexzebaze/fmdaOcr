@@ -53,14 +53,16 @@ class OcrFieldRepository extends ServiceEntityRepository
     */
 
 
-    public function searchPosition($left, $top, $dossier, $marge){
-
+    public function searchPosition($left, $top, $dossier, $marge, $entreprise_id = null){
+        if(is_null($entreprise_id)){
+            $entreprise_id = $this->entreprise_id;
+        }
 
         $sql = "SELECT id, document_id FROM  ocr_field WHERE dossier = :dossier AND entreprise_id = :entreprise AND (position_left <= :left_min AND position_left >= :left_max ) AND (position_top <= :top_min AND position_top >= :top_max) ORDER BY id DESC LIMIT 1";
 
         $datas = $this->em->prepare($sql);
 
-        $datas->execute(['left_min'=>($left+$marge[0]), 'left_max'=>($left-$marge[0]), 'top_min'=>($top+$marge[1]), 'top_max'=>($top-$marge[1]), 'entreprise'=>$this->entreprise_id, 'dossier'=>$dossier]);
+        $datas->execute(['left_min'=>($left+$marge[0]), 'left_max'=>($left-$marge[0]), 'top_min'=>($top+$marge[1]), 'top_max'=>($top-$marge[1]), 'entreprise'=>$entreprise_id, 'dossier'=>$dossier]);
         $datas = $datas->fetch();
         return $datas;
     }

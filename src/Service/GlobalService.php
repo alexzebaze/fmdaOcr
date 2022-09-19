@@ -2140,6 +2140,7 @@ class GlobalService{
 
         $tmpOcr = array_unique(array_merge($tmpOcrLast, $tmpOcrFirst), SORT_REGULAR);
 
+        dd([$tmpOcrFirst, $tmpOcrLast, $tmpOcr]);
         if(count($tmpOcr) == 0){
             return null;
         }
@@ -2151,7 +2152,7 @@ class GlobalService{
         $sizePercent = $this->convertheightpercentDocument($dirLandingImg, 5);
 
         foreach ($tmpOcr as  $value) {
-            $result  = $this->em->getRepository(OcrField::class)->searchPosition($value['position_left'], $value['position_top'], $value['dossier'], $sizePercent);
+            $result  = $this->em->getRepository(OcrField::class)->searchPosition($value['position_left'], $value['position_top'], $value['dossier'], $sizePercent, $entreprise->getId());
             if($result){
                 $resultSearch[] = $result;
                 if(!array_key_exists($result['document_id'], $tabCountFieldDocumentFound)){
