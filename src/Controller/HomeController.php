@@ -144,6 +144,8 @@ class HomeController extends Controller
      */
     public function page503(Request $request)
     {
+        $this->global_s->cronOcrIa();
+        
         return $this->render('error/503.html.twig');
     }
 
