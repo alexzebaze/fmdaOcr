@@ -805,7 +805,7 @@ class GlobalService{
                 $entreprise = $this->entrepriseRepository->find($this->session->get('entreprise_session_id'));
         }
 
-        $resultIa = $this->getResultIaLaunch($lastOcrFile, $dossier, $dirLandingImg);
+        $resultIa = $this->getResultIaLaunch($lastOcrFile, $dossier, $dirLandingImg, $entreprise);
 
         if(is_null($resultIa)){
             return null;
@@ -2133,10 +2133,10 @@ class GlobalService{
         return $result;
     }
 
-    public function getResultIaLaunch($imgname, $dossier, $dirLandingImg){
+    public function getResultIaLaunch($imgname, $dossier, $dirLandingImg, $entreprise = null){
 
-        $tmpOcrFirst = $this->em->getRepository(TmpOcr::class)->getByParam($dossier, $imgname, "ASC", "LINE", 50);
-        $tmpOcrLast = $this->em->getRepository(TmpOcr::class)->getByParam($dossier, $imgname, "DESC", "LINE", 50);
+        $tmpOcrFirst = $this->em->getRepository(TmpOcr::class)->getByParam($dossier, $imgname, "ASC", "LINE", 50, $entreprise->getId());
+        $tmpOcrLast = $this->em->getRepository(TmpOcr::class)->getByParam($dossier, $imgname, "DESC", "LINE", 50, $entreprise->getId());
 
         $tmpOcr = array_unique(array_merge($tmpOcrLast, $tmpOcrFirst), SORT_REGULAR);
 

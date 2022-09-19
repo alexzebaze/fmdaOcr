@@ -71,11 +71,15 @@ class TmpOcrRepository extends ServiceEntityRepository
         return $datas;
     }
 
-    public function getByParam($dossier, $filename, $order, $blocktype, $limit = 50){
+    public function getByParam($dossier, $filename, $order, $blocktype, $limit = 50, $entreprise_id = null){
+        if(is_null($entreprise_id)){
+            $entreprise_id = $this->entreprise_id;
+        }
+
         $sql = "SELECT id, position_left, position_top, size_width, size_height, dossier, entreprise_id FROM tmp_ocr WHERE entreprise_id = :entreprise AND dossier = :dossier AND filename = :filename AND blocktype = :blocktype ORDER BY id $order LIMIT $limit";
 
         $datas = $this->em->prepare($sql);
-        $datas->execute(['dossier'=>$dossier, 'filename'=>$filename, 'entreprise'=>$this->entreprise_id, 'blocktype'=>$blocktype]);
+        $datas->execute(['dossier'=>$dossier, 'filename'=>$filename, 'entreprise'=>$entreprise_id, 'blocktype'=>$blocktype]);
 
         $datas = $datas->fetchAll();
         return $datas;
