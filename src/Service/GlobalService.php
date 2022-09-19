@@ -3019,7 +3019,7 @@ class GlobalService{
     }
 
     public function saveDocument($filename, $dossier, $entreprise, $headers){
-        
+        dd([$filename, $dossier, $entreprise]);
         $extension = strtolower($this->getExtentionFile($filename));
 
         $from = imap_utf8($headers[0]->from);

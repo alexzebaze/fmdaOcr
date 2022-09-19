@@ -145,8 +145,17 @@ class HomeController extends Controller
     public function page503(Request $request)
     {
         $this->global_s->cronOcrIa();
-        
+
         return $this->render('error/503.html.twig');
+    }
+    /**
+     * @Route("/import", name="page_import")
+     */
+    public function import(Request $request)
+    {
+        $this->global_s->cronOcrImportDocument();
+        
+        dd("import");
     }
 
     public function rotateIfPaysage($dir, $file, $angle){
