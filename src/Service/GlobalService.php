@@ -2524,8 +2524,31 @@ class GlobalService{
                         $text = array_unique($text);
                         $text = implode(" ", $text);
                         $entity->setDocumentId($text);
+                    }
+                }
+            }
+        }
+        
+        //Exception pour le champ document_id qui systematiquement recurere la position à partir du client
+        if(method_exists($entity, 'getClient')){
+            $client =  $entity->getClient();
+            if($client){
+                $documentIdPosition = $client->getDocumentIdPosition();
+                if($documentIdPosition != "" && count(explode('-', $documentIdPosition)) == 4){
 
+                    $tabPosition = explode("-", $documentIdPosition);
 
+                    $text = $this->getNewTextByPostion($tabPosition[0], $tabPosition[1], $tabPosition[2], $tabPosition[3], $dossier, $filename);
+                    if($text != ""){
+                        $text = str_replace("n°", "", strtolower($text));
+                        $text = str_replace("du", "", strtolower($text));
+                        $text = str_replace("numéro", "", strtolower($text));
+                        $text = trim($text, " ");
+
+                        $text = explode(" ", $text);
+                        $text = array_unique($text);
+                        $text = implode(" ", $text);
+                        $entity->setDocumentId($text);
                     }
                 }
             }
