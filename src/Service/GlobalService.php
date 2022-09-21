@@ -2218,7 +2218,7 @@ class GlobalService{
             }
         }
         
-        dd($entity->getDocumentId());
+        dd($entity);
 
         $fournisseurfound = [];
         $clientfound = [];
