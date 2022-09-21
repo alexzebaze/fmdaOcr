@@ -2519,7 +2519,18 @@ class GlobalService{
                     var_dump("text");
                     var_dump($text);
                     if($text != ""){
-                        $entity = $this->hydrateEntityWithTextFieldExtract($entity, 'document_id', $text, $datas, $filename, $dossier);
+
+                        $text = str_replace("n°", "", strtolower($text));
+                        $text = str_replace("du", "", strtolower($text));
+                        $text = str_replace("numéro", "", strtolower($text));
+                        $text = trim($text, " ");
+
+                        $text = explode(" ", $text);
+                        $text = array_unique($text);
+                        $text = implode(" ", $text);
+                        $entity->setDocumentId($text);
+
+
                     }
                 }
             }
