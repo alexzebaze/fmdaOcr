@@ -2195,6 +2195,28 @@ class GlobalService{
                 $entity = $this->hydrateEntityWithTextFieldExtract($entity, $value->getField(), $text, $datas, $filename, $dossier);
             }
         }
+
+
+        //Exception pour le champ document_id qui systematiquement recurere la position à partir du fournisseur
+        if(method_exists($entity, 'getFournisseur')){
+            $fournisseur =  $entity->getFournisseur();
+            if($fournisseur){
+                $documentIdPosition = $fournisseur->getDocumentIdPosition();
+
+                if($documentIdPosition != "" && explode('-', $documentIdPosition) == 4){
+
+                    $tabPosition = explode("-", $documentIdPosition);
+
+                    $text = $this->getNewTextByPostion($tabPosition[0], $tabPosition[1], $tabPosition[2], $tabPosition[3], $dossier, $filename);
+                    
+                    if($text != ""){
+                        $entity = $this->hydrateEntityWithTextFieldExtract($entity, 'document_id', $text, $datas, $filename, $dossier);
+                    }
+                }
+            }
+        }
+
+        
         $fournisseurfound = [];
         $clientfound = [];
         $userfound = [];
