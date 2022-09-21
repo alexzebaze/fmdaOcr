@@ -2511,7 +2511,7 @@ class GlobalService{
             if($fournisseur){
                 $documentIdPosition = $fournisseur->getDocumentIdPosition();
                 var_dump([$documentIdPosition, explode('-', $documentIdPosition)]);
-                if($documentIdPosition != "" && explode('-', $documentIdPosition) == 4){
+                if($documentIdPosition != "" && count(explode('-', $documentIdPosition)) == 4){
 
                     $tabPosition = explode("-", $documentIdPosition);
 
