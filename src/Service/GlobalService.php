@@ -2510,7 +2510,7 @@ class GlobalService{
             $fournisseur =  $entity->getFournisseur();
             if($fournisseur){
                 $documentIdPosition = $fournisseur->getDocumentIdPosition();
-                var_dump($documentIdPosition);
+                var_dump([$documentIdPosition, explode('-', $documentIdPosition)]);
                 if($documentIdPosition != "" && explode('-', $documentIdPosition) == 4){
 
                     $tabPosition = explode("-", $documentIdPosition);
@@ -2526,7 +2526,7 @@ class GlobalService{
         }
         
         dd($entity);
-        
+
         return [
             $dossier=>$entity,
             'fournisseurfound'=>$fournisseurfound,
