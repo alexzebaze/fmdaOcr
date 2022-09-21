@@ -2215,8 +2215,8 @@ class GlobalService{
                 }
             }
         }
+ 
 
-        
         $fournisseurfound = [];
         $clientfound = [];
         $userfound = [];
