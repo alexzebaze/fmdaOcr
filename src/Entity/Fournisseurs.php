@@ -220,6 +220,11 @@ class Fournisseurs implements JsonSerializable
      */
     private $totalConfigTtc;
 
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $documentIdPosition;
+    
     public function __construct()
     {
         $this->facturations = new ArrayCollection();
@@ -746,6 +751,18 @@ class Fournisseurs implements JsonSerializable
     public function setTotalConfigTtc(?string $totalConfigTtc): self
     {
         $this->totalConfigTtc = $totalConfigTtc;
+
+        return $this;
+    }
+
+    public function getDocumentIdPosition(): ?string
+    {
+        return $this->documentIdPosition;
+    }
+
+    public function setDocumentIdPosition(?string $documentIdPosition): self
+    {
+        $this->documentIdPosition = $documentIdPosition;
 
         return $this;
     }
