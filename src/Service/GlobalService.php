@@ -2505,21 +2505,16 @@ class GlobalService{
 
 
         //Exception pour le champ document_id qui systematiquement recurere la position à partir du fournisseur
-        var_dump("expression1");
         if(method_exists($entity, 'getFournisseur')){
             $fournisseur =  $entity->getFournisseur();
             if($fournisseur){
                 $documentIdPosition = $fournisseur->getDocumentIdPosition();
-                var_dump([$documentIdPosition, explode('-', $documentIdPosition)]);
                 if($documentIdPosition != "" && count(explode('-', $documentIdPosition)) == 4){
 
                     $tabPosition = explode("-", $documentIdPosition);
 
                     $text = $this->getNewTextByPostion($tabPosition[0], $tabPosition[1], $tabPosition[2], $tabPosition[3], $dossier, $filename);
-                    var_dump("text");
-                    var_dump($text);
                     if($text != ""){
-
                         $text = str_replace("n°", "", strtolower($text));
                         $text = str_replace("du", "", strtolower($text));
                         $text = str_replace("numéro", "", strtolower($text));
@@ -2536,8 +2531,6 @@ class GlobalService{
             }
         }
         
-        dd($entity);
-
         return [
             $dossier=>$entity,
             'fournisseurfound'=>$fournisseurfound,
