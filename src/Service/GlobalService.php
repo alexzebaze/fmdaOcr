@@ -2269,7 +2269,7 @@ class GlobalService{
             }
             if(count($clientfound) == 0 || ( count($clientfound) > 0 && array_key_exists("1", $clientfound) && count($clientfound["1"]) == 0)){
                 foreach ($clients as $value) {
-                    if(strtolower($value->getNom()) == 'a definir' || strtolower($value->getNom()) == 'fmda construction')
+                    if(strtolower($value->getNom()) == 'a definir' || strtolower($value->getNom()) == 'fmda construction' || || strtolower($value->getNom()) == 'sci hdbm immo')
                         continue;
 
                     $clientName = $value->getNom();
@@ -2287,7 +2287,7 @@ class GlobalService{
                     foreach ($tabnomClient as $nom) {
                         if(strlen($nom) >= 4){
                             $entityfound = $this->em->getRepository(OcrField::class)->getByNameAlpnClient($dossier, $entreprise->getId(), $filename, $nom, $firstEltDocument['id'], "", 30);
-                            
+
                             if(count($entityfound) > 0){
                                 if(array_search($value->getId(), array_column($clientfound, 'id')) === false) {
                                     $clientfound[$priority][] = ['id'=>$value->getId(), 'nom'=>$value->getNom()];
