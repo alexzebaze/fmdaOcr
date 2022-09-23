@@ -2268,7 +2268,6 @@ class GlobalService{
 
             }
             if(count($clientfound) == 0 || ( count($clientfound) > 0 && array_key_exists("1", $clientfound) && count($clientfound["1"]) == 0)){
-                dd($clients);
                 foreach ($clients as $value) {
                     if(strtolower($value->getNom()) == 'a definir' || strtolower($value->getNom()) == 'fmda construction' || str_contains(strtolower($value->getNom()), 'hdbm') || str_contains(strtolower($value->getNom()), 'immo'))
                         continue;
