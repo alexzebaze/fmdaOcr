@@ -2265,7 +2265,44 @@ class GlobalService{
                     }
                     break;
                 }
+
             }
+            if(empty($clientfound) || ( count($clientfound) > 0 && array_key_exists("1", $clientfound) && count($clientfound["1"]) == 0)){
+                foreach ($clients as $value) {
+                    if(strtolower($value->getNom()) == 'a definir' || strtolower($value->getNom()) == 'fmda construction')
+                        continue;
+
+                    $clientName = $value->getNom();
+                    if($clientName == "LORANGERIE")
+                        $clientName = "L'ORANGERIE";
+                    
+                    $priority = "2";
+                    
+                    $clientName = str_replace("/", "", $clientName);
+                    $clientName = str_replace(".", "", $clientName);
+                    $clientName = str_replace("-", "", $clientName);
+
+                    $tabnomClient = explode(" ", $clientName);
+                    $trouve = false;
+                    foreach ($tabnomClient as $nom) {
+                        if(strlen($nom) >= 4){
+                            $entityfound = $this->em->getRepository(OcrField::class)->getByNameAlpnClient($dossier, $entreprise->getId(), $filename, $clientName, $firstEltDocument['id'], "", 30);
+
+                            if(count($entityfound) > 0){
+                                if(array_search($value->getId(), array_column($clientfound, 'id')) === false) {
+                                    $clientfound[$priority][] = ['id'=>$value->getId(), 'nom'=>$nom];
+                                }
+                                $trouve = true;
+                                break;
+                            }
+                        }
+                    }
+                    if($trouve)
+                        break;
+   
+                }
+            }
+
             if($dossier == "paie"){
                 foreach ($users as $value) {
                     if(strtolower($value->getFirstname()) == 'a definir' || strtolower($value->getFirstname()) == 'fmda construction' || strtolower($value->getLastname()) == 'a definir' || strtolower($value->getLastname()) == 'fmda construction')
