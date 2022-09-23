@@ -2297,9 +2297,6 @@ class GlobalService{
                             }
                         }
                     }
-                    if($value->getId() == 86){
-                        dd([$tabnomClient, $clientfound, $entityfound]);
-                    }
                     if($trouve)
                         break;
    
