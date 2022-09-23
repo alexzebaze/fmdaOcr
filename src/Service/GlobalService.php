@@ -2269,7 +2269,7 @@ class GlobalService{
             }
             if(count($clientfound) == 0 || ( count($clientfound) > 0 && array_key_exists("1", $clientfound) && count($clientfound["1"]) == 0)){
                 foreach ($clients as $value) {
-                    if(strtolower($value->getNom()) == 'a definir' || strtolower($value->getNom()) == 'fmda construction' || || strtolower($value->getNom()) == 'sci hdbm immo')
+                    if(strtolower($value->getNom()) == 'a definir' || strtolower($value->getNom()) == 'fmda construction' || strtolower($value->getNom()) == 'sci hdbm immo')
                         continue;
 
                     $clientName = $value->getNom();
