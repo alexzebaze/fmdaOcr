@@ -85,7 +85,7 @@ class TmpOcr
     private $totalHt;
 
     /**
-     * @ORM\Column(type="string", nullable=true)
+     * @ORM\Column(type="text", nullable=true)
      */
     private $total_ht_list;
 
