@@ -876,7 +876,7 @@ class GlobalService{
     public function cronOcrIa($entreprise = null){
 
         if(!is_null($entreprise)){
-            $documents = $this->em->getRepository(EmailDocumentPreview::class)->findBy(['execute'=>false, 'extension'=>'pdf', 'entreprise'=>$entreprise->getId(), 'sender'=>"alexngoumo.an@gmail.com"], ['id'=>"ASC"], 10);
+            $documents = $this->em->getRepository(EmailDocumentPreview::class)->findBy(['execute'=>false, 'extension'=>'pdf', 'entreprise'=>$entreprise->getId(), 'sender'=>"amarkey@trenois.com"], ['id'=>"ASC"], 10);
         }
         else{
             $documents = $this->em->getRepository(EmailDocumentPreview::class)->findBy(['execute'=>false, 'extension'=>'pdf', 'sender'=>"amarkey@trenois.com"], ['id'=>"ASC"], 10);
