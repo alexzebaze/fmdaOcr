@@ -47,7 +47,7 @@ class Paie implements JsonSerializable
     private $trajet;
 
     /**
-     * @ORM\Column(type="float")
+     * @ORM\Column(type="float", nullable=true)
      */
     private $cout_global;
 
@@ -141,7 +141,7 @@ class Paie implements JsonSerializable
         return $this->cout_global;
     }
 
-    public function setCoutGlobal(float $cout_global): self
+    public function setCoutGlobal(?float $cout_global): self
     {
         $this->cout_global = $cout_global;
 
