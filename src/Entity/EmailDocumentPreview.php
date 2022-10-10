@@ -198,6 +198,7 @@ class EmailDocumentPreview
 
     /**
      * @ORM\ManyToOne(targetEntity=ModelDocument::class)
+     * @ORM\JoinColumn(nullable=true)
      */
     private $modelDocument;
 
@@ -634,5 +635,5 @@ class EmailDocumentPreview
 
         return $this;
     }
-    
+
 }
