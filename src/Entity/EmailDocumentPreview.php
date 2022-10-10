@@ -196,6 +196,12 @@ class EmailDocumentPreview
     protected $passageId;
 
 
+    /**
+     * @ORM\ManyToOne(targetEntity=ModelDocument::class)
+     */
+    private $modelDocument;
+
+
     public function __construct()
     {
         $this->lu = false;
@@ -616,4 +622,17 @@ class EmailDocumentPreview
 
         return $this;
     }
+
+    public function getModelDocument(): ?ModelDocument
+    {
+        return $this->modelDocument;
+    }
+
+    public function setModelDocument(?ModelDocument $modelDocument): self
+    {
+        $this->modelDocument = $modelDocument;
+
+        return $this;
+    }
+    
 }
