@@ -2190,7 +2190,6 @@ class GlobalService{
         $datas = [];
         $fieldsExtract =  $this->em->getRepository(IAZone::class)->findBy(['document'=> $documentId]);
 
-
         $tabFieldFound = [];
         foreach ($fieldsExtract as $value) {
             $tabFieldFound[] = $value->getField()->getIdentifiant();
