@@ -737,11 +737,11 @@ class GlobalService{
                 break;
             case 'cout_global':
                 $value = $this->correctFloatValue($value);
-                $entity->setCoutGlobal((float)$value);
+                $entity->setCoutGlobal(round((float)$value, 2));
                 break;
             case 'salaire_net':
                 $value = $this->correctFloatValue($value);
-                $entity->setSalaireNet((float)$value);
+                $entity->setSalaireNet(round((float)$value, 2));
                 break;
             case 'date_paie':
                 $value = explode(" ", $value);
