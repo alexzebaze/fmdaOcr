@@ -2182,6 +2182,11 @@ class GlobalService{
 
     public function hydrateEntityWithDocumentPositionText($entity, $filename, $dossier, $documentId, $entreprise = null){
 
+        if(!is_null($documentId)){
+            $modelDocument = $this->em->getRepository(ModelDocument::class)->find($documentId);
+            $entity->setModelDocument($modelDocument);
+        }
+
         if(is_null($entreprise)){
             if($this->session->get('entreprise_session_id'))
                 $entreprise = $this->entrepriseRepository->find($this->session->get('entreprise_session_id'));
