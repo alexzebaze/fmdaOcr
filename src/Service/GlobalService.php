@@ -2190,7 +2190,8 @@ class GlobalService{
         $datas = [];
         $fieldsExtract =  $this->em->getRepository(IAZone::class)->findBy(['document'=> $documentId]);
 
-        dd([$fieldsExtract, $documentId]);
+        if($dossier == "paie")
+            dd([$fieldsExtract, $documentId]);
 
         $tabFieldFound = [];
         foreach ($fieldsExtract as $value) {
