@@ -806,8 +806,10 @@ class GlobalService{
         }
 
         $resultIa = $this->getResultIaLaunch($lastOcrFile, $dossier, $dirLandingImg, $entreprise);
-
-        dd($resultIa);
+        
+        if($dossier == "paie"){
+            dd($resultIa);
+        }
 
         if(is_null($resultIa)){
             return null;
@@ -1026,20 +1028,23 @@ class GlobalService{
                 break;
         }
 
-        $landingFilejpgSaved = $this->convertPdfToImage2($path, $newFilename, $imagenameSaved);
 
-        // TODO SEND FILE (Sauvegarde du doc jpg dans le dossier du module)
-        if($landingFilejpgSaved != ""){
+        if($value->getDossier() != "paie"){
+            $landingFilejpgSaved = $this->convertPdfToImage2($path, $newFilename, $imagenameSaved);
 
+            // TODO SEND FILE (Sauvegarde du doc jpg dans le dossier du module)
+            if($landingFilejpgSaved != ""){
+
+            }
+
+            $entity->setIsConvert(true); 
+
+            $isRotation = $this->saveOcrScan($path, $imagenameSaved, $value->getDossier(), false, $entreprise)['isRotation'];
+            
+            $entity->setExecute(true); 
+
+            $this->em->flush();
         }
-
-        $entity->setIsConvert(true); 
-
-        $isRotation = $this->saveOcrScan($path, $imagenameSaved, $value->getDossier(), false, $entreprise)['isRotation'];
-        
-        $entity->setExecute(true); 
-
-        $this->em->flush(); 
 
         $dirLandingImg = $this->params->get('kernel.project_dir') . "/public/".$path.$imagenameSaved;
 
