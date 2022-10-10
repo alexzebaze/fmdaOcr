@@ -807,6 +807,8 @@ class GlobalService{
 
         $resultIa = $this->getResultIaLaunch($lastOcrFile, $dossier, $dirLandingImg, $entreprise);
 
+        dd($resultIa);
+
         if(is_null($resultIa)){
             return null;
         }
@@ -2189,9 +2191,6 @@ class GlobalService{
 
         $datas = [];
         $fieldsExtract =  $this->em->getRepository(IAZone::class)->findBy(['document'=> $documentId]);
-
-        if($dossier == "paie")
-            dd([$fieldsExtract, $documentId]);
 
         $tabFieldFound = [];
         foreach ($fieldsExtract as $value) {
