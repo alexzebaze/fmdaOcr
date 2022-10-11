@@ -747,8 +747,9 @@ class GlobalService{
                 $value = explode(" ", $value);
                 $value = array_unique($value);
                 $value = implode(" ", $value);
-                $value = str_replace("période : ", "", strtolower($value));
-                $value = str_replace(":", "", $value);
+                $value = str_replace("période", "", strtolower($value));
+                $value = str_replace(":", "", strtolower($value));
+                $value = str_replace("  ", "", $value);
                 $entity->setDatePaie($value);
                 break;
             default:
