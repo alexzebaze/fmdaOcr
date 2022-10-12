@@ -2141,7 +2141,9 @@ class GlobalService{
     public function getResultIaLaunch($imgname, $dossier, $dirLandingImg, $entreprise = null){
 
         $tmpOcrFirst = $this->em->getRepository(TmpOcr::class)->getByParam($dossier, $imgname, "ASC", "LINE", 50, $entreprise->getId());
-        $tmpOcrLast = $this->em->getRepository(TmpOcr::class)->getByParam($dossier, $imgname, "DESC", "LINE", 50, $entreprise->getId());
+        
+        $tmpOcrLast = [];
+        //$tmpOcrLast = $this->em->getRepository(TmpOcr::class)->getByParam($dossier, $imgname, "DESC", "LINE", 50, $entreprise->getId());
 
         $tmpOcr = array_unique(array_merge($tmpOcrLast, $tmpOcrFirst), SORT_REGULAR);
 
