@@ -750,7 +750,7 @@ class GlobalService{
                 $value = str_replace("période", "", strtolower($value));
                 $value = str_replace(":", "", strtolower($value));
                 $value = str_replace("  ", "", $value);
-                $entity->setDatePaie($value);
+                $entity->setDatePaie(ucfirst($value));
                 break;
             default:
                 break;
