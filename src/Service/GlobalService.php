@@ -641,8 +641,10 @@ class GlobalService{
         $type = $fieldPrefence->getType();
         switch ($field) {
             case 'document_id':
+                $value = str_replace("*", "", strtolower($value));
                 $value = str_replace("n°", "", strtolower($value));
                 $value = str_replace("du", "", strtolower($value));
+                $value = str_replace("numéro", "", strtolower($value));
                 $value = str_replace("numéro", "", strtolower($value));
                 $value = trim($value, " ");
 
@@ -1123,6 +1125,7 @@ class GlobalService{
 
         $newText = $this->getNewTextByPostion($left, $top, $width, $height, $dossier, $lastOcrFile);
         
+        $newText = str_replace("*", "", strtolower($newText));
         $newText = str_replace("n°", "", strtolower($newText));
         $newText = str_replace("du", "", strtolower($newText));
         $newText = str_replace("numéro", "", strtolower($newText));
@@ -2567,6 +2570,7 @@ class GlobalService{
 
                     $text = $this->getNewTextByPostion($tabPosition[0], $tabPosition[1], $tabPosition[2], $tabPosition[3], $dossier, $filename);
                     if($text != ""){
+                        $text = str_replace("*", "", strtolower($text));
                         $text = str_replace("n°", "", strtolower($text));
                         $text = str_replace("du", "", strtolower($text));
                         $text = str_replace("numéro", "", strtolower($text));
@@ -2592,6 +2596,7 @@ class GlobalService{
 
                     $text = $this->getNewTextByPostion($tabPosition[0], $tabPosition[1], $tabPosition[2], $tabPosition[3], $dossier, $filename);
                     if($text != ""){
+                        $text = str_replace("*", "", strtolower($text));
                         $text = str_replace("n°", "", strtolower($text));
                         $text = str_replace("du", "", strtolower($text));
                         $text = str_replace("numéro", "", strtolower($text));
