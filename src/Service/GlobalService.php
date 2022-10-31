@@ -1759,8 +1759,8 @@ class GlobalService{
                 }
                 else{
                     $resultSummaryFields = array_values((array) $resultSummaryFields);
-                    
-                    dd([$resultSummaryFields, $resultSummaryFields["ExpenseDocuments"][0]['SummaryFields']]);
+
+                    dd([$resultSummaryFields]);
 
                     if(count($resultSummaryFields) > 0 && array_key_exists("ExpenseDocuments", $resultSummaryFields[0])){
                         $resultSummaryFields = $resultSummaryFields[0];
