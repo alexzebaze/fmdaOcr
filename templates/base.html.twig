@@ -310,7 +310,7 @@
                             <span class="caret"></span>
                             </button>
                             <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
-                                {% if app.user.role == "administrateur" %}
+                                {% if app.user is not null and app.user.role == "administrateur" %}
                                     <li>
                                         {% if app.session.get('entreprise_session_id') %}
                                             <a href="javascript:void()" class="openEntrepriseModal">
