@@ -225,6 +225,12 @@ class Fournisseurs implements JsonSerializable
      */
     private $documentIdPosition;
     
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $documentIdPositionFacture;
+
+
     public function __construct()
     {
         $this->facturations = new ArrayCollection();
@@ -773,5 +779,17 @@ class Fournisseurs implements JsonSerializable
             'id' => $this->id,
             'nom'=> $this->nom
         );
+    }
+
+    public function getDocumentIdPositionFacture(): ?string
+    {
+        return $this->documentIdPositionFacture;
+    }
+
+    public function setDocumentIdPositionFacture(?string $documentIdPositionFacture): self
+    {
+        $this->documentIdPositionFacture = $documentIdPositionFacture;
+
+        return $this;
     }
 }

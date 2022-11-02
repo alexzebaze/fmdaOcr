@@ -2567,7 +2567,12 @@ class GlobalService{
         if(method_exists($entity, 'getFournisseur')){
             $fournisseur =  $entity->getFournisseur();
             if($fournisseur){
-                $documentIdPosition = $fournisseur->getDocumentIdPosition();
+                
+                if($dossier == "bon_livraison")
+                    $documentIdPosition = $fournisseur->getDocumentIdPosition();
+                elseif($dossier == "facturation")
+                    $documentIdPosition = $fournisseur->getDocumentIdPositionFacture();
+
                 if($documentIdPosition != "" && count(explode('-', $documentIdPosition)) == 4){
 
                     $tabPosition = explode("-", $documentIdPosition);
