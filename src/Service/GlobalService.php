@@ -2560,6 +2560,10 @@ class GlobalService{
 
 
         //Exception pour le champ document_id qui systematiquement recurere la position à partir du fournisseur
+
+        if($entity->getDocumentId() != "")
+            $entity->setDocumentIdSource(2);
+
         if(method_exists($entity, 'getFournisseur')){
             $fournisseur =  $entity->getFournisseur();
             if($fournisseur){
@@ -2580,6 +2584,7 @@ class GlobalService{
                         $text = array_unique($text);
                         $text = implode(" ", $text);
                         $entity->setDocumentId($text);
+                        $entity->setDocumentIdSource(1);
                     }
                 }
             }

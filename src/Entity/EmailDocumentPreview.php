@@ -202,6 +202,10 @@ class EmailDocumentPreview
      */
     private $modelDocument;
 
+    /**
+     * @ORM\Column(type="integer", nullable=true)
+     */
+    private $documentIdSource;
 
     public function __construct()
     {
@@ -636,4 +640,16 @@ class EmailDocumentPreview
         return $this;
     }
 
+    public function getDocumentIdSource(): ?int
+    {
+        return $this->documentIdSource;
+    }
+
+    public function setDocumentIdSource(?int $documentIdSource): self
+    {
+        $this->documentIdSource = $documentIdSource;
+
+        return $this;
+    }
+    
 }
