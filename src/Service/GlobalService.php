@@ -1110,6 +1110,7 @@ class GlobalService{
 
             //$this->em->getRepository(TmpOcr::class)->removesAll($document->getDossier(), $imagename);
         }
+
         $this->em->flush(); 
 
         return 1;
@@ -2701,7 +2702,7 @@ class GlobalService{
                 foreach ($groupTotal as $value) {
                     $labelVal = explode('_', $value);
                     foreach ($this->TAB_TOTAL_HT_TEXT() as $ttText) {
-                        if(count($labelVal) > 0 && strpos(strtoupper($labelVal[1]), strtoupper($ttText)) !== false){
+                        if(count($labelVal) > 0 && strpos(strtoupper($this->stripAccents($labelVal[1])), strtoupper($ttText)) !== false){
                             return $this->correctFloatValue($labelVal[0]);
                         } 
                     }
@@ -2719,7 +2720,7 @@ class GlobalService{
                 foreach ($groupTotal as $value) {
                     $labelVal = explode('_', $value);
                     foreach ($this->TAB_TOTAL_TTC_TEXT() as $ttText) {
-                        if(count($labelVal) > 0 && strpos(strtoupper($labelVal[1]), strtoupper($ttText)) !== false ){
+                        if(count($labelVal) > 0 && strpos(strtoupper($this->stripAccents($labelVal[1])), strtoupper($ttText)) !== false ){
                             return $this->correctFloatValue($labelVal[0]);
                         }     
                     }               
