@@ -1726,6 +1726,7 @@ class GlobalService{
             list($landimgWidth, $landimgHeight) = getimagesize($dirLandingImg.$filename);
 
             $itemPage = 0; $isTotalHtFound = false; $isTotalTtcFound = false;
+            $dd = [];
             foreach ($files as $value) {
 
                 list($imgWidth, $imgHeight) = getimagesize($dir.$value);
@@ -1763,6 +1764,7 @@ class GlobalService{
 
                 $Blocks = $result['Blocks'];
 
+                $dd[] = $resultSummaryFields;
                 //dd($resultSummaryFields);
 
                 if(array_key_exists("ExpenseDocuments", $resultSummaryFields)){
@@ -1835,6 +1837,8 @@ class GlobalService{
 
                 $itemPage++;
             }
+
+            dd($dd);
 
             // if(count($tabTotalHtText) > 0)
             //     $field->setTotalHtList(implode('#', $tabTotalHtText));
