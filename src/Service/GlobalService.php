@@ -2679,7 +2679,7 @@ class GlobalService{
                     (strpos(strtoupper($value['LabelDetection']['Text']), "HT") !== false) || 
                     (strpos(strtoupper($this->stripAccents($value['LabelDetection']['Text'])), "H.T") !== false)) ){
 
-                if(strpos(strtoupper($value['ValueDetection']['Text']), "MONTANT") !== false)
+                if(strpos(strtoupper($value['ValueDetection']['Text']), "MONTANT") === false)
                     $tabText[] = $value['ValueDetection']['Text']."_".$value['LabelDetection']['Text'];
             }
         }
@@ -2697,7 +2697,7 @@ class GlobalService{
                     (strpos(strtoupper($value['LabelDetection']['Text']), "T.T.C") !== false) ||
                     (strpos(strtoupper($this->stripAccents($value['LabelDetection']['Text'])), "A PAYER") !== false) ) ){
 
-                if(strpos(strtoupper($value['ValueDetection']['Text']), "MONTANT") !== false)
+                if(strpos(strtoupper($value['ValueDetection']['Text']), "MONTANT") === false)
                     $tabText[] = $value['ValueDetection']['Text']."_".$value['LabelDetection']['Text'];
             }
         }
