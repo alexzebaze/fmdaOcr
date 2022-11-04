@@ -1140,7 +1140,7 @@ class GlobalService{
         if($request->request->get('fieldname') == "cout_global" || $request->request->get('fieldname') == "salaire_net"){
             $newText = round((float)$newText, 2);
         }
-        
+
         $datas = [];
         $listFields = $this->getListEntityField();
         if(in_array($fieldname, $listFields)){
@@ -2675,8 +2675,12 @@ class GlobalService{
         $tabText = [];
         foreach ($summaryFields as $value) {
             if( array_key_exists('LabelDetection', $value) && 
-                ( (strpos(strtoupper($value['LabelDetection']['Text']), "TOTAL") !== false) || (strpos(strtoupper($value['LabelDetection']['Text']), "HT") !== false) || (strpos(strtoupper($value['LabelDetection']['Text']), "H.T") !== false)) ){
-                $tabText[] = $value['ValueDetection']['Text']."_".$value['LabelDetection']['Text'];
+                ( (strpos(strtoupper($value['LabelDetection']['Text']), "TOTAL") !== false) || 
+                    (strpos(strtoupper($value['LabelDetection']['Text']), "HT") !== false) || 
+                    (strpos(strtoupper($this->stripAccents($value['LabelDetection']['Text'])), "H.T") !== false)) ){
+
+                if(strpos(strtoupper($value['ValueDetection']['Text']), "MONTANT") !== false)
+                    $tabText[] = $value['ValueDetection']['Text']."_".$value['LabelDetection']['Text'];
             }
         }
 
@@ -2687,18 +2691,14 @@ class GlobalService{
 
         $tabText = [];
         foreach ($summaryFields as $value) {
-            // foreach ($this->TAB_TOTAL_TTC_TEXT() as $val) {
-            //     if( array_key_exists('LabelDetection', $value) && strpos(strtoupper($value['LabelDetection']['Text']), strtoupper($val) !== false) ){
-            //         $tabText[] = $value['ValueDetection']['Text']."_".$value['LabelDetection']['Text'];
-            //         break;
-            //     }
-            // }
             if( array_key_exists('LabelDetection', $value) && 
                 ( (strpos(strtoupper($value['LabelDetection']['Text']), "TOTAL") !== false) || 
                     (strpos(strtoupper($value['LabelDetection']['Text']), "TTC") !== false) || 
                     (strpos(strtoupper($value['LabelDetection']['Text']), "T.T.C") !== false) ||
-                    (strpos(strtoupper($value['LabelDetection']['Text']), "A PAYER") !== false) ) ){
-                $tabText[] = $value['ValueDetection']['Text']."_".$value['LabelDetection']['Text'];
+                    (strpos(strtoupper($this->stripAccents($value['LabelDetection']['Text'])), "A PAYER") !== false) ) ){
+
+                if(strpos(strtoupper($value['ValueDetection']['Text']), "MONTANT") !== false)
+                    $tabText[] = $value['ValueDetection']['Text']."_".$value['LabelDetection']['Text'];
             }
         }
 
