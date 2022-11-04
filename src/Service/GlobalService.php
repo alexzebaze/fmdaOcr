@@ -2674,7 +2674,7 @@ class GlobalService{
     public function buildTotalHtIfExist($summaryFields){
         $tabText = [];
         for ($i=count($summaryFields)-1 ; $i >=0 ; $i--) { 
-            $value = $summaryFields[$i]
+            $value = $summaryFields[$i];
 
             if( array_key_exists('LabelDetection', $value) && 
                 ( (strpos(strtoupper($value['LabelDetection']['Text']), "TOTAL") !== false) || 
@@ -2693,7 +2693,7 @@ class GlobalService{
 
         $tabText = [];
         for ($i=count($summaryFields)-1 ; $i >=0 ; $i--) { 
-            $value = $summaryFields[$i]
+            $value = $summaryFields[$i];
 
             if( array_key_exists('LabelDetection', $value) && 
                 ( (strpos(strtoupper($value['LabelDetection']['Text']), "TOTAL") !== false) || 
