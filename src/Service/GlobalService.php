@@ -1140,7 +1140,7 @@ class GlobalService{
         if($request->request->get('fieldname') == "cout_global" || $request->request->get('fieldname') == "salaire_net"){
             $newText = round((float)$newText, 2);
         }
-        
+
         $datas = [];
         $listFields = $this->getListEntityField();
         if(in_array($fieldname, $listFields)){
@@ -1726,6 +1726,8 @@ class GlobalService{
             list($landimgWidth, $landimgHeight) = getimagesize($dirLandingImg.$filename);
 
             $itemPage = 0; $isTotalHtFound = false; $isTotalTtcFound = false;
+
+            $dd = [];
             foreach ($files as $value) {
 
                 list($imgWidth, $imgHeight) = getimagesize($dir.$value);
@@ -1762,6 +1764,8 @@ class GlobalService{
                 ]);
 
                 $Blocks = $result['Blocks'];
+
+                $dd[] = $resultSummaryFields;
 
                 //dd($resultSummaryFields);
 
@@ -1831,10 +1835,14 @@ class GlobalService{
                     $this->em->persist($field);
                 }
 
+
+
                 $this->em->flush();
 
                 $itemPage++;
             }
+
+            dd($dd);
 
             // if(count($tabTotalHtText) > 0)
             //     $field->setTotalHtList(implode('#', $tabTotalHtText));
