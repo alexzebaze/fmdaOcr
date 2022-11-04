@@ -1132,6 +1132,15 @@ class GlobalService{
         $newText = str_replace("numéro", "", strtolower($newText));
         $newText = trim($newText, " ");
 
+        if($request->request->get('fieldname') == "date_paie" || $request->request->get('fieldname') == "document_id" || $request->request->get('fieldname') == "facturedAt"){
+            $newText = explode(" ", $newText);
+            $newText = array_unique($newText);
+            $newText = implode(" ", $newText);
+        }
+        if($request->request->get('fieldname') == "cout_global" || $request->request->get('fieldname') == "salaire_net"){
+            $newText = round((float)$newText, 2);
+        }
+        
         $datas = [];
         $listFields = $this->getListEntityField();
         if(in_array($fieldname, $listFields)){
