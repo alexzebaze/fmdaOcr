@@ -2673,7 +2673,7 @@ class GlobalService{
 
     public function buildTotalHtIfExist($summaryFields){
         $tabText = [];
-        for ($i=count($summaryFields-1) ; $i >=0 ; $i--) { 
+        for ($i=count($summaryFields)-1 ; $i >=0 ; $i--) { 
             $value = $summaryFields[$i]
 
             if( array_key_exists('LabelDetection', $value) && 
@@ -2692,9 +2692,9 @@ class GlobalService{
     public function buildTotalTTCIfExist($summaryFields){
 
         $tabText = [];
-        for ($i=count($summaryFields-1) ; $i >=0 ; $i--) { 
+        for ($i=count($summaryFields)-1 ; $i >=0 ; $i--) { 
             $value = $summaryFields[$i]
-            
+
             if( array_key_exists('LabelDetection', $value) && 
                 ( (strpos(strtoupper($value['LabelDetection']['Text']), "TOTAL") !== false) || 
                     (strpos(strtoupper($value['LabelDetection']['Text']), "TTC") !== false) || 
