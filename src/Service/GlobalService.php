@@ -1754,6 +1754,8 @@ class GlobalService{
 
                 $Blocks = $result['Blocks'];
 
+                dd($resultSummaryFields);
+                
                 if(array_key_exists("ExpenseDocuments", $resultSummaryFields)){
                     if(count($resultSummaryFields['ExpenseDocuments']) > 0)
                         $summaryFields = $resultSummaryFields["ExpenseDocuments"][0]['SummaryFields'];
@@ -2465,6 +2467,7 @@ class GlobalService{
         if(method_exists($entity, 'getPrixht')){
             $dividende = ((float)$entity->getPrixht() != 0) ? $entity->getPrixht() : 1 ;
             $tva = ( ((float)$entity->getPrixttc() - (float)$entity->getPrixht()) / $dividende )*100;
+            $tva = round($tva, 2);
             $partE = (int)$tva;
             $partD = $tva - $partE;
 
