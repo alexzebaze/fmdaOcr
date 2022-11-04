@@ -1726,7 +1726,7 @@ class GlobalService{
             list($landimgWidth, $landimgHeight) = getimagesize($dirLandingImg.$filename);
 
             $itemPage = 0; $isTotalHtFound = false; $isTotalTtcFound = false;
-            
+
             foreach ($files as $value) {
 
                 list($imgWidth, $imgHeight) = getimagesize($dir.$value);
@@ -2684,7 +2684,7 @@ class GlobalService{
 
                 if(strpos(strtoupper($value['ValueDetection']['Text']), "MONTANT") === false && 
                     strpos(strtoupper($value['LabelDetection']['Text']), "MONTANT TVA") === false && 
-                    strpos(strtoupper($value['LabelDetection']['Text']), "SOUS-TOTAL") === false && 
+                    strpos(strtoupper($value['LabelDetection']['Text']), "SOUS") === false && 
                     $value['ValueDetection']['Text'] != ""){
                     $tabText[] = $value['ValueDetection']['Text']."_".$value['LabelDetection']['Text'];
                 }
@@ -2708,7 +2708,7 @@ class GlobalService{
 
                 if(strpos(strtoupper($value['ValueDetection']['Text']), "MONTANT") === false && 
                     strpos(strtoupper($value['LabelDetection']['Text']), "MONTANT TVA") === false && 
-                    strpos(strtoupper($value['LabelDetection']['Text']), "SOUS-TOTAL") === false &&
+                    strpos(strtoupper($value['LabelDetection']['Text']), "SOUS") === false &&
                     $value['ValueDetection']['Text'] != ""){
                     $tabText[] = $value['ValueDetection']['Text']."_".$value['LabelDetection']['Text'];
                 }
