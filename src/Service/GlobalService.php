@@ -1754,8 +1754,8 @@ class GlobalService{
 
                 $Blocks = $result['Blocks'];
 
-                dd($resultSummaryFields);
-                
+                //dd($resultSummaryFields);
+
                 if(array_key_exists("ExpenseDocuments", $resultSummaryFields)){
                     if(count($resultSummaryFields['ExpenseDocuments']) > 0)
                         $summaryFields = $resultSummaryFields["ExpenseDocuments"][0]['SummaryFields'];
