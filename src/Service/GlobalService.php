@@ -2647,7 +2647,7 @@ class GlobalService{
             $dossier=>$entity,
             'fournisseurfound'=>$fournisseurfound,
             'chantierfound'=>$chantierfound,
-            'tvaVal'=>round($tvaVal,2)."%",
+            'tvaVal'=>round($tvaVal,2),
             'oldDate'=>$oldDate,
             'color'=>$color,
             'clientfound'=>$clientfound,
