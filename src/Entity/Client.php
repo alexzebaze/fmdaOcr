@@ -186,6 +186,12 @@ class Client implements JsonSerializable
      */
     private $documentIdPosition;
 
+
+    /**
+     * @ORM\Column(type="string", length=255)
+     */
+    private $documentIdPositionFacture;
+
     public function __construct()
     {
         $this->display = true;
@@ -674,5 +680,19 @@ class Client implements JsonSerializable
             'nom'=> $this->nom
         );
     }
+
+
+    public function getDocumentIdPositionFacture(): ?string
+    {
+        return $this->documentIdPositionFacture;
+    }
+
+    public function setDocumentIdPositionFacture(string $documentIdPositionFacture): self
+    {
+        $this->documentIdPositionFacture = $documentIdPositionFacture;
+
+        return $this;
+    }
+
 
 }
