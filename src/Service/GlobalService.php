@@ -2319,6 +2319,7 @@ class GlobalService{
                         if(strlen($nom) >= 4){
                             $entityfound = $this->em->getRepository(OcrField::class)->getByNameAlpnClient($dossier, $entreprise->getId(), $filename, $nom, $firstEltDocument['id'], "", 30);
 
+                            dd([$entityfound, $nom]);
                             if(count($entityfound) > 0){
                                 if(array_search($value->getId(), array_column($clientfound, 'id')) === false) {
                                     $clientfound[$priority][] = ['id'=>$value->getId(), 'nom'=>$value->getNom()];
