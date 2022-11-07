@@ -2638,6 +2638,8 @@ class GlobalService{
                         $text = array_unique($text);
                         $text = implode(" ", $text);
                         $entity->setDocumentId($text);
+
+                        $entity->setDocumentIdSource(1);
                     }
                 }
             }
