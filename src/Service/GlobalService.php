@@ -2580,6 +2580,7 @@ class GlobalService{
             $fournisseur =  $entity->getFournisseur();
             if($fournisseur){
                 
+                $documentIdPosition = "";
                 if($dossier == "bon_livraison")
                     $documentIdPosition = $fournisseur->getDocumentIdPosition();
                 elseif($dossier == "facturation")
@@ -2611,7 +2612,13 @@ class GlobalService{
         if(method_exists($entity, 'getClient')){
             $client =  $entity->getClient();
             if($client){
-                $documentIdPosition = $client->getDocumentIdPosition();
+
+                $documentIdPosition = "";
+                if($dossier == "bon_livraison")
+                    $documentIdPosition = $client->getDocumentIdPosition();
+                elseif($dossier == "facturation")
+                    $documentIdPosition = $client->getDocumentIdPositionFacture();
+
                 if($documentIdPosition != "" && count(explode('-', $documentIdPosition)) == 4){
 
                     $tabPosition = explode("-", $documentIdPosition);
