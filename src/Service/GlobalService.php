@@ -2614,6 +2614,7 @@ class GlobalService{
         //Exception pour le champ document_id qui systematiquement recurere la position à partir du client
         if(method_exists($entity, 'getClient')){
             $client =  $entity->getClient();
+            dd($client);
             if($client){
 
                 $documentIdPosition = "";
