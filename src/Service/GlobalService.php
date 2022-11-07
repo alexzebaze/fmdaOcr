@@ -2614,7 +2614,6 @@ class GlobalService{
         //Exception pour le champ document_id qui systematiquement recurere la position à partir du client
         if(method_exists($entity, 'getClient')){
             $client =  $entity->getClient();
-            dd($client);
             if($client){
 
                 $documentIdPosition = "";
@@ -2623,14 +2622,11 @@ class GlobalService{
                 elseif($dossier == "devis_client")
                     $documentIdPosition = $client->getDocumentIdPositionFacture();
 
-                dd($documentIdPosition);
                 if($documentIdPosition != "" && count(explode('-', $documentIdPosition)) == 4){
 
                     $tabPosition = explode("-", $documentIdPosition);
 
                     $text = $this->getNewTextByPostion($tabPosition[0], $tabPosition[1], $tabPosition[2], $tabPosition[3], $dossier, $filename);
-                    dd([$text, $tabPosition]);
-
                     if($text != ""){
                         $text = str_replace("*", "", strtolower($text));
                         $text = str_replace("n°", "", strtolower($text));
