@@ -1046,7 +1046,11 @@ class GlobalService{
 
         $dirLandingImg = $this->params->get('kernel.project_dir') . "/public/".$path.$imagenameSaved;
 
+        try{
             $datasResult = $this->lancerIa($imagenameSaved, $value, $value->getDossier(), $dirLandingImg, $entreprise);
+        } catch (\Exception $e) {
+            throw new \Exception("Probleme rencontré lors du lancement de l'IA", 1);   
+        }
         
 
         if(!is_null($datasResult))
@@ -2316,7 +2320,6 @@ class GlobalService{
                         if(strlen($nom) >= 4){
                             $entityfound = $this->em->getRepository(OcrField::class)->getByNameAlpnClient($dossier, $entreprise->getId(), $filename, $nom, $firstEltDocument['id'], "", 30);
 
-                            dd([$entityfound, $nom, $firstEltDocument]);
                             if(count($entityfound) > 0){
                                 if(array_search($value->getId(), array_column($clientfound, 'id')) === false) {
                                     $clientfound[$priority][] = ['id'=>$value->getId(), 'nom'=>$value->getNom()];
