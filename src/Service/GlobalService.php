@@ -2617,9 +2617,9 @@ class GlobalService{
             if($client){
 
                 $documentIdPosition = "";
-                if($dossier == "bon_livraison")
+                if($dossier == "facture_client")
                     $documentIdPosition = $client->getDocumentIdPosition();
-                elseif($dossier == "facturation")
+                elseif($dossier == "devis_client")
                     $documentIdPosition = $client->getDocumentIdPositionFacture();
 
                 if($documentIdPosition != "" && count(explode('-', $documentIdPosition)) == 4){
