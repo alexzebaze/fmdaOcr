@@ -2613,15 +2613,14 @@ class GlobalService{
         }
         
         //Exception pour le champ document_id qui systematiquement recurere la position à partir du client
-        if(method_exists($entity, 'getClient')){
-
+            
+        if($dossier == "facture_client"){
             $documentIdPosition = "";
-            if($dossier == "facture_client"){
-                $metaConfig =  $this->em->getRepository(MetaConfig::class)->findOneBy(['mkey'=>"document_id_position_facture", 'entreprise'=>$entity->getEntreprise()]);
 
-                if(!is_null($metaConfig))
-                    $documentIdPosition = $metaConfig->getValue();
-            }
+            $metaConfig =  $this->em->getRepository(MetaConfig::class)->findOneBy(['mkey'=>"document_id_position_facture", 'entreprise'=>$entity->getEntreprise()]);
+
+            if(!is_null($metaConfig))
+                $documentIdPosition = $metaConfig->getValue();
 
             if(!is_null($documentIdPosition) && $documentIdPosition != "" && count(explode('-', $documentIdPosition)) == 4){
 
@@ -2644,7 +2643,8 @@ class GlobalService{
                 }
             }
         }
-        
+
+                
         return [
             $dossier=>$entity,
             'fournisseurfound'=>$fournisseurfound,
