@@ -2642,8 +2642,6 @@ class GlobalService{
                     $entity->setDocumentIdSource(1);
                 }
             }
-
-            dd([$metaConfig, $documentIdPosition]);
         }
 
                 
