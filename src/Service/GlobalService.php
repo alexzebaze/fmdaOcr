@@ -25,6 +25,7 @@ use App\Entity\Fields;
 use App\Entity\Fournisseurs;
 use App\Entity\FieldsEntreprise;
 use App\Entity\Page;
+use App\Entity\MetaConfig;
 use App\Entity\EmailDocumentPreview;
 use App\Entity\Client;
 use App\Entity\Tva;
@@ -2613,34 +2614,33 @@ class GlobalService{
         
         //Exception pour le champ document_id qui systematiquement recurere la position à partir du client
         if(method_exists($entity, 'getClient')){
-            $client =  $entity->getClient();
-            if($client){
 
-                $documentIdPosition = "";
-                if($dossier == "facture_client")
-                    $documentIdPosition = $client->getDocumentIdPosition();
-                elseif($dossier == "devis_client")
-                    $documentIdPosition = $client->getDocumentIdPositionFacture();
+            $documentIdPosition = "";
+            if($dossier == "facture_client"){
+                $metaConfig =  $this->em->getRepository(MetaConfig::class)->findOneBy(['mkey'=>"document_id_position_facture", 'entreprise'=>$entity->getEntreprise()]);
 
-                if($documentIdPosition != "" && count(explode('-', $documentIdPosition)) == 4){
+                if(!is_null($metaConfig))
+                    $documentIdPosition = $metaConfig->getValue();
+            }
 
-                    $tabPosition = explode("-", $documentIdPosition);
+            if(!is_null($documentIdPosition) && $documentIdPosition != "" && count(explode('-', $documentIdPosition)) == 4){
 
-                    $text = $this->getNewTextByPostion($tabPosition[0], $tabPosition[1], $tabPosition[2], $tabPosition[3], $dossier, $filename);
-                    if($text != ""){
-                        $text = str_replace("*", "", strtolower($text));
-                        $text = str_replace("n°", "", strtolower($text));
-                        $text = str_replace("du", "", strtolower($text));
-                        $text = str_replace("numéro", "", strtolower($text));
-                        $text = trim($text, " ");
+                $tabPosition = explode("-", $documentIdPosition);
 
-                        $text = explode(" ", $text);
-                        $text = array_unique($text);
-                        $text = implode(" ", $text);
-                        $entity->setDocumentId($text);
+                $text = $this->getNewTextByPostion($tabPosition[0], $tabPosition[1], $tabPosition[2], $tabPosition[3], $dossier, $filename);
+                if($text != ""){
+                    $text = str_replace("*", "", strtolower($text));
+                    $text = str_replace("n°", "", strtolower($text));
+                    $text = str_replace("du", "", strtolower($text));
+                    $text = str_replace("numéro", "", strtolower($text));
+                    $text = trim($text, " ");
 
-                        $entity->setDocumentIdSource(1);
-                    }
+                    $text = explode(" ", $text);
+                    $text = array_unique($text);
+                    $text = implode(" ", $text);
+                    $entity->setDocumentId($text);
+
+                    $entity->setDocumentIdSource(1);
                 }
             }
         }
