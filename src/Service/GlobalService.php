@@ -2626,7 +2626,7 @@ class GlobalService{
                     $countNbChiffre = $this->find_num_of_integers(array_values($tabDocumentIdText)[0]);
                     $pos = array_keys($tabDocumentIdText)[0];
                 }
-
+                
                 foreach ($tabDocumentIdText as $keyPos => $valueText) {
                     $newCountNbChiffre = $this->find_num_of_integers($valueText);
                     if($newCountNbChiffre > $countNbChiffre){
