@@ -2584,30 +2584,62 @@ class GlobalService{
             $fournisseur =  $entity->getFournisseur();
             if($fournisseur){
                 
-                $documentIdPosition = "";
-                if($dossier == "bon_livraison")
-                    $documentIdPosition = $fournisseur->getDocumentIdPosition();
-                elseif($dossier == "facturation")
-                    $documentIdPosition = $fournisseur->getDocumentIdPositionFacture();
+                $tabDocumentIdPosition = [];
+                if($dossier == "bon_livraison"){
+                    $tabDocumentIdPosition[] = $fournisseur->getDocumentIdPosition();
+                    $tabDocumentIdPosition[] = $fournisseur->getDocumentIdPosition2();
+                    $tabDocumentIdPosition[] = $fournisseur->getDocumentIdPosition3();
+                }
+                elseif($dossier == "facturation"){
+                    $tabDocumentIdPosition[] = $fournisseur->getDocumentIdPositionFacture();
+                    $tabDocumentIdPosition[] = $fournisseur->getDocumentIdPositionFacture2();
+                    $tabDocumentIdPosition[] = $fournisseur->getDocumentIdPositionFacture3();
+                }
 
-                if($documentIdPosition != "" && count(explode('-', $documentIdPosition)) == 4){
+                $tabDocumentIdText = [];
+                foreach ($tabDocumentIdPosition as $valuePos) {
+                
+                    if($valuePos != "" && count(explode('-', $valuePos)) == 4){
 
-                    $tabPosition = explode("-", $documentIdPosition);
+                        $tabPosition = explode("-", $valuePos);
 
-                    $text = $this->getNewTextByPostion($tabPosition[0], $tabPosition[1], $tabPosition[2], $tabPosition[3], $dossier, $filename);
-                    if($text != ""){
-                        $text = str_replace("*", "", strtolower($text));
-                        $text = str_replace("n°", "", strtolower($text));
-                        $text = str_replace("du", "", strtolower($text));
-                        $text = str_replace("numéro", "", strtolower($text));
-                        $text = trim($text, " ");
+                        $text = $this->getNewTextByPostion($tabPosition[0], $tabPosition[1], $tabPosition[2], $tabPosition[3], $dossier, $filename);
+                        if($text != ""){
+                            $text = str_replace("*", "", strtolower($text));
+                            $text = str_replace("n°", "", strtolower($text));
+                            $text = str_replace("du", "", strtolower($text));
+                            $text = str_replace("numéro", "", strtolower($text));
+                            $text = trim($text, " ");
 
-                        $text = explode(" ", $text);
-                        $text = array_unique($text);
-                        $text = implode(" ", $text);
-                        $entity->setDocumentId($text);
-                        $entity->setDocumentIdSource(1);
+                            $text = explode(" ", $text);
+                            $text = array_unique($text);
+                            $text = implode(" ", $text);
+
+                            $tabDocumentIdText[$valuePos] = $text;
+                        }
                     }
+                }
+
+                $text = ""; $pos = "";
+                if(count($tabDocumentIdText) > 0){
+                    $text = array_values($tabDocumentIdText)[0];
+                    $countNbChiffre = $this->find_num_of_integers(array_values($tabDocumentIdText)[0]);
+                    $pos = array_keys($tabDocumentIdText)[0];
+                }
+
+                foreach ($tabDocumentIdText as $keyPos => $valueText) {
+                    $newCountNbChiffre = $this->find_num_of_integers($valueText);
+                    if($newCountNbChiffre > $countNbChiffre){
+                        $text = $valueText;
+                        $countNbChiffre = $newCountNbChiffre;
+                        $pos = $keyPos;
+                    }
+                }
+
+                if($text != ""){
+                    $entity->setDocumentId($text);
+                    $entity->setDocumentIdPosition($pos);
+                    $entity->setDocumentIdSource(1);
                 }
             }
         }
@@ -2655,6 +2687,21 @@ class GlobalService{
             'clientfound'=>$clientfound,
             'userfound'=>$userfound
         ];
+    }
+
+
+    public function find_num_of_integers($string) {
+        //split the strings
+        $chars = str_split($string);
+        $count = 0;
+        foreach($chars as $char) {
+            //check if the character is a number
+            if (is_numeric($char)) {
+                //increment the count
+                $count++;
+            }
+        }
+        return $count;
     }
 
 

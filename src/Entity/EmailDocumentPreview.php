@@ -207,6 +207,11 @@ class EmailDocumentPreview
      */
     private $documentIdSource;
 
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $documentIdPosition;
+
     public function __construct()
     {
         $this->lu = false;
@@ -651,5 +656,16 @@ class EmailDocumentPreview
 
         return $this;
     }
-    
+   
+    public function getDocumentIdPosition(): ?string
+    {
+        return $this->documentIdPosition;
+    }
+
+    public function setDocumentIdPosition(?string $documentIdPosition): self
+    {
+        $this->documentIdPosition = $documentIdPosition;
+
+        return $this;
+    } 
 }

@@ -230,6 +230,26 @@ class Fournisseurs implements JsonSerializable
      */
     private $documentIdPositionFacture;
 
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $documentIdPositionFacture2;
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $documentIdPositionFacture3;
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $documentIdPosition2;
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $documentIdPosition3;
+
 
     public function __construct()
     {
@@ -789,6 +809,54 @@ class Fournisseurs implements JsonSerializable
     public function setDocumentIdPositionFacture(?string $documentIdPositionFacture): self
     {
         $this->documentIdPositionFacture = $documentIdPositionFacture;
+
+        return $this;
+    }
+
+    public function getDocumentIdPositionFacture2(): ?string
+    {
+        return $this->documentIdPositionFacture2;
+    }
+
+    public function setDocumentIdPositionFacture2(?string $documentIdPositionFacture2): self
+    {
+        $this->documentIdPositionFacture2 = $documentIdPositionFacture2;
+
+        return $this;
+    }
+
+    public function getDocumentIdPositionFacture3(): ?string
+    {
+        return $this->documentIdPositionFacture3;
+    }
+
+    public function setDocumentIdPositionFacture3(?string $documentIdPositionFacture3): self
+    {
+        $this->documentIdPositionFacture3 = $documentIdPositionFacture3;
+
+        return $this;
+    }
+
+    public function getDocumentIdPosition2(): ?string
+    {
+        return $this->documentIdPosition2;
+    }
+
+    public function setDocumentIdPosition2(?string $documentIdPosition2): self
+    {
+        $this->documentIdPosition2 = $documentIdPosition2;
+
+        return $this;
+    }
+
+    public function getDocumentIdPosition3(): ?string
+    {
+        return $this->documentIdPosition3;
+    }
+
+    public function setDocumentIdPosition3(?string $documentIdPosition3): self
+    {
+        $this->documentIdPosition3 = $documentIdPosition3;
 
         return $this;
     }
