@@ -1766,7 +1766,7 @@ class GlobalService{
 
                 $Blocks = $result['Blocks'];
 
-                dd($resultSummaryFields);
+                //dd($resultSummaryFields);
 
                 if(array_key_exists("ExpenseDocuments", $resultSummaryFields)){
                     if(count($resultSummaryFields['ExpenseDocuments']) > 0)
@@ -2626,7 +2626,7 @@ class GlobalService{
                     $countNbChiffre = $this->find_num_of_integers(array_values($tabDocumentIdText)[0]);
                     $pos = array_keys($tabDocumentIdText)[0];
                 }
-
+                
                 foreach ($tabDocumentIdText as $keyPos => $valueText) {
                     $newCountNbChiffre = $this->find_num_of_integers($valueText);
                     if($newCountNbChiffre > $countNbChiffre){
