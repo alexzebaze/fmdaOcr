@@ -40,7 +40,9 @@ class VenteType extends AbstractType
                 'query_builder' => function (EntityRepository $er) {
                     return $er->createQueryBuilder('c')
                         ->andWhere('c.entreprise = :entreprise')
+                        ->andWhere('c.status = :status')
                         ->setParameter('entreprise', $this->session->get('entreprise_session_id'))
+                        ->setParameter('status', 1)
                         ->orderBy('c.nameentreprise', 'ASC');;
                 },
                 'required' => false,
