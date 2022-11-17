@@ -48,7 +48,7 @@ class AchatType extends AbstractType
                         ->andWhere('c.entreprise = :entreprise')
                         ->setParameter('entreprise', $this->session->get('entreprise_session_id'))
                         ->setParameter('status', 1)
-                        ->orderBy('c.nameentreprise', 'ASC');
+                        ->orderBy('c.nameentreprise', 'DESC');
                 },
                 'required' => false,
                 'label' => false,
