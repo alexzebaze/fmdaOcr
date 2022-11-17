@@ -2320,6 +2320,7 @@ class GlobalService{
                     $clientName = str_replace("-", "", $clientName);
                     $clientName = str_replace("SAS", "", strtoupper($clientName));
                     $clientName = str_replace("SARL", "", strtoupper($clientName));
+                    $clientName = trim($clientName);
 
                     $tabnomClient = explode(" ", $clientName);
                     $trouve = false;
