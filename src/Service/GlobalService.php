@@ -2655,10 +2655,44 @@ class GlobalService{
         
         //Exception pour le champ document_id qui systematiquement recurere la position à partir du client
             
-        if($dossier == "facture_client" || $dossier == "devis_client"){
+        if($dossier == "facture_client"){
             $documentIdPosition = "";
 
             $metaConfig =  $this->em->getRepository(MetaConfig::class)->findOneBy(['mkey'=>"document_id_position_facture", 'entreprise'=>$entity->getEntreprise()]);
+
+            if(!is_null($metaConfig))
+                $documentIdPosition = $metaConfig->getValue();
+
+            if(!is_null($documentIdPosition) && $documentIdPosition != "" && count(explode('-', $documentIdPosition)) == 4){
+
+                $tabPosition = explode("-", $documentIdPosition);
+
+                $text = $this->getNewTextByPostion($tabPosition[0], $tabPosition[1], $tabPosition[2], $tabPosition[3], $dossier, $filename);
+                if($text != ""){
+                    $text = str_replace("*", "", strtolower($text));
+                    $text = str_replace("bl", "", strtolower($text));
+                    $text = str_replace(":", "", strtolower($text));
+                    $text = str_replace("n°", "", strtolower($text));
+                    $text = str_replace("du", "", strtolower($text));
+                    $text = str_replace("numéro", "", strtolower($text));
+                    $text = trim($text, " ");
+
+                    $text = explode(" ", $text);
+                    $text = array_unique($text);
+                    $text = implode(" ", $text);
+                    $entity->setDocumentId($text);
+
+                    $entity->setDocumentIdSource(1);
+                }
+            }
+        }
+
+        //Exception pour le champ document_id qui systematiquement recurere la position à partir du client
+            
+        if($dossier == "devis_client"){
+            $documentIdPosition = "";
+
+            $metaConfig =  $this->em->getRepository(MetaConfig::class)->findOneBy(['mkey'=>"document_id_position_devis_client", 'entreprise'=>$entity->getEntreprise()]);
 
             if(!is_null($metaConfig))
                 $documentIdPosition = $metaConfig->getValue();
