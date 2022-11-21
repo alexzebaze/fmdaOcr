@@ -904,6 +904,8 @@ class GlobalService{
                 
 
                 if(is_null($datasResult)){
+                    $value->setScore(0); 
+                    $this->em->flush(); 
                     continue;
                 }// pas besoin d'enregistrer les donnees doc email pour doc renversé car il sera retourné et relancé
                 else{
