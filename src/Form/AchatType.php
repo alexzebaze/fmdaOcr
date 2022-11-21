@@ -44,11 +44,9 @@ class AchatType extends AbstractType
                 'class' => Chantier::class,
                 'query_builder' => function (EntityRepository $er) {
                     return $er->createQueryBuilder('c')
-                        ->andWhere('c.status = :status')
                         ->andWhere('c.entreprise = :entreprise')
                         ->setParameter('entreprise', $this->session->get('entreprise_session_id'))
-                        ->setParameter('status', 1)
-                        ->orderBy('c.nameentreprise', 'DESC');
+                        ->orderBy('c.nameentreprise', 'ASC');
                 },
                 'required' => false,
                 'label' => false,

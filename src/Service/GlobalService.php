@@ -2655,7 +2655,7 @@ class GlobalService{
         
         //Exception pour le champ document_id qui systematiquement recurere la position à partir du client
             
-        if($dossier == "facture_client"){
+        if($dossier == "facture_client" || $dossier == "devis_client"){
             $documentIdPosition = "";
 
             $metaConfig =  $this->em->getRepository(MetaConfig::class)->findOneBy(['mkey'=>"document_id_position_facture", 'entreprise'=>$entity->getEntreprise()]);
