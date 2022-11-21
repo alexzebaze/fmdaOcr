@@ -894,6 +894,9 @@ class GlobalService{
         foreach ($documents as $value) {
 
                 $value = $this->em->getRepository(EmailDocumentPreview::class)->find($value->getId());
+
+                $value->setScore(0); 
+                
                 if($value->getIsConvert() && $value->getExecute())
                     continue;
 
