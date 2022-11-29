@@ -613,9 +613,18 @@ class GlobalService{
                 $day = $this->pad2($dateTab[0]);
                 
                 $month = $this->getMonthNumByMonthText($dateTab[1]);
+                if($month == "")
+                    $month = $this->getMonthNumByMonthText($this->stripAccents($dateTab[1]));
+
             }
             else{
-                $month = $this->getMonthNumByMonthText($this->stripAccents($dateTab[1]));
+                $month = $this->getMonthNumByMonthText($dateTab[1]);
+                if($month == "")
+                    $month = $this->getMonthNumByMonthText($this->stripAccents($dateTab[1]));
+                
+                if($month != "")
+                    $day = $this->pad2($dateTab[0]);
+
             }
             else{
                 $day = $this->pad2($dateTab[0]);
