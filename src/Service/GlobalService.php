@@ -612,20 +612,17 @@ class GlobalService{
                 array_shift($dateTab);
                 $day = $this->pad2($dateTab[0]);
                 
-                $month = $this->getMonthNumByMonthText($dateTab[1]);
-                if($month == "")
-                    $month = $this->getMonthNumByMonthText($this->stripAccents($dateTab[1]));
-
+                if(array_key_exists(strtolower($dateTab[1]), $tabMonth)){
+                    $month = $tabMonth[strtolower($this->stripAccents($dateTab[1]))];
+                }
+            }
+            else if(array_key_exists(strtolower($this->stripAccents($dateTab[1])), $tabMonth)){
+                $day = $this->pad2($dateTab[0]);
+                $month = $tabMonth[strtolower($this->stripAccents($dateTab[1]))];
             }
             else{
                 $day = $this->pad2($dateTab[0]);
-
-                $month = $this->getMonthNumByMonthText($dateTab[1]);
-                if($month == "")
-                    $month = $this->getMonthNumByMonthText($this->stripAccents($dateTab[1]));                   
-                
-                if($month == "")
-                    $month = $this->pad2($dateTab[1]);
+                $month = $this->pad2($dateTab[1]);
             }
 
             if($month != "" && $day != "")
@@ -633,20 +630,6 @@ class GlobalService{
         } 
         
         return $formattedDate;
-    }
-
-    public function getMonthNumByMonthText($monthText){
-
-        $tabMonth = $this->getMoisFull();
-
-        $monthNum = "";
-        foreach ($tabMonth as $value) {
-            if(substr($monthText, 0, 3)){
-                return $tabMonth[strtolower($monthText)];
-            }
-        }
-
-        return $monthNum;
     }
 
     public function pad2($n) {
