@@ -2560,13 +2560,12 @@ class GlobalService{
             }
         }
         else{
-            $firstTmpOcrText = $this->em->getRepository(OcrField::class)->findFirstTmpOcrText($dossier, $entreprise->getId(), $filename, $firstEltDocument['id'], 1000);
-            dd($firstTmpOcrText);
+            $firstTmpOcrText = $this->em->getRepository(OcrField::class)->findFirstTmpOcrText($dossier, $entreprise->getId(), $filename, $firstEltDocument['id'], 300);
             foreach ($firstTmpOcrText as $value) {
                 $dateSearch = str_replace('du ', "", strtolower($value['name']));
                 $dateSearch = str_replace('du', "", strtolower($dateSearch));
                 $formattedDate = $this->rebuildDate($dateSearch);
-                dd($dateSearch);
+
                 if(!is_null($formattedDate)){
                     if(strtotime($formattedDate)){
                         if(method_exists($entity, 'setFacturedAt')){
@@ -2577,8 +2576,6 @@ class GlobalService{
                 }
             }
         }
-
-        dd($firstTmpOcrText);
 
         if($dossier == "bon_livraison" && method_exists($entity, 'setPassageId')){
             /* couplage passage */
