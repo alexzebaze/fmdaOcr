@@ -2560,7 +2560,7 @@ class GlobalService{
             }
         }
         else{
-            $firstTmpOcrText = $this->em->getRepository(OcrField::class)->findFirstTmpOcrText($dossier, $entreprise->getId(), $filename, $firstEltDocument['id'], 300);
+            $firstTmpOcrText = $this->em->getRepository(OcrField::class)->findFirstTmpOcrText($dossier, $entreprise->getId(), $filename, $firstEltDocument['id'], 1000);
             dd($firstTmpOcrText);
             foreach ($firstTmpOcrText as $value) {
                 $dateSearch = str_replace('du ', "", strtolower($value['name']));
