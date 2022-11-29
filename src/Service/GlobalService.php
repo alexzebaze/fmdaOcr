@@ -2577,6 +2577,8 @@ class GlobalService{
             }
         }
 
+        dd([$firstTmpOcrText]);
+
         if($dossier == "bon_livraison" && method_exists($entity, 'setPassageId')){
             /* couplage passage */
             $passageExist = null;
