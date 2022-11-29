@@ -2575,9 +2575,9 @@ class GlobalService{
                     }
                 }
             }
+            dd([$firstTmpOcrText, $dossier, $entreprise->getId(), $filename, $firstEltDocument['id']]);
         }
 
-        dd($firstTmpOcrText);
 
         if($dossier == "bon_livraison" && method_exists($entity, 'setPassageId')){
             /* couplage passage */
