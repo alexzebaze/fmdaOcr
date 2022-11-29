@@ -2565,7 +2565,7 @@ class GlobalService{
                 $dateSearch = str_replace('du ', "", strtolower($value['name']));
                 $dateSearch = str_replace('du', "", strtolower($dateSearch));
                 $formattedDate = $this->rebuildDate($dateSearch);
-                dd($formattedDate);
+                dd($dateSearch);
                 if(!is_null($formattedDate)){
                     if(strtotime($formattedDate)){
                         if(method_exists($entity, 'setFacturedAt')){
@@ -2575,9 +2575,9 @@ class GlobalService{
                     }
                 }
             }
-            dd([$firstTmpOcrText, $dossier, $entreprise->getId(), $filename, $firstEltDocument['id']]);
         }
 
+        dd($firstTmpOcrText);
 
         if($dossier == "bon_livraison" && method_exists($entity, 'setPassageId')){
             /* couplage passage */
