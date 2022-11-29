@@ -163,7 +163,7 @@ class OcrFieldRepository extends ServiceEntityRepository
 
     public function findFirstTmpOcrText($dossier, $entreprise_id, $filename, $offset=1, $limit=30){
 
-        $sql = "SELECT name, entreprise_id, filename, dossier FROM (SELECT * FROM tmp_ocr WHERE id >= :offset GROUP BY name ORDER BY position_top ASC LIMIT $limit) as A WHERE A.filename = :filename and A.dossier = :dossier AND A.entreprise_id = :entreprise_id GROUP BY A.name ORDER BY position_top, position_left ASC ";
+        $sql = "SELECT name, entreprise_id, filename, dossier FROM (SELECT DISTINCT * FROM tmp_ocr WHERE id >= :offset GROUP BY name ORDER BY position_top ASC LIMIT $limit) as A WHERE A.filename = :filename and A.dossier = :dossier AND A.entreprise_id = :entreprise_id GROUP BY A.name ORDER BY position_top, position_left ASC ";
 
         $datas = $this->em->prepare($sql);
         $datas->execute(['dossier'=>$dossier, 'filename'=>$filename, 'entreprise_id'=>$entreprise_id, 'offset'=>$offset]);
