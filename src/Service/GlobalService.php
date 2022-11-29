@@ -584,6 +584,10 @@ class GlobalService{
     public function rebuildDate($text, $dateFormat = "jjmmyyyy"){
 
         $text = str_replace(",", "", $text);
+
+        if(strpos($text, " ") !== false)
+            $text = str_replace(".", "", $text);
+
         if(strpos($text, "/") === false){
             $text = str_replace(".", "/", $text);
             $text = str_replace("-", "/", $text);
@@ -640,9 +644,11 @@ class GlobalService{
         $tabMonth = $this->getMoisFull();
 
         $monthNum = "";
-        foreach ($tabMonth as $value) {
-            if(substr($monthText, 0, 3)){
-                return $tabMonth[strtolower($monthText)];
+        $monthTextSub = substr($monthText, 0, 3);
+        foreach ($tabMonth as $key => $value) {
+            $subValue = substr($key, 0, 3);
+            if($subValue == $monthTextSub){
+                return $value;
             }
         }
 
