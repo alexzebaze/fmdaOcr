@@ -457,23 +457,6 @@ class GlobalService{
         ];
     }
 
-    public function getMoisFullAbrev(){
-        return [
-            'janv'=>'01',
-            'fevr'=>'02',
-            'mars'=>'03',
-            'avr'=>'04',
-            'mai'=>'05',
-            'juin'=>'06',
-            'juill'=>'07',
-            'aout'=>'08',
-            'sept.'=>'09',
-            'oct'=>'10',
-            'nov'=>'11',
-            'dec'=>'12'
-        ];
-    }
-
     public function getJourFr(){
         return ['lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', 'dimanche'];
     }
@@ -613,8 +596,6 @@ class GlobalService{
         }
         
         $tabMonth = $this->getMoisFull();
-        $tabMonthAbrev = $this->getMoisFullAbrev();
-
         $tabDay = $this->getJourFr();
         $dateTab = explode("/", $text);
 
@@ -631,22 +612,10 @@ class GlobalService{
                 array_shift($dateTab);
                 $day = $this->pad2($dateTab[0]);
                 
-                if(array_key_exists(strtolower($dateTab[1]), $tabMonth)){
-
-                    $month = $tabMonth[strtolower($this->stripAccents($dateTab[1]))];
-                }
-                else if(array_key_exists(strtolower($dateTab[1]), $tabMonthAbrev)){
-
-                    $month = $tabMonthAbrev[strtolower($this->stripAccents($dateTab[1]))];
-                }
+                $month = $this->getMonthNumByMonthText($dateTab[1]);
             }
-            else if(array_key_exists(strtolower($this->stripAccents($dateTab[1])), $tabMonth)){
-                $day = $this->pad2($dateTab[0]);
-                $month = $tabMonth[strtolower($this->stripAccents($dateTab[1]))];
-            }
-            else if(array_key_exists(strtolower($this->stripAccents($dateTab[1])), $tabMonthAbrev)){
-                $day = $this->pad2($dateTab[0]);
-                $month = $tabMonthAbrev[strtolower($this->stripAccents($dateTab[1]))];
+            else{
+                $month = $this->getMonthNumByMonthText($this->stripAccents($dateTab[1]));
             }
             else{
                 $day = $this->pad2($dateTab[0]);
@@ -658,6 +627,20 @@ class GlobalService{
         } 
         
         return $formattedDate;
+    }
+
+    public function getMonthNumByMonthText($monthText){
+
+        $tabMonth = $this->getMoisFull();
+
+        $monthNum = "";
+        foreach ($tabMonth as $value) {
+            if(substr($monthText, 0, 3)){
+                return $tabMonth[strtolower($monthText)];
+            }
+        }
+
+        return $monthNum;
     }
 
     public function pad2($n) {
