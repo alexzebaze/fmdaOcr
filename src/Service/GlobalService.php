@@ -584,7 +584,6 @@ class GlobalService{
     public function rebuildDate($text, $dateFormat = "jjmmyyyy"){
 
         $text = str_replace(",", "", $text);
-
         if(strpos($text, " ") !== false)
             $text = str_replace(".", "", $text);
 
@@ -622,6 +621,7 @@ class GlobalService{
 
             }
             else{
+
                 $day = $this->pad2($dateTab[0]);
 
                 $month = $this->getMonthNumByMonthText($dateTab[1]);
@@ -630,6 +630,7 @@ class GlobalService{
                 
                 if($month == "")
                     $month = $this->pad2($dateTab[1]);
+                
             }
 
             if($month != "" && $day != "")
@@ -2564,7 +2565,7 @@ class GlobalService{
                 $dateSearch = str_replace('du ', "", strtolower($value['name']));
                 $dateSearch = str_replace('du', "", strtolower($dateSearch));
                 $formattedDate = $this->rebuildDate($dateSearch);
-
+                dd($formattedDate);
                 if(!is_null($formattedDate)){
                     if(strtotime($formattedDate)){
                         if(method_exists($entity, 'setFacturedAt')){
