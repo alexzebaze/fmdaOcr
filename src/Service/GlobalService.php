@@ -467,7 +467,7 @@ class GlobalService{
             'juin'=>'06',
             'juill'=>'07',
             'aout'=>'08',
-            'sept'=>'09',
+            'sept.'=>'09',
             'oct'=>'10',
             'nov'=>'11',
             'dec'=>'12'
