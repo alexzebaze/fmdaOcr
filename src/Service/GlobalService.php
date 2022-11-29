@@ -621,7 +621,7 @@ class GlobalService{
                 $day = $this->pad2($dateTab[0]);
 
                 $month = $this->getMonthNumByMonthText($dateTab[1]);
-                if($month == ""){
+                if($month == "")
                     $month = $this->getMonthNumByMonthText($this->stripAccents($dateTab[1]));                   
                 
                 if($month == ""){
