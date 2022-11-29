@@ -2564,6 +2564,7 @@ class GlobalService{
             foreach ($firstTmpOcrText as $value) {
                 $dateSearch = str_replace('du ', "", strtolower($value['name']));
                 $dateSearch = str_replace('du', "", strtolower($dateSearch));
+                $dateSearch = str_replace('Date: ', "", strtolower($dateSearch));
                 $formattedDate = $this->rebuildDate($dateSearch);
 
                 if(!is_null($formattedDate)){
@@ -2576,8 +2577,6 @@ class GlobalService{
                 }
             }
         }
-
-        dd([$firstTmpOcrText]);
 
         if($dossier == "bon_livraison" && method_exists($entity, 'setPassageId')){
             /* couplage passage */
