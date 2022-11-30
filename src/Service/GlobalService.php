@@ -2561,12 +2561,13 @@ class GlobalService{
         }
         else{
             $firstTmpOcrText = $this->em->getRepository(OcrField::class)->findFirstTmpOcrText($dossier, $entreprise->getId(), $filename, $firstEltDocument['id'], 300);
+            dd($firstTmpOcrText);
             foreach ($firstTmpOcrText as $value) {
                 $dateSearch = str_replace('du ', "", strtolower($value['name']));
                 $dateSearch = str_replace('du', "", strtolower($dateSearch));
                 $dateSearch = str_replace('Date: ', "", strtolower($dateSearch));
                 $formattedDate = $this->rebuildDate($dateSearch);
-                
+
                 if(strpos($dateSearch, "sept.") !== false){
                     dd([$dateSearch, $formattedDate]);
                 }
