@@ -2567,11 +2567,6 @@ class GlobalService{
                 $dateSearch = str_replace('du', "", strtolower($dateSearch));
                 $dateSearch = str_replace('date: ', "", strtolower($dateSearch));
                 $formattedDate = $this->rebuildDate($dateSearch);
-
-                if(strpos($dateSearch, "sept.") !== false){
-                    dd([$dateSearch, $formattedDate]);
-                }
-
                 
                 if(!is_null($formattedDate)){
                     if(strtotime($formattedDate)){
