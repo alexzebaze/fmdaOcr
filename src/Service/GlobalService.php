@@ -2565,7 +2565,7 @@ class GlobalService{
             foreach ($firstTmpOcrText as $value) {
                 $dateSearch = str_replace('du ', "", strtolower($value['name']));
                 $dateSearch = str_replace('du', "", strtolower($dateSearch));
-                $dateSearch = str_replace('Date: ', "", strtolower($dateSearch));
+                $dateSearch = str_replace('date: ', "", strtolower($dateSearch));
                 $formattedDate = $this->rebuildDate($dateSearch);
 
                 if(strpos($dateSearch, "sept.") !== false){
