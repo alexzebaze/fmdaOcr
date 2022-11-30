@@ -2561,7 +2561,7 @@ class GlobalService{
         }
         else{
             $firstTmpOcrText = $this->em->getRepository(OcrField::class)->findFirstTmpOcrText($dossier, $entreprise->getId(), $filename, $firstEltDocument['id'], 300);
-            dd($firstTmpOcrText);
+            dd($firstTmpOcrText);  
             foreach ($firstTmpOcrText as $value) {
                 $dateSearch = str_replace('du ', "", strtolower($value['name']));
                 $dateSearch = str_replace('du', "", strtolower($dateSearch));
@@ -2573,7 +2573,6 @@ class GlobalService{
                 }
 
                 
-
                 if(!is_null($formattedDate)){
                     if(strtotime($formattedDate)){
                         if(method_exists($entity, 'setFacturedAt')){
