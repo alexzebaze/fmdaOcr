@@ -2565,6 +2565,7 @@ class GlobalService{
                 $dateSearch = str_replace('du ', "", strtolower($value['name']));
                 $dateSearch = str_replace('du', "", strtolower($dateSearch));
                 $dateSearch = str_replace('Date: ', "", strtolower($dateSearch));
+                $dateSearch = "19 sept. 2022";
                 $formattedDate = $this->rebuildDate($dateSearch);
 
                 if(!is_null($formattedDate)){
