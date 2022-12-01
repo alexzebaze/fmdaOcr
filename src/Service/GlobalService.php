@@ -669,6 +669,7 @@ class GlobalService{
                 $value = str_replace("bl", "", strtolower($value));
                 $value = str_replace(":", "", strtolower($value));
                 $value = str_replace("*", "", strtolower($value));
+                $value = str_replace("#", "", strtolower($value));
                 $value = str_replace("n°", "", strtolower($value));
                 $value = str_replace("du", "", strtolower($value));
                 $value = str_replace("numéro", "", strtolower($value));
@@ -2645,6 +2646,7 @@ class GlobalService{
                         $text = $this->getNewTextByPostion($tabPosition[0], $tabPosition[1], $tabPosition[2], $tabPosition[3], $dossier, $filename);
                         if($text != ""){
                             $text = str_replace("*", "", strtolower($text));
+                            $text = str_replace("#", "", strtolower($text));
                             $text = str_replace("bl", "", strtolower($text));
                             $text = str_replace(":", "", strtolower($text));
                             $text = str_replace("n°", "", strtolower($text));
@@ -2702,6 +2704,7 @@ class GlobalService{
                 $text = $this->getNewTextByPostion($tabPosition[0], $tabPosition[1], $tabPosition[2], $tabPosition[3], $dossier, $filename);
                 if($text != ""){
                     $text = str_replace("*", "", strtolower($text));
+                    $text = str_replace("#", "", strtolower($text));
                     $text = str_replace("bl", "", strtolower($text));
                     $text = str_replace(":", "", strtolower($text));
                     $text = str_replace("n°", "", strtolower($text));
@@ -2736,6 +2739,7 @@ class GlobalService{
                 $text = $this->getNewTextByPostion($tabPosition[0], $tabPosition[1], $tabPosition[2], $tabPosition[3], $dossier, $filename);
                 if($text != ""){
                     $text = str_replace("*", "", strtolower($text));
+                    $text = str_replace("#", "", strtolower($text));
                     $text = str_replace("bl", "", strtolower($text));
                     $text = str_replace(":", "", strtolower($text));
                     $text = str_replace("n°", "", strtolower($text));
