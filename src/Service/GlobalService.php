@@ -2638,6 +2638,8 @@ class GlobalService{
                 }
 
                 $tabDocumentIdText = [];
+
+                $debug = [];
                 foreach ($tabDocumentIdPosition as $valuePos) {
                 
                     if($valuePos != "" && count(explode('-', $valuePos)) == 4){
@@ -2645,6 +2647,9 @@ class GlobalService{
                         $tabPosition = explode("-", $valuePos);
 
                         $text = $this->getNewTextByPostion($tabPosition[0], $tabPosition[1], $tabPosition[2], $tabPosition[3], $dossier, $filename);
+
+                        $debug[] = $text;
+
                         if($text != ""){
                             $text = str_replace("*", "", strtolower($text));
                             $text = str_replace("#", "", strtolower($text));
@@ -2663,6 +2668,8 @@ class GlobalService{
                         }
                     }
                 }
+
+                dd($debug);
 
                 $text = ""; $pos = "";
                 if(count($tabDocumentIdText) > 0){
