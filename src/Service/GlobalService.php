@@ -2695,7 +2695,7 @@ class GlobalService{
                 }
             }
 
-            dd($debug);
+            //dd($debug);
         }
         
         //Exception pour le champ document_id qui systematiquement recurere la position à partir du client
