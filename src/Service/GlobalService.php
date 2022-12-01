@@ -1161,6 +1161,7 @@ class GlobalService{
         $newText = $this->getNewTextByPostion($left, $top, $width, $height, $dossier, $lastOcrFile);
         
         $newText = str_replace("*", "", strtolower($newText));
+        $newText = str_replace("#", "", strtolower($newText));
         $newText = str_replace("bl", "", strtolower($newText));
         $newText = str_replace(":", "", strtolower($newText));
         $newText = str_replace("n°", "", strtolower($newText));
