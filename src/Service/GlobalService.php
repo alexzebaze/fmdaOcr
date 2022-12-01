@@ -2623,6 +2623,7 @@ class GlobalService{
 
         if(method_exists($entity, 'getFournisseur')){
             $fournisseur =  $entity->getFournisseur();
+            $debug = [];
             if($fournisseur){
                 
                 $tabDocumentIdPosition = [];
@@ -2639,7 +2640,7 @@ class GlobalService{
 
                 $tabDocumentIdText = [];
 
-                $debug = [];
+                
                 foreach ($tabDocumentIdPosition as $valuePos) {
                 
                     if($valuePos != "" && count(explode('-', $valuePos)) == 4){
@@ -2669,7 +2670,7 @@ class GlobalService{
                     }
                 }
 
-                dd($debug);
+                
 
                 $text = ""; $pos = "";
                 if(count($tabDocumentIdText) > 0){
@@ -2693,6 +2694,8 @@ class GlobalService{
                     $entity->setDocumentIdSource(1);
                 }
             }
+
+            dd($debug);
         }
         
         //Exception pour le champ document_id qui systematiquement recurere la position à partir du client
