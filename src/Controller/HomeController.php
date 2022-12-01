@@ -146,6 +146,7 @@ class HomeController extends Controller
     {
         $this->global_s->cronOcrIa();
 
+        dd('sds');
         return $this->render('error/503.html.twig');
     }
     /**
