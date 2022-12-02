@@ -2369,6 +2369,10 @@ class GlobalService{
 
                     $tabnomClient = [explode(" ", $clientName)];
                     $trouve = false;
+
+                    if(strpos(strtoupper($clientName), "ZELIE ") !== false){
+                        dd($tabnomClient);
+                    }
                     foreach ($tabnomClient as $nom) {
                         if(strlen($nom) >= 4){
                             $entityfound = $this->em->getRepository(OcrField::class)->getByNameAlpnClient($dossier, $entreprise->getId(), $filename, $nom, $firstEltDocument['id'], "", 30);
