@@ -2377,9 +2377,11 @@ class GlobalService{
                                 if(array_search($value->getId(), array_column($clientfound, 'id')) === false) {
                                     $clientfound[$priority][] = ['id'=>$value->getId(), 'nom'=>$value->getNom()];
                                 }
+                                dd($entityfound);
                                 $trouve = true;
                                 break;
                             }
+                            dd($entityfound);
                         }
                     }
 
