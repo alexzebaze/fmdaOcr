@@ -2367,7 +2367,7 @@ class GlobalService{
                     $clientName = str_replace("M", "", strtoupper($clientName));
                     $clientName = trim($clientName);
 
-                    $tabnomClient = explode(" ", $clientName);
+                    $tabnomClient = ["ZELIE"];
                     $trouve = false;
                     foreach ($tabnomClient as $nom) {
                         if(strlen($nom) >= 4){
@@ -2387,7 +2387,7 @@ class GlobalService{
    
                 }
             }
-
+            dd($entityfound);
             if($dossier == "paie"){
                 foreach ($users as $value) {
                     if(strtolower($value->getFirstname()) == 'a definir' || strtolower($value->getFirstname()) == 'fmda construction' || strtolower($value->getLastname()) == 'a definir' || strtolower($value->getLastname()) == 'fmda construction')
