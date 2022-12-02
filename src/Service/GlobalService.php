@@ -2386,8 +2386,10 @@ class GlobalService{
                         break;
    
                 }
+
+                dd($entityfound);
             }
-            dd($entityfound);
+            
             if($dossier == "paie"){
                 foreach ($users as $value) {
                     if(strtolower($value->getFirstname()) == 'a definir' || strtolower($value->getFirstname()) == 'fmda construction' || strtolower($value->getLastname()) == 'a definir' || strtolower($value->getLastname()) == 'fmda construction')
