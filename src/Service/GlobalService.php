@@ -2367,11 +2367,11 @@ class GlobalService{
                     $clientName = str_replace("M", "", strtoupper($clientName));
                     $clientName = trim($clientName);
 
-                    $tabnomClient = ["ZELIE"];
+                    $tabnomClient = [explode(" ", $clientName)];
                     $trouve = false;
                     foreach ($tabnomClient as $nom) {
                         if(strlen($nom) >= 4){
-                            $entityfound = $this->em->getRepository(OcrField::class)->getByNameAlpnClient($dossier, $entreprise->getId(), $filename, $nom, $firstEltDocument['id'], "", 130);
+                            $entityfound = $this->em->getRepository(OcrField::class)->getByNameAlpnClient($dossier, $entreprise->getId(), $filename, $nom, $firstEltDocument['id'], "", 300);
 
                             if(count($entityfound) > 0){
                                 if(array_search($value->getId(), array_column($clientfound, 'id')) === false) {
@@ -2387,7 +2387,9 @@ class GlobalService{
    
                 }
             }
+
             dd($entityfound);
+
             if($dossier == "paie"){
                 foreach ($users as $value) {
                     if(strtolower($value->getFirstname()) == 'a definir' || strtolower($value->getFirstname()) == 'fmda construction' || strtolower($value->getLastname()) == 'a definir' || strtolower($value->getLastname()) == 'fmda construction')
@@ -2408,8 +2410,6 @@ class GlobalService{
                 }
             }
         }
-
-        dd($clientfound);
 
         $fournisseur = null;
         if(count($fournisseurfound) > 0){
