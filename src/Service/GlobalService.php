@@ -2364,7 +2364,7 @@ class GlobalService{
                     $clientName = str_replace("M", "", strtoupper($clientName));
                     $clientName = trim($clientName);
 
-                    $tabnomClient = [explode(" ", $clientName)];
+                    $tabnomClient = explode(" ", $clientName);
                     $trouve = false;
 
                     if(strpos(strtoupper($clientName), "ZELIE ") !== false){
