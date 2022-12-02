@@ -2292,6 +2292,15 @@ class GlobalService{
                 if(strtolower($value['nom']) == 'a definir' || strtolower($value['nom']) == 'fmda construction')
                     continue;
 
+
+                $fournisseurName = $value['nom'];
+                $fournisseurName = str_replace(".", "", $fournisseurName);
+                $fournisseurName = str_replace("MLLE", "", strtoupper($fournisseurName));
+                $fournisseurName = str_replace("MR", "", strtoupper($fournisseurName));
+                $fournisseurName = str_replace("M", "", strtoupper($fournisseurName));
+                $fournisseurName = trim($fournisseurName);
+                $value['nom'] = $fournisseurName;
+
                 $priority = "1";
                 if(strpos(strtolower($value['nom']), "france") !== false){// exception pour le fournisseur france air
                     $entityfound = $this->em->getRepository(OcrField::class)->getByNameAndName2Alpn($dossier, $entreprise->getId(), $filename, $value['nom'], $firstEltDocument['id'], $value['nom2'], 30);
@@ -2351,6 +2360,9 @@ class GlobalService{
                     $clientName = str_replace("-", "", $clientName);
                     $clientName = str_replace("SAS", "", strtoupper($clientName));
                     $clientName = str_replace("SARL", "", strtoupper($clientName));
+                    $clientName = str_replace("MLLE", "", strtoupper($clientName));
+                    $clientName = str_replace("MR", "", strtoupper($clientName));
+                    $clientName = str_replace("M", "", strtoupper($clientName));
                     $clientName = trim($clientName);
 
                     $tabnomClient = explode(" ", $clientName);
