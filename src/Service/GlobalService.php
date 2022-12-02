@@ -2371,7 +2371,7 @@ class GlobalService{
                     $trouve = false;
                     foreach ($tabnomClient as $nom) {
                         if(strlen($nom) >= 4){
-                            $entityfound = $this->em->getRepository(OcrField::class)->getByNameAlpnClient($dossier, $entreprise->getId(), $filename, $nom, $firstEltDocument['id'], "", 30);
+                            $entityfound = $this->em->getRepository(OcrField::class)->getByNameAlpnClient($dossier, $entreprise->getId(), $filename, $nom, $firstEltDocument['id'], "", 100);
 
                             if(count($entityfound) > 0){
                                 if(array_search($value->getId(), array_column($clientfound, 'id')) === false) {
@@ -2381,7 +2381,7 @@ class GlobalService{
                                 $trouve = true;
                                 break;
                             }
-                            dd($entityfound);
+                            dd([$dossier, $entreprise->getId(), $filename, $nom, $firstEltDocument['id'],$entityfound]);
                         }
                     }
 
