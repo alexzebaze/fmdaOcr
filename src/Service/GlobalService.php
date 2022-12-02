@@ -2296,6 +2296,7 @@ class GlobalService{
                 $fournisseurName = $value['nom'];
                 $fournisseurName = str_replace(".", "", $fournisseurName);
                 $fournisseurName = str_replace("MLLE", "", strtoupper($fournisseurName));
+                $fournisseurName = str_replace("MME", "", strtoupper($fournisseurName));
                 $fournisseurName = str_replace("MR", "", strtoupper($fournisseurName));
                 $fournisseurName = str_replace("M", "", strtoupper($fournisseurName));
                 $fournisseurName = trim($fournisseurName);
@@ -2361,6 +2362,7 @@ class GlobalService{
                     $clientName = str_replace("SAS", "", strtoupper($clientName));
                     $clientName = str_replace("SARL", "", strtoupper($clientName));
                     $clientName = str_replace("MLLE", "", strtoupper($clientName));
+                    $clientName = str_replace("MME", "", strtoupper($clientName));
                     $clientName = str_replace("MR", "", strtoupper($clientName));
                     $clientName = str_replace("M", "", strtoupper($clientName));
                     $clientName = trim($clientName);
