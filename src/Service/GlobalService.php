@@ -2409,6 +2409,8 @@ class GlobalService{
             }
         }
 
+        dd($clientfound);
+
         $fournisseur = null;
         if(count($fournisseurfound) > 0){
             if(array_key_exists("1", $fournisseurfound) && count($fournisseurfound["1"]) > 0)
