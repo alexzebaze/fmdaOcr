@@ -2382,12 +2382,14 @@ class GlobalService{
                             }
                         }
                     }
+
+                    dd($entityfound);
                     if($trouve)
                         break;
    
                 }
 
-                dd($entityfound);
+
             }
             
             if($dossier == "paie"){
