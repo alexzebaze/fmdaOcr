@@ -2350,7 +2350,7 @@ class GlobalService{
                     if(strtolower($value->getNom()) == 'a definir' || strtolower($value->getNom()) == 'fmda construction' || str_contains(strtolower($value->getNom()), 'hdbm') || str_contains(strtolower($value->getNom()), 'immo'))
                         continue;
 
-                    $clientName = "ZELIE BERNIER";
+                    $clientName = $value->getNom();
                     if($clientName == "LORANGERIE")
                         $clientName = "L'ORANGERIE";
                     
