@@ -2725,6 +2725,7 @@ class GlobalService{
                     $text = str_replace("n°", "", strtolower($text));
                     $text = str_replace("du", "", strtolower($text));
                     $text = str_replace("numéro", "", strtolower($text));
+                    $text = str_replace("facture", "", strtolower($text));
                     $text = trim($text, " ");
 
                     $text = explode(" ", $text);
