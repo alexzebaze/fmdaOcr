@@ -673,7 +673,7 @@ class GlobalService{
                 $value = str_replace("n°", "", strtolower($value));
                 $value = str_replace("du", "", strtolower($value));
                 $value = str_replace("numéro", "", strtolower($value));
-                $value = str_replace("numéro", "", strtolower($value));
+                $text = str_replace("facture", "", strtolower($text));
                 $value = trim($value, " ");
 
                 $value = explode(" ", $value);
@@ -1167,6 +1167,9 @@ class GlobalService{
         $newText = str_replace("n°", "", strtolower($newText));
         $newText = str_replace("du", "", strtolower($newText));
         $newText = str_replace("numéro", "", strtolower($newText));
+        $newText = str_replace("facture", "", strtolower($newText));
+
+        $text = str_replace("newText", "", strtolower($text));
         $newText = trim($newText, " ");
 
         if($request->request->get('fieldname') == "date_paie" || $request->request->get('fieldname') == "document_id" || $request->request->get('fieldname') == "facturedAt"){
@@ -2667,6 +2670,7 @@ class GlobalService{
                             $text = str_replace("n°", "", strtolower($text));
                             $text = str_replace("du", "", strtolower($text));
                             $text = str_replace("numéro", "", strtolower($text));
+                            $text = str_replace("facture", "", strtolower($text));
                             $text = trim($text, " ");
 
                             $text = explode(" ", $text);
@@ -2761,6 +2765,7 @@ class GlobalService{
                     $text = str_replace("n°", "", strtolower($text));
                     $text = str_replace("du", "", strtolower($text));
                     $text = str_replace("numéro", "", strtolower($text));
+                    $text = str_replace("facture", "", strtolower($text));
                     $text = trim($text, " ");
 
                     $text = explode(" ", $text);
