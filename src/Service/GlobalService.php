@@ -1079,11 +1079,8 @@ class GlobalService{
 
         $dirLandingImg = $this->params->get('kernel.project_dir') . "/public/".$path.$imagenameSaved;
 
-        try{
             $datasResult = $this->lancerIa($imagenameSaved, $value, $value->getDossier(), $dirLandingImg, $entreprise);
-        } catch (\Exception $e) {
-            throw new \Exception("Probleme rencontré lors du lancement de l'IA", 1);   
-        }
+        
         
 
         if(!is_null($datasResult))
