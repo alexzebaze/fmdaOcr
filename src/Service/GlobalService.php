@@ -912,7 +912,7 @@ class GlobalService{
             $documents = $this->em->getRepository(EmailDocumentPreview::class)->findBy(['execute'=>false, 'extension'=>'pdf', 'entreprise'=>$entreprise->getId()], ['id'=>"ASC"], 10);
         }
         else{
-            $documents = $this->em->getRepository(EmailDocumentPreview::class)->findBy(['id'=>7060, 'execute'=>false]);
+            $documents = $this->em->getRepository(EmailDocumentPreview::class)->findBy(['execute'=>false, 'extension'=>'pdf'], ['id'=>"ASC"], 10);
         }
 
         $documentToRotate = [];
