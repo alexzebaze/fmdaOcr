@@ -920,17 +920,18 @@ class GlobalService{
 
                 $value = $this->em->getRepository(EmailDocumentPreview::class)->find($value->getId());
 
-                $value->setScore(0); 
-                
-                if($value->getIsConvert() && $value->getExecute())
+                if($value->getEncours())
                     continue;
 
-                $datasResult = $this->launchIaDocumentAttente($value, $value->getEntreprise());
-                
+                $value->setEncours(1);
+                $this->em->flush();
 
+                $value->setScore(0); 
+                
+                $datasResult = $this->launchIaDocumentAttente($value, $value->getEntreprise());
                 if(is_null($datasResult)){
-                    // $value->setScore(0); 
-                    // $this->em->flush(); 
+                    $value->setExecute(1); 
+                    $this->em->flush(); 
                     continue;
                 }// pas besoin d'enregistrer les donnees doc email pour doc renversé car il sera retourné et relancé
                 else{
@@ -956,6 +957,8 @@ class GlobalService{
             try {
                 $datasResult = $this->launchIaDocumentAttente($value, $value->getEntreprise());
                 if(is_null($datasResult)){
+                    $value->setExecute(1); 
+                    $this->em->flush(); 
                     continue;
                 }
                 else
@@ -1073,7 +1076,7 @@ class GlobalService{
 
         $isRotation = $this->saveOcrScan($path, $imagenameSaved, $value->getDossier(), false, $entreprise)['isRotation'];
         
-        $entity->setExecute(true); 
+        //$entity->setExecute(true); 
 
         $this->em->flush(); 
 
