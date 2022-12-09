@@ -909,7 +909,7 @@ class GlobalService{
     public function cronOcrIa($entreprise = null){
 
         if(!is_null($entreprise)){
-            $documents = $this->em->getRepository(EmailDocumentPreview::class)->findBy(['id'=>7082], ['id'=>"ASC"], 10);
+            $documents = $this->em->getRepository(EmailDocumentPreview::class)->findBy(['execute'=>false, 'extension'=>'pdf', 'entreprise'=>$entreprise->getId()], ['id'=>"ASC"], 10);
         }
         else{
             $documents = $this->em->getRepository(EmailDocumentPreview::class)->findBy(['execute'=>false, 'extension'=>'pdf'], ['id'=>"ASC"], 10);
@@ -1082,8 +1082,11 @@ class GlobalService{
 
         $dirLandingImg = $this->params->get('kernel.project_dir') . "/public/".$path.$imagenameSaved;
 
+        try{
             $datasResult = $this->lancerIa($imagenameSaved, $value, $value->getDossier(), $dirLandingImg, $entreprise);
-        
+        } catch (\Exception $e) {
+            throw new \Exception("Probleme rencontré lors du lancement de l'IA", 1);   
+        }
         
 
         if(!is_null($datasResult))
