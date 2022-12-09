@@ -2464,18 +2464,28 @@ class GlobalService{
 
         $totalTtcAndTotalHT = $this->em->getRepository(TmpOcr::class)->getsummaryFields($dossier, $filename, $entreprise->getId());
 
+        $isAvoir = $this->isAvoir($dossier, $filename, $entreprise->getId());
+
         if($totalTtcAndTotalHT){
             if(method_exists($entity, 'setPrixht')){
                 $htExtract = $this->extractTotalHt($totalTtcAndTotalHT['total_ht_list']);
 
-                if($htExtract)
+                if($htExtract){
+                    if($isAvoir && $htExtract > 0 )
+                        $htExtract = 0-$htExtract;
+
                     $entity->setPrixht($htExtract);
+                }
             }
             if(method_exists($entity, 'setPrixttc')){
                 $ttcExtract = $this->extractTotalTTC($totalTtcAndTotalHT['total_ttc_list']);
 
-                if($ttcExtract)
+                if($ttcExtract){
+                    if($isAvoir && $ttcExtract > 0 )
+                        $ttcExtract = 0-$ttcExtract;
+
                     $entity->setPrixttc($ttcExtract);
+                }
             }
         }
 
@@ -2794,6 +2804,15 @@ class GlobalService{
         ];
     }
 
+
+    public function isAvoir($dossier, $filename, $entrepriseId){
+        
+        $countAvoir = $this->em->getRepository(TmpOcr::class)->findLikeText($dossier, $filename, $entreprise->getId(), 'avoir');
+        if((int)$countAvoir['countText'] > 0)
+            return true;
+
+        return false;
+    }
 
     public function find_num_of_integers($string) {
         //split the strings
