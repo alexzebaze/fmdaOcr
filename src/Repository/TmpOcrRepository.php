@@ -96,10 +96,10 @@ class TmpOcrRepository extends ServiceEntityRepository
     }
 
     public function findLikeText($dossier, $lastOcrFile, $entrepriseId, $text){
-        $sql = "SELECT COUNT(*) as countText FROM tmp_ocr  WHERE entreprise_id = :entreprise AND dossier = :dossier AND filename = :filename AND LOWER(name) LIKE :nom LIMIT 1";
+        $sql = "SELECT COUNT(*) as countText FROM tmp_ocr  WHERE entreprise_id = :entreprise AND dossier = :dossier AND filename = :filename AND LOWER(name) LIKE :text LIMIT 1";
 
         $datas = $this->em->prepare($sql);
-        $datas->execute(['dossier'=>$dossier, 'filename'=>$lastOcrFile, 'entreprise'=>$entrepriseId, 'nom' => strtolower('%'.$nom.'%')]);
+        $datas->execute(['dossier'=>$dossier, 'filename'=>$lastOcrFile, 'entreprise'=>$entrepriseId, 'text' => strtolower('%'.$text.'%')]);
 
         $datas = $datas->fetch();
         return $datas;
