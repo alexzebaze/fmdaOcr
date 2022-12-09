@@ -2804,7 +2804,7 @@ class GlobalService{
 
     public function isAvoir($dossier, $filename, $entrepriseId){
         
-        $countAvoir = $this->em->getRepository(TmpOcr::class)->findLikeText($dossier, $filename, $entreprise->getId(), 'avoir');
+        $countAvoir = $this->em->getRepository(TmpOcr::class)->findLikeText($dossier, $filename, $entrepriseId, 'avoir');
         if((int)$countAvoir['countText'] > 0)
             return true;
 
