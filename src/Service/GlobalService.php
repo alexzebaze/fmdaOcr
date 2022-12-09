@@ -923,7 +923,7 @@ class GlobalService{
                 if($value->getEncours())
                     continue;
 
-                $value->setEncours(1);
+                $value->setEncours(true);
                 $this->em->flush();
 
                 $value->setScore(0); 

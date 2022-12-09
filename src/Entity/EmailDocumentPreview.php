@@ -212,11 +212,17 @@ class EmailDocumentPreview
      */
     private $documentIdPosition;
 
+    /**
+     * @ORM\Column(type="boolean", nullable=true)
+     */
+    private $enCours;
+
     public function __construct()
     {
         $this->lu = false;
         $this->execute = false;
         $this->is_convert = false;
+        $this->enCours = false;
     }
 
 
@@ -668,4 +674,17 @@ class EmailDocumentPreview
 
         return $this;
     } 
+
+    public function getEnCours(): ?bool
+    {
+        return $this->enCours;
+    }
+
+    public function setEnCours(?bool $enCours): self
+    {
+        $this->enCours = $enCours;
+
+        return $this;
+    }
+    
 }
