@@ -85,7 +85,7 @@ class Achat implements JsonSerializable
 
     /**
      * @ORM\ManyToOne(targetEntity=Fournisseurs::class, inversedBy="achats", fetch="EAGER")
-     * @ORM\JoinColumn(nullable=false)
+     * @ORM\JoinColumn(nullable=true)
      */
     private $fournisseur;
     
