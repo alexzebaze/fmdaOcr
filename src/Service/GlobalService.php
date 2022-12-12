@@ -674,6 +674,9 @@ class GlobalService{
                 $value = str_replace("du", "", strtolower($value));
                 $value = str_replace("numéro", "", strtolower($value));
                 $value = str_replace("facture", "", strtolower($value));
+                $value = str_replace("b.l", "", strtolower($value));
+                $value = str_replace("de", "", strtolower($value));
+                $value = str_replace("be", "", strtolower($value));
                 $value = trim($value, " ");
 
                 $value = explode(" ", $value);
@@ -1171,6 +1174,9 @@ class GlobalService{
         $newText = str_replace("du", "", strtolower($newText));
         $newText = str_replace("numéro", "", strtolower($newText));
         $newText = str_replace("facture", "", strtolower($newText));
+        $newText = str_replace("b.l", "", strtolower($newText));
+        $newText = str_replace("de", "", strtolower($newText));
+        $newText = str_replace("be", "", strtolower($newText));
 
         $text = str_replace("newText", "", strtolower($text));
         $newText = trim($newText, " ");
@@ -2684,6 +2690,9 @@ class GlobalService{
                             $text = str_replace("du", "", strtolower($text));
                             $text = str_replace("numéro", "", strtolower($text));
                             $text = str_replace("facture", "", strtolower($text));
+                            $text = str_replace("b.l", "", strtolower($text));
+                            $text = str_replace("de", "", strtolower($text));
+                            $text = str_replace("be", "", strtolower($text));
                             $text = trim($text, " ");
 
                             $text = explode(" ", $text);
@@ -2742,7 +2751,9 @@ class GlobalService{
                     $text = str_replace("n°", "", strtolower($text));
                     $text = str_replace("du", "", strtolower($text));
                     $text = str_replace("numéro", "", strtolower($text));
-                    $text = str_replace("facture", "", strtolower($text));
+                    $text = str_replace("b.l", "", strtolower($text));
+                    $text = str_replace("de", "", strtolower($text));
+                    $text = str_replace("be", "", strtolower($text));
                     $text = trim($text, " ");
 
                     $text = explode(" ", $text);
@@ -2779,6 +2790,9 @@ class GlobalService{
                     $text = str_replace("du", "", strtolower($text));
                     $text = str_replace("numéro", "", strtolower($text));
                     $text = str_replace("facture", "", strtolower($text));
+                    $text = str_replace("b.l", "", strtolower($text));
+                    $text = str_replace("de", "", strtolower($text));
+                    $text = str_replace("be", "", strtolower($text));
                     $text = trim($text, " ");
 
                     $text = explode(" ", $text);
