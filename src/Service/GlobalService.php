@@ -678,6 +678,8 @@ class GlobalService{
                 $value = str_replace("b.l", "", strtolower($value));
                 $value = str_replace("de", "", strtolower($value));
                 $value = str_replace("be", "", strtolower($value));
+                $value = str_replace("bon livraison", "", strtolower($value));
+                $value = str_replace("bon de livraison", "", strtolower($value));
                 $value = trim($value, " ");
 
                 $value = explode(" ", $value);
@@ -1179,6 +1181,8 @@ class GlobalService{
         $newText = str_replace("b.l", "", strtolower($newText));
         $newText = str_replace("de", "", strtolower($newText));
         $newText = str_replace("be", "", strtolower($newText));
+        $newText = str_replace("bon livraison", "", strtolower($newText));
+        $newText = str_replace("bon de livraison", "", strtolower($newText));
 
         $text = str_replace("newText", "", strtolower($text));
         $newText = trim($newText, " ");
@@ -2696,6 +2700,8 @@ class GlobalService{
                             $text = str_replace("b.l", "", strtolower($text));
                             $text = str_replace("de", "", strtolower($text));
                             $text = str_replace("be", "", strtolower($text));
+                            $text = str_replace("bon livraison", "", strtolower($text));
+                            $text = str_replace("bon de livraison", "", strtolower($text));
                             $text = trim($text, " ");
 
                             $text = explode(" ", $text);
@@ -2758,6 +2764,8 @@ class GlobalService{
                     $text = str_replace("b.l", "", strtolower($text));
                     $text = str_replace("de", "", strtolower($text));
                     $text = str_replace("be", "", strtolower($text));
+                    $text = str_replace("bon livraison", "", strtolower($text));
+                    $text = str_replace("bon de livraison", "", strtolower($text));
                     $text = trim($text, " ");
 
                     $text = explode(" ", $text);
@@ -2798,6 +2806,8 @@ class GlobalService{
                     $text = str_replace("b.l", "", strtolower($text));
                     $text = str_replace("de", "", strtolower($text));
                     $text = str_replace("be", "", strtolower($text));
+                    $text = str_replace("bon livraison", "", strtolower($text));
+                    $text = str_replace("bon de livraison", "", strtolower($text));
                     $text = trim($text, " ");
 
                     $text = explode(" ", $text);
@@ -2826,6 +2836,9 @@ class GlobalService{
 
     public function isAvoir($dossier, $filename, $entrepriseId){
         
+        if($dossier != "facturation" && $dossier != "bon_livraison")
+            return false;
+
         $countAvoir = $this->em->getRepository(TmpOcr::class)->findLikeText($dossier, $filename, $entrepriseId, 'avoir');
         if((int)$countAvoir['countText'] > 0)
             return true;
