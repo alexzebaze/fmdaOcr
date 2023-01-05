@@ -2492,12 +2492,10 @@ class GlobalService{
             if(method_exists($entity, 'setPrixttc')){
                 $ttcExtract = $this->extractTotalTTC($totalTtcAndTotalHT['total_ttc_list']);
 
-                if($ttcExtract){
-                    if($isAvoir && $ttcExtract > 0 )
-                        $ttcExtract = 0-$ttcExtract;
+                        $ttcExtract = -1;
 
                     $entity->setPrixttc($ttcExtract);
-                }
+                
             }
         }
 
