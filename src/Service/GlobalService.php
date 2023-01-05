@@ -2840,6 +2840,7 @@ class GlobalService{
 
         $entityfound = $this->em->getRepository(OcrField::class)->getByNameAlpn2($dossier, $filename, $entrepriseId, 'avoir', $firstEltDocument['id'], 40);
 
+        dd([$dossier, $filename, $entrepriseId, $firstEltDocument['id'], $entityfound]);
         if(count($entityfound) > 0)
             return true;
 
