@@ -2842,6 +2842,7 @@ class GlobalService{
 
         $entityfound = $this->em->getRepository(TmpOcr::class)->getByNameAlpn($dossier, $filename, $entrepriseId, 'avoir', $firstEltDocument['id'], "", 20);
 
+        dd($entityfound);
         if(count($entityfound) > 0)
             return true;
 
