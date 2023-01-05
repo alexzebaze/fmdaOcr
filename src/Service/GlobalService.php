@@ -922,6 +922,7 @@ class GlobalService{
         }
 
         $documentToRotate = [];
+        dd($documents);
         foreach ($documents as $value) {
 
                 $value = $this->em->getRepository(EmailDocumentPreview::class)->find($value->getId());
