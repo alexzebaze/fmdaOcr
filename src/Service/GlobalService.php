@@ -922,7 +922,6 @@ class GlobalService{
         }
 
         $documentToRotate = [];
-        dd($documents);
         foreach ($documents as $value) {
 
                 $value = $this->em->getRepository(EmailDocumentPreview::class)->find($value->getId());
@@ -2478,7 +2477,7 @@ class GlobalService{
         $totalTtcAndTotalHT = $this->em->getRepository(TmpOcr::class)->getsummaryFields($dossier, $filename, $entreprise->getId());
 
         $isAvoir = $this->isAvoir($dossier, $filename, $entreprise->getId());
-
+        dd($isAvoir);
         if($totalTtcAndTotalHT){
             if(method_exists($entity, 'setPrixht')){
                 $htExtract = $this->extractTotalHt($totalTtcAndTotalHT['total_ht_list']);
