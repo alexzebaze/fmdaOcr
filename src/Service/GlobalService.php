@@ -2833,15 +2833,18 @@ class GlobalService{
         ];
     }
 
-
     public function isAvoir($dossier, $filename, $entrepriseId){
         
+        $firstEltDocument = $this->em->getRepository(OcrField::class)->getFirstEltDocument($dossier, $entrepriseId, $filename);
+
         if($dossier != "facturation" && $dossier != "bon_livraison")
             return false;
 
-        $countAvoir = $this->em->getRepository(TmpOcr::class)->findLikeText($dossier, $filename, $entrepriseId, 'avoir');
-        if((int)$countAvoir['countText'] > 0)
+        $entityfound = $this->em->getRepository(TmpOcr::class)->getByNameAlpn($dossier, $filename, $entrepriseId, 'avoir', $firstEltDocument['id'], "", 20);
+        
+        if(count($entityfound) > 0)
             return true;
+
 
         return false;
     }
