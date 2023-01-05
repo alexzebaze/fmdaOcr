@@ -2477,7 +2477,7 @@ class GlobalService{
         $totalTtcAndTotalHT = $this->em->getRepository(TmpOcr::class)->getsummaryFields($dossier, $filename, $entreprise->getId());
 
         $isAvoir = $this->isAvoir($dossier, $filename, $entreprise->getId());
-        dd($isAvoir);
+
         if($totalTtcAndTotalHT){
             if(method_exists($entity, 'setPrixht')){
                 $htExtract = $this->extractTotalHt($totalTtcAndTotalHT['total_ht_list']);
@@ -2833,19 +2833,15 @@ class GlobalService{
         ];
     }
 
+
     public function isAvoir($dossier, $filename, $entrepriseId){
         
-        $firstEltDocument = $this->em->getRepository(OcrField::class)->getFirstEltDocument($dossier, $entrepriseId, $filename);
-
         if($dossier != "facturation" && $dossier != "bon_livraison")
             return false;
 
-        $entityfound = $this->em->getRepository(TmpOcr::class)->getByNameAlpn($dossier, $filename, $entrepriseId, 'avoir', $firstEltDocument['id'], "", 20);
-
-        dd($entityfound);
-        if(count($entityfound) > 0)
+        $countAvoir = $this->em->getRepository(TmpOcr::class)->findLikeText($dossier, $filename, $entrepriseId, 'avoir');
+        if((int)$countAvoir['countText'] > 0)
             return true;
-
 
         return false;
     }
