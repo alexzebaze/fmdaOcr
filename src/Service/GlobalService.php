@@ -2840,7 +2840,7 @@ class GlobalService{
         if($dossier != "facturation" && $dossier != "bon_livraison")
             return false;
 
-        $entityfound = $this->em->getRepository(OcrField::class)->getByNameAlpn($dossier, $filename, $entrepriseId, 'avoir', $firstEltDocument['id'], "", 40);
+        $entityfound = $this->em->getRepository(OcrField::class)->getByNameAlpn2($dossier, $filename, $entrepriseId, 'avoir', $firstEltDocument['id'], 40);
 
         if(count($entityfound) > 0)
             return true;

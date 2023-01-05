@@ -98,6 +98,17 @@ class OcrFieldRepository extends ServiceEntityRepository
         return $datas->fetchAll();
     } 
 
+    public function getByNameAlpn2($dossier, $entreprise_id, $filename, $searchName, $offset=1, $limit = 30){
+
+       
+        $sql = "SELECT name, entreprise_id, filename, dossier FROM (SELECT * FROM tmp_ocr WHERE id >= :offset LIMIT $limit) as A WHERE A.name LIKE '%$searchName%' AND A.filename = :filename and A.dossier = :dossier AND A.entreprise_id = :entreprise_id";
+        
+
+        $datas = $this->em->prepare($sql);
+        $datas->execute(['dossier'=>$dossier, 'filename'=>$filename, 'entreprise_id'=>$entreprise_id, 'offset'=>$offset]);
+        return $datas->fetchAll();
+    } 
+
     public function getByNameAlpnClient($dossier, $entreprise_id, $filename, $searchName, $offset=1, $searchName2="", $limit = 30){
 
         if(strtolower($searchName) == "m.")
