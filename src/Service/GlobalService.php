@@ -2492,10 +2492,12 @@ class GlobalService{
             if(method_exists($entity, 'setPrixttc')){
                 $ttcExtract = $this->extractTotalTTC($totalTtcAndTotalHT['total_ttc_list']);
 
-                    if($isAvoir)
-                        $ttcExtract = -2;
+                if($ttcExtract){
+                    if($isAvoir && $ttcExtract > 0 )
+                        $ttcExtract = 0-$ttcExtract;
 
                     $entity->setPrixttc($ttcExtract);
+                }
             }
         }
 
@@ -2835,14 +2837,11 @@ class GlobalService{
         
         $firstEltDocument = $this->em->getRepository(OcrField::class)->getFirstEltDocument($dossier, $entrepriseId, $filename);
 
-        if($dossier != "facturation" && $dossier != "bon_livraison"){
-            dd('false');
+        if($dossier != "facturation" && $dossier != "bon_livraison")
             return false;
-        }
 
         $entityfound = $this->em->getRepository(OcrField::class)->getByNameAlpn2($dossier, $filename, $entrepriseId, 'avoir', $firstEltDocument['id'], 40);
 
-        dd([$dossier, $filename, $entrepriseId, $firstEltDocument['id'], $entityfound]);
         if(count($entityfound) > 0)
             return true;
 
