@@ -2835,8 +2835,10 @@ class GlobalService{
         
         $firstEltDocument = $this->em->getRepository(OcrField::class)->getFirstEltDocument($dossier, $entrepriseId, $filename);
 
-        if($dossier != "facturation" && $dossier != "bon_livraison")
+        if($dossier != "facturation" && $dossier != "bon_livraison"){
+            dd('false');
             return false;
+        }
 
         $entityfound = $this->em->getRepository(OcrField::class)->getByNameAlpn2($dossier, $filename, $entrepriseId, 'avoir', $firstEltDocument['id'], 40);
 
