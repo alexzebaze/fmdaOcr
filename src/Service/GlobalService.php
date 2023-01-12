@@ -2739,87 +2739,78 @@ class GlobalService{
         
         //Exception pour le champ document_id qui systematiquement recurere la position à partir du client
             
-        if($dossier == "facture_client"){
+        if($dossier == "facture_client" || $dossier == "devis_client"){
             $documentIdPosition = "";
 
-            $metaConfig =  $this->em->getRepository(MetaConfig::class)->findOneBy(['mkey'=>"document_id_position_facture", 'entreprise'=>$entity->getEntreprise()]);
+            if($dossier == "facture_client"){
+                $metaConfig =  $this->em->getRepository(MetaConfig::class)->findOneBy(['mkey'=>"document_id_position_facture", 'entreprise'=>$entity->getEntreprise()]);
+            }
+            elseif($dossier == "devis_client"){
+                $metaConfig =  $this->em->getRepository(MetaConfig::class)->findOneBy(['mkey'=>"document_id_position_devis_client", 'entreprise'=>$entity->getEntreprise()]);
+            }
 
-            if(!is_null($metaConfig))
+
+            if(!is_null($metaConfig)){
                 $documentIdPosition = $metaConfig->getValue();
 
-            if(!is_null($documentIdPosition) && $documentIdPosition != "" && count(explode('-', $documentIdPosition)) == 4){
+                $metaConfigArr = explode("##", $metaConfig->getValue());
+                $tabDocumentIdText = [];
+                foreach ($metaConfigArr as $valuePos) {
+                
+                    if($valuePos != "" && count(explode('-', $valuePos)) == 4){
 
-                $tabPosition = explode("-", $documentIdPosition);
+                        $tabPosition = explode("-", $valuePos);
 
-                $text = $this->getNewTextByPostion($tabPosition[0], $tabPosition[1], $tabPosition[2], $tabPosition[3], $dossier, $filename);
+                        $text = $this->getNewTextByPostion($tabPosition[0], $tabPosition[1], $tabPosition[2], $tabPosition[3], $dossier, $filename);
+                        if($text != ""){
+                            $text = str_replace("*", "", strtolower($text));
+                            $text = str_replace("#", "", strtolower($text));
+                            $text = str_replace("bl", "", strtolower($text));
+                            $text = str_replace(":", "", strtolower($text));
+                            $text = str_replace("n°", "", strtolower($text));
+                            $text = str_replace("du", "", strtolower($text));
+                            $text = str_replace("numéro", "", strtolower($text));
+                            $text = str_replace("numero", "", strtolower($text));
+                            $text = str_replace("facture", "", strtolower($text));
+                            $text = str_replace("b.l", "", strtolower($text));
+                            $text = str_replace("de", "", strtolower($text));
+                            $text = str_replace("be", "", strtolower($text));
+                            $text = str_replace("bon livraison", "", strtolower($text));
+                            $text = str_replace("bon de livraison", "", strtolower($text));
+                            $text = trim($text, " ");
+
+                            $text = explode(" ", $text);
+                            $text = array_unique($text);
+                            $text = implode(" ", $text);
+
+                            $tabDocumentIdText[$valuePos] = $text;
+                        }
+                    }
+                }
+
+                $text = ""; $pos = "";
+                if(count($tabDocumentIdText) > 0){
+                    $text = array_values($tabDocumentIdText)[0];
+                    $countNbChiffre = $this->find_num_of_integers(array_values($tabDocumentIdText)[0]);
+                    $pos = array_keys($tabDocumentIdText)[0];
+                }
+                
+                foreach ($tabDocumentIdText as $keyPos => $valueText) {
+                    $newCountNbChiffre = $this->find_num_of_integers($valueText);
+                    if($newCountNbChiffre > $countNbChiffre){
+                        $text = $valueText;
+                        $countNbChiffre = $newCountNbChiffre;
+                        $pos = $keyPos;
+                    }
+                }
+
                 if($text != ""){
-                    $text = str_replace("*", "", strtolower($text));
-                    $text = str_replace("#", "", strtolower($text));
-                    $text = str_replace("bl", "", strtolower($text));
-                    $text = str_replace(":", "", strtolower($text));
-                    $text = str_replace("n°", "", strtolower($text));
-                    $text = str_replace("du", "", strtolower($text));
-                    $text = str_replace("numéro", "", strtolower($text));
-                    $text = str_replace("numero", "", strtolower($text));
-                    $text = str_replace("b.l", "", strtolower($text));
-                    $text = str_replace("de", "", strtolower($text));
-                    $text = str_replace("be", "", strtolower($text));
-                    $text = str_replace("bon livraison", "", strtolower($text));
-                    $text = str_replace("bon de livraison", "", strtolower($text));
-                    $text = trim($text, " ");
-
-                    $text = explode(" ", $text);
-                    $text = array_unique($text);
-                    $text = implode(" ", $text);
                     $entity->setDocumentId($text);
-
+                    $entity->setDocumentIdPosition($pos);
                     $entity->setDocumentIdSource(1);
                 }
             }
         }
-
-        //Exception pour le champ document_id qui systematiquement recurere la position à partir du client
-            
-        if($dossier == "devis_client"){
-            $documentIdPosition = "";
-
-            $metaConfig =  $this->em->getRepository(MetaConfig::class)->findOneBy(['mkey'=>"document_id_position_devis_client", 'entreprise'=>$entity->getEntreprise()]);
-
-            if(!is_null($metaConfig))
-                $documentIdPosition = $metaConfig->getValue();
-
-            if(!is_null($documentIdPosition) && $documentIdPosition != "" && count(explode('-', $documentIdPosition)) == 4){
-
-                $tabPosition = explode("-", $documentIdPosition);
-
-                $text = $this->getNewTextByPostion($tabPosition[0], $tabPosition[1], $tabPosition[2], $tabPosition[3], $dossier, $filename);
-                if($text != ""){
-                    $text = str_replace("*", "", strtolower($text));
-                    $text = str_replace("#", "", strtolower($text));
-                    $text = str_replace("bl", "", strtolower($text));
-                    $text = str_replace(":", "", strtolower($text));
-                    $text = str_replace("n°", "", strtolower($text));
-                    $text = str_replace("du", "", strtolower($text));
-                    $text = str_replace("numéro", "", strtolower($text));
-                    $text = str_replace("numero", "", strtolower($text));
-                    $text = str_replace("facture", "", strtolower($text));
-                    $text = str_replace("b.l", "", strtolower($text));
-                    $text = str_replace("de", "", strtolower($text));
-                    $text = str_replace("be", "", strtolower($text));
-                    $text = str_replace("bon livraison", "", strtolower($text));
-                    $text = str_replace("bon de livraison", "", strtolower($text));
-                    $text = trim($text, " ");
-
-                    $text = explode(" ", $text);
-                    $text = array_unique($text);
-                    $text = implode(" ", $text);
-                    $entity->setDocumentId($text);
-
-                    $entity->setDocumentIdSource(1);
-                }
-            }
-        }
-
                 
         return [
             $dossier=>$entity,
